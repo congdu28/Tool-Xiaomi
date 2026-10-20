@@ -26,20 +26,21 @@ import app.cd.mitool.util.BatteryHelper;
 import app.cd.mitool.util.PreferencesHelper;
 
 /**
- * Single Unified Notification Service for Mi Tool.
- * Displays:
- * 1. Real-time Clock (HH:mm:ss) + Day/Date in Notification Drawer and Lockscreen.
- * 2. Real-time Charging Stats (W, %, ETA chuẩn, Temp, Voltage, Current) in ONE single notification.
- * 3. Handles battery alerts (80%, 100%, Overheat).
- * Zero duplicate notifications. 100% no ADB required.
+ * Real-time Lockscreen Charging & Clock Notification Service.
+ * - Shows on Lockscreen (IMPORTANCE_HIGH, VISIBILITY_PUBLIC, completely silent).
+ * - Realtime Clock (HH:mm:ss) + Power (W) + Battery % + Temp (°C) + Standard ETA.
+ * - Automatically dismissed when charger is unplugged.
+ * - 0% CPU consumption when screen is OFF.
  */
 public class NotificationClockService extends Service {
 
     public static final String ACTION_START = "app.cd.mitool.START_NOTIF_CLOCK";
     public static final String ACTION_STOP = "app.cd.mitool.STOP_NOTIF_CLOCK";
+    public static final String ACTION_START_CHARGING = "app.cd.mitool.START_CHARGING";
     public static final String ACTION_UPDATE_BATTERY = "app.cd.mitool.UPDATE_BATTERY";
 
-    public static final String CHANNEL_ID = "mitool_notification_clock";
+    // New unique channel ID with IMPORTANCE_HIGH to force Android & Xiaomi HyperOS to show on Lockscreen
+    public static final String CHANNEL_ID = "mitool_charging_lockscreen_v4";
     public static final int NOTIF_ID = 4004;
 
     private NotificationManager notificationManager;
@@ -60,28 +61,25 @@ public class NotificationClockService extends Service {
             if (intent == null || intent.getAction() == null) return;
             String action = intent.getAction();
 
-            if (Intent.ACTION_SCREEN_OFF.equals(action)) {
+            if (Intent.ACTION_POWER_DISCONNECTED.equals(action)) {
+                // When unplugged: Immediately remove notification and stop service
+                dismissAndStop();
+            } else if (Intent.ACTION_POWER_CONNECTED.equals(action)) {
+                updateNotification();
+                startTicker();
+            } else if (Intent.ACTION_SCREEN_OFF.equals(action)) {
                 isScreenOn = false;
-                handler.removeCallbacks(tickerRunnable);
+                if (tickerRunnable != null) {
+                    handler.removeCallbacks(tickerRunnable);
+                }
             } else if (Intent.ACTION_SCREEN_ON.equals(action)) {
                 isScreenOn = true;
                 updateNotification();
-                handler.removeCallbacks(tickerRunnable);
-                if (prefs.isNotifClockEnabled()) {
-                    handler.postDelayed(tickerRunnable, 1000);
-                }
+                startTicker();
             } else if (Intent.ACTION_BATTERY_CHANGED.equals(action)) {
                 BatteryHelper.BatteryInfo info = BatteryHelper.getBatteryInfo(context, intent);
                 checkBatteryAlerts(info);
                 updateNotification();
-            } else if (Intent.ACTION_POWER_CONNECTED.equals(action)) {
-                updateNotification();
-            } else if (Intent.ACTION_POWER_DISCONNECTED.equals(action)) {
-                if (!prefs.isNotifClockEnabled()) {
-                    stopSelf();
-                } else {
-                    updateNotification();
-                }
             }
         }
     };
@@ -94,17 +92,25 @@ public class NotificationClockService extends Service {
         timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
         dateFormat = new SimpleDateFormat("EEEE, dd/MM", new Locale("vi", "VN"));
 
-        // Clear any old duplicate notifications from previous app versions
+        // Clean up legacy notification channels & old notification IDs
         if (notificationManager != null) {
             notificationManager.cancel(1001);
             notificationManager.cancel(2002);
             notificationManager.cancel(3003);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                try {
+                    notificationManager.deleteNotificationChannel("mitool_notification_clock");
+                    notificationManager.deleteNotificationChannel("mitool_charging_notifications");
+                    notificationManager.deleteNotificationChannel("mitool_battery_channel");
+                } catch (Exception ignored) {
+                }
+            }
         }
 
         createChannel();
         startForeground(NOTIF_ID, buildUnifiedNotification());
         registerStateReceivers();
-        startTickerIfNeeded();
+        startTicker();
     }
 
     private void registerStateReceivers() {
@@ -133,11 +139,13 @@ public class NotificationClockService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                     CHANNEL_ID,
-                    "Mi Tool - Thông báo đồng hồ & sạc pin",
-                    NotificationManager.IMPORTANCE_LOW
+                    "Thông báo sạc & Màn hình khóa",
+                    NotificationManager.IMPORTANCE_HIGH
             );
-            channel.setDescription("Hiển thị đồng hồ giây và thông số sạc pin tức thời trong bảng thông báo và màn hình khóa");
+            channel.setDescription("Hiển thị thông số sạc, công suất W, nhiệt độ và ETA trực tiếp ngoài màn hình khóa");
             channel.setShowBadge(false);
+            channel.setSound(null, null); // completely silent, no annoying beeps every second
+            channel.enableVibration(false);
             channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
             if (notificationManager != null) {
                 notificationManager.createNotificationChannel(channel);
@@ -211,7 +219,8 @@ public class NotificationClockService extends Service {
                 .setOngoing(true)
                 .setOnlyAlertOnce(true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setCategory(NotificationCompat.CATEGORY_STATUS)
                 .build();
     }
 
@@ -221,22 +230,20 @@ public class NotificationClockService extends Service {
         }
     }
 
-    private void startTickerIfNeeded() {
-        if (!prefs.isNotifClockEnabled()) {
-            return;
+    private void startTicker() {
+        if (tickerRunnable != null) {
+            handler.removeCallbacks(tickerRunnable);
         }
         tickerRunnable = new Runnable() {
             @Override
             public void run() {
                 if (isScreenOn) {
                     updateNotification();
-                }
-                if (prefs.isNotifClockEnabled()) {
                     handler.postDelayed(this, 1000);
                 }
             }
         };
-        handler.postDelayed(tickerRunnable, 1000);
+        handler.post(tickerRunnable);
     }
 
     private void checkBatteryAlerts(BatteryHelper.BatteryInfo info) {
@@ -267,18 +274,36 @@ public class NotificationClockService extends Service {
         }
     }
 
+    private void dismissAndStop() {
+        if (handler != null && tickerRunnable != null) {
+            handler.removeCallbacks(tickerRunnable);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            stopForeground(STOP_FOREGROUND_REMOVE);
+        } else {
+            stopForeground(true);
+        }
+        if (notificationManager != null) {
+            notificationManager.cancel(NOTIF_ID);
+            notificationManager.cancelAll();
+        }
+        stopSelf();
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
             String action = intent.getAction();
             if (ACTION_STOP.equals(action)) {
-                stopSelf();
+                dismissAndStop();
                 return START_NOT_STICKY;
+            } else if (ACTION_START_CHARGING.equals(action) || ACTION_START.equals(action)) {
+                updateNotification();
+                startTicker();
             } else if (ACTION_UPDATE_BATTERY.equals(action)) {
                 updateNotification();
             }
         }
-        startTickerIfNeeded();
         return START_STICKY;
     }
 

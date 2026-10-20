@@ -407,16 +407,30 @@ public class MainActivity extends AppCompatActivity {
 
     private void openXiaomiLockscreenSettings() {
         try {
-            Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
-            intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
-            startActivity(intent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Intent channelIntent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
+                channelIntent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+                channelIntent.putExtra(Settings.EXTRA_CHANNEL_ID, NotificationClockService.CHANNEL_ID);
+                startActivity(channelIntent);
+            } else {
+                Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+                startActivity(intent);
+            }
             Toast.makeText(this, "Hãy chọn 'Trên màn hình khóa' -> 'Hiển thị tất cả nội dung'", Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             try {
-                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                intent.setData(Uri.parse("package:" + getPackageName()));
+                Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
                 startActivity(intent);
-            } catch (Exception ignored) {
+                Toast.makeText(this, "Hãy chọn 'Trên màn hình khóa' -> 'Hiển thị tất cả nội dung'", Toast.LENGTH_LONG).show();
+            } catch (Exception e2) {
+                try {
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    intent.setData(Uri.parse("package:" + getPackageName()));
+                    startActivity(intent);
+                } catch (Exception ignored) {
+                }
             }
         }
     }

@@ -15,9 +15,6 @@ import app.cd.mitool.view.ChargingHudView;
 
 public class BatteryReceiver extends BroadcastReceiver {
 
-    public static final int OLD_CHARGING_NOTIF_ID = 3003;
-    public static final int OLD_BATTERY_NOTIF_ID = 2002;
-
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent == null || intent.getAction() == null) return;
@@ -25,25 +22,18 @@ public class BatteryReceiver extends BroadcastReceiver {
         PreferencesHelper prefs = new PreferencesHelper(context);
         String action = intent.getAction();
 
-        // Ensure old duplicate notifications from previous app versions are wiped clean
-        NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        if (nm != null) {
-            nm.cancel(OLD_CHARGING_NOTIF_ID);
-            nm.cancel(OLD_BATTERY_NOTIF_ID);
-        }
-
         if (Intent.ACTION_POWER_CONNECTED.equals(action)) {
-            // Read realtime battery info directly from system API
+            // Read realtime battery info
             BatteryHelper.BatteryInfo info = BatteryHelper.getBatteryInfo(context);
             info.isCharging = true;
 
-            // Optional subtle haptic feedback
+            // Subtle haptic feedback
             BatteryHelper.vibrateDevice(context, 80);
 
-            // 1. Update or start single unified notification (shows Clock + Charging W, ETA, Temp)
+            // 1. Launch / Update realtime charging notification on lockscreen
             if (prefs.isLockscreenNotifEnabled() || prefs.isNotifClockEnabled()) {
                 Intent serviceIntent = new Intent(context, NotificationClockService.class);
-                serviceIntent.setAction(NotificationClockService.ACTION_UPDATE_BATTERY);
+                serviceIntent.setAction(NotificationClockService.ACTION_START_CHARGING);
                 try {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         context.startForegroundService(serviceIntent);
@@ -64,7 +54,7 @@ public class BatteryReceiver extends BroadcastReceiver {
                 }
             }
 
-            // 3. Show optional dynamic HUD pill if user enabled and has overlay permission
+            // 3. Dynamic HUD pill if enabled
             if (prefs.isChargingHudEnabled() && Settings.canDrawOverlays(context)) {
                 try {
                     ChargingHudView.show(context, info);
@@ -73,22 +63,20 @@ public class BatteryReceiver extends BroadcastReceiver {
             }
 
         } else if (Intent.ACTION_POWER_DISCONNECTED.equals(action)) {
-            if (!prefs.isNotifClockEnabled()) {
-                // If user didn't want clock constantly, dismiss unified notification when unplugged
-                Intent stopIntent = new Intent(context, NotificationClockService.class);
-                stopIntent.setAction(NotificationClockService.ACTION_STOP);
-                try {
-                    context.startService(stopIntent);
-                } catch (Exception ignored) {
-                }
-            } else {
-                // If clock is enabled, update notification to show battery status
-                Intent updateIntent = new Intent(context, NotificationClockService.class);
-                updateIntent.setAction(NotificationClockService.ACTION_UPDATE_BATTERY);
-                try {
-                    context.startService(updateIntent);
-                } catch (Exception ignored) {
-                }
+            // Unplugged: Immediately stop service and clear notification from lockscreen & status bar
+            Intent stopIntent = new Intent(context, NotificationClockService.class);
+            stopIntent.setAction(NotificationClockService.ACTION_STOP);
+            try {
+                context.startService(stopIntent);
+            } catch (Exception ignored) {
+            }
+
+            NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (nm != null) {
+                nm.cancel(NotificationClockService.NOTIF_ID);
+                nm.cancel(1001);
+                nm.cancel(2002);
+                nm.cancel(3003);
             }
         }
     }
