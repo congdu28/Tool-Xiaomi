@@ -21,6 +21,8 @@ public class PreferencesHelper {
     public static final String KEY_ALERT_80 = "alert_battery_80";
     public static final String KEY_ALERT_100 = "alert_battery_100";
     public static final String KEY_ALERT_TEMP = "alert_temp_high";
+    public static final String KEY_LOCKSCREEN_NOTIF = "lockscreen_notif_enabled";
+    public static final String KEY_LOCKSCREEN_AMBIENT = "lockscreen_ambient_enabled";
 
     private final SharedPreferences prefs;
 
@@ -130,5 +132,21 @@ public class PreferencesHelper {
 
     public void setAlertTempEnabled(boolean enabled) {
         prefs.edit().putBoolean(KEY_ALERT_TEMP, enabled).apply();
+    }
+
+    public boolean isLockscreenNotifEnabled() {
+        return prefs.getBoolean(KEY_LOCKSCREEN_NOTIF, true);
+    }
+
+    public void setLockscreenNotifEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_LOCKSCREEN_NOTIF, enabled).apply();
+    }
+
+    public boolean isLockscreenAmbientEnabled() {
+        return prefs.getBoolean(KEY_LOCKSCREEN_AMBIENT, true);
+    }
+
+    public void setLockscreenAmbientEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_LOCKSCREEN_AMBIENT, enabled).apply();
     }
 }

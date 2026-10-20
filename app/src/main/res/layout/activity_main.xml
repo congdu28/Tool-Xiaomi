@@ -331,7 +331,7 @@
                                 </LinearLayout>
                             </LinearLayout>
 
-                            <!-- Guide Box (shown when permission missing) -->
+                            <!-- Guide Box (Always visible for easy copy & guidance) -->
                             <LinearLayout
                                 android:id="@+id/layout_secure_settings_guide"
                                 android:layout_width="match_parent"
@@ -345,7 +345,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Nếu máy yêu cầu Secure Settings (Quyền hệ thống sâu):"
+                                    android:text="📋 Lệnh cấp quyền qua máy tính (ADB):"
                                     android:textColor="@color/mi_orange"
                                     android:textSize="12sp"
                                     android:textStyle="bold" />
@@ -354,7 +354,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="4dp"
-                                    android:text="Xiaomi HyperOS khóa biến giây vào Secure Settings. Nếu cấp quyền trên chưa đủ, bạn có thể cấp quyền hệ thống qua 2 cách:\n• Cách 1: Dùng app Shizuku kết nối qua Gỡ lỗi không dây (Không cần máy tính).\n• Cách 2: Kết nối máy tính và chạy lệnh ADB:"
+                                    android:text="Sao chép lệnh dưới đây và dán vào cửa sổ dòng lệnh (CMD/Terminal) trên máy tính khi kết nối điện thoại:"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="11sp" />
 
@@ -365,7 +365,7 @@
                                     android:layout_marginTop="6dp"
                                     android:background="@drawable/bg_floating_capsule"
                                     android:fontFamily="monospace"
-                                    android:padding="6dp"
+                                    android:padding="8dp"
                                     android:text="adb shell pm grant app.cd.mitool android.permission.WRITE_SECURE_SETTINGS"
                                     android:textColor="@color/neon_cyan"
                                     android:textSize="10sp" />
@@ -408,6 +408,18 @@
                                         app:strokeColor="@color/card_dark_stroke"
                                         app:strokeWidth="1dp" />
                                 </LinearLayout>
+
+                                <!-- Xiaomi Important Note -->
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:background="@drawable/bg_floating_capsule"
+                                    android:lineSpacingExtra="2dp"
+                                    android:padding="8dp"
+                                    android:text="⚠️ Lưu ý bắt buộc trên Xiaomi (HyperOS / MIUI):\nTrong Cài đặt cho nhà phát triển, bạn PHẢI BẬT đồng thời:\n1. Gỡ lỗi USB (USB debugging)\n2. Gỡ lỗi USB (Cài đặt bảo mật) — (Cần cắm SIM và đăng nhập Mi Account)\nNếu không bật mục số 2, Xiaomi sẽ chặn lệnh ADB và Shizuku!"
+                                    android:textColor="@color/mi_orange"
+                                    android:textSize="11sp" />
                             </LinearLayout>
 
                         </LinearLayout>
@@ -762,6 +774,166 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content" />
                             </LinearLayout>
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Lock Screen Charging Card -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        app:cardBackgroundColor="@color/card_dark"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Hiển Thị Sạc Ngoài Màn Hình Khóa"
+                                android:textColor="@color/text_primary"
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="Tự động hiển thị thời gian còn lại đến khi sạc đầy, công suất W và nhiệt độ ngay trên màn hình khóa."
+                                android:textColor="@color/text_secondary"
+                                android:textSize="12sp" />
+
+                            <!-- Switch 1: Lockscreen Notification -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="14dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="12dp"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="1. Ghim thông báo sạc ngoài màn hình khóa"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="13sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="Luôn hiển thị chi tiết thời gian sạc đầy và công suất W ở màn hình khóa khi cắm sạc."
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="11sp" />
+                                </LinearLayout>
+
+                                <com.google.android.material.materialswitch.MaterialSwitch
+                                    android:id="@+id/switch_lockscreen_notif"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+                            </LinearLayout>
+
+                            <!-- Switch 2: AMOLED Lockscreen Charging Screen -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="12dp"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="2. Màn hình sạc khóa AMOLED (Sạc siêu tốc)"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="13sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="Bật sáng màn hình đen AMOLED hiển thị đồng hồ giây, vòng tròn pin, công suất W và đếm ngược thời gian đầy khi cắm sạc."
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="11sp" />
+                                </LinearLayout>
+
+                                <com.google.android.material.materialswitch.MaterialSwitch
+                                    android:id="@+id/switch_lockscreen_ambient"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+                            </LinearLayout>
+
+                            <!-- Buttons: Preview & Xiaomi Lockscreen Permission Guide -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="14dp"
+                                android:orientation="horizontal">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_preview_lockscreen"
+                                    android:layout_width="0dp"
+                                    android:layout_height="38dp"
+                                    android:layout_marginEnd="4dp"
+                                    android:layout_weight="1"
+                                    android:backgroundTint="@color/card_highlight"
+                                    android:insetTop="0dp"
+                                    android:insetBottom="0dp"
+                                    android:padding="0dp"
+                                    android:text="Xem thử màn hình sạc"
+                                    android:textColor="@color/neon_green"
+                                    android:textSize="11sp"
+                                    app:cornerRadius="8dp"
+                                    app:strokeColor="@color/neon_green"
+                                    app:strokeWidth="1dp" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_open_lockscreen_settings"
+                                    android:layout_width="0dp"
+                                    android:layout_height="38dp"
+                                    android:layout_marginStart="4dp"
+                                    android:layout_weight="1"
+                                    android:backgroundTint="@color/card_highlight"
+                                    android:insetTop="0dp"
+                                    android:insetBottom="0dp"
+                                    android:padding="0dp"
+                                    android:text="Cài đặt khóa Xiaomi"
+                                    android:textColor="@color/mi_orange"
+                                    android:textSize="11sp"
+                                    app:cornerRadius="8dp"
+                                    app:strokeColor="@color/mi_orange"
+                                    app:strokeWidth="1dp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="💡 Mẹo Xiaomi: Trong phần 'Cài đặt khóa Xiaomi', hãy bật mục 'Hiển thị trên màn hình khóa' và chọn 'Hiển thị tất cả thông báo và nội dung' để không bị HyperOS ẩn nội dung công suất sạc."
+                                android:textColor="@color/text_muted"
+                                android:textSize="11sp" />
 
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>

@@ -107,6 +107,11 @@ public class BatteryMonitorService extends Service {
         if (info.isCharging) {
             notifTitle = "⚡ Đang sạc: " + info.level + "% (" + info.plugTypeName + ")";
             notifText = info.formattedEta;
+
+            // Also keep public lockscreen notification updated in real time
+            if (prefs.isLockscreenNotifEnabled()) {
+                app.cd.mitool.receiver.BatteryReceiver.showChargingNotification(this, info);
+            }
         } else {
             notifTitle = "Pin: " + info.level + "% • " + info.temperature + "°C";
             notifText = "Tình trạng: " + info.healthDescription;

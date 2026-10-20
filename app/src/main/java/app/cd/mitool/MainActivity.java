@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -76,6 +77,10 @@ public class MainActivity extends AppCompatActivity {
     private MaterialSwitch switchAlert80;
     private MaterialSwitch switchAlert100;
     private MaterialSwitch switchAlertTemp;
+    private MaterialSwitch switchLockscreenNotif;
+    private MaterialSwitch switchLockscreenAmbient;
+    private MaterialButton btnPreviewLockscreen;
+    private MaterialButton btnOpenLockscreenSettings;
 
     // Settings Views
     private TextView tvSettingsCurrentVersion;
@@ -149,6 +154,10 @@ public class MainActivity extends AppCompatActivity {
         switchAlert80 = findViewById(R.id.switch_alert_80);
         switchAlert100 = findViewById(R.id.switch_alert_100);
         switchAlertTemp = findViewById(R.id.switch_alert_temp);
+        switchLockscreenNotif = findViewById(R.id.switch_lockscreen_notif);
+        switchLockscreenAmbient = findViewById(R.id.switch_lockscreen_ambient);
+        btnPreviewLockscreen = findViewById(R.id.btn_preview_lockscreen);
+        btnOpenLockscreenSettings = findViewById(R.id.btn_open_lockscreen_settings);
 
         // Settings Views
         tvSettingsCurrentVersion = findViewById(R.id.tv_settings_current_version);
@@ -306,23 +315,22 @@ public class MainActivity extends AppCompatActivity {
         boolean canWriteSys = SystemClockHelper.canWriteSystemSettings(this);
 
         if (hasSecure) {
-            tvSecureSettingsStatus.setText("Đã cấp Secure Settings (ADB / Shizuku)");
+            tvSecureSettingsStatus.setText("Đã cấp Secure Settings (ADB)");
             tvSecureSettingsStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
-            layoutSecureSettingsGuide.setVisibility(View.GONE);
             boolean isSecondsOn = SystemClockHelper.isSystemClockSecondsEnabled(this);
             switchSystemClock.setChecked(isSecondsOn);
         } else if (canWriteSys) {
             tvSecureSettingsStatus.setText("Đã cấp Sửa cài đặt hệ thống (Zero-ADB)");
             tvSecureSettingsStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
-            layoutSecureSettingsGuide.setVisibility(View.GONE);
             boolean isSecondsOn = SystemClockHelper.isSystemClockSecondsEnabled(this);
             switchSystemClock.setChecked(isSecondsOn);
         } else {
             tvSecureSettingsStatus.setText(R.string.status_missing);
             tvSecureSettingsStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_red));
-            layoutSecureSettingsGuide.setVisibility(View.VISIBLE);
             switchSystemClock.setChecked(false);
         }
+        // Always keep ADB guide and copy command visible for convenient access
+        layoutSecureSettingsGuide.setVisibility(View.VISIBLE);
     }
 
     private void setupBatteryControls() {
@@ -349,6 +357,60 @@ public class MainActivity extends AppCompatActivity {
                 prefs.setAlertTempEnabled(isChecked);
             }
         });
+
+        // Lockscreen Charging Controls
+        switchLockscreenNotif.setChecked(prefs.isLockscreenNotifEnabled());
+        switchLockscreenNotif.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                prefs.setLockscreenNotifEnabled(isChecked);
+                Toast.makeText(MainActivity.this, isChecked ?
+                        "Đã bật ghim thông báo sạc ngoài màn hình khóa!" :
+                        "Đã tắt thông báo ngoài màn hình khóa.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        switchLockscreenAmbient.setChecked(prefs.isLockscreenAmbientEnabled());
+        switchLockscreenAmbient.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                prefs.setLockscreenAmbientEnabled(isChecked);
+                Toast.makeText(MainActivity.this, isChecked ?
+                        "Đã bật màn hình sạc khóa AMOLED!" :
+                        "Đã tắt màn hình sạc khóa.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btnPreviewLockscreen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent previewIntent = new Intent(MainActivity.this, LockscreenChargingActivity.class);
+                startActivity(previewIntent);
+            }
+        });
+
+        btnOpenLockscreenSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openXiaomiLockscreenSettings();
+            }
+        });
+    }
+
+    private void openXiaomiLockscreenSettings() {
+        try {
+            Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+            startActivity(intent);
+            Toast.makeText(this, "Hãy chọn 'Trên màn hình khóa' -> 'Hiển thị tất cả nội dung'", Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            try {
+                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                intent.setData(Uri.parse("package:" + getPackageName()));
+                startActivity(intent);
+            } catch (Exception ignored) {
+            }
+        }
     }
 
     private void setupSettingsControls() {
