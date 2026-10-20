@@ -1369,7 +1369,213 @@
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
-                    <!-- Tool 2: RAM Booster & Game Turbo -->
+                    <!-- Tool 2: Game 120 FPS Unlocker (Anti 89 FPS Cap) -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        app:cardBackgroundColor="@color/card_dark"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/game_fps_title"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="@string/game_fps_desc"
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="11sp" />
+                                </LinearLayout>
+
+                                <!-- Joyose Status Indicator Badge -->
+                                <TextView
+                                    android:id="@+id/tv_joyose_status"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:background="@drawable/bg_floating_capsule"
+                                    android:paddingStart="8dp"
+                                    android:paddingTop="3dp"
+                                    android:paddingEnd="8dp"
+                                    android:paddingBottom="3dp"
+                                    android:text="Joyose: Đang kiểm tra"
+                                    android:textColor="@color/mi_orange"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <!-- Button 1: Force Game 120Hz & Max Performance -->
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_game_120_mode"
+                                android:layout_width="match_parent"
+                                android:layout_height="38dp"
+                                android:layout_marginTop="12dp"
+                                android:backgroundTint="@color/card_highlight"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:text="@string/game_fps_btn_speed_mode"
+                                android:textColor="@color/neon_green"
+                                android:textSize="11sp"
+                                app:cornerRadius="8dp"
+                                app:strokeColor="@color/neon_green"
+                                app:strokeWidth="1dp" />
+
+                            <!-- Joyose Explanation & ADB Command Box -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:background="@drawable/bg_floating_capsule"
+                                android:orientation="vertical"
+                                android:padding="10dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/game_fps_joyose_title"
+                                    android:textColor="@color/mi_orange"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:lineSpacingExtra="2dp"
+                                    android:text="@string/game_fps_joyose_desc"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="11sp" />
+
+                                <TextView
+                                    android:id="@+id/tv_joyose_cmd"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:background="#151A22"
+                                    android:fontFamily="monospace"
+                                    android:padding="8dp"
+                                    android:text="adb shell pm disable-user --user 0 com.xiaomi.joyose"
+                                    android:textColor="@color/neon_cyan"
+                                    android:textSize="11sp" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:orientation="horizontal">
+
+                                    <com.google.android.material.button.MaterialButton
+                                        android:id="@+id/btn_copy_disable_joyose"
+                                        android:layout_width="0dp"
+                                        android:layout_height="36dp"
+                                        android:layout_marginEnd="4dp"
+                                        android:layout_weight="1"
+                                        android:backgroundTint="@color/card_highlight"
+                                        android:insetTop="0dp"
+                                        android:insetBottom="0dp"
+                                        android:text="@string/game_fps_btn_copy_disable"
+                                        android:textColor="@color/neon_cyan"
+                                        android:textSize="11sp"
+                                        app:cornerRadius="6dp" />
+
+                                    <com.google.android.material.button.MaterialButton
+                                        android:id="@+id/btn_copy_enable_joyose"
+                                        android:layout_width="0dp"
+                                        android:layout_height="36dp"
+                                        android:layout_marginStart="4dp"
+                                        android:layout_weight="1"
+                                        android:backgroundTint="@color/card_highlight"
+                                        android:insetTop="0dp"
+                                        android:insetBottom="0dp"
+                                        android:text="@string/game_fps_btn_copy_enable"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="11sp"
+                                        app:cornerRadius="6dp" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <!-- Shortcuts for Powerkeeper & Per-App Hz -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_clear_powerkeeper"
+                                    android:layout_width="0dp"
+                                    android:layout_height="36dp"
+                                    android:layout_marginEnd="4dp"
+                                    android:layout_weight="1"
+                                    android:backgroundTint="@color/card_highlight"
+                                    android:insetTop="0dp"
+                                    android:insetBottom="0dp"
+                                    android:text="@string/game_fps_btn_powerkeeper"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="11sp"
+                                    app:cornerRadius="6dp" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_open_per_app_hz"
+                                    android:layout_width="0dp"
+                                    android:layout_height="36dp"
+                                    android:layout_marginStart="4dp"
+                                    android:layout_weight="1"
+                                    android:backgroundTint="@color/card_highlight"
+                                    android:insetTop="0dp"
+                                    android:insetBottom="0dp"
+                                    android:text="@string/game_fps_btn_per_app_hz"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="11sp"
+                                    app:cornerRadius="6dp" />
+                            </LinearLayout>
+
+                            <!-- Launch Arena of Valor Button -->
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_launch_aov"
+                                android:layout_width="match_parent"
+                                android:layout_height="38dp"
+                                android:layout_marginTop="10dp"
+                                android:backgroundTint="@color/card_highlight"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:text="@string/game_fps_btn_launch_aov"
+                                android:textColor="@color/mi_orange"
+                                android:textSize="11sp"
+                                app:cornerRadius="8dp"
+                                app:strokeColor="@color/mi_orange"
+                                app:strokeWidth="1dp" />
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Tool 3: RAM Booster & Game Turbo -->
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

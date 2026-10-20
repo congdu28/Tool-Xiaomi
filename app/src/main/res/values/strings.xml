@@ -89,6 +89,18 @@
     <string name="btn_open_msa">🚫 Mở Ủy quyền &amp; Hủy bỏ (Tắt MSA)</string>
     <string name="btn_open_ad_services">🔒 Mở Dịch vụ Quảng cáo cá nhân</string>
 
+    <!-- Game 120 FPS Unlocker -->
+    <string name="game_fps_title">Mở Khóa 120 FPS Game (Chống Khóa 89 FPS)</string>
+    <string name="game_fps_desc">Khắc phục triệt để lỗi Xiaomi khóa 89-90 FPS trong Liên Quân Mobile (AOV) dù màn hình đã bật 120Hz và game đã bật 120 FPS.</string>
+    <string name="game_fps_btn_speed_mode">⚡ Kích hoạt Game Mode 120Hz &amp; Tối Đa Hiệu Năng</string>
+    <string name="game_fps_joyose_title">⚠️ Thủ phạm khóa 89 FPS: Dịch vụ Joyose (Xiaomi)</string>
+    <string name="game_fps_joyose_desc">Joyose là dịch vụ ngầm của Xiaomi tự ý bóp GPU/FPS xuống 89-90 FPS để hạ nhiệt khi chơi Liên Quân. Bạn hãy sao chép lệnh ADB dưới đây và chạy 1 lần trên máy tính để gỡ bỏ triệt để giới hạn:</string>
+    <string name="game_fps_btn_copy_disable">📋 Chép lệnh TẮT Joyose (120 FPS)</string>
+    <string name="game_fps_btn_copy_enable">🔄 Chép lệnh BẬT lại Joyose</string>
+    <string name="game_fps_btn_powerkeeper">🔋 Xóa dữ liệu Pin &amp; Hiệu suất</string>
+    <string name="game_fps_btn_per_app_hz">📱 Ứng dụng dùng 120Hz</string>
+    <string name="game_fps_btn_launch_aov">⚔️ Mở Liên Quân Mobile (AOV)</string>
+
     <string name="status_granted">Đã cấp</string>
     <string name="status_missing">Chưa cấp</string>
 </resources>

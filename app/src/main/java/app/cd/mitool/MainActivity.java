@@ -40,6 +40,7 @@ import java.util.Locale;
 import app.cd.mitool.service.FloatingClockService;
 import app.cd.mitool.service.NotificationClockService;
 import app.cd.mitool.util.BatteryHelper;
+import app.cd.mitool.util.GamingFpsHelper;
 import app.cd.mitool.util.PreferencesHelper;
 import app.cd.mitool.util.RamBoosterHelper;
 import app.cd.mitool.util.RefreshRateHelper;
@@ -111,6 +112,16 @@ public class MainActivity extends AppCompatActivity {
     private MaterialButton btnHz120;
     private MaterialButton btnHz144;
     private MaterialButton btnOpenHzSettings;
+
+    // Game 120 FPS Unlocker Views
+    private TextView tvJoyoseStatus;
+    private MaterialButton btnGame120Mode;
+    private TextView tvJoyoseCmd;
+    private MaterialButton btnCopyDisableJoyose;
+    private MaterialButton btnCopyEnableJoyose;
+    private MaterialButton btnClearPowerkeeper;
+    private MaterialButton btnOpenPerAppHz;
+    private MaterialButton btnLaunchAov;
 
     private TextView tvRamStats;
     private ProgressBar pbRamUsage;
@@ -236,6 +247,16 @@ public class MainActivity extends AppCompatActivity {
         btnHz120 = findViewById(R.id.btn_hz_120);
         btnHz144 = findViewById(R.id.btn_hz_144);
         btnOpenHzSettings = findViewById(R.id.btn_open_hz_settings);
+
+        // Game 120 FPS Views
+        tvJoyoseStatus = findViewById(R.id.tv_joyose_status);
+        btnGame120Mode = findViewById(R.id.btn_game_120_mode);
+        tvJoyoseCmd = findViewById(R.id.tv_joyose_cmd);
+        btnCopyDisableJoyose = findViewById(R.id.btn_copy_disable_joyose);
+        btnCopyEnableJoyose = findViewById(R.id.btn_copy_enable_joyose);
+        btnClearPowerkeeper = findViewById(R.id.btn_clear_powerkeeper);
+        btnOpenPerAppHz = findViewById(R.id.btn_open_per_app_hz);
+        btnLaunchAov = findViewById(R.id.btn_launch_aov);
 
         tvRamStats = findViewById(R.id.tv_ram_stats);
         pbRamUsage = findViewById(R.id.pb_ram_usage);
@@ -612,7 +633,71 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // 2. RAM Booster & Game Turbo
+        // 2. Game 120 FPS Unlocker
+        btnGame120Mode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean ok = GamingFpsHelper.applyGaming120Mode(MainActivity.this);
+                if (ok) {
+                    Toast.makeText(MainActivity.this, "⚡ Đã kích hoạt Game Mode 120Hz & Tối Đa Hiệu Năng!", Toast.LENGTH_LONG).show();
+                    updateToolsDisplay();
+                } else {
+                    Toast.makeText(MainActivity.this, "Cần cấp quyền WRITE_SECURE_SETTINGS (Xem Tab 1) để áp dụng đầy đủ.", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        btnCopyDisableJoyose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GamingFpsHelper.handleDisableJoyose(MainActivity.this);
+                updateToolsDisplay();
+            }
+        });
+
+        btnCopyEnableJoyose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GamingFpsHelper.handleEnableJoyose(MainActivity.this);
+                updateToolsDisplay();
+            }
+        });
+
+        btnClearPowerkeeper.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean opened = GamingFpsHelper.openPowerKeeperAppInfo(MainActivity.this);
+                if (opened) {
+                    Toast.makeText(MainActivity.this, "Bấm 'Xóa dữ liệu' -> 'Xóa tất cả dữ liệu' để reset bảng khóa 89 FPS.", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "Không tìm thấy Pin và hiệu suất (PowerKeeper).", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        btnOpenPerAppHz.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean opened = GamingFpsHelper.openPerAppRefreshRate(MainActivity.this);
+                if (opened) {
+                    Toast.makeText(MainActivity.this, "Chọn 'Liên Quân Mobile' trong danh sách và đổi sang '120Hz'.", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "Không thể mở trang tần số quét ứng dụng.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        btnLaunchAov.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean launched = GamingFpsHelper.launchLienQuanMobile(MainActivity.this);
+                if (!launched) {
+                    Toast.makeText(MainActivity.this, "Không tìm thấy Liên Quân Mobile trên máy của bạn.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        // 3. RAM Booster & Game Turbo
         btnBoostRam.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -714,7 +799,37 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateToolsDisplay() {
         updateHzButtons();
+        updateGamingFpsDisplay();
         updateRamDisplay();
+    }
+
+    private void updateGamingFpsDisplay() {
+        if (tvJoyoseStatus == null) return;
+        GamingFpsHelper.JoyoseStatus status = GamingFpsHelper.checkJoyoseStatus(this);
+        switch (status) {
+            case DISABLED_UNLOCKED:
+                tvJoyoseStatus.setText("Joyose: ĐÃ TẮT (120 FPS Unlocked)");
+                tvJoyoseStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
+                break;
+            case ACTIVE_LOCKED:
+                tvJoyoseStatus.setText("Joyose: ĐANG CHẠY (Khóa 89 FPS)");
+                tvJoyoseStatus.setTextColor(ContextCompat.getColor(this, R.color.mi_orange));
+                break;
+            case NOT_FOUND:
+                tvJoyoseStatus.setText("Joyose: Không có / Đã gỡ");
+                tvJoyoseStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_cyan));
+                break;
+        }
+
+        if (btnLaunchAov != null) {
+            boolean installed = GamingFpsHelper.isLienQuanInstalled(this);
+            if (installed) {
+                btnLaunchAov.setText("⚔️ Mở Liên Quân Mobile (AOV)");
+                btnLaunchAov.setEnabled(true);
+            } else {
+                btnLaunchAov.setText("⚔️ Mở Liên Quân Mobile (Chưa cài đặt)");
+            }
+        }
     }
 
     private void updateHzButtons() {
