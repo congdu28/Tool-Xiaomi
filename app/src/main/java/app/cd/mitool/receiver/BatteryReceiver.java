@@ -63,20 +63,12 @@ public class BatteryReceiver extends BroadcastReceiver {
             }
 
         } else if (Intent.ACTION_POWER_DISCONNECTED.equals(action)) {
-            // Unplugged: Immediately stop service and clear notification from lockscreen & status bar
-            Intent stopIntent = new Intent(context, NotificationClockService.class);
-            stopIntent.setAction(NotificationClockService.ACTION_STOP);
+            // Unplugged: Seamlessly switch notification to normal battery status without dismissing
+            Intent updateIntent = new Intent(context, NotificationClockService.class);
+            updateIntent.setAction(NotificationClockService.ACTION_UPDATE_BATTERY);
             try {
-                context.startService(stopIntent);
+                context.startService(updateIntent);
             } catch (Exception ignored) {
-            }
-
-            NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            if (nm != null) {
-                nm.cancel(NotificationClockService.NOTIF_ID);
-                nm.cancel(1001);
-                nm.cancel(2002);
-                nm.cancel(3003);
             }
         }
     }

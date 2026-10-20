@@ -62,8 +62,8 @@ public class NotificationClockService extends Service {
             String action = intent.getAction();
 
             if (Intent.ACTION_POWER_DISCONNECTED.equals(action)) {
-                // When unplugged: Immediately remove notification and stop service
-                dismissAndStop();
+                // When unplugged: Seamlessly switch to battery status, keeping unified notification active
+                updateNotification();
             } else if (Intent.ACTION_POWER_CONNECTED.equals(action)) {
                 updateNotification();
                 startTicker();

@@ -52,20 +52,6 @@
                     android:textSize="11sp" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/tv_app_version_badge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_floating_capsule"
-                android:paddingStart="8dp"
-                android:paddingTop="3dp"
-                android:paddingEnd="8dp"
-                android:paddingBottom="3dp"
-                android:text="v1.0.8"
-                android:textColor="@color/mi_orange"
-                android:textSize="11sp"
-                android:textStyle="bold" />
-
         </LinearLayout>
 
         <!-- Main Content Area with ScrollView for each Tab -->
