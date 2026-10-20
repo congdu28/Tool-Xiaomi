@@ -101,6 +101,16 @@
     <string name="game_fps_btn_per_app_hz">📱 Ứng dụng dùng 120Hz</string>
     <string name="game_fps_btn_launch_aov">⚔️ Mở Liên Quân Mobile (AOV)</string>
 
+    <!-- Status Bar Pin Mode -->
+    <string name="status_bar_pin_title">Ghim Giây Lên Thanh Trạng Thái (HyperOS)</string>
+    <string name="status_bar_pin_desc">Hiển thị giờ giây trực tiếp ở góc trái thanh trạng thái đỉnh máy, nền trong suốt, chạm xuyên thấu kéo thanh thông báo bình thường.</string>
+    <string name="enable_status_bar_pin">Bật ghim giây góc trái thanh trạng thái</string>
+    <string name="hide_system_minute_clock">Ẩn đồng hồ phút gốc của máy (Tránh trùng)</string>
+    <string name="btn_preset_top_left">📍 Góc trái đỉnh máy</string>
+    <string name="btn_preset_beside">➡️ Kế bên đồng hồ gốc</string>
+    <string name="btn_preset_notch">🎯 Cạnh camera nốt ruồi</string>
+    <string name="btn_preset_free">🖐️ Kéo thả tự do</string>
+
     <string name="status_granted">Đã cấp</string>
     <string name="status_missing">Chưa cấp</string>
 </resources>

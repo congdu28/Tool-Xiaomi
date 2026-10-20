@@ -171,21 +171,47 @@ public class FloatingClockService extends Service {
                 ? WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
                 : WindowManager.LayoutParams.TYPE_PHONE;
 
+        int flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
+
+        if (prefs.isClockStatusBarMode() || prefs.isClockLockPosition()) {
+            flags |= WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
+        }
+
         params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 layoutType,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                flags,
                 PixelFormat.TRANSLUCENT
         );
 
         params.gravity = Gravity.TOP | Gravity.START;
-        params.x = prefs.getClockX();
-        params.y = prefs.getClockY();
+        if (prefs.isClockStatusBarMode()) {
+            params.x = prefs.getClockX();
+            int sbHeight = getStatusBarHeight();
+            params.y = Math.max(0, (sbHeight - (int) (18 * getResources().getDisplayMetrics().density)) / 2);
+        } else {
+            params.x = prefs.getClockX();
+            params.y = prefs.getClockY();
+        }
 
         setupTouchListener();
 
         windowManager.addView(floatingView, params);
+    }
+
+    private int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        if (result <= 0) {
+            result = (int) (28 * getResources().getDisplayMetrics().density);
+        }
+        return result;
     }
 
     private void setupTouchListener() {
@@ -226,14 +252,27 @@ public class FloatingClockService extends Service {
     }
 
     private void applyViewCustomizations() {
-        if (tvClock == null) return;
+        if (tvClock == null || floatingView == null) return;
+
+        View root = floatingView.findViewById(R.id.clock_root);
+        if (root != null) {
+            if (prefs.isClockTransparentBg() || prefs.isClockStatusBarMode()) {
+                root.setBackgroundColor(Color.TRANSPARENT);
+                root.setPadding(0, 0, 0, 0);
+            } else {
+                root.setBackgroundResource(R.drawable.bg_floating_capsule);
+                int pHoriz = (int) (10 * getResources().getDisplayMetrics().density);
+                int pVert = (int) (5 * getResources().getDisplayMetrics().density);
+                root.setPadding(pHoriz, pVert, pHoriz, pVert);
+            }
+        }
 
         // Size
         float textSize = 15f;
         int sizePref = prefs.getClockSize();
         if (sizePref == 0) textSize = 12f;
-        else if (sizePref == 1) textSize = 16f;
-        else if (sizePref == 2) textSize = 20f;
+        else if (sizePref == 1) textSize = 15f;
+        else if (sizePref == 2) textSize = 18f;
         tvClock.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
 
         // Color
@@ -245,7 +284,7 @@ public class FloatingClockService extends Service {
 
         // Show battery
         if (tvBattery != null) {
-            tvBattery.setVisibility(prefs.isClockShowBattery() ? View.VISIBLE : View.GONE);
+            tvBattery.setVisibility((prefs.isClockShowBattery() && !prefs.isClockStatusBarMode()) ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -296,6 +335,27 @@ public class FloatingClockService extends Service {
                 return START_NOT_STICKY;
             } else if (ACTION_RELOAD_SETTINGS.equals(action)) {
                 applyViewCustomizations();
+                if (floatingView != null && windowManager != null && params != null) {
+                    int windowFlags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                            | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                            | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
+                    if (prefs.isClockStatusBarMode() || prefs.isClockLockPosition()) {
+                        windowFlags |= WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
+                    }
+                    params.flags = windowFlags;
+                    if (prefs.isClockStatusBarMode()) {
+                        params.x = prefs.getClockX();
+                        int sbHeight = getStatusBarHeight();
+                        params.y = Math.max(0, (sbHeight - (int) (18 * getResources().getDisplayMetrics().density)) / 2);
+                    } else {
+                        params.x = prefs.getClockX();
+                        params.y = prefs.getClockY();
+                    }
+                    try {
+                        windowManager.updateViewLayout(floatingView, params);
+                    } catch (Exception ignored) {
+                    }
+                }
             }
         }
         return START_STICKY;

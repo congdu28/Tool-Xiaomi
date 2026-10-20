@@ -223,6 +223,7 @@ public class NotificationClockService extends Service {
                 .setSmallIcon(iconRes)
                 .setContentIntent(pendingIntent)
                 .setDeleteIntent(deletePi)
+                .addAction(android.R.drawable.ic_menu_close_clear_cancel, "✕ Tắt thông báo", deletePi)
                 .setOngoing(false)
                 .setOnlyAlertOnce(true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

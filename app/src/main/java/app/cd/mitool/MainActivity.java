@@ -74,6 +74,17 @@ public class MainActivity extends AppCompatActivity {
     private MaterialButton btnGrantWriteSettings;
     private MaterialButton btnOpenMiuiStatusSettings;
 
+    // Status Bar Pin & Floating Clock Sub-Views
+    private View layoutFloatingSubOptions;
+    private MaterialButton btnPresetTopLeft;
+    private MaterialButton btnPresetBeside;
+    private MaterialButton btnPresetNotch;
+    private MaterialButton btnPresetFree;
+    private MaterialSwitch switchHideSysClock;
+    private MaterialSwitch switchClockTransparent;
+    private MaterialSwitch switchClockLock;
+    private MaterialSwitch switchClockMs;
+
     // Battery Views
     private TextView tvBatteryPercent;
     private TextView tvBatteryStatus;
@@ -208,6 +219,17 @@ public class MainActivity extends AppCompatActivity {
         btnCheckSecurePerm = findViewById(R.id.btn_check_secure_perm);
         btnGrantWriteSettings = findViewById(R.id.btn_grant_write_settings);
         btnOpenMiuiStatusSettings = findViewById(R.id.btn_open_miui_status_settings);
+
+        // Status Bar Pin & Floating Sub-Views
+        layoutFloatingSubOptions = findViewById(R.id.layout_floating_sub_options);
+        btnPresetTopLeft = findViewById(R.id.btn_preset_top_left);
+        btnPresetBeside = findViewById(R.id.btn_preset_beside);
+        btnPresetNotch = findViewById(R.id.btn_preset_notch);
+        btnPresetFree = findViewById(R.id.btn_preset_free);
+        switchHideSysClock = findViewById(R.id.switch_hide_sys_clock);
+        switchClockTransparent = findViewById(R.id.switch_clock_transparent);
+        switchClockLock = findViewById(R.id.switch_clock_lock);
+        switchClockMs = findViewById(R.id.switch_clock_ms);
 
         // Battery Views
         tvBatteryPercent = findViewById(R.id.tv_battery_percent);
@@ -408,8 +430,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // 3. Floating Overlay Clock
+        // 3. Floating Overlay / Status Bar Pin Clock
         switchFloatingClock.setChecked(prefs.isClockEnabled());
+        if (layoutFloatingSubOptions != null) {
+            layoutFloatingSubOptions.setVisibility(prefs.isClockEnabled() ? View.VISIBLE : View.GONE);
+        }
+
         switchFloatingClock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -421,13 +447,223 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
                     prefs.setClockEnabled(true);
+                    if (layoutFloatingSubOptions != null) {
+                        layoutFloatingSubOptions.setVisibility(View.VISIBLE);
+                    }
                     startFloatingClockService();
                 } else {
                     prefs.setClockEnabled(false);
+                    if (layoutFloatingSubOptions != null) {
+                        layoutFloatingSubOptions.setVisibility(View.GONE);
+                    }
                     stopFloatingClockService();
                 }
             }
         });
+
+        // Floating sub-options
+        if (switchHideSysClock != null) {
+            switchHideSysClock.setChecked(SystemClockHelper.isSystemClockHidden(this));
+            switchHideSysClock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    boolean hasSecure = SystemClockHelper.hasSecureSettingsPermission(MainActivity.this);
+                    if (!hasSecure) {
+                        if (isChecked) {
+                            switchHideSysClock.setChecked(false);
+                            Toast.makeText(MainActivity.this, "Cần quyền Secure Settings (ADB) để ẩn đồng hồ gốc!", Toast.LENGTH_LONG).show();
+                        }
+                        return;
+                    }
+                    boolean success = SystemClockHelper.setHideSystemClock(MainActivity.this, isChecked);
+                    if (success) {
+                        prefs.setHideSystemClock(isChecked);
+                        Toast.makeText(MainActivity.this, isChecked ?
+                                "Đã ẩn đồng hồ 2 chữ số gốc của HyperOS/MIUI!" :
+                                "Đã khôi phục đồng hồ gốc.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        switchHideSysClock.setChecked(!isChecked);
+                        Toast.makeText(MainActivity.this, "Không thể thay đổi cài đặt icon_blacklist.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+
+        if (switchClockTransparent != null) {
+            switchClockTransparent.setChecked(prefs.isClockTransparentBg());
+            switchClockTransparent.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    prefs.setClockTransparentBg(isChecked);
+                    reloadFloatingClock();
+                }
+            });
+        }
+
+        if (switchClockLock != null) {
+            switchClockLock.setChecked(prefs.isClockLockPosition());
+            switchClockLock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    prefs.setClockLockPosition(isChecked);
+                    reloadFloatingClock();
+                    Toast.makeText(MainActivity.this, isChecked ?
+                            "Đã khóa vị trí & bật chạm xuyên thấu!" :
+                            "Đã mở khóa, bạn có thể kéo thả di chuyển.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        if (switchClockMs != null) {
+            switchClockMs.setChecked(prefs.isClockShowMs());
+            switchClockMs.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    prefs.setClockShowMs(isChecked);
+                    reloadFloatingClock();
+                }
+            });
+        }
+
+        if (btnPresetTopLeft != null) {
+            btnPresetTopLeft.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    applyFloatingPreset(0);
+                }
+            });
+        }
+
+        if (btnPresetBeside != null) {
+            btnPresetBeside.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    applyFloatingPreset(1);
+                }
+            });
+        }
+
+        if (btnPresetNotch != null) {
+            btnPresetNotch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    applyFloatingPreset(2);
+                }
+            });
+        }
+
+        if (btnPresetFree != null) {
+            btnPresetFree.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    applyFloatingPreset(3);
+                }
+            });
+        }
+
+        updateFloatingPresetButtons();
+    }
+
+    private void applyFloatingPreset(int index) {
+        float density = getResources().getDisplayMetrics().density;
+        int screenWidth = getResources().getDisplayMetrics().widthPixels;
+        int sbHeight = getStatusBarHeight();
+        int centerY = Math.max(0, (sbHeight - (int) (18 * density)) / 2);
+
+        switch (index) {
+            case 0: // Top-Left Status Bar Pin
+                prefs.setClockStatusBarMode(true);
+                prefs.setClockTransparentBg(true);
+                prefs.setClockLockPosition(true);
+                prefs.setClockX((int) (16 * density));
+                prefs.setClockY(centerY);
+                if (switchClockTransparent != null) switchClockTransparent.setChecked(true);
+                if (switchClockLock != null) switchClockLock.setChecked(true);
+                Toast.makeText(this, "Đã đặt ghim góc trái thanh trạng thái (Status Bar Pin)!", Toast.LENGTH_SHORT).show();
+                break;
+            case 1: // Beside original clock
+                prefs.setClockStatusBarMode(false);
+                prefs.setClockTransparentBg(true);
+                prefs.setClockLockPosition(true);
+                prefs.setClockX((int) (75 * density));
+                prefs.setClockY(centerY);
+                if (switchClockTransparent != null) switchClockTransparent.setChecked(true);
+                if (switchClockLock != null) switchClockLock.setChecked(true);
+                Toast.makeText(this, "Đã đặt đồng hồ kế bên giờ gốc!", Toast.LENGTH_SHORT).show();
+                break;
+            case 2: // Next to camera notch
+                prefs.setClockStatusBarMode(false);
+                prefs.setClockTransparentBg(true);
+                prefs.setClockLockPosition(true);
+                prefs.setClockX(screenWidth / 2 + (int) (22 * density));
+                prefs.setClockY(centerY);
+                if (switchClockTransparent != null) switchClockTransparent.setChecked(true);
+                if (switchClockLock != null) switchClockLock.setChecked(true);
+                Toast.makeText(this, "Đã đặt đồng hồ cạnh nốt ruồi camera!", Toast.LENGTH_SHORT).show();
+                break;
+            case 3: // Free draggable
+                prefs.setClockStatusBarMode(false);
+                prefs.setClockLockPosition(false);
+                if (switchClockLock != null) switchClockLock.setChecked(false);
+                Toast.makeText(this, "Chế độ tự do: Bạn có thể kéo thả đồng hồ đến vị trí mong muốn.", Toast.LENGTH_SHORT).show();
+                break;
+        }
+
+        updateFloatingPresetButtons();
+        if (prefs.isClockEnabled()) {
+            reloadFloatingClock();
+        } else {
+            Toast.makeText(this, "Gạt bật công tắc bên trên để kích hoạt hiển thị.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void updateFloatingPresetButtons() {
+        if (btnPresetTopLeft == null || btnPresetBeside == null || btnPresetNotch == null || btnPresetFree == null) return;
+        int activeIdx = 3;
+        if (prefs.isClockStatusBarMode()) {
+            activeIdx = 0;
+        } else if (prefs.isClockLockPosition()) {
+            float density = getResources().getDisplayMetrics().density;
+            int x = prefs.getClockX();
+            int screenWidth = getResources().getDisplayMetrics().widthPixels;
+            if (x >= screenWidth / 3) {
+                activeIdx = 2; // Notch
+            } else if (x >= (int) (50 * density)) {
+                activeIdx = 1; // Beside
+            } else {
+                activeIdx = 0;
+            }
+        } else {
+            activeIdx = 3; // Free
+        }
+
+        int highlightColor = ContextCompat.getColor(this, R.color.mi_orange);
+        int normalColor = ContextCompat.getColor(this, R.color.card_highlight);
+
+        btnPresetTopLeft.setBackgroundTintList(ColorStateList.valueOf(activeIdx == 0 ? highlightColor : normalColor));
+        btnPresetBeside.setBackgroundTintList(ColorStateList.valueOf(activeIdx == 1 ? highlightColor : normalColor));
+        btnPresetNotch.setBackgroundTintList(ColorStateList.valueOf(activeIdx == 2 ? highlightColor : normalColor));
+        btnPresetFree.setBackgroundTintList(ColorStateList.valueOf(activeIdx == 3 ? highlightColor : normalColor));
+    }
+
+    private void reloadFloatingClock() {
+        if (prefs.isClockEnabled()) {
+            Intent intent = new Intent(this, FloatingClockService.class);
+            intent.setAction(FloatingClockService.ACTION_RELOAD_SETTINGS);
+            startService(intent);
+        }
+    }
+
+    private int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        if (result <= 0) {
+            result = (int) (28 * getResources().getDisplayMetrics().density);
+        }
+        return result;
     }
 
     private void updateSystemClockStatus() {
@@ -448,6 +684,9 @@ public class MainActivity extends AppCompatActivity {
             tvSecureSettingsStatus.setText(R.string.status_missing);
             tvSecureSettingsStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_red));
             switchSystemClock.setChecked(false);
+        }
+        if (switchHideSysClock != null) {
+            switchHideSysClock.setChecked(SystemClockHelper.isSystemClockHidden(this));
         }
         // Always keep ADB guide and copy command visible for convenient access
         layoutSecureSettingsGuide.setVisibility(View.VISIBLE);
@@ -922,6 +1161,7 @@ public class MainActivity extends AppCompatActivity {
             switchNotifClock.setChecked(prefs.isNotifClockEnabled());
         }
         updateSystemClockStatus();
+        updateFloatingPresetButtons();
         updateBatteryDisplay();
         updateToolsDisplay();
         registerBatteryMonitorReceiver();

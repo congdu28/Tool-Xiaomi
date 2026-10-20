@@ -35,6 +35,11 @@ public class PreferencesHelper {
     // Refresh Rate Key
     public static final String KEY_TARGET_REFRESH_RATE = "target_refresh_rate";
 
+    // Status Bar Pin & Clock Enhancements
+    public static final String KEY_CLOCK_STATUS_BAR_MODE = "clock_status_bar_mode";
+    public static final String KEY_CLOCK_TRANSPARENT_BG = "clock_transparent_bg";
+    public static final String KEY_CLOCK_HIDE_SYSTEM_CLOCK = "clock_hide_system_clock";
+
     private final SharedPreferences prefs;
 
     public PreferencesHelper(Context context) {
@@ -111,6 +116,30 @@ public class PreferencesHelper {
 
     public void setClockY(int y) {
         prefs.edit().putInt(KEY_CLOCK_Y, y).apply();
+    }
+
+    public boolean isClockStatusBarMode() {
+        return prefs.getBoolean(KEY_CLOCK_STATUS_BAR_MODE, false);
+    }
+
+    public void setClockStatusBarMode(boolean mode) {
+        prefs.edit().putBoolean(KEY_CLOCK_STATUS_BAR_MODE, mode).apply();
+    }
+
+    public boolean isClockTransparentBg() {
+        return prefs.getBoolean(KEY_CLOCK_TRANSPARENT_BG, false);
+    }
+
+    public void setClockTransparentBg(boolean trans) {
+        prefs.edit().putBoolean(KEY_CLOCK_TRANSPARENT_BG, trans).apply();
+    }
+
+    public boolean isHideSystemClock() {
+        return prefs.getBoolean(KEY_CLOCK_HIDE_SYSTEM_CLOCK, false);
+    }
+
+    public void setHideSystemClock(boolean hide) {
+        prefs.edit().putBoolean(KEY_CLOCK_HIDE_SYSTEM_CLOCK, hide).apply();
     }
 
     public boolean isChargingHudEnabled() {

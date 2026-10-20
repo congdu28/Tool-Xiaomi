@@ -279,39 +279,43 @@
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="6dp"
+                                    android:layout_marginTop="8dp"
                                     android:gravity="center_vertical"
                                     android:orientation="horizontal">
 
                                     <com.google.android.material.button.MaterialButton
                                         android:id="@+id/btn_grant_write_settings"
                                         android:layout_width="0dp"
-                                        android:layout_height="36dp"
+                                        android:layout_height="wrap_content"
                                         android:layout_marginEnd="4dp"
                                         android:layout_weight="1"
+                                        android:minHeight="42dp"
                                         android:backgroundTint="@color/mi_orange"
                                         android:insetTop="0dp"
                                         android:insetBottom="0dp"
-                                        android:padding="0dp"
+                                        android:paddingStart="8dp"
+                                        android:paddingEnd="8dp"
                                         android:text="Cấp quyền trực tiếp"
                                         android:textColor="#FFFFFF"
                                         android:textSize="11sp"
-                                        app:cornerRadius="6dp" />
+                                        app:cornerRadius="8dp" />
 
                                     <com.google.android.material.button.MaterialButton
                                         android:id="@+id/btn_open_miui_status_settings"
                                         android:layout_width="0dp"
-                                        android:layout_height="36dp"
+                                        android:layout_height="wrap_content"
                                         android:layout_marginStart="4dp"
                                         android:layout_weight="1"
+                                        android:minHeight="42dp"
                                         android:backgroundTint="@color/card_dark"
                                         android:insetTop="0dp"
                                         android:insetBottom="0dp"
-                                        android:padding="0dp"
+                                        android:paddingStart="8dp"
+                                        android:paddingEnd="8dp"
                                         android:text="Mở Cài đặt gốc"
                                         android:textColor="@color/text_primary"
                                         android:textSize="11sp"
-                                        app:cornerRadius="6dp"
+                                        app:cornerRadius="8dp"
                                         app:strokeColor="@color/card_dark_stroke"
                                         app:strokeWidth="1dp" />
                                 </LinearLayout>
@@ -365,32 +369,36 @@
                                     <com.google.android.material.button.MaterialButton
                                         android:id="@+id/btn_copy_adb"
                                         android:layout_width="0dp"
-                                        android:layout_height="38dp"
+                                        android:layout_height="wrap_content"
                                         android:layout_marginEnd="4dp"
                                         android:layout_weight="1"
+                                        android:minHeight="42dp"
                                         android:backgroundTint="@color/mi_orange"
                                         android:insetTop="0dp"
                                         android:insetBottom="0dp"
-                                        android:padding="0dp"
+                                        android:paddingStart="8dp"
+                                        android:paddingEnd="8dp"
                                         android:text="@string/btn_copy_adb"
                                         android:textColor="#FFFFFF"
                                         android:textSize="11sp"
-                                        app:cornerRadius="6dp" />
+                                        app:cornerRadius="8dp" />
 
                                     <com.google.android.material.button.MaterialButton
                                         android:id="@+id/btn_check_secure_perm"
                                         android:layout_width="0dp"
-                                        android:layout_height="38dp"
+                                        android:layout_height="wrap_content"
                                         android:layout_marginStart="4dp"
                                         android:layout_weight="1"
+                                        android:minHeight="42dp"
                                         android:backgroundTint="@color/card_dark"
                                         android:insetTop="0dp"
                                         android:insetBottom="0dp"
-                                        android:padding="0dp"
+                                        android:paddingStart="8dp"
+                                        android:paddingEnd="8dp"
                                         android:text="@string/btn_check_permission"
                                         android:textColor="@color/text_primary"
                                         android:textSize="11sp"
-                                        app:cornerRadius="6dp"
+                                        app:cornerRadius="8dp"
                                         app:strokeColor="@color/card_dark_stroke"
                                         app:strokeWidth="1dp" />
                                 </LinearLayout>
@@ -403,7 +411,7 @@
                                     android:background="@drawable/bg_floating_capsule"
                                     android:lineSpacingExtra="2dp"
                                     android:padding="8dp"
-                                    android:text="⚠️ Lưu ý bắt buộc trên Xiaomi (HyperOS / MIUI):\nTrong Cài đặt cho nhà phát triển, bạn PHẢI BẬT đồng thời:\n1. Gỡ lỗi USB (USB debugging)\n2. Gỡ lỗi USB (Cài đặt bảo mật) — (Cần cắm SIM và đăng nhập Mi Account)\nNếu không bật mục số 2, Xiaomi sẽ chặn lệnh ADB và Shizuku!\n\n📌 Lưu ý về đồng hồ góc trái: Xiaomi đã cố định mã nguồn đồng hồ góc trái ở định dạng Giờ:Phút để tiết kiệm pin và tránh lệch camera. Nếu sau khi cấp ADB mà góc trái máy bạn chưa hiện giây, bạn hãy dùng mục 'Thanh thông báo' (ở trên) hiển thị giây chuẩn 100% khi vuốt xuống nhé!"
+                                    android:text="⚠️ Lưu ý bắt buộc trên Xiaomi (HyperOS / MIUI):\nTrong Cài đặt cho nhà phát triển, bạn PHẢI BẬT đồng thời:\n1. Gỡ lỗi USB (USB debugging)\n2. Gỡ lỗi USB (Cài đặt bảo mật) — (Cần cắm SIM và đăng nhập Mi Account)\n\n📌 Nếu đồng hồ góc trái máy bạn không hiện giây sau khi cấp ADB, đó là vì Xiaomi đã khóa cứng mã nguồn SystemUI ở định dạng Giờ:Phút. Bạn hãy bật mục số 3 (bên dưới) để Ghim Giây lên đỉnh máy cực chuẩn nhé!"
                                     android:textColor="@color/mi_orange"
                                     android:textSize="11sp" />
                             </LinearLayout>
@@ -411,7 +419,7 @@
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
-                    <!-- Option 3: Floating Overlay (Optional Backup) -->
+                    <!-- Option 3: Status Bar Pin Clock & Floating Clock (HyperOS Solution) -->
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -423,37 +431,282 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
+                            android:orientation="vertical"
                             android:padding="14dp">
 
                             <LinearLayout
-                                android:layout_width="0dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginEnd="12dp"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
 
-                                <TextView
-                                    android:layout_width="wrap_content"
+                                <LinearLayout
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
-                                    android:text="Đồng hồ nổi kéo thả (Cửa sổ nổi)"
-                                    android:textColor="@color/text_primary"
-                                    android:textSize="14sp" />
+                                    android:layout_marginEnd="12dp"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
 
-                                <TextView
+                                    <LinearLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center_vertical"
+                                        android:orientation="horizontal">
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Ghim giây thanh trạng thái"
+                                            android:textColor="@color/text_primary"
+                                            android:textSize="14sp"
+                                            android:textStyle="bold" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginStart="8dp"
+                                            android:background="@drawable/bg_floating_capsule"
+                                            android:paddingStart="6dp"
+                                            android:paddingTop="2dp"
+                                            android:paddingEnd="6dp"
+                                            android:paddingBottom="2dp"
+                                            android:text="Cho HyperOS"
+                                            android:textColor="@color/neon_cyan"
+                                            android:textSize="10sp"
+                                            android:textStyle="bold" />
+                                    </LinearLayout>
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:text="Hiển thị giờ giây trực tiếp lên góc trái đỉnh máy. Nền trong suốt, chạm xuyên thấu kéo thanh thông báo bình thường không cấn chạm."
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="12sp" />
+                                </LinearLayout>
+
+                                <com.google.android.material.materialswitch.MaterialSwitch
+                                    android:id="@+id/switch_floating_clock"
                                     android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="2dp"
-                                    android:text="Tùy chọn tạo widget nhỏ kéo thả tự do đè trên màn hình."
-                                    android:textColor="@color/text_muted"
-                                    android:textSize="11sp" />
+                                    android:layout_height="wrap_content" />
                             </LinearLayout>
 
-                            <com.google.android.material.materialswitch.MaterialSwitch
-                                android:id="@+id/switch_floating_clock"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
+                            <!-- Sub controls for Pin & Floating options -->
+                            <LinearLayout
+                                android:id="@+id/layout_floating_sub_options"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:orientation="vertical"
+                                android:visibility="gone">
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginBottom="10dp"
+                                    android:background="@color/card_dark_stroke" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Căn chỉnh vị trí ghim sẵn:"
+                                    android:textColor="@color/text_muted"
+                                    android:textSize="11sp" />
+
+                                <!-- Row 1 of presets -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="6dp"
+                                    android:orientation="horizontal">
+
+                                    <com.google.android.material.button.MaterialButton
+                                        android:id="@+id/btn_preset_top_left"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginEnd="4dp"
+                                        android:layout_weight="1"
+                                        android:minHeight="40dp"
+                                        android:backgroundTint="@color/card_highlight"
+                                        android:insetTop="0dp"
+                                        android:insetBottom="0dp"
+                                        android:paddingStart="6dp"
+                                        android:paddingEnd="6dp"
+                                        android:text="@string/btn_preset_top_left"
+                                        android:textColor="@color/neon_green"
+                                        android:textSize="11sp"
+                                        app:cornerRadius="6dp"
+                                        app:strokeColor="@color/neon_green"
+                                        app:strokeWidth="1dp" />
+
+                                    <com.google.android.material.button.MaterialButton
+                                        android:id="@+id/btn_preset_beside"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="4dp"
+                                        android:layout_weight="1"
+                                        android:minHeight="40dp"
+                                        android:backgroundTint="@color/card_highlight"
+                                        android:insetTop="0dp"
+                                        android:insetBottom="0dp"
+                                        android:paddingStart="6dp"
+                                        android:paddingEnd="6dp"
+                                        android:text="@string/btn_preset_beside"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="11sp"
+                                        app:cornerRadius="6dp" />
+                                </LinearLayout>
+
+                                <!-- Row 2 of presets -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="6dp"
+                                    android:orientation="horizontal">
+
+                                    <com.google.android.material.button.MaterialButton
+                                        android:id="@+id/btn_preset_notch"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginEnd="4dp"
+                                        android:layout_weight="1"
+                                        android:minHeight="40dp"
+                                        android:backgroundTint="@color/card_highlight"
+                                        android:insetTop="0dp"
+                                        android:insetBottom="0dp"
+                                        android:paddingStart="6dp"
+                                        android:paddingEnd="6dp"
+                                        android:text="@string/btn_preset_notch"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="11sp"
+                                        app:cornerRadius="6dp" />
+
+                                    <com.google.android.material.button.MaterialButton
+                                        android:id="@+id/btn_preset_free"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="4dp"
+                                        android:layout_weight="1"
+                                        android:minHeight="40dp"
+                                        android:backgroundTint="@color/card_highlight"
+                                        android:insetTop="0dp"
+                                        android:insetBottom="0dp"
+                                        android:paddingStart="6dp"
+                                        android:paddingEnd="6dp"
+                                        android:text="@string/btn_preset_free"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="11sp"
+                                        app:cornerRadius="6dp" />
+                                </LinearLayout>
+
+                                <!-- Switch: Hide native system clock -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="12dp"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginEnd="12dp"
+                                        android:layout_weight="1"
+                                        android:orientation="vertical">
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="@string/hide_system_minute_clock"
+                                            android:textColor="@color/text_primary"
+                                            android:textSize="13sp" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="2dp"
+                                            android:text="Ẩn đồng hồ 2 chữ số gốc để đồng hồ giây thay thế liền mạch (Cần ADB)."
+                                            android:textColor="@color/text_muted"
+                                            android:textSize="11sp" />
+                                    </LinearLayout>
+
+                                    <com.google.android.material.materialswitch.MaterialSwitch
+                                        android:id="@+id/switch_hide_sys_clock"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
+                                </LinearLayout>
+
+                                <!-- Switch: Transparent Background -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginEnd="12dp"
+                                        android:layout_weight="1"
+                                        android:text="Nền trong suốt (Hòa vào thanh trạng thái)"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="13sp" />
+
+                                    <com.google.android.material.materialswitch.MaterialSwitch
+                                        android:id="@+id/switch_clock_transparent"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
+                                </LinearLayout>
+
+                                <!-- Switch: Lock Position & Touch-through -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginEnd="12dp"
+                                        android:layout_weight="1"
+                                        android:text="Khóa vị trí &amp; Chạm xuyên thấu (Vuốt thông báo)"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="13sp" />
+
+                                    <com.google.android.material.materialswitch.MaterialSwitch
+                                        android:id="@+id/switch_clock_lock"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
+                                </LinearLayout>
+
+                                <!-- Switch: Show Milliseconds -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginEnd="12dp"
+                                        android:layout_weight="1"
+                                        android:text="Hiển thị mili-giây (.SS)"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="13sp" />
+
+                                    <com.google.android.material.materialswitch.MaterialSwitch
+                                        android:id="@+id/switch_clock_ms"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
+                                </LinearLayout>
+
+                            </LinearLayout>
+
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
@@ -940,11 +1193,14 @@
                                 <com.google.android.material.button.MaterialButton
                                     android:id="@+id/btn_test_voice"
                                     android:layout_width="match_parent"
-                                    android:layout_height="38dp"
+                                    android:layout_height="wrap_content"
                                     android:layout_marginTop="12dp"
+                                    android:minHeight="42dp"
                                     android:backgroundTint="@color/card_highlight"
                                     android:insetTop="0dp"
                                     android:insetBottom="0dp"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="8dp"
                                     android:text="@string/voice_test_btn"
                                     android:textColor="@color/neon_green"
                                     android:textSize="11sp"
@@ -1073,13 +1329,15 @@
                                 <com.google.android.material.button.MaterialButton
                                     android:id="@+id/btn_preview_lockscreen"
                                     android:layout_width="0dp"
-                                    android:layout_height="38dp"
+                                    android:layout_height="wrap_content"
                                     android:layout_marginEnd="4dp"
                                     android:layout_weight="1"
+                                    android:minHeight="42dp"
                                     android:backgroundTint="@color/card_highlight"
                                     android:insetTop="0dp"
                                     android:insetBottom="0dp"
-                                    android:padding="0dp"
+                                    android:paddingStart="6dp"
+                                    android:paddingEnd="6dp"
                                     android:text="Xem thử màn hình sạc"
                                     android:textColor="@color/neon_green"
                                     android:textSize="11sp"
@@ -1090,13 +1348,15 @@
                                 <com.google.android.material.button.MaterialButton
                                     android:id="@+id/btn_open_lockscreen_settings"
                                     android:layout_width="0dp"
-                                    android:layout_height="38dp"
+                                    android:layout_height="wrap_content"
                                     android:layout_marginStart="4dp"
                                     android:layout_weight="1"
+                                    android:minHeight="42dp"
                                     android:backgroundTint="@color/card_highlight"
                                     android:insetTop="0dp"
                                     android:insetBottom="0dp"
-                                    android:padding="0dp"
+                                    android:paddingStart="6dp"
+                                    android:paddingEnd="6dp"
                                     android:text="Cài đặt khóa Xiaomi"
                                     android:textColor="@color/mi_orange"
                                     android:textSize="11sp"
@@ -1152,11 +1412,14 @@
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btn_open_battery_secret_info"
                                 android:layout_width="match_parent"
-                                android:layout_height="38dp"
+                                android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
+                                android:minHeight="42dp"
                                 android:backgroundTint="@color/card_highlight"
                                 android:insetTop="0dp"
                                 android:insetBottom="0dp"
+                                android:paddingStart="8dp"
+                                android:paddingEnd="8dp"
                                 android:text="Mở trang xem số lần sạc (*#*#6485#*#*)"
                                 android:textColor="@color/mi_orange"
                                 android:textSize="11sp"
@@ -1269,93 +1532,121 @@
                                     android:textStyle="bold" />
                             </LinearLayout>
 
-                            <!-- Refresh Rate selector buttons -->
+                            <!-- Refresh Rate selector buttons (2 clean responsive rows) -->
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="12dp"
-                                android:orientation="horizontal">
+                                android:orientation="vertical">
 
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/btn_hz_auto"
-                                    android:layout_width="0dp"
-                                    android:layout_height="36dp"
-                                    android:layout_marginEnd="3dp"
-                                    android:layout_weight="1"
-                                    android:backgroundTint="@color/card_highlight"
-                                    android:insetTop="0dp"
-                                    android:insetBottom="0dp"
-                                    android:padding="0dp"
-                                    android:text="Auto"
-                                    android:textColor="@color/text_primary"
-                                    android:textSize="11sp"
-                                    app:cornerRadius="6dp" />
+                                <!-- Row 1: Auto, 60Hz, 90Hz -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
 
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/btn_hz_60"
-                                    android:layout_width="0dp"
-                                    android:layout_height="36dp"
-                                    android:layout_marginEnd="3dp"
-                                    android:layout_weight="1"
-                                    android:backgroundTint="@color/card_highlight"
-                                    android:insetTop="0dp"
-                                    android:insetBottom="0dp"
-                                    android:padding="0dp"
-                                    android:text="60Hz"
-                                    android:textColor="@color/text_primary"
-                                    android:textSize="11sp"
-                                    app:cornerRadius="6dp" />
+                                    <com.google.android.material.button.MaterialButton
+                                        android:id="@+id/btn_hz_auto"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginEnd="3dp"
+                                        android:layout_weight="1"
+                                        android:minHeight="40dp"
+                                        android:backgroundTint="@color/card_highlight"
+                                        android:insetTop="0dp"
+                                        android:insetBottom="0dp"
+                                        android:paddingStart="4dp"
+                                        android:paddingEnd="4dp"
+                                        android:text="Auto"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="11sp"
+                                        app:cornerRadius="6dp" />
 
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/btn_hz_90"
-                                    android:layout_width="0dp"
-                                    android:layout_height="36dp"
-                                    android:layout_marginEnd="3dp"
-                                    android:layout_weight="1"
-                                    android:backgroundTint="@color/card_highlight"
-                                    android:insetTop="0dp"
-                                    android:insetBottom="0dp"
-                                    android:padding="0dp"
-                                    android:text="90Hz"
-                                    android:textColor="@color/text_primary"
-                                    android:textSize="11sp"
-                                    app:cornerRadius="6dp" />
+                                    <com.google.android.material.button.MaterialButton
+                                        android:id="@+id/btn_hz_60"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="2dp"
+                                        android:layout_marginEnd="2dp"
+                                        android:layout_weight="1"
+                                        android:minHeight="40dp"
+                                        android:backgroundTint="@color/card_highlight"
+                                        android:insetTop="0dp"
+                                        android:insetBottom="0dp"
+                                        android:paddingStart="4dp"
+                                        android:paddingEnd="4dp"
+                                        android:text="60Hz"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="11sp"
+                                        app:cornerRadius="6dp" />
 
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/btn_hz_120"
-                                    android:layout_width="0dp"
-                                    android:layout_height="36dp"
-                                    android:layout_marginEnd="3dp"
-                                    android:layout_weight="1"
-                                    android:backgroundTint="@color/card_highlight"
-                                    android:insetTop="0dp"
-                                    android:insetBottom="0dp"
-                                    android:padding="0dp"
-                                    android:text="120Hz"
-                                    android:textColor="@color/text_primary"
-                                    android:textSize="11sp"
-                                    app:cornerRadius="6dp" />
+                                    <com.google.android.material.button.MaterialButton
+                                        android:id="@+id/btn_hz_90"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="3dp"
+                                        android:layout_weight="1"
+                                        android:minHeight="40dp"
+                                        android:backgroundTint="@color/card_highlight"
+                                        android:insetTop="0dp"
+                                        android:insetBottom="0dp"
+                                        android:paddingStart="4dp"
+                                        android:paddingEnd="4dp"
+                                        android:text="90Hz"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="11sp"
+                                        app:cornerRadius="6dp" />
+                                </LinearLayout>
 
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/btn_hz_144"
-                                    android:layout_width="0dp"
-                                    android:layout_height="36dp"
-                                    android:layout_weight="1"
-                                    android:backgroundTint="@color/card_highlight"
-                                    android:insetTop="0dp"
-                                    android:insetBottom="0dp"
-                                    android:padding="0dp"
-                                    android:text="144Hz"
-                                    android:textColor="@color/text_primary"
-                                    android:textSize="11sp"
-                                    app:cornerRadius="6dp" />
+                                <!-- Row 2: 120Hz, 144Hz -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="6dp"
+                                    android:orientation="horizontal">
+
+                                    <com.google.android.material.button.MaterialButton
+                                        android:id="@+id/btn_hz_120"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginEnd="3dp"
+                                        android:layout_weight="1"
+                                        android:minHeight="40dp"
+                                        android:backgroundTint="@color/card_highlight"
+                                        android:insetTop="0dp"
+                                        android:insetBottom="0dp"
+                                        android:paddingStart="4dp"
+                                        android:paddingEnd="4dp"
+                                        android:text="120Hz (Mượt mà)"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="11sp"
+                                        app:cornerRadius="6dp" />
+
+                                    <com.google.android.material.button.MaterialButton
+                                        android:id="@+id/btn_hz_144"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="3dp"
+                                        android:layout_weight="1"
+                                        android:minHeight="40dp"
+                                        android:backgroundTint="@color/card_highlight"
+                                        android:insetTop="0dp"
+                                        android:insetBottom="0dp"
+                                        android:paddingStart="4dp"
+                                        android:paddingEnd="4dp"
+                                        android:text="144Hz (Cực hạn)"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="11sp"
+                                        app:cornerRadius="6dp" />
+                                </LinearLayout>
                             </LinearLayout>
 
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btn_open_hz_settings"
                                 android:layout_width="match_parent"
-                                android:layout_height="36dp"
+                                android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
+                                android:minHeight="42dp"
                                 android:backgroundTint="@color/card_highlight"
                                 android:insetTop="0dp"
                                 android:insetBottom="0dp"
@@ -1384,58 +1675,45 @@
                             android:orientation="vertical"
                             android:padding="16dp">
 
-                            <LinearLayout
-                                android:layout_width="match_parent"
+                            <TextView
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
+                                android:text="@string/game_fps_title"
+                                android:textColor="@color/text_primary"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
 
-                                <LinearLayout
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="@string/game_fps_desc"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="11sp" />
 
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="@string/game_fps_title"
-                                        android:textColor="@color/text_primary"
-                                        android:textSize="14sp"
-                                        android:textStyle="bold" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginTop="2dp"
-                                        android:text="@string/game_fps_desc"
-                                        android:textColor="@color/text_secondary"
-                                        android:textSize="11sp" />
-                                </LinearLayout>
-
-                                <!-- Joyose Status Indicator Badge -->
-                                <TextView
-                                    android:id="@+id/tv_joyose_status"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="8dp"
-                                    android:background="@drawable/bg_floating_capsule"
-                                    android:paddingStart="8dp"
-                                    android:paddingTop="3dp"
-                                    android:paddingEnd="8dp"
-                                    android:paddingBottom="3dp"
-                                    android:text="Joyose: Đang kiểm tra"
-                                    android:textColor="@color/mi_orange"
-                                    android:textSize="11sp"
-                                    android:textStyle="bold" />
-                            </LinearLayout>
+                            <!-- Joyose Status Indicator Banner -->
+                            <TextView
+                                android:id="@+id/tv_joyose_status"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:background="@drawable/bg_floating_capsule"
+                                android:paddingStart="10dp"
+                                android:paddingTop="4dp"
+                                android:paddingEnd="10dp"
+                                android:paddingBottom="4dp"
+                                android:text="Joyose: Đang kiểm tra..."
+                                android:textColor="@color/mi_orange"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
 
                             <!-- Button 1: Force Game 120Hz & Max Performance -->
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btn_game_120_mode"
                                 android:layout_width="match_parent"
-                                android:layout_height="38dp"
+                                android:layout_height="wrap_content"
                                 android:layout_marginTop="12dp"
+                                android:minHeight="44dp"
                                 android:backgroundTint="@color/card_highlight"
                                 android:insetTop="0dp"
                                 android:insetBottom="0dp"
@@ -1480,6 +1758,7 @@
                                     android:background="#151A22"
                                     android:fontFamily="monospace"
                                     android:padding="8dp"
+                                    android:textIsSelectable="true"
                                     android:text="adb shell pm disable-user --user 0 com.xiaomi.joyose"
                                     android:textColor="@color/neon_cyan"
                                     android:textSize="11sp" />
@@ -1493,12 +1772,15 @@
                                     <com.google.android.material.button.MaterialButton
                                         android:id="@+id/btn_copy_disable_joyose"
                                         android:layout_width="0dp"
-                                        android:layout_height="36dp"
+                                        android:layout_height="wrap_content"
                                         android:layout_marginEnd="4dp"
                                         android:layout_weight="1"
+                                        android:minHeight="42dp"
                                         android:backgroundTint="@color/card_highlight"
                                         android:insetTop="0dp"
                                         android:insetBottom="0dp"
+                                        android:paddingStart="8dp"
+                                        android:paddingEnd="8dp"
                                         android:text="@string/game_fps_btn_copy_disable"
                                         android:textColor="@color/neon_cyan"
                                         android:textSize="11sp"
@@ -1507,12 +1789,15 @@
                                     <com.google.android.material.button.MaterialButton
                                         android:id="@+id/btn_copy_enable_joyose"
                                         android:layout_width="0dp"
-                                        android:layout_height="36dp"
+                                        android:layout_height="wrap_content"
                                         android:layout_marginStart="4dp"
                                         android:layout_weight="1"
+                                        android:minHeight="42dp"
                                         android:backgroundTint="@color/card_highlight"
                                         android:insetTop="0dp"
                                         android:insetBottom="0dp"
+                                        android:paddingStart="8dp"
+                                        android:paddingEnd="8dp"
                                         android:text="@string/game_fps_btn_copy_enable"
                                         android:textColor="@color/text_primary"
                                         android:textSize="11sp"
@@ -1530,12 +1815,15 @@
                                 <com.google.android.material.button.MaterialButton
                                     android:id="@+id/btn_clear_powerkeeper"
                                     android:layout_width="0dp"
-                                    android:layout_height="36dp"
+                                    android:layout_height="wrap_content"
                                     android:layout_marginEnd="4dp"
                                     android:layout_weight="1"
+                                    android:minHeight="42dp"
                                     android:backgroundTint="@color/card_highlight"
                                     android:insetTop="0dp"
                                     android:insetBottom="0dp"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="8dp"
                                     android:text="@string/game_fps_btn_powerkeeper"
                                     android:textColor="@color/text_primary"
                                     android:textSize="11sp"
@@ -1544,12 +1832,15 @@
                                 <com.google.android.material.button.MaterialButton
                                     android:id="@+id/btn_open_per_app_hz"
                                     android:layout_width="0dp"
-                                    android:layout_height="36dp"
+                                    android:layout_height="wrap_content"
                                     android:layout_marginStart="4dp"
                                     android:layout_weight="1"
+                                    android:minHeight="42dp"
                                     android:backgroundTint="@color/card_highlight"
                                     android:insetTop="0dp"
                                     android:insetBottom="0dp"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="8dp"
                                     android:text="@string/game_fps_btn_per_app_hz"
                                     android:textColor="@color/text_primary"
                                     android:textSize="11sp"
@@ -1560,8 +1851,9 @@
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btn_launch_aov"
                                 android:layout_width="match_parent"
-                                android:layout_height="38dp"
+                                android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
+                                android:minHeight="44dp"
                                 android:backgroundTint="@color/card_highlight"
                                 android:insetTop="0dp"
                                 android:insetBottom="0dp"
@@ -1635,12 +1927,15 @@
                                 <com.google.android.material.button.MaterialButton
                                     android:id="@+id/btn_boost_ram"
                                     android:layout_width="0dp"
-                                    android:layout_height="38dp"
+                                    android:layout_height="wrap_content"
                                     android:layout_marginEnd="4dp"
                                     android:layout_weight="1"
+                                    android:minHeight="42dp"
                                     android:backgroundTint="@color/card_highlight"
                                     android:insetTop="0dp"
                                     android:insetBottom="0dp"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="8dp"
                                     android:text="@string/ram_boost_btn"
                                     android:textColor="@color/neon_green"
                                     android:textSize="11sp"
@@ -1651,12 +1946,15 @@
                                 <com.google.android.material.button.MaterialButton
                                     android:id="@+id/btn_open_game_turbo"
                                     android:layout_width="0dp"
-                                    android:layout_height="38dp"
+                                    android:layout_height="wrap_content"
                                     android:layout_marginStart="4dp"
                                     android:layout_weight="1"
+                                    android:minHeight="42dp"
                                     android:backgroundTint="@color/card_highlight"
                                     android:insetTop="0dp"
                                     android:insetBottom="0dp"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="8dp"
                                     android:text="@string/ram_game_turbo_btn"
                                     android:textColor="@color/mi_orange"
                                     android:textSize="11sp"
@@ -1668,7 +1966,7 @@
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
-                    <!-- Tool 3: Deep Clean MIUI No-Ads -->
+                    <!-- Tool 4: Deep Clean MIUI No-Ads -->
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -1702,8 +2000,9 @@
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btn_open_deep_clean"
                                 android:layout_width="match_parent"
-                                android:layout_height="38dp"
+                                android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
+                                android:minHeight="44dp"
                                 android:backgroundTint="@color/card_highlight"
                                 android:insetTop="0dp"
                                 android:insetBottom="0dp"
@@ -1717,7 +2016,7 @@
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
-                    <!-- Tool 4: Hidden Xiaomi Menus (CIT Test) -->
+                    <!-- Tool 5: Hidden Xiaomi Menus (CIT Test) -->
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -1757,12 +2056,15 @@
                                 <com.google.android.material.button.MaterialButton
                                     android:id="@+id/btn_open_cit_test"
                                     android:layout_width="0dp"
-                                    android:layout_height="38dp"
+                                    android:layout_height="wrap_content"
                                     android:layout_marginEnd="4dp"
                                     android:layout_weight="1"
+                                    android:minHeight="42dp"
                                     android:backgroundTint="@color/card_highlight"
                                     android:insetTop="0dp"
                                     android:insetBottom="0dp"
+                                    android:paddingStart="6dp"
+                                    android:paddingEnd="6dp"
                                     android:text="🛠️ CIT Test"
                                     android:textColor="@color/text_primary"
                                     android:textSize="11sp"
@@ -1771,12 +2073,15 @@
                                 <com.google.android.material.button.MaterialButton
                                     android:id="@+id/btn_open_radio_info"
                                     android:layout_width="0dp"
-                                    android:layout_height="38dp"
+                                    android:layout_height="wrap_content"
                                     android:layout_marginStart="4dp"
                                     android:layout_weight="1"
+                                    android:minHeight="42dp"
                                     android:backgroundTint="@color/card_highlight"
                                     android:insetTop="0dp"
                                     android:insetBottom="0dp"
+                                    android:paddingStart="6dp"
+                                    android:paddingEnd="6dp"
                                     android:text="📡 Testing (*#4636#*)"
                                     android:textColor="@color/text_primary"
                                     android:textSize="11sp"
@@ -1786,7 +2091,7 @@
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
-                    <!-- Tool 5: Disable Xiaomi MSA / System Ads -->
+                    <!-- Tool 6: Disable Xiaomi MSA / System Ads -->
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -1826,12 +2131,15 @@
                                 <com.google.android.material.button.MaterialButton
                                     android:id="@+id/btn_open_msa_settings"
                                     android:layout_width="0dp"
-                                    android:layout_height="38dp"
+                                    android:layout_height="wrap_content"
                                     android:layout_marginEnd="4dp"
                                     android:layout_weight="1"
+                                    android:minHeight="42dp"
                                     android:backgroundTint="@color/card_highlight"
                                     android:insetTop="0dp"
                                     android:insetBottom="0dp"
+                                    android:paddingStart="6dp"
+                                    android:paddingEnd="6dp"
                                     android:text="Tắt MSA ngầm"
                                     android:textColor="@color/neon_red"
                                     android:textSize="11sp"
@@ -1842,12 +2150,15 @@
                                 <com.google.android.material.button.MaterialButton
                                     android:id="@+id/btn_open_ad_service_settings"
                                     android:layout_width="0dp"
-                                    android:layout_height="38dp"
+                                    android:layout_height="wrap_content"
                                     android:layout_marginStart="4dp"
                                     android:layout_weight="1"
+                                    android:minHeight="42dp"
                                     android:backgroundTint="@color/card_highlight"
                                     android:insetTop="0dp"
                                     android:insetBottom="0dp"
+                                    android:paddingStart="6dp"
+                                    android:paddingEnd="6dp"
                                     android:text="Tắt QC cá nhân"
                                     android:textColor="@color/neon_yellow"
                                     android:textSize="11sp"

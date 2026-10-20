@@ -169,4 +169,50 @@ public class SystemClockHelper {
     public static String getAdbCommand(Context context) {
         return "adb shell pm grant " + context.getPackageName() + " android.permission.WRITE_SECURE_SETTINGS";
     }
+
+    /**
+     * Hide or show native system clock in status bar using icon_blacklist.
+     */
+    public static boolean setHideSystemClock(Context context, boolean hide) {
+        if (!hasSecureSettingsPermission(context)) return false;
+        try {
+            String currentBlacklist = Settings.Secure.getString(context.getContentResolver(), "icon_blacklist");
+            if (currentBlacklist == null) currentBlacklist = "";
+
+            java.util.Set<String> set = new java.util.LinkedHashSet<>();
+            for (String item : currentBlacklist.split(",")) {
+                String trimmed = item.trim();
+                if (!trimmed.isEmpty()) set.add(trimmed);
+            }
+
+            if (hide) {
+                set.add("clock");
+            } else {
+                set.remove("clock");
+            }
+
+            StringBuilder sb = new StringBuilder();
+            for (String s : set) {
+                if (sb.length() > 0) sb.append(",");
+                sb.append(s);
+            }
+
+            Settings.Secure.putString(context.getContentResolver(), "icon_blacklist", sb.toString());
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Check if native clock is currently hidden via icon_blacklist.
+     */
+    public static boolean isSystemClockHidden(Context context) {
+        try {
+            String currentBlacklist = Settings.Secure.getString(context.getContentResolver(), "icon_blacklist");
+            return currentBlacklist != null && currentBlacklist.contains("clock");
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
