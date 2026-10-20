@@ -69,52 +69,132 @@ public class RefreshRateHelper {
     /**
      * Force refresh rate (min == peak == user) to lock FPS and prevent throttling.
      * @param targetRate 0 for Default/Auto, or 60, 90, 120, 144.
-     * @return true if successfully written to Settings.
+     * @return true if successfully written to Settings or applied via Root.
      */
     public static boolean setRefreshRate(Context context, int targetRate) {
         ContentResolver cr = context.getContentResolver();
+        float rateFloat = (float) targetRate;
+
+        // Try Root command first for instant, permission-free execution
+        StringBuilder rootCmd = new StringBuilder();
+        if (targetRate <= 0) {
+            rootCmd.append("settings put secure min_refresh_rate 60.0; ")
+                    .append("settings put secure peak_refresh_rate 120.0; ")
+                    .append("settings put system user_refresh_rate 0; ")
+                    .append("settings put system miui_refresh_rate 0; ")
+                    .append("settings put secure miui_refresh_rate 0; ")
+                    .append("settings put system thermal_limit_refresh_rate 0");
+        } else {
+            rootCmd.append("settings put secure peak_refresh_rate ").append(rateFloat).append("; ")
+                    .append("settings put secure min_refresh_rate ").append(rateFloat).append("; ")
+                    .append("settings put secure user_refresh_rate ").append(targetRate).append("; ")
+                    .append("settings put system user_refresh_rate ").append(targetRate).append("; ")
+                    .append("settings put secure miui_refresh_rate ").append(targetRate).append("; ")
+                    .append("settings put system miui_refresh_rate ").append(targetRate).append("; ")
+                    .append("settings put system min_refresh_rate ").append(rateFloat).append("; ")
+                    .append("settings put system peak_refresh_rate ").append(rateFloat).append("; ")
+                    .append("settings put system thermal_limit_refresh_rate 0; ")
+                    .append("settings put global speed_mode 1");
+        }
+
+        if (runRootCommand(rootCmd.toString())) {
+            return true;
+        }
+
+        // Standard ContentResolver (requires WRITE_SECURE_SETTINGS or WRITE_SETTINGS)
+        boolean wroteAny = false;
         try {
             if (targetRate <= 0) {
-                // Reset to Auto/Default
                 try {
                     Settings.Secure.putFloat(cr, "min_refresh_rate", 60.0f);
                     Settings.Secure.putFloat(cr, "peak_refresh_rate", 120.0f);
+                    Settings.Secure.putInt(cr, "user_refresh_rate", 0);
+                    wroteAny = true;
                 } catch (Exception ignored) {
                 }
                 try {
                     Settings.System.putInt(cr, "user_refresh_rate", 0);
-                    Settings.System.putInt(cr, "min_refresh_rate", 60);
-                    Settings.System.putInt(cr, "peak_refresh_rate", 120);
+                    Settings.System.putInt(cr, "miui_refresh_rate", 0);
+                    Settings.Secure.putInt(cr, "miui_refresh_rate", 0);
+                    Settings.System.putInt(cr, "thermal_limit_refresh_rate", 0);
+                    wroteAny = true;
                 } catch (Exception ignored) {
                 }
-                return true;
+                return wroteAny;
             }
 
-            float rateFloat = (float) targetRate;
-
-            // Android standard secure settings
-            boolean wroteSecure = false;
+            // AVOID DisplayModeDirector COLLISION:
+            // When increasing rate (e.g. 60 -> 120), peak MUST be set first so min <= peak!
+            // When decreasing rate (e.g. 120 -> 60), min MUST be set first so min <= peak!
+            float currentPeak = 120.0f;
             try {
-                Settings.Secure.putFloat(cr, "min_refresh_rate", rateFloat);
-                Settings.Secure.putFloat(cr, "peak_refresh_rate", rateFloat);
-                Settings.Secure.putInt(cr, "user_refresh_rate", targetRate);
-                wroteSecure = true;
+                currentPeak = Settings.Secure.getFloat(cr, "peak_refresh_rate", 120.0f);
             } catch (Exception ignored) {
             }
 
-            // Xiaomi MIUI / HyperOS system settings
-            boolean wroteSystem = false;
+            if (rateFloat >= currentPeak) {
+                try {
+                    Settings.Secure.putFloat(cr, "peak_refresh_rate", rateFloat);
+                    Settings.Secure.putFloat(cr, "min_refresh_rate", rateFloat);
+                    Settings.Secure.putInt(cr, "user_refresh_rate", targetRate);
+                    wroteAny = true;
+                } catch (Exception ignored) {
+                }
+            } else {
+                try {
+                    Settings.Secure.putFloat(cr, "min_refresh_rate", rateFloat);
+                    Settings.Secure.putFloat(cr, "peak_refresh_rate", rateFloat);
+                    Settings.Secure.putInt(cr, "user_refresh_rate", targetRate);
+                    wroteAny = true;
+                } catch (Exception ignored) {
+                }
+            }
+
+            // Xiaomi MIUI / HyperOS specific settings
             try {
                 Settings.System.putInt(cr, "user_refresh_rate", targetRate);
-                Settings.System.putInt(cr, "min_refresh_rate", targetRate);
-                Settings.System.putInt(cr, "peak_refresh_rate", targetRate);
-                wroteSystem = true;
+                Settings.System.putFloat(cr, "min_refresh_rate", rateFloat);
+                Settings.System.putFloat(cr, "peak_refresh_rate", rateFloat);
+                Settings.System.putInt(cr, "miui_refresh_rate", targetRate);
+                Settings.Secure.putInt(cr, "miui_refresh_rate", targetRate);
+                Settings.System.putInt(cr, "thermal_limit_refresh_rate", 0);
+                Settings.Global.putInt(cr, "speed_mode", 1);
+                wroteAny = true;
             } catch (Exception ignored) {
             }
 
-            return wroteSecure || wroteSystem;
+        } catch (Exception ignored) {
+        }
+
+        return wroteAny;
+    }
+
+    private static boolean runRootCommand(String command) {
+        java.io.DataOutputStream os = null;
+        Process process = null;
+        try {
+            process = Runtime.getRuntime().exec("su");
+            os = new java.io.DataOutputStream(process.getOutputStream());
+            os.writeBytes(command + "\n");
+            os.writeBytes("exit\n");
+            os.flush();
+            int exitCode = process.waitFor();
+            return exitCode == 0;
         } catch (Exception e) {
             return false;
+        } finally {
+            if (os != null) {
+                try {
+                    os.close();
+                } catch (Exception ignored) {
+                }
+            }
+            if (process != null) {
+                try {
+                    process.destroy();
+                } catch (Exception ignored) {
+                }
+            }
         }
     }
 
@@ -134,11 +214,12 @@ public class RefreshRateHelper {
      */
     public static String getAdbCommand(int targetRate) {
         if (targetRate <= 0) {
-            return "adb shell settings put secure min_refresh_rate 60.0 && adb shell settings put secure peak_refresh_rate 120.0";
+            return "adb shell \"settings put secure min_refresh_rate 60.0 && settings put secure peak_refresh_rate 120.0 && settings put system user_refresh_rate 0 && settings put system thermal_limit_refresh_rate 0\"";
         }
-        return "adb shell settings put secure min_refresh_rate " + targetRate + ".0 && " +
-               "adb shell settings put secure peak_refresh_rate " + targetRate + ".0 && " +
-               "adb shell settings put system user_refresh_rate " + targetRate;
+        return "adb shell \"settings put secure peak_refresh_rate " + targetRate + ".0 && " +
+               "settings put secure min_refresh_rate " + targetRate + ".0 && " +
+               "settings put system user_refresh_rate " + targetRate + " && " +
+               "settings put system thermal_limit_refresh_rate 0\"";
     }
 
     /**

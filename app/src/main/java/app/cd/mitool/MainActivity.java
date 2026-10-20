@@ -870,15 +870,57 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void applyRefreshRate(int targetRate) {
+    private void applyRefreshRate(final int targetRate) {
+        // 1. Check if device hardware actually supports this rate
+        List<Integer> supportedRates = RefreshRateHelper.getSupportedRefreshRates(this);
+        if (targetRate > 0 && !supportedRates.contains(targetRate)) {
+            Toast.makeText(this, "Màn hình thiết bị không hỗ trợ mốc " + targetRate + "Hz! Các mốc hỗ trợ: " + supportedRates, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // 2. Immediate Window Preferred Refresh Rate (Zero delay in foreground)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            try {
+                WindowManager.LayoutParams lp = getWindow().getAttributes();
+                lp.preferredRefreshRate = (float) (targetRate > 0 ? targetRate : 0);
+                getWindow().setAttributes(lp);
+            } catch (Exception ignored) {
+            }
+        }
+
+        // 3. Save preference & provide instant visual feedback
+        prefs.setTargetRefreshRate(targetRate);
+        tvCurrentRefreshRate.setText(targetRate == 0 ? "Mặc định (Auto)..." : (targetRate + " Hz (Đang chuyển...)"));
+        updateHzButtons();
+
+        // 4. Apply system-wide refresh rate (via Root or ContentResolver)
         boolean success = RefreshRateHelper.setRefreshRate(this, targetRate);
         if (success) {
-            prefs.setTargetRefreshRate(targetRate);
             String msg = (targetRate == 0) ? "Đã đặt tần số quét Mặc định (Auto)." : ("Đã ép tần số quét " + targetRate + "Hz!");
             Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-            updateHzButtons();
+
+            // 5. Polling checks to sync display text with SurfaceFlinger mode transition
+            final Handler h = new Handler(Looper.getMainLooper());
+            h.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    updateHzButtons();
+                }
+            }, 300);
+            h.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    updateHzButtons();
+                }
+            }, 800);
+            h.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    updateHzButtons();
+                }
+            }, 1500);
         } else {
-            Toast.makeText(this, "Cần cấp quyền WRITE_SECURE_SETTINGS qua ADB hoặc Shizuku để thay đổi!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Cần cấp quyền WRITE_SECURE_SETTINGS qua ADB hoặc Root để thay đổi!", Toast.LENGTH_LONG).show();
             ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
             if (cm != null) {
                 cm.setPrimaryClip(ClipData.newPlainText("ADB Refresh Rate", RefreshRateHelper.getAdbCommand(targetRate)));
@@ -923,6 +965,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateHzButtons() {
+        if (tvCurrentRefreshRate == null) return;
         int activeRate = RefreshRateHelper.getCurrentRefreshRate(this);
         int savedRate = prefs.getTargetRefreshRate();
         tvCurrentRefreshRate.setText(activeRate + " Hz");
@@ -930,11 +973,49 @@ public class MainActivity extends AppCompatActivity {
         int highlightColor = ContextCompat.getColor(this, R.color.mi_orange);
         int normalColor = ContextCompat.getColor(this, R.color.card_highlight);
 
+        List<Integer> supportedRates = RefreshRateHelper.getSupportedRefreshRates(this);
+        boolean supp90 = supportedRates.contains(90);
+        boolean supp120 = supportedRates.contains(120);
+        boolean supp144 = supportedRates.contains(144);
+
         btnHzAuto.setBackgroundTintList(ColorStateList.valueOf(savedRate == 0 ? highlightColor : normalColor));
         btnHz60.setBackgroundTintList(ColorStateList.valueOf(savedRate == 60 ? highlightColor : normalColor));
-        btnHz90.setBackgroundTintList(ColorStateList.valueOf(savedRate == 90 ? highlightColor : normalColor));
-        btnHz120.setBackgroundTintList(ColorStateList.valueOf(savedRate == 120 ? highlightColor : normalColor));
-        btnHz144.setBackgroundTintList(ColorStateList.valueOf(savedRate == 144 ? highlightColor : normalColor));
+
+        if (supp90) {
+            btnHz90.setEnabled(true);
+            btnHz90.setAlpha(1.0f);
+            btnHz90.setText("90 Hz");
+            btnHz90.setBackgroundTintList(ColorStateList.valueOf(savedRate == 90 ? highlightColor : normalColor));
+        } else {
+            btnHz90.setEnabled(false);
+            btnHz90.setAlpha(0.35f);
+            btnHz90.setText("90 Hz (N/A)");
+            btnHz90.setBackgroundTintList(ColorStateList.valueOf(normalColor));
+        }
+
+        if (supp120) {
+            btnHz120.setEnabled(true);
+            btnHz120.setAlpha(1.0f);
+            btnHz120.setText("120 Hz");
+            btnHz120.setBackgroundTintList(ColorStateList.valueOf(savedRate == 120 ? highlightColor : normalColor));
+        } else {
+            btnHz120.setEnabled(false);
+            btnHz120.setAlpha(0.35f);
+            btnHz120.setText("120 Hz (N/A)");
+            btnHz120.setBackgroundTintList(ColorStateList.valueOf(normalColor));
+        }
+
+        if (supp144) {
+            btnHz144.setEnabled(true);
+            btnHz144.setAlpha(1.0f);
+            btnHz144.setText("144 Hz");
+            btnHz144.setBackgroundTintList(ColorStateList.valueOf(savedRate == 144 ? highlightColor : normalColor));
+        } else {
+            btnHz144.setEnabled(false);
+            btnHz144.setAlpha(0.35f);
+            btnHz144.setText("144 Hz (N/A)");
+            btnHz144.setBackgroundTintList(ColorStateList.valueOf(normalColor));
+        }
     }
 
     private void updateRamDisplay() {
