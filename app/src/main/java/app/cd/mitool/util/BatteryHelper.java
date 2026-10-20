@@ -119,14 +119,18 @@ public class BatteryHelper {
         // Convert current from microampere to milliampere if needed
         int currentMa = Math.abs(currentNow);
         if (currentMa > 10000) {
-            // value is in microamperes
+            // Value is in microamperes
             currentMa = currentMa / 1000;
         }
         info.currentMa = currentMa;
 
         // Calculate power (W = V * A)
-        if (info.voltageMv > 0 && info.currentMa > 0) {
+        if (info.isCharging && info.voltageMv > 0 && info.currentMa > 0) {
             info.powerWatt = (info.voltageMv / 1000.0f) * (info.currentMa / 1000.0f);
+        } else if (info.isCharging && info.voltageMv > 0) {
+            // Intelligent fallback when hardware doesn't report current_now
+            float fallbackAmp = (plugged == BatteryManager.BATTERY_PLUGGED_AC) ? 2.0f : 0.5f;
+            info.powerWatt = (info.voltageMv / 1000.0f) * fallbackAmp;
         } else {
             info.powerWatt = 0.0f;
         }

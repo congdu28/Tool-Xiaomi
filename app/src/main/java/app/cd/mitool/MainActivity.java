@@ -44,7 +44,6 @@ import app.cd.mitool.util.GamingFpsHelper;
 import app.cd.mitool.util.PreferencesHelper;
 import app.cd.mitool.util.RamBoosterHelper;
 import app.cd.mitool.util.RefreshRateHelper;
-import app.cd.mitool.util.SystemClockHelper;
 import app.cd.mitool.util.UpdateHelper;
 import app.cd.mitool.util.VoiceAlertHelper;
 import app.cd.mitool.util.XiaomiHelper;
@@ -64,23 +63,14 @@ public class MainActivity extends AppCompatActivity {
 
     // Clock Views
     private MaterialSwitch switchNotifClock;
-    private MaterialSwitch switchSystemClock;
     private MaterialSwitch switchFloatingClock;
-    private TextView tvSecureSettingsStatus;
-    private View layoutSecureSettingsGuide;
-    private TextView tvAdbCommand;
-    private MaterialButton btnCopyAdb;
-    private MaterialButton btnCheckSecurePerm;
-    private MaterialButton btnGrantWriteSettings;
-    private MaterialButton btnOpenMiuiStatusSettings;
 
-    // Status Bar Pin & Floating Clock Sub-Views
+    // Floating Clock Sub-Views
     private View layoutFloatingSubOptions;
     private MaterialButton btnPresetTopLeft;
     private MaterialButton btnPresetBeside;
     private MaterialButton btnPresetNotch;
     private MaterialButton btnPresetFree;
-    private MaterialSwitch switchHideSysClock;
     private MaterialSwitch switchClockTransparent;
     private MaterialSwitch switchClockLock;
     private MaterialSwitch switchClockMs;
@@ -210,23 +200,14 @@ public class MainActivity extends AppCompatActivity {
 
         // Clock Views
         switchNotifClock = findViewById(R.id.switch_notif_clock);
-        switchSystemClock = findViewById(R.id.switch_system_clock);
         switchFloatingClock = findViewById(R.id.switch_floating_clock);
-        tvSecureSettingsStatus = findViewById(R.id.tv_secure_settings_status);
-        layoutSecureSettingsGuide = findViewById(R.id.layout_secure_settings_guide);
-        tvAdbCommand = findViewById(R.id.tv_adb_command);
-        btnCopyAdb = findViewById(R.id.btn_copy_adb);
-        btnCheckSecurePerm = findViewById(R.id.btn_check_secure_perm);
-        btnGrantWriteSettings = findViewById(R.id.btn_grant_write_settings);
-        btnOpenMiuiStatusSettings = findViewById(R.id.btn_open_miui_status_settings);
 
-        // Status Bar Pin & Floating Sub-Views
+        // Floating Sub-Views
         layoutFloatingSubOptions = findViewById(R.id.layout_floating_sub_options);
         btnPresetTopLeft = findViewById(R.id.btn_preset_top_left);
         btnPresetBeside = findViewById(R.id.btn_preset_beside);
         btnPresetNotch = findViewById(R.id.btn_preset_notch);
         btnPresetFree = findViewById(R.id.btn_preset_free);
-        switchHideSysClock = findViewById(R.id.switch_hide_sys_clock);
         switchClockTransparent = findViewById(R.id.switch_clock_transparent);
         switchClockLock = findViewById(R.id.switch_clock_lock);
         switchClockMs = findViewById(R.id.switch_clock_ms);
@@ -354,83 +335,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // 2. System Status Bar Clock
-        final String adbCmd = SystemClockHelper.getAdbCommand(this);
-        tvAdbCommand.setText(adbCmd);
-
-        btnGrantWriteSettings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean opened = SystemClockHelper.openWriteSettingsScreen(MainActivity.this);
-                if (opened) {
-                    Toast.makeText(MainActivity.this, "Hãy gạt bật 'Cho phép sửa đổi cài đặt hệ thống'", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(MainActivity.this, "Đã cấp quyền hoặc không cần cấp.", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        btnOpenMiuiStatusSettings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean opened = SystemClockHelper.openXiaomiStatusBarSettings(MainActivity.this);
-                if (!opened) {
-                    Toast.makeText(MainActivity.this, "Không tìm thấy trang cài đặt thanh trạng thái.", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        btnCopyAdb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                if (clipboard != null) {
-                    ClipData clip = ClipData.newPlainText("ADB Command", adbCmd);
-                    clipboard.setPrimaryClip(clip);
-                    Toast.makeText(MainActivity.this, "Đã sao chép lệnh ADB!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        btnCheckSecurePerm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateSystemClockStatus();
-                if (SystemClockHelper.hasSecureSettingsPermission(MainActivity.this)
-                        || SystemClockHelper.canWriteSystemSettings(MainActivity.this)) {
-                    Toast.makeText(MainActivity.this, "Đã nhận diện quyền hệ thống thành công!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(MainActivity.this, "Chưa nhận được quyền. Vui lòng kiểm tra lại.", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        switchSystemClock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                boolean hasSecure = SystemClockHelper.hasSecureSettingsPermission(MainActivity.this);
-                boolean canWriteSys = SystemClockHelper.canWriteSystemSettings(MainActivity.this);
-
-                if (!hasSecure && !canWriteSys) {
-                    if (isChecked) {
-                        switchSystemClock.setChecked(false);
-                        Toast.makeText(MainActivity.this, "Vui lòng bấm 'Cấp quyền trực tiếp' hoặc cấp qua Shizuku/ADB trước!", Toast.LENGTH_LONG).show();
-                    }
-                    return;
-                }
-
-                boolean success = SystemClockHelper.setSystemClockSeconds(MainActivity.this, isChecked);
-                if (success) {
-                    String msg = isChecked ? "Đã gửi lệnh bật giây vào hệ thống!" : "Đã gửi lệnh tắt giây.";
-                    Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
-                } else {
-                    switchSystemClock.setChecked(!isChecked);
-                    Toast.makeText(MainActivity.this, "Không thể ghi cài đặt (ROM yêu cầu cấp quyền qua ADB/Shizuku).", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
-        // 3. Floating Overlay / Status Bar Pin Clock
+        // 2. Floating Overlay Clock
         switchFloatingClock.setChecked(prefs.isClockEnabled());
         if (layoutFloatingSubOptions != null) {
             layoutFloatingSubOptions.setVisibility(prefs.isClockEnabled() ? View.VISIBLE : View.GONE);
@@ -460,34 +365,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
-        // Floating sub-options
-        if (switchHideSysClock != null) {
-            switchHideSysClock.setChecked(SystemClockHelper.isSystemClockHidden(this));
-            switchHideSysClock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    boolean hasSecure = SystemClockHelper.hasSecureSettingsPermission(MainActivity.this);
-                    if (!hasSecure) {
-                        if (isChecked) {
-                            switchHideSysClock.setChecked(false);
-                            Toast.makeText(MainActivity.this, "Cần quyền Secure Settings (ADB) để ẩn đồng hồ gốc!", Toast.LENGTH_LONG).show();
-                        }
-                        return;
-                    }
-                    boolean success = SystemClockHelper.setHideSystemClock(MainActivity.this, isChecked);
-                    if (success) {
-                        prefs.setHideSystemClock(isChecked);
-                        Toast.makeText(MainActivity.this, isChecked ?
-                                "Đã ẩn đồng hồ 2 chữ số gốc của HyperOS/MIUI!" :
-                                "Đã khôi phục đồng hồ gốc.", Toast.LENGTH_SHORT).show();
-                    } else {
-                        switchHideSysClock.setChecked(!isChecked);
-                        Toast.makeText(MainActivity.this, "Không thể thay đổi cài đặt icon_blacklist.", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-        }
 
         if (switchClockTransparent != null) {
             switchClockTransparent.setChecked(prefs.isClockTransparentBg());
@@ -664,32 +541,6 @@ public class MainActivity extends AppCompatActivity {
             result = (int) (28 * getResources().getDisplayMetrics().density);
         }
         return result;
-    }
-
-    private void updateSystemClockStatus() {
-        boolean hasSecure = SystemClockHelper.hasSecureSettingsPermission(this);
-        boolean canWriteSys = SystemClockHelper.canWriteSystemSettings(this);
-
-        if (hasSecure) {
-            tvSecureSettingsStatus.setText("Đã cấp Secure Settings (ADB)");
-            tvSecureSettingsStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
-            boolean isSecondsOn = SystemClockHelper.isSystemClockSecondsEnabled(this);
-            switchSystemClock.setChecked(isSecondsOn);
-        } else if (canWriteSys) {
-            tvSecureSettingsStatus.setText("Đã cấp Sửa cài đặt hệ thống (Zero-ADB)");
-            tvSecureSettingsStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
-            boolean isSecondsOn = SystemClockHelper.isSystemClockSecondsEnabled(this);
-            switchSystemClock.setChecked(isSecondsOn);
-        } else {
-            tvSecureSettingsStatus.setText(R.string.status_missing);
-            tvSecureSettingsStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_red));
-            switchSystemClock.setChecked(false);
-        }
-        if (switchHideSysClock != null) {
-            switchHideSysClock.setChecked(SystemClockHelper.isSystemClockHidden(this));
-        }
-        // Always keep ADB guide and copy command visible for convenient access
-        layoutSecureSettingsGuide.setVisibility(View.VISIBLE);
     }
 
     private void setupBatteryControls() {
@@ -1160,7 +1011,6 @@ public class MainActivity extends AppCompatActivity {
         if (switchNotifClock != null) {
             switchNotifClock.setChecked(prefs.isNotifClockEnabled());
         }
-        updateSystemClockStatus();
         updateFloatingPresetButtons();
         updateBatteryDisplay();
         updateToolsDisplay();

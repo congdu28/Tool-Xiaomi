@@ -289,12 +289,16 @@ public class FloatingClockService extends Service {
     }
 
     private void startClockTicker() {
+        if (clockRunnable != null) {
+            handler.removeCallbacks(clockRunnable);
+        }
         clockRunnable = new Runnable() {
             @Override
             public void run() {
                 updateTime();
                 boolean showMs = prefs.isClockShowMs();
-                handler.postDelayed(this, showMs ? 45 : 1000);
+                long delay = showMs ? 45 : (1000 - (System.currentTimeMillis() % 1000));
+                handler.postDelayed(this, Math.max(15, delay));
             }
         };
         handler.post(clockRunnable);

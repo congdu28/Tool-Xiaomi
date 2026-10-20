@@ -33,7 +33,7 @@ import java.util.concurrent.Executors;
 public class UpdateHelper {
 
     private static final String GITHUB_RELEASE_API = "https://api.github.com/repos/congdu28/Tool-Xiaomi/releases/latest";
-    private static final String CURRENT_VERSION = "1.0.17";
+    private static final String CURRENT_VERSION = "1.0.18";
 
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
     private static final Handler mainHandler = new Handler(Looper.getMainLooper());
