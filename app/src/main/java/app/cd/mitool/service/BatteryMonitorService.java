@@ -37,7 +37,16 @@ public class BatteryMonitorService extends Service {
         super.onCreate();
         prefs = new PreferencesHelper(this);
         createNotificationChannel();
-        startForeground(NOTIFICATION_ID, buildNotification("Đang theo dõi pin & sạc...", "Mi Tool đang hoạt động"));
+        Notification notification = buildNotification("Đang theo dõi pin & sạc...", "Mi Tool đang hoạt động");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (Build.VERSION.SDK_INT >= 34) {
+                startForeground(NOTIFICATION_ID, notification, android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE);
+            } else {
+                startForeground(NOTIFICATION_ID, notification, 0);
+            }
+        } else {
+            startForeground(NOTIFICATION_ID, notification);
+        }
 
         registerBatteryListener();
     }
