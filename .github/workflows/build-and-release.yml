@@ -41,11 +41,7 @@ jobs:
       - name: Build APKs
         run: |
           chmod +x ./gradlew
-          ./gradlew --no-daemon --stacktrace :app:assembleRelease :app:assembleDebug 2>&1 | tee build_log.txt || {
-            echo "::error::Build failed! Last 100 log lines:"
-            tail -n 100 build_log.txt
-            exit 1
-          }
+          ./gradlew --no-daemon --stacktrace :app:assembleRelease :app:assembleDebug
 
       - name: Run Tests
         run: |
@@ -54,8 +50,19 @@ jobs:
       - name: Prepare APK Files
         run: |
           mkdir -p output-apks
-          cp app/build/outputs/apk/release/app-release.apk output-apks/Tool-Xiaomi-Release.apk
-          cp app/build/outputs/apk/debug/app-debug.apk output-apks/Tool-Xiaomi-Debug.apk
+          echo "=== Found APKs ==="
+          find app/build/outputs/apk -type f -name "*.apk"
+          RELEASE_APK=$(find app/build/outputs/apk -type f -name "*release*.apk" | head -n 1)
+          DEBUG_APK=$(find app/build/outputs/apk -type f -name "*debug*.apk" | head -n 1)
+          if [ -n "$RELEASE_APK" ]; then
+            cp "$RELEASE_APK" output-apks/Tool-Xiaomi-Release.apk
+            echo "Copied $RELEASE_APK to Tool-Xiaomi-Release.apk"
+          fi
+          if [ -n "$DEBUG_APK" ]; then
+            cp "$DEBUG_APK" output-apks/Tool-Xiaomi-Debug.apk
+            echo "Copied $DEBUG_APK to Tool-Xiaomi-Debug.apk"
+          fi
+          ls -la output-apks/
 
       - name: Upload APKs as Workflow Artifacts
         uses: actions/upload-artifact@v4
@@ -68,14 +75,14 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.2' }}
-          name: Mi Tool ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.2' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.3' }}
+          name: Mi Tool ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.3' }}
           draft: false
           prerelease: false
           make_latest: "true"
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
-            ## 📱 Mi Tool (Tool Xiaomi) - Phiên bản ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.2' }}
+            ## 📱 Mi Tool (Tool Xiaomi) - Phiên bản ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.3' }}
 
             Ứng dụng tiện ích tối ưu chuyên dụng cho điện thoại **Xiaomi, Redmi, POCO (MIUI / HyperOS)**.
 
