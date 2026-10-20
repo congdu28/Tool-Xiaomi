@@ -3,7 +3,7 @@
     <shortcut
         android:shortcutId="shortcut_toggle_notif"
         android:enabled="true"
-        android:icon="@drawable/ic_battery_bolt"
+        android:icon="@drawable/ic_shortcut_notification"
         android:shortcutShortLabel="@string/shortcut_toggle_notif_short"
         android:shortcutLongLabel="@string/shortcut_toggle_notif_long">
         <intent

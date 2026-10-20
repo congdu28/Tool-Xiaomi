@@ -1,0 +1,23 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <!-- Circular Background Badge in Xiaomi Accent -->
+    <path
+        android:fillColor="#FF6900"
+        android:pathData="M24,2.5A21.5,21.5 0 1,0 24,45.5A21.5,21.5 0 1,0 24,2.5Z" />
+
+    <!-- Notification Bell with Waves in Pure White -->
+    <group
+        android:scaleX="1.2"
+        android:scaleY="1.2"
+        android:pivotX="12"
+        android:pivotY="12"
+        android:translateX="12"
+        android:translateY="12">
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M12,22c1.1,0 2,-0.9 2,-2h-4c0,1.1 0.9,2 2,2zM18,16v-5c0,-3.07 -1.63,-5.64 -4.5,-6.32V4c0,-0.83 -0.67,-1.5 -1.5,-1.5s-1.5,0.67 -1.5,1.5v0.68C7.64,5.36 6,7.92 6,11v5l-2,2v1h16v-1l-2,-2zM7.58,4.08L6.15,2.65C3.75,4.48 2.17,7.3 2.03,10.5h2c0.15,-2.65 1.51,-4.97 3.55,-6.42zM19.97,10.5h2c-0.15,-3.2 -1.73,-6.02 -4.12,-7.85l-1.42,1.43c2.03,1.45 3.4,3.77 3.54,6.42z" />
+    </group>
+</vector>

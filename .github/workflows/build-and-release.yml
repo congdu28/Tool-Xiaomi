@@ -63,7 +63,7 @@ jobs:
         if: failure() && (startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main')
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.21' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.22' }}
           name: Build Failed - Log
           body_path: gradle-build.log
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -71,7 +71,7 @@ jobs:
       - name: Prepare APK Files with Version
         run: |
           mkdir -p output-apks
-          TAG_NAME="${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.21' }}"
+          TAG_NAME="${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.22' }}"
           RELEASE_APK=$(find app/build/outputs/apk -type f -name "*release*.apk" | head -n 1)
           DEBUG_APK=$(find app/build/outputs/apk -type f -name "*debug*.apk" | head -n 1)
           if [ -n "$RELEASE_APK" ]; then
@@ -95,17 +95,16 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.21' }}
-          name: Mi Tool ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.21' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.22' }}
+          name: Mi Tool ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.22' }}
           draft: false
           prerelease: false
           make_latest: "true"
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
-            Bản cập nhật v1.0.21:
-            - 🎛️ Bổ sung Quick Settings Tile (Phím tắt Bảng điều khiển kéo xuống) giúp bật/tắt nhanh thanh thông báo trạng thái với 1 chạm từ màn hình khóa hay bất kỳ ứng dụng nào.
-            - 📌 Bổ sung phím tắt 1-chạm ngoài màn hình chính (Desktop Shortcut) và Menu nhấn giữ biểu tượng app (App Shortcuts) để mở lại thanh thông báo ngay lập tức mà không cần vào ứng dụng.
-            - ⚡ Tối ưu đồng bộ thời gian thực hai chiều giữa thanh thông báo, Quick Settings Tile và trạng thái trong ứng dụng.
+            Bản cập nhật v1.0.22:
+            - 🔔 Thay đổi biểu tượng phím tắt màn hình chính và Quick Settings Tile sang hình Chuông thông báo (Notification Bell) trực quan, chuẩn nhận diện thông báo hệ thống và không còn bị trùng lặp với icon sạc pin.
+            - ⚡ Tối ưu hiển thị sắc nét của icon trên màn hình chính và thanh điều khiển kéo xuống của Xiaomi HyperOS.
           files: |
             output-apks/Mi-Tool-*-Release.apk
             output-apks/Mi-Tool-*-Debug.apk

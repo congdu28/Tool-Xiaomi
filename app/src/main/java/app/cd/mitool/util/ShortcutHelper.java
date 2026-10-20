@@ -40,7 +40,7 @@ public class ShortcutHelper {
             ShortcutInfoCompat shortcutInfo = new ShortcutInfoCompat.Builder(context, SHORTCUT_ID_TOGGLE_NOTIF)
                     .setShortLabel("Bật/Tắt Thông báo")
                     .setLongLabel("Bật/Tắt Thông báo Mi-Tool")
-                    .setIcon(IconCompat.createWithResource(context, R.drawable.ic_battery_bolt))
+                    .setIcon(IconCompat.createWithResource(context, R.drawable.ic_shortcut_notification))
                     .setIntent(shortcutIntent)
                     .build();
 
