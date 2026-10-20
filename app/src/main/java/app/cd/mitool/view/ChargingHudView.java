@@ -116,7 +116,7 @@ public class ChargingHudView {
                     .setDuration(300)
                     .setListener(new AnimatorListenerAdapter() {
                         @Override
-                        public void end(Animator animation) {
+                        public void onAnimationEnd(Animator animation) {
                             try {
                                 windowManager.removeView(viewToRemove);
                             } catch (Exception ignored) {
