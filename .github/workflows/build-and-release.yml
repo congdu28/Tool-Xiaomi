@@ -77,14 +77,24 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.5' }}
-          name: Mi Tool ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.5' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.6' }}
+          name: Mi Tool ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.6' }}
           draft: false
           prerelease: false
           make_latest: "true"
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
-            ## 📱 Mi Tool (Tool Xiaomi) - Phiên bản ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.5' }}
+            ## 📱 Mi Tool (Tool Xiaomi) - Phiên bản ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.6' }}
+
+            Bản cập nhật tối ưu hóa hệ thống sâu cho Xiaomi HyperOS / MIUI:
+            - 🕒 **Đồng hồ giây hệ thống (Native System Status Bar Seconds):** Kích hoạt hiển thị trực tiếp `Giờ : Phút : Giây` trên thanh trạng thái hệ thống của Xiaomi (AOSP SystemUI / HyperOS Status Bar). Hoạt động mượt mà, trực tiếp từ hệ điều hành, không cần chạy service nền tốn pin.
+            - ⚡ **Ước lượng sạc & Pin hệ thống:** Đọc trực tiếp từ API hệ thống và cảm biến pin, tự động gửi thông báo ước lượng thời gian sạc đầy và công suất khi cắm sạc.
+            - 🛡️ **Khắc phục lỗi crash khi mở app:** Đã bổ sung cờ `RECEIVER_NOT_EXPORTED` bắt buộc trên Android 14+ (HyperOS), loại bỏ việc tự khởi động ForegroundService gây xung đột.
+            - 📋 **Tích hợp sẵn hướng dẫn cấp quyền 1 lần:** Kèm nút sao chép lệnh ADB và kiểm tra quyền tức thì.
+
+            ### 📦 Tải về:
+            - **Tool-Xiaomi-Release.apk**: Bản phát hành chính thức đã ký số.
+            - **Tool-Xiaomi-Debug.apk**: Bản thử nghiệm.
 
             Ứng dụng tiện ích tối ưu chuyên dụng cho điện thoại **Xiaomi, Redmi, POCO (MIUI / HyperOS)**.
 

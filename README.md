@@ -10,27 +10,39 @@ Bộ tiện ích mở rộng tối ưu chuyên biệt cho điện thoại **Xiao
 
 ## ✨ Tính Năng Nổi Bật
 
-### 1. 🕒 Đồng hồ giây nổi (Realtime Floating Clock)
-- Hiển thị **Giờ : Phút : Giây** (`HH:mm:ss`) nổi trực tiếp trên màn hình mọi lúc (qua ứng dụng khác, game, màn hình chính).
-- Hỗ trợ chế độ **Mili-giây** (`HH:mm:ss.SS`) siêu chuẩn xác cho nhu cầu săn sale, flash sale, canh thời gian.
-- Tự do kéo thả vị trí bất kỳ, tự động lưu vị trí đã chỉnh.
-- Tùy chỉnh linh hoạt:
-  - Cỡ chữ: Nhỏ, Vừa, Lớn.
-  - Màu sắc: Trắng, Xanh lá Neon, Cam Xiaomi.
-  - Tùy chọn hiển thị kèm % pin.
-  - Chức năng **Khóa vị trí** để không vô tình chạm xê dịch khi vuốt màn hình.
+### 1. 🕒 Đồng hồ giây trên thanh trạng thái hệ thống (Native System Status Bar Clock)
+- Kích hoạt hiển thị trực tiếp **Giờ : Phút : Giây** (`HH:mm:ss`) trên thanh thông báo / thanh trạng thái của hệ điều hành Xiaomi HyperOS & MIUI.
+- **Ưu điểm vượt trội:**
+  - Do chính **SystemUI** của hệ thống vẽ ra, không cần vẽ cửa sổ ảo đè lên màn hình.
+  - **Không tốn một chút pin hay CPU nào**, không cần chạy service nền.
+  - Đồng bộ chuẩn xác 100% với đồng hồ mạng của hệ thống.
+  - Được bật/tắt an toàn thông qua quyền hệ thống `WRITE_SECURE_SETTINGS` (cấp 1 lần duy nhất qua máy tính ADB hoặc Shizuku).
 
-### 2. ⚡ Ước lượng sạc & Giám sát pin thông minh (Smart Charging)
-- Tự động nhận diện trạng thái khi cắm sạc (Củ sạc AC Nhanh, USB, Sạc không dây).
-- **Tính toán thời gian sạc đầy (ETA):** Sử dụng kết hợp thuật toán tính toán đường cong sạc pin và API Android để đưa ra dự kiến chính xác (*Ví dụ: Còn ~24 phút, đầy lúc 21:15*).
-- **Đo công suất tức thời (Watt):** Tính toán từ điện áp (V) và dòng điện sạc (mA).
-- **Giám sát nhiệt độ pin (°C):** Cảnh báo màu trực quan (Mát < 38°C, Ấm 38-41°C, Nóng > 42°C).
-- **Charging HUD (Dynamic Island):** Khi vừa cắm sạc, hiển thị viên thuốc nổi trong 5 giây báo nhanh % pin, thời gian dự kiến đầy và công suất sạc.
+### 2. ⚡ Ước lượng sạc & Giám sát pin từ API hệ thống (Smart Charging)
+- Tự động nhận diện khi cắm sạc (`AC Nhanh`, `USB`, `Sạc không dây`).
+- **Ước lượng thời gian sạc đầy (ETA):** Sử dụng API `BatteryManager.computeChargeTimeRemaining()` của Android kết hợp đường cong sạc pin giảm dòng sau 80% để tính toán thời gian chính xác (*Ví dụ: Còn ~24 phút • Đầy lúc 21:15*).
+- **Thông báo sạc hệ thống:** Tự động gửi thông báo native khi vừa cắm sạc, và tự hủy khi rút sạc mà không cần chạy nền liên tục.
+- **Đo công suất tức thời:** Hiển thị công suất sạc tính theo **Watt** ($V \times A$) và nhiệt độ pin (°C).
+- **Cảnh báo pin thông minh:** Báo chuông khi đạt 80% (bảo vệ pin), khi sạc đầy 100%, hoặc cảnh báo quá nhiệt (> 42°C).
 
-### 3. 🔔 Cảnh báo thông minh bảo vệ pin
-- Báo chuông & rung khi pin sạc đến **80%** (ngưỡng tối ưu giúp kéo dài tuổi thọ cell pin).
-- Báo chuông khi sạc đầy **100%**.
-- Cảnh báo khi nhiệt độ pin vượt quá **42°C** (tránh chai pin do quá nhiệt khi vừa sạc vừa dùng hoặc chơi game nặng).
+### 3. 🛠️ Khắc phục tối ưu cho HyperOS & Xiaomi
+- Tương thích hoàn toàn với Android 14+ (HyperOS) với đầy đủ cờ bảo mật `RECEIVER_NOT_EXPORTED`.
+- Khởi động tức thì dưới 100ms, không gây nóng máy hay xung đột tiến trình.
+- Tích hợp sẵn nút sao chép lệnh ADB và kiểm tra quyền trực tiếp trong ứng dụng.
+
+---
+
+## 🔑 Hướng Dẫn Cấp Quyền Đồng Hồ Giây Hệ Thống (Chỉ cần làm 1 lần)
+
+Để bật được giây trực tiếp trên thanh trạng thái của Xiaomi:
+1. Trên điện thoại Xiaomi: Vào **Cài đặt** -> **Cài đặt bổ sung** -> **Tùy chọn nhà phát triển**:
+   - Bật **Gỡ lỗi USB**.
+   - Bật **Gỡ lỗi USB (Cài đặt bảo mật)**.
+2. Kết nối điện thoại với máy tính (hoặc mở ứng dụng Shizuku / LADB trên điện thoại) và chạy lệnh:
+```bash
+adb shell pm grant app.cd.mitool android.permission.WRITE_SECURE_SETTINGS
+```
+3. Mở ứng dụng **Mi Tool**, bấm **Kiểm tra lại quyền** và gạt bật **Đồng hồ giây hệ thống**. Giờ trên thanh trạng thái sẽ lập tức nhảy thêm giây!
 
 ### 4. 🛠️ Hướng dẫn tối ưu đặc thù cho Xiaomi (HyperOS / MIUI)
 Tích hợp sẵn các nút tắt 1-chạm mở trực tiếp cài đặt hệ thống của Xiaomi:

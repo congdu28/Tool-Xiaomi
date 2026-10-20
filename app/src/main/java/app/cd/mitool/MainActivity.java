@@ -2,19 +2,17 @@ package app.cd.mitool;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
 import android.widget.CompoundButton;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,12 +26,11 @@ import com.google.android.material.materialswitch.MaterialSwitch;
 
 import java.util.Locale;
 
-import app.cd.mitool.service.BatteryMonitorService;
 import app.cd.mitool.service.FloatingClockService;
 import app.cd.mitool.util.BatteryHelper;
 import app.cd.mitool.util.PreferencesHelper;
+import app.cd.mitool.util.SystemClockHelper;
 import app.cd.mitool.util.XiaomiHelper;
-import app.cd.mitool.view.ChargingHudView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,13 +38,13 @@ public class MainActivity extends AppCompatActivity {
 
     private PreferencesHelper prefs;
 
-    // Clock Views
-    private MaterialSwitch switchClock;
-    private MaterialSwitch switchClockMs;
-    private MaterialSwitch switchClockBattery;
-    private MaterialSwitch switchClockLock;
-    private RadioGroup rgClockSize;
-    private RadioGroup rgClockColor;
+    // System Clock Views
+    private MaterialSwitch switchSystemClock;
+    private TextView tvSecureSettingsStatus;
+    private View layoutSecureSettingsGuide;
+    private TextView tvAdbCommand;
+    private MaterialButton btnCopyAdb;
+    private MaterialButton btnCheckSecurePerm;
 
     // Battery Views
     private TextView tvBatteryPercent;
@@ -57,19 +54,19 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvBatteryPower;
     private TextView tvBatteryTemp;
     private TextView tvBatteryVoltage;
-    private MaterialSwitch switchChargingHud;
-    private MaterialButton btnTestHud;
-
+    private MaterialSwitch switchChargingNotif;
     private MaterialSwitch switchAlert80;
     private MaterialSwitch switchAlert100;
     private MaterialSwitch switchAlertTemp;
 
-    // Xiaomi Guide Views
-    private TextView tvStatusOverlay;
-    private View btnPermOverlay;
+    // Optional Floating Clock Views
+    private MaterialSwitch switchFloatingClock;
+    private MaterialSwitch switchClockMs;
+    private MaterialSwitch switchClockLock;
+
+    // Xiaomi Shortcuts
     private View btnPermAutostart;
     private View btnPermBatterySaver;
-    private View btnPermLockscreen;
     private MaterialButton btnOpenBatteryInfo;
 
     private BroadcastReceiver batteryReceiver;
@@ -82,23 +79,23 @@ public class MainActivity extends AppCompatActivity {
         prefs = new PreferencesHelper(this);
 
         initViews();
-        setupClockControls();
+        setupSystemClockControls();
         setupBatteryControls();
+        setupFloatingClockControls();
         setupXiaomiControls();
         requestNotificationPermissionIfNeeded();
-
-        // Ensure background battery monitor is running
-        startBatteryService();
     }
 
     private void initViews() {
-        switchClock = findViewById(R.id.switch_floating_clock);
-        switchClockMs = findViewById(R.id.switch_clock_ms);
-        switchClockBattery = findViewById(R.id.switch_clock_battery);
-        switchClockLock = findViewById(R.id.switch_clock_lock);
-        rgClockSize = findViewById(R.id.rg_clock_size);
-        rgClockColor = findViewById(R.id.rg_clock_color);
+        // System Clock
+        switchSystemClock = findViewById(R.id.switch_system_clock);
+        tvSecureSettingsStatus = findViewById(R.id.tv_secure_settings_status);
+        layoutSecureSettingsGuide = findViewById(R.id.layout_secure_settings_guide);
+        tvAdbCommand = findViewById(R.id.tv_adb_command);
+        btnCopyAdb = findViewById(R.id.btn_copy_adb);
+        btnCheckSecurePerm = findViewById(R.id.btn_check_secure_perm);
 
+        // Battery
         tvBatteryPercent = findViewById(R.id.tv_battery_percent);
         tvBatteryStatus = findViewById(R.id.tv_battery_status);
         tvBatteryPlugType = findViewById(R.id.tv_battery_plug_type);
@@ -106,133 +103,97 @@ public class MainActivity extends AppCompatActivity {
         tvBatteryPower = findViewById(R.id.tv_battery_power);
         tvBatteryTemp = findViewById(R.id.tv_battery_temp);
         tvBatteryVoltage = findViewById(R.id.tv_battery_voltage);
-        switchChargingHud = findViewById(R.id.switch_charging_hud);
-        btnTestHud = findViewById(R.id.btn_test_hud);
-
+        switchChargingNotif = findViewById(R.id.switch_charging_notif);
         switchAlert80 = findViewById(R.id.switch_alert_80);
         switchAlert100 = findViewById(R.id.switch_alert_100);
         switchAlertTemp = findViewById(R.id.switch_alert_temp);
 
-        tvStatusOverlay = findViewById(R.id.tv_status_overlay);
-        btnPermOverlay = findViewById(R.id.btn_perm_overlay);
+        // Optional Floating Clock
+        switchFloatingClock = findViewById(R.id.switch_floating_clock);
+        switchClockMs = findViewById(R.id.switch_clock_ms);
+        switchClockLock = findViewById(R.id.switch_clock_lock);
+
+        // Xiaomi Shortcuts
         btnPermAutostart = findViewById(R.id.btn_perm_autostart);
         btnPermBatterySaver = findViewById(R.id.btn_perm_battery_saver);
-        btnPermLockscreen = findViewById(R.id.btn_perm_lockscreen);
         btnOpenBatteryInfo = findViewById(R.id.btn_open_battery_info);
     }
 
-    private void setupClockControls() {
-        switchClock.setChecked(prefs.isClockEnabled());
-        switchClockMs.setChecked(prefs.isClockShowMs());
-        switchClockBattery.setChecked(prefs.isClockShowBattery());
-        switchClockLock.setChecked(prefs.isClockLockPosition());
+    private void setupSystemClockControls() {
+        final String adbCmd = SystemClockHelper.getAdbCommand(this);
+        tvAdbCommand.setText(adbCmd);
 
-        int size = prefs.getClockSize();
-        if (size == 0) ((RadioButton) findViewById(R.id.rb_size_small)).setChecked(true);
-        else if (size == 2) ((RadioButton) findViewById(R.id.rb_size_large)).setChecked(true);
-        else ((RadioButton) findViewById(R.id.rb_size_medium)).setChecked(true);
-
-        int color = prefs.getClockColor();
-        if (color == 1) ((RadioButton) findViewById(R.id.rb_color_green)).setChecked(true);
-        else if (color == 2) ((RadioButton) findViewById(R.id.rb_color_orange)).setChecked(true);
-        else ((RadioButton) findViewById(R.id.rb_color_white)).setChecked(true);
-
-        switchClock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        btnCopyAdb.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    if (!Settings.canDrawOverlays(MainActivity.this)) {
-                        switchClock.setChecked(false);
-                        Toast.makeText(MainActivity.this, "Vui lòng cấp quyền 'Hiển thị trên ứng dụng khác' trước!", Toast.LENGTH_LONG).show();
-                        XiaomiHelper.openOverlaySettings(MainActivity.this);
-                        return;
-                    }
-                    prefs.setClockEnabled(true);
-                    startClockService();
-                } else {
-                    prefs.setClockEnabled(false);
-                    stopClockService();
+            public void onClick(View v) {
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                if (clipboard != null) {
+                    ClipData clip = ClipData.newPlainText("ADB Command", adbCmd);
+                    clipboard.setPrimaryClip(clip);
+                    Toast.makeText(MainActivity.this, "Đã sao chép lệnh ADB vào khay nhớ tạm!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        switchClockMs.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        btnCheckSecurePerm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateSystemClockStatus();
+                if (SystemClockHelper.hasSecureSettingsPermission(MainActivity.this)) {
+                    Toast.makeText(MainActivity.this, R.string.permission_granted, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, R.string.permission_not_granted, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        switchSystemClock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                prefs.setClockShowMs(isChecked);
-                notifyClockSettingsChanged();
-            }
-        });
+                if (!SystemClockHelper.hasSecureSettingsPermission(MainActivity.this)) {
+                    if (isChecked) {
+                        switchSystemClock.setChecked(false);
+                        Toast.makeText(MainActivity.this, "Cần cấp quyền Secure Settings qua ADB hoặc Shizuku trước!", Toast.LENGTH_LONG).show();
+                    }
+                    return;
+                }
 
-        switchClockBattery.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                prefs.setClockShowBattery(isChecked);
-                notifyClockSettingsChanged();
-            }
-        });
-
-        switchClockLock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                prefs.setClockLockPosition(isChecked);
-                notifyClockSettingsChanged();
-            }
-        });
-
-        rgClockSize.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.rb_size_small) prefs.setClockSize(0);
-                else if (checkedId == R.id.rb_size_large) prefs.setClockSize(2);
-                else prefs.setClockSize(1);
-                notifyClockSettingsChanged();
-            }
-        });
-
-        rgClockColor.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.rb_color_green) prefs.setClockColor(1);
-                else if (checkedId == R.id.rb_color_orange) prefs.setClockColor(2);
-                else prefs.setClockColor(0);
-                notifyClockSettingsChanged();
+                boolean success = SystemClockHelper.setSystemClockSeconds(MainActivity.this, isChecked);
+                if (success) {
+                    String msg = isChecked ? "Đã bật hiển thị giây trên thanh trạng thái hệ thống!" : "Đã tắt hiển thị giây.";
+                    Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+                } else {
+                    switchSystemClock.setChecked(!isChecked);
+                    Toast.makeText(MainActivity.this, "Không thể ghi cài đặt hệ thống!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
 
+    private void updateSystemClockStatus() {
+        boolean hasPerm = SystemClockHelper.hasSecureSettingsPermission(this);
+        if (hasPerm) {
+            tvSecureSettingsStatus.setText(R.string.status_granted);
+            tvSecureSettingsStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
+            layoutSecureSettingsGuide.setVisibility(View.GONE);
+
+            // Reflect real system state
+            boolean isSecondsOn = SystemClockHelper.isSystemClockSecondsEnabled(this);
+            switchSystemClock.setChecked(isSecondsOn);
+        } else {
+            tvSecureSettingsStatus.setText(R.string.status_missing);
+            tvSecureSettingsStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_red));
+            layoutSecureSettingsGuide.setVisibility(View.VISIBLE);
+            switchSystemClock.setChecked(false);
+        }
+    }
+
     private void setupBatteryControls() {
-        switchChargingHud.setChecked(prefs.isChargingHudEnabled());
-        switchChargingHud.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        switchChargingNotif.setChecked(prefs.isChargingHudEnabled());
+        switchChargingNotif.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked && !Settings.canDrawOverlays(MainActivity.this)) {
-                    switchChargingHud.setChecked(false);
-                    Toast.makeText(MainActivity.this, "Cần cấp quyền 'Hiển thị trên ứng dụng khác' để hiện HUD sạc!", Toast.LENGTH_LONG).show();
-                    XiaomiHelper.openOverlaySettings(MainActivity.this);
-                    return;
-                }
                 prefs.setChargingHudEnabled(isChecked);
-            }
-        });
-
-        btnTestHud.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!Settings.canDrawOverlays(MainActivity.this)) {
-                    Toast.makeText(MainActivity.this, "Vui lòng cấp quyền 'Hiển thị trên ứng dụng khác' trước!", Toast.LENGTH_SHORT).show();
-                    XiaomiHelper.openOverlaySettings(MainActivity.this);
-                    return;
-                }
-                BatteryHelper.BatteryInfo demoInfo = BatteryHelper.getBatteryInfo(MainActivity.this);
-                demoInfo.isCharging = true;
-                demoInfo.plugTypeName = "Củ sạc Turbo (67W)";
-                if (demoInfo.estimatedMinutesToFull <= 0) {
-                    demoInfo.estimatedMinutesToFull = 25;
-                    demoInfo.formattedEta = "Còn ~25 phút (Đầy lúc 21:15)";
-                }
-                demoInfo.powerWatt = 31.4f;
-                ChargingHudView.show(MainActivity.this, demoInfo);
             }
         });
 
@@ -261,14 +222,48 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void setupXiaomiControls() {
-        btnPermOverlay.setOnClickListener(new View.OnClickListener() {
+    private void setupFloatingClockControls() {
+        switchFloatingClock.setChecked(prefs.isClockEnabled());
+        switchClockMs.setChecked(prefs.isClockShowMs());
+        switchClockLock.setChecked(prefs.isClockLockPosition());
+
+        switchFloatingClock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                XiaomiHelper.openOverlaySettings(MainActivity.this);
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    if (!Settings.canDrawOverlays(MainActivity.this)) {
+                        switchFloatingClock.setChecked(false);
+                        Toast.makeText(MainActivity.this, "Cần cấp quyền 'Hiển thị trên ứng dụng khác' cho đồng hồ nổi!", Toast.LENGTH_SHORT).show();
+                        XiaomiHelper.openOverlaySettings(MainActivity.this);
+                        return;
+                    }
+                    prefs.setClockEnabled(true);
+                    startFloatingClockService();
+                } else {
+                    prefs.setClockEnabled(false);
+                    stopFloatingClockService();
+                }
             }
         });
 
+        switchClockMs.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                prefs.setClockShowMs(isChecked);
+                notifyFloatingClockSettings();
+            }
+        });
+
+        switchClockLock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                prefs.setClockLockPosition(isChecked);
+                notifyFloatingClockSettings();
+            }
+        });
+    }
+
+    private void setupXiaomiControls() {
         btnPermAutostart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -283,13 +278,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btnPermLockscreen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                XiaomiHelper.openLockScreenPermSettings(MainActivity.this);
-            }
-        });
-
         btnOpenBatteryInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -301,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        updateOverlayPermissionStatus();
+        updateSystemClockStatus();
         updateBatteryDisplay();
         registerBatteryMonitorReceiver();
     }
@@ -312,55 +300,47 @@ public class MainActivity extends AppCompatActivity {
         unregisterBatteryMonitorReceiver();
     }
 
-    private void updateOverlayPermissionStatus() {
-        boolean hasOverlay = Settings.canDrawOverlays(this);
-        if (hasOverlay) {
-            tvStatusOverlay.setText(R.string.status_granted);
-            tvStatusOverlay.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
-        } else {
-            tvStatusOverlay.setText(R.string.status_missing);
-            tvStatusOverlay.setTextColor(ContextCompat.getColor(this, R.color.neon_red));
-        }
-    }
-
     private void updateBatteryDisplay() {
-        BatteryHelper.BatteryInfo info = BatteryHelper.getBatteryInfo(this);
+        try {
+            BatteryHelper.BatteryInfo info = BatteryHelper.getBatteryInfo(this);
 
-        tvBatteryPercent.setText(info.level + "%");
+            tvBatteryPercent.setText(info.level + "%");
 
-        if (info.isFull) {
-            tvBatteryStatus.setText(R.string.battery_status_full);
-            tvBatteryStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
-        } else if (info.isCharging) {
-            tvBatteryStatus.setText(R.string.battery_status_charging);
-            tvBatteryStatus.setTextColor(ContextCompat.getColor(this, R.color.mi_orange));
-        } else {
-            tvBatteryStatus.setText(R.string.battery_status_discharging);
-            tvBatteryStatus.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
-        }
+            if (info.isFull) {
+                tvBatteryStatus.setText(R.string.battery_status_full);
+                tvBatteryStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
+            } else if (info.isCharging) {
+                tvBatteryStatus.setText(R.string.battery_status_charging);
+                tvBatteryStatus.setTextColor(ContextCompat.getColor(this, R.color.mi_orange));
+            } else {
+                tvBatteryStatus.setText(R.string.battery_status_discharging);
+                tvBatteryStatus.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
+            }
 
-        tvBatteryPlugType.setText("Nguồn sạc: " + info.plugTypeName);
-        tvChargeEta.setText("⚡ " + info.formattedEta);
+            tvBatteryPlugType.setText("Nguồn sạc: " + info.plugTypeName);
+            tvChargeEta.setText("⚡ " + info.formattedEta);
 
-        if (info.powerWatt > 0) {
-            tvBatteryPower.setText(String.format(Locale.US, "%.1f W", info.powerWatt));
-        } else {
-            tvBatteryPower.setText("-- W");
-        }
+            if (info.powerWatt > 0) {
+                tvBatteryPower.setText(String.format(Locale.US, "%.1f W", info.powerWatt));
+            } else {
+                tvBatteryPower.setText("-- W");
+            }
 
-        tvBatteryTemp.setText(String.format(Locale.US, "%.1f °C", info.temperature));
-        if (info.temperature >= 42.0f) {
-            tvBatteryTemp.setTextColor(ContextCompat.getColor(this, R.color.neon_red));
-        } else if (info.temperature >= 38.0f) {
-            tvBatteryTemp.setTextColor(ContextCompat.getColor(this, R.color.neon_yellow));
-        } else {
-            tvBatteryTemp.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
-        }
+            tvBatteryTemp.setText(String.format(Locale.US, "%.1f °C", info.temperature));
+            if (info.temperature >= 42.0f) {
+                tvBatteryTemp.setTextColor(ContextCompat.getColor(this, R.color.neon_red));
+            } else if (info.temperature >= 38.0f) {
+                tvBatteryTemp.setTextColor(ContextCompat.getColor(this, R.color.neon_yellow));
+            } else {
+                tvBatteryTemp.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
+            }
 
-        if (info.voltageMv > 0) {
-            tvBatteryVoltage.setText(String.format(Locale.US, "%.2f V", info.voltageMv / 1000.0f));
-        } else {
-            tvBatteryVoltage.setText("-- V");
+            if (info.voltageMv > 0) {
+                tvBatteryVoltage.setText(String.format(Locale.US, "%.2f V", info.voltageMv / 1000.0f));
+            } else {
+                tvBatteryVoltage.setText("-- V");
+            }
+        } catch (Exception ignored) {
         }
     }
 
@@ -372,10 +352,12 @@ public class MainActivity extends AppCompatActivity {
                     updateBatteryDisplay();
                 }
             };
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(Intent.ACTION_BATTERY_CHANGED);
-            filter.addAction(BatteryMonitorService.ACTION_BATTERY_UPDATED);
-            registerReceiver(batteryReceiver, filter);
+            IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                registerReceiver(batteryReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+            } else {
+                registerReceiver(batteryReceiver, filter);
+            }
         }
     }
 
@@ -389,35 +371,35 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void startClockService() {
-        Intent intent = new Intent(this, FloatingClockService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent);
-        } else {
-            startService(intent);
-        }
-    }
-
-    private void stopClockService() {
-        Intent intent = new Intent(this, FloatingClockService.class);
-        intent.setAction(FloatingClockService.ACTION_STOP);
-        startService(intent);
-    }
-
-    private void notifyClockSettingsChanged() {
-        if (prefs.isClockEnabled()) {
+    private void startFloatingClockService() {
+        try {
             Intent intent = new Intent(this, FloatingClockService.class);
-            intent.setAction(FloatingClockService.ACTION_RELOAD_SETTINGS);
-            startService(intent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(intent);
+            } else {
+                startService(intent);
+            }
+        } catch (Exception ignored) {
         }
     }
 
-    private void startBatteryService() {
-        Intent intent = new Intent(this, BatteryMonitorService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent);
-        } else {
+    private void stopFloatingClockService() {
+        try {
+            Intent intent = new Intent(this, FloatingClockService.class);
+            intent.setAction(FloatingClockService.ACTION_STOP);
             startService(intent);
+        } catch (Exception ignored) {
+        }
+    }
+
+    private void notifyFloatingClockSettings() {
+        if (prefs.isClockEnabled()) {
+            try {
+                Intent intent = new Intent(this, FloatingClockService.class);
+                intent.setAction(FloatingClockService.ACTION_RELOAD_SETTINGS);
+                startService(intent);
+            } catch (Exception ignored) {
+            }
         }
     }
 

@@ -60,7 +60,12 @@ public class BatteryMonitorService extends Service {
                 }
             }
         };
-        registerReceiver(batteryReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(batteryReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(batteryReceiver, filter);
+        }
     }
 
     private void processBatteryState(Intent intent) {
