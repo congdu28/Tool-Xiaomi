@@ -77,14 +77,24 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.6' }}
-          name: Mi Tool ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.6' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.7' }}
+          name: Mi Tool ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.7' }}
           draft: false
           prerelease: false
           make_latest: "true"
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
-            ## 📱 Mi Tool (Tool Xiaomi) - Phiên bản ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.6' }}
+            ## 📱 Mi Tool (Tool Xiaomi) - Phiên bản ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.7' }}
+
+            Bản cập nhật tối ưu hóa toàn diện giao diện và dung lượng:
+            - 🕒 **Đồng hồ giây trên thanh thông báo (100% không cần ADB/Máy tính):** Bổ sung tùy chọn ghim đồng hồ giây trực tiếp vào bảng thông báo kéo xuống của hệ thống.
+            - 🕒 **Đồng hồ giây trên thanh trạng thái (Status Bar):** Tùy chọn bật vào đồng hồ góc trên của Xiaomi (kèm hướng dẫn Shizuku không dây ngay trên điện thoại hoặc ADB).
+            - ⚡ **Tối ưu dung lượng ứng dụng:** Bật R8 ProGuard Minify + Resource Shrinking + lọc ngôn ngữ, thu nhỏ kích thước APK đáng kể.
+            - 🎨 **Giao diện Responsive chuẩn chỉnh:** Sắp xếp lại bố cục khoa học, thẻ bo tròn tinh tế, không bị tràn dòng hay lệch nút trên mọi cỡ màn hình Xiaomi.
+
+            ### 📦 Tải về:
+            - **Tool-Xiaomi-Release.apk**: Bản phát hành chính thức đã tối ưu & ký số.
+            - **Tool-Xiaomi-Debug.apk**: Bản thử nghiệm.
 
             Bản cập nhật tối ưu hóa hệ thống sâu cho Xiaomi HyperOS / MIUI:
             - 🕒 **Đồng hồ giây hệ thống (Native System Status Bar Seconds):** Kích hoạt hiển thị trực tiếp `Giờ : Phút : Giây` trên thanh trạng thái hệ thống của Xiaomi (AOSP SystemUI / HyperOS Status Bar). Hoạt động mượt mà, trực tiếp từ hệ điều hành, không cần chạy service nền tốn pin.

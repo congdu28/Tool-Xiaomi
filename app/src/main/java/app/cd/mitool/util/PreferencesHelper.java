@@ -7,6 +7,7 @@ public class PreferencesHelper {
 
     private static final String PREF_NAME = "mi_tool_prefs";
 
+    public static final String KEY_NOTIF_CLOCK_ENABLED = "notif_clock_enabled";
     public static final String KEY_CLOCK_ENABLED = "clock_enabled";
     public static final String KEY_CLOCK_SHOW_MS = "clock_show_ms";
     public static final String KEY_CLOCK_SHOW_BATTERY = "clock_show_battery";
@@ -25,6 +26,14 @@ public class PreferencesHelper {
 
     public PreferencesHelper(Context context) {
         this.prefs = context.getApplicationContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+    }
+
+    public boolean isNotifClockEnabled() {
+        return prefs.getBoolean(KEY_NOTIF_CLOCK_ENABLED, false);
+    }
+
+    public void setNotifClockEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_NOTIF_CLOCK_ENABLED, enabled).apply();
     }
 
     public boolean isClockEnabled() {

@@ -27,6 +27,7 @@ import com.google.android.material.materialswitch.MaterialSwitch;
 import java.util.Locale;
 
 import app.cd.mitool.service.FloatingClockService;
+import app.cd.mitool.service.NotificationClockService;
 import app.cd.mitool.util.BatteryHelper;
 import app.cd.mitool.util.PreferencesHelper;
 import app.cd.mitool.util.SystemClockHelper;
@@ -38,8 +39,10 @@ public class MainActivity extends AppCompatActivity {
 
     private PreferencesHelper prefs;
 
-    // System Clock Views
+    // Clock Views
+    private MaterialSwitch switchNotifClock;
     private MaterialSwitch switchSystemClock;
+    private MaterialSwitch switchFloatingClock;
     private TextView tvSecureSettingsStatus;
     private View layoutSecureSettingsGuide;
     private TextView tvAdbCommand;
@@ -54,15 +57,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvBatteryPower;
     private TextView tvBatteryTemp;
     private TextView tvBatteryVoltage;
-    private MaterialSwitch switchChargingNotif;
     private MaterialSwitch switchAlert80;
     private MaterialSwitch switchAlert100;
     private MaterialSwitch switchAlertTemp;
-
-    // Optional Floating Clock Views
-    private MaterialSwitch switchFloatingClock;
-    private MaterialSwitch switchClockMs;
-    private MaterialSwitch switchClockLock;
 
     // Xiaomi Shortcuts
     private View btnPermAutostart;
@@ -79,16 +76,17 @@ public class MainActivity extends AppCompatActivity {
         prefs = new PreferencesHelper(this);
 
         initViews();
-        setupSystemClockControls();
+        setupClockOptions();
         setupBatteryControls();
-        setupFloatingClockControls();
         setupXiaomiControls();
         requestNotificationPermissionIfNeeded();
     }
 
     private void initViews() {
-        // System Clock
+        // Clock Options
+        switchNotifClock = findViewById(R.id.switch_notif_clock);
         switchSystemClock = findViewById(R.id.switch_system_clock);
+        switchFloatingClock = findViewById(R.id.switch_floating_clock);
         tvSecureSettingsStatus = findViewById(R.id.tv_secure_settings_status);
         layoutSecureSettingsGuide = findViewById(R.id.layout_secure_settings_guide);
         tvAdbCommand = findViewById(R.id.tv_adb_command);
@@ -103,15 +101,9 @@ public class MainActivity extends AppCompatActivity {
         tvBatteryPower = findViewById(R.id.tv_battery_power);
         tvBatteryTemp = findViewById(R.id.tv_battery_temp);
         tvBatteryVoltage = findViewById(R.id.tv_battery_voltage);
-        switchChargingNotif = findViewById(R.id.switch_charging_notif);
         switchAlert80 = findViewById(R.id.switch_alert_80);
         switchAlert100 = findViewById(R.id.switch_alert_100);
         switchAlertTemp = findViewById(R.id.switch_alert_temp);
-
-        // Optional Floating Clock
-        switchFloatingClock = findViewById(R.id.switch_floating_clock);
-        switchClockMs = findViewById(R.id.switch_clock_ms);
-        switchClockLock = findViewById(R.id.switch_clock_lock);
 
         // Xiaomi Shortcuts
         btnPermAutostart = findViewById(R.id.btn_perm_autostart);
@@ -119,7 +111,23 @@ public class MainActivity extends AppCompatActivity {
         btnOpenBatteryInfo = findViewById(R.id.btn_open_battery_info);
     }
 
-    private void setupSystemClockControls() {
+    private void setupClockOptions() {
+        // 1. Notification Clock (NO ADB required)
+        switchNotifClock.setChecked(prefs.isNotifClockEnabled());
+        switchNotifClock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                prefs.setNotifClockEnabled(isChecked);
+                if (isChecked) {
+                    startNotificationClockService();
+                    Toast.makeText(MainActivity.this, "Đã bật đồng hồ giây trên thanh thông báo!", Toast.LENGTH_SHORT).show();
+                } else {
+                    stopNotificationClockService();
+                }
+            }
+        });
+
+        // 2. System Status Bar Clock (via Secure Settings)
         final String adbCmd = SystemClockHelper.getAdbCommand(this);
         tvAdbCommand.setText(adbCmd);
 
@@ -130,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
                 if (clipboard != null) {
                     ClipData clip = ClipData.newPlainText("ADB Command", adbCmd);
                     clipboard.setPrimaryClip(clip);
-                    Toast.makeText(MainActivity.this, "Đã sao chép lệnh ADB vào khay nhớ tạm!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Đã sao chép lệnh ADB vào bộ nhớ tạm!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -140,9 +148,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 updateSystemClockStatus();
                 if (SystemClockHelper.hasSecureSettingsPermission(MainActivity.this)) {
-                    Toast.makeText(MainActivity.this, R.string.permission_granted, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Đã nhận diện quyền hệ thống thành công!", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(MainActivity.this, R.string.permission_not_granted, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Chưa nhận được quyền. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -153,18 +161,39 @@ public class MainActivity extends AppCompatActivity {
                 if (!SystemClockHelper.hasSecureSettingsPermission(MainActivity.this)) {
                     if (isChecked) {
                         switchSystemClock.setChecked(false);
-                        Toast.makeText(MainActivity.this, "Cần cấp quyền Secure Settings qua ADB hoặc Shizuku trước!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this, "Cần cấp quyền qua Shizuku hoặc ADB trước!", Toast.LENGTH_LONG).show();
                     }
                     return;
                 }
 
                 boolean success = SystemClockHelper.setSystemClockSeconds(MainActivity.this, isChecked);
                 if (success) {
-                    String msg = isChecked ? "Đã bật hiển thị giây trên thanh trạng thái hệ thống!" : "Đã tắt hiển thị giây.";
+                    String msg = isChecked ? "Đã bật giây trên thanh trạng thái góc trên!" : "Đã tắt giây thanh trạng thái.";
                     Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
                 } else {
                     switchSystemClock.setChecked(!isChecked);
-                    Toast.makeText(MainActivity.this, "Không thể ghi cài đặt hệ thống!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Không thể ghi cài đặt hệ thống.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        // 3. Floating Overlay Clock (Optional Backup)
+        switchFloatingClock.setChecked(prefs.isClockEnabled());
+        switchFloatingClock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    if (!Settings.canDrawOverlays(MainActivity.this)) {
+                        switchFloatingClock.setChecked(false);
+                        Toast.makeText(MainActivity.this, "Cần cấp quyền 'Hiển thị trên ứng dụng khác' cho đồng hồ nổi!", Toast.LENGTH_SHORT).show();
+                        XiaomiHelper.openOverlaySettings(MainActivity.this);
+                        return;
+                    }
+                    prefs.setClockEnabled(true);
+                    startFloatingClockService();
+                } else {
+                    prefs.setClockEnabled(false);
+                    stopFloatingClockService();
                 }
             }
         });
@@ -177,7 +206,6 @@ public class MainActivity extends AppCompatActivity {
             tvSecureSettingsStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
             layoutSecureSettingsGuide.setVisibility(View.GONE);
 
-            // Reflect real system state
             boolean isSecondsOn = SystemClockHelper.isSystemClockSecondsEnabled(this);
             switchSystemClock.setChecked(isSecondsOn);
         } else {
@@ -189,14 +217,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupBatteryControls() {
-        switchChargingNotif.setChecked(prefs.isChargingHudEnabled());
-        switchChargingNotif.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                prefs.setChargingHudEnabled(isChecked);
-            }
-        });
-
         switchAlert80.setChecked(prefs.isAlert80Enabled());
         switchAlert80.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -218,47 +238,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 prefs.setAlertTempEnabled(isChecked);
-            }
-        });
-    }
-
-    private void setupFloatingClockControls() {
-        switchFloatingClock.setChecked(prefs.isClockEnabled());
-        switchClockMs.setChecked(prefs.isClockShowMs());
-        switchClockLock.setChecked(prefs.isClockLockPosition());
-
-        switchFloatingClock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    if (!Settings.canDrawOverlays(MainActivity.this)) {
-                        switchFloatingClock.setChecked(false);
-                        Toast.makeText(MainActivity.this, "Cần cấp quyền 'Hiển thị trên ứng dụng khác' cho đồng hồ nổi!", Toast.LENGTH_SHORT).show();
-                        XiaomiHelper.openOverlaySettings(MainActivity.this);
-                        return;
-                    }
-                    prefs.setClockEnabled(true);
-                    startFloatingClockService();
-                } else {
-                    prefs.setClockEnabled(false);
-                    stopFloatingClockService();
-                }
-            }
-        });
-
-        switchClockMs.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                prefs.setClockShowMs(isChecked);
-                notifyFloatingClockSettings();
-            }
-        });
-
-        switchClockLock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                prefs.setClockLockPosition(isChecked);
-                notifyFloatingClockSettings();
             }
         });
     }
@@ -317,7 +296,7 @@ public class MainActivity extends AppCompatActivity {
                 tvBatteryStatus.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
             }
 
-            tvBatteryPlugType.setText("Nguồn sạc: " + info.plugTypeName);
+            tvBatteryPlugType.setText("Nguồn: " + info.plugTypeName);
             tvChargeEta.setText("⚡ " + info.formattedEta);
 
             if (info.powerWatt > 0) {
@@ -371,6 +350,27 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void startNotificationClockService() {
+        try {
+            Intent intent = new Intent(this, NotificationClockService.class);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(intent);
+            } else {
+                startService(intent);
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    private void stopNotificationClockService() {
+        try {
+            Intent intent = new Intent(this, NotificationClockService.class);
+            intent.setAction(NotificationClockService.ACTION_STOP);
+            startService(intent);
+        } catch (Exception ignored) {
+        }
+    }
+
     private void startFloatingClockService() {
         try {
             Intent intent = new Intent(this, FloatingClockService.class);
@@ -389,17 +389,6 @@ public class MainActivity extends AppCompatActivity {
             intent.setAction(FloatingClockService.ACTION_STOP);
             startService(intent);
         } catch (Exception ignored) {
-        }
-    }
-
-    private void notifyFloatingClockSettings() {
-        if (prefs.isClockEnabled()) {
-            try {
-                Intent intent = new Intent(this, FloatingClockService.class);
-                intent.setAction(FloatingClockService.ACTION_RELOAD_SETTINGS);
-                startService(intent);
-            } catch (Exception ignored) {
-            }
         }
     }
 

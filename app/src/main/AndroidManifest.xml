@@ -30,6 +30,16 @@
         </activity>
 
         <service
+            android:name=".service.NotificationClockService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Notification clock ticker" />
+        </service>
+
+        <service
             android:name=".service.FloatingClockService"
             android:enabled="true"
             android:exported="false"
