@@ -1,0 +1,103 @@
+name: Build and Release APK
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build & Publish APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+      
+      - name: Install Android Platform & Build-Tools
+        run: |
+          sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Grant Execute Permission for Gradlew
+        run: chmod +x ./gradlew
+
+      - name: Run Unit Tests
+        run: ./gradlew :app:testDebugUnitTest
+
+      - name: Build Release and Debug APK
+        run: |
+          ./gradlew --no-daemon :app:assembleRelease :app:assembleDebug
+
+      - name: Prepare APK Files
+        run: |
+          mkdir -p output-apks
+          cp app/build/outputs/apk/release/app-release.apk output-apks/Tool-Xiaomi-Release.apk
+          cp app/build/outputs/apk/debug/app-debug.apk output-apks/Tool-Xiaomi-Debug.apk
+
+      - name: Upload APKs as Workflow Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Tool-Xiaomi-APK
+          path: output-apks/*.apk
+          retention-days: 30
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.0' }}
+          name: Mi Tool ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.0' }}
+          draft: false
+          prerelease: false
+          body: |
+            ## 📱 Mi Tool (Tool Xiaomi) - Phiên bản ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.0' }}
+
+            Ứng dụng tiện ích tối ưu chuyên dụng cho điện thoại **Xiaomi, Redmi, POCO (MIUI / HyperOS)**.
+
+            ### 🚀 Các tính năng chính:
+            1. **Đồng hồ giây nổi (Floating Clock):**
+               - Hiển thị thời gian thực `Giờ : Phút : Giây` (và tùy chọn mili-giây `.SS`).
+               - Cửa sổ nổi tự do kéo thả, ghi nhớ vị trí, tùy chỉnh kích thước chữ, màu chữ và kiểu nền.
+               - Tùy chọn khóa vị trí chống chạm nhầm và hiển thị % pin song song.
+            2. **Ước lượng thời gian sạc & Giám sát pin thông minh:**
+               - Tự động phát hiện khi cắm sạc (`AC Nhanh`, `USB`, `Không dây`).
+               - Tính toán thời gian dự kiến sạc đầy (ETA) theo thuật toán mô phỏng đường cong sạc.
+               - Đo công suất sạc tức thời (Watt), điện áp (V) và nhiệt độ pin (°C).
+               - **Charging HUD (Viên thuốc Dynamic Island)** nổi 5 giây khi vừa cắm sạc.
+            3. **Tiện ích cảnh báo âm thanh & rung:**
+               - Báo chuông khi sạc đạt 80% (để bảo vệ tuổi thọ pin).
+               - Báo khi pin đầy 100%.
+               - Cảnh báo khi pin quá nóng (> 42°C).
+            4. **Trình hướng dẫn tối ưu đặc thù cho Xiaomi / HyperOS:**
+               - 1-chạm mở cài đặt cấp quyền **Hiển thị trên ứng dụng khác** (Overlay).
+               - 1-chạm mở cài đặt **Tự khởi chạy** (Autostart).
+               - 1-chạm cấu hình **Tiết kiệm pin - Không giới hạn** (No restrictions).
+               - 1-chạm mở cài đặt **Hiển thị trên màn hình khóa**.
+               - Phím tắt mở trang thông tin pin ẩn của Xiaomi.
+
+            ### 📦 Tải về cài đặt:
+            - **Tool-Xiaomi-Release.apk**: Bản phát hành chính thức đã ký số.
+            - **Tool-Xiaomi-Debug.apk**: Bản thử nghiệm.
+          files: |
+            output-apks/Tool-Xiaomi-Release.apk
+            output-apks/Tool-Xiaomi-Debug.apk

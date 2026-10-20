@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mi Tool</string>
+    <string name="app_subtitle">Bộ tiện ích mở rộng tối ưu cho Xiaomi &amp; HyperOS</string>
+
+    <!-- Navigation / Tabs -->
+    <string name="tab_clock">Đồng Hồ Giây</string>
+    <string name="tab_battery">Giám Sát Sạc</string>
+    <string name="tab_xiaomi">Tối Ưu Xiaomi</string>
+
+    <!-- Floating Clock Section -->
+    <string name="clock_title">Đồng Hồ Giây Nổi (Overlay)</string>
+    <string name="clock_desc">Hiển thị giờ:phút:giây nổi trên màn hình mọi lúc, tiện canh giờ săn sale hoặc kiểm tra thời gian thực chính xác.</string>
+    <string name="enable_floating_clock">Bật đồng hồ nổi</string>
+    <string name="clock_show_ms">Hiển thị mili-giây (.SS)</string>
+    <string name="clock_show_battery">Hiển thị % pin bên cạnh</string>
+    <string name="clock_lock_position">Khóa vị trí (chống chạm nhầm)</string>
+    <string name="clock_size">Cỡ chữ đồng hồ</string>
+    <string name="clock_size_small">Nhỏ</string>
+    <string name="clock_size_medium">Vừa</string>
+    <string name="clock_size_large">Lớn</string>
+    <string name="clock_size_xl">Cực lớn</string>
+    <string name="clock_color">Màu chữ</string>
+    <string name="clock_bg">Kiểu nền</string>
+    <string name="clock_bg_translucent">Đen mờ (Khuyên dùng)</string>
+    <string name="clock_bg_black">Đen đặc</string>
+    <string name="clock_bg_transparent">Trong suốt hoàn toàn</string>
+
+    <!-- Battery & Charging Section -->
+    <string name="battery_title">Ước Lượng Sạc &amp; Thông Số Pin</string>
+    <string name="battery_desc">Tự động tính toán thời gian sạc đầy, đo công suất sạc W và theo dõi nhiệt độ bảo vệ pin.</string>
+    <string name="battery_status_charging">Đang sạc</string>
+    <string name="battery_status_discharging">Đang dùng pin</string>
+    <string name="battery_status_full">Pin đã đầy</string>
+    <string name="battery_status_not_charging">Không sạc</string>
+
+    <string name="charging_eta_title">Thời gian dự kiến sạc đầy</string>
+    <string name="charging_power_title">Công suất sạc</string>
+    <string name="battery_temp_title">Nhiệt độ pin</string>
+    <string name="battery_voltage_title">Điện áp</string>
+    <string name="battery_health_title">Sức khỏe pin</string>
+
+    <string name="enable_charging_hud">Hiện thông báo động khi cắm sạc (HUD)</string>
+    <string name="charging_hud_desc">Hiển thị viên thuốc Dynamic Island nổi 5 giây khi vừa cắm sạc để báo nhanh thời gian sạc đầy và công suất.</string>
+    <string name="enable_charging_notification">Hiện thông báo liên tục khi đang sạc</string>
+    <string name="battery_protect_alert">Chuông báo khi sạc tới 80% (Bảo vệ pin)</string>
+    <string name="battery_full_alert">Chuông báo khi sạc đầy 100%</string>
+    <string name="battery_temp_alert">Cảnh báo khi nhiệt độ pin quá nóng (&gt; 42°C)</string>
+    <string name="test_charging_hud">Xem thử giao diện sạc (Demo HUD)</string>
+
+    <!-- Xiaomi Specific Optimization -->
+    <string name="xiaomi_title">Cài Đặt Cần Thiết Cho Xiaomi / HyperOS</string>
+    <string name="xiaomi_intro">Để các tính năng chạy ổn định không bị hệ thống tắt ngầm, vui lòng cấp các quyền sau:</string>
+    
+    <string name="perm_overlay_title">1. Quyền hiển thị trên ứng dụng khác</string>
+    <string name="perm_overlay_desc">Bắt buộc để đồng hồ nổi và pop-up sạc pin có thể hiển thị đè lên màn hình.</string>
+    <string name="btn_grant_overlay">Cấp quyền hiển thị nổi</string>
+
+    <string name="perm_autostart_title">2. Quyền Tự khởi chạy (Autostart)</string>
+    <string name="perm_autostart_desc">Cho phép ứng dụng tự chạy lại khi bạn khởi động lại máy điện thoại.</string>
+    <string name="btn_grant_autostart">Mở cài đặt Tự khởi chạy</string>
+
+    <string name="perm_battery_saver_title">3. Tiết kiệm pin: Không giới hạn</string>
+    <string name="perm_battery_saver_desc">Chuyển sang "Không giới hạn" (No restrictions) để MIUI/HyperOS không kill app chạy nền.</string>
+    <string name="btn_grant_battery_saver">Mở cài đặt Tiết kiệm pin</string>
+
+    <string name="perm_lockscreen_title">4. Hiển thị trên màn hình khóa</string>
+    <string name="perm_lockscreen_desc">Cho phép xem giờ và thông số pin ngay cả khi màn hình đang khóa.</string>
+    <string name="btn_grant_lockscreen">Cài đặt quyền màn hình khóa</string>
+
+    <string name="shortcut_battery_info">Mở trang thông tin pin ẩn của Xiaomi</string>
+
+    <!-- General -->
+    <string name="status_granted">Đã cấp</string>
+    <string name="status_missing">Chưa cấp</string>
+    <string name="notification_channel_name">Mi Tool Dịch Vụ Nền</string>
+    <string name="notification_channel_desc">Duy trì dịch vụ đồng hồ giây và tính toán thời gian sạc</string>
+</resources>
