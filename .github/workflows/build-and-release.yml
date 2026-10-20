@@ -38,15 +38,10 @@ jobs:
         run: |
           sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
 
-      - name: Grant Execute Permission for Gradlew
-        run: chmod +x ./gradlew
-
-      - name: Run Unit Tests
-        run: ./gradlew :app:testDebugUnitTest
-
-      - name: Build Release and Debug APK
+      - name: Build and Test APK
         run: |
-          ./gradlew --no-daemon :app:assembleRelease :app:assembleDebug
+          chmod +x ./gradlew
+          ./gradlew --no-daemon --stacktrace :app:testDebugUnitTest :app:assembleRelease :app:assembleDebug
 
       - name: Prepare APK Files
         run: |
@@ -61,7 +56,7 @@ jobs:
           path: output-apks/*.apk
           retention-days: 30
 
-      - name: Create GitHub Release
+      - name: Publish GitHub Release
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
@@ -69,6 +64,8 @@ jobs:
           name: Mi Tool ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.0' }}
           draft: false
           prerelease: false
+          make_latest: "true"
+          token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             ## 📱 Mi Tool (Tool Xiaomi) - Phiên bản ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.0' }}
 
@@ -87,7 +84,7 @@ jobs:
             3. **Tiện ích cảnh báo âm thanh & rung:**
                - Báo chuông khi sạc đạt 80% (để bảo vệ tuổi thọ pin).
                - Báo khi pin đầy 100%.
-               - Cảnh báo khi pin quá nóng (> 42°C).
+               - Cảnh báo khi nhiệt độ pin quá nóng (> 42°C).
             4. **Trình hướng dẫn tối ưu đặc thù cho Xiaomi / HyperOS:**
                - 1-chạm mở cài đặt cấp quyền **Hiển thị trên ứng dụng khác** (Overlay).
                - 1-chạm mở cài đặt **Tự khởi chạy** (Autostart).

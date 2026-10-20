@@ -21,7 +21,7 @@ android {
 
     signingConfigs {
         release {
-            storeFile file('release.keystore')
+            storeFile file("${projectDir}/release.keystore")
             storePassword 'mitool123'
             keyAlias 'toolxiaomi'
             keyPassword 'mitool123'
