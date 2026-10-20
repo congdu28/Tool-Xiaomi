@@ -58,6 +58,26 @@ public class FloatingClockService extends Service {
 
     private int lastBatteryLevel = -1;
     private long lastBatteryCheckTime = 0;
+    private boolean isScreenOn = true;
+
+    private final android.content.BroadcastReceiver screenReceiver = new android.content.BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent == null || intent.getAction() == null) return;
+            if (Intent.ACTION_SCREEN_OFF.equals(intent.getAction())) {
+                isScreenOn = false;
+                if (handler != null && clockRunnable != null) {
+                    handler.removeCallbacks(clockRunnable);
+                }
+            } else if (Intent.ACTION_SCREEN_ON.equals(intent.getAction())) {
+                isScreenOn = true;
+                if (clockRunnable != null) {
+                    handler.removeCallbacks(clockRunnable);
+                    handler.post(clockRunnable);
+                }
+            }
+        }
+    };
 
     @Override
     public void onCreate() {
@@ -70,9 +90,28 @@ public class FloatingClockService extends Service {
 
         if (Settings.canDrawOverlays(this)) {
             initFloatingView();
+            registerScreenStateReceiver();
             startClockTicker();
         } else {
             stopSelf();
+        }
+    }
+
+    private void registerScreenStateReceiver() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        filter.addAction(Intent.ACTION_SCREEN_ON);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                registerReceiver(screenReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+            } else {
+                registerReceiver(screenReceiver, filter);
+            }
+        } catch (Exception ignored) {
+            try {
+                registerReceiver(screenReceiver, filter);
+            } catch (Exception ignored2) {
+            }
         }
     }
 
@@ -267,6 +306,10 @@ public class FloatingClockService extends Service {
         super.onDestroy();
         if (handler != null && clockRunnable != null) {
             handler.removeCallbacks(clockRunnable);
+        }
+        try {
+            unregisterReceiver(screenReceiver);
+        } catch (Exception ignored) {
         }
         if (floatingView != null && windowManager != null) {
             try {

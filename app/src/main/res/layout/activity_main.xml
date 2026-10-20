@@ -264,6 +264,73 @@
                                     android:textStyle="bold" />
                             </LinearLayout>
 
+                            <!-- Zero-ADB Quick Test Box -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:background="@drawable/bg_card_rounded"
+                                android:backgroundTint="@color/card_highlight"
+                                android:orientation="vertical"
+                                android:padding="10dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="⚡ Thử kích hoạt trực tiếp (Không cần ADB / PC):"
+                                    android:textColor="@color/neon_green"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="3dp"
+                                    android:text="Tương tự Oppo/Honor, bạn có thể cấp quyền 'Sửa cài đặt hệ thống' ngay trên màn hình điện thoại (không cần máy tính) để app thử ghi giây trực tiếp:"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="11sp" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="6dp"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <com.google.android.material.button.MaterialButton
+                                        android:id="@+id/btn_grant_write_settings"
+                                        android:layout_width="0dp"
+                                        android:layout_height="36dp"
+                                        android:layout_marginEnd="4dp"
+                                        android:layout_weight="1"
+                                        android:backgroundTint="@color/mi_orange"
+                                        android:insetTop="0dp"
+                                        android:insetBottom="0dp"
+                                        android:padding="0dp"
+                                        android:text="Cấp quyền trực tiếp"
+                                        android:textColor="#FFFFFF"
+                                        android:textSize="11sp"
+                                        app:cornerRadius="6dp" />
+
+                                    <com.google.android.material.button.MaterialButton
+                                        android:id="@+id/btn_open_miui_status_settings"
+                                        android:layout_width="0dp"
+                                        android:layout_height="36dp"
+                                        android:layout_marginStart="4dp"
+                                        android:layout_weight="1"
+                                        android:backgroundTint="@color/card_dark"
+                                        android:insetTop="0dp"
+                                        android:insetBottom="0dp"
+                                        android:padding="0dp"
+                                        android:text="Mở Cài đặt gốc"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="11sp"
+                                        app:cornerRadius="6dp"
+                                        app:strokeColor="@color/card_dark_stroke"
+                                        app:strokeWidth="1dp" />
+                                </LinearLayout>
+                            </LinearLayout>
+
                             <!-- Guide Box (shown when permission missing) -->
                             <LinearLayout
                                 android:id="@+id/layout_secure_settings_guide"
@@ -278,7 +345,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Cách cấp quyền (Làm 1 lần duy nhất):"
+                                    android:text="Nếu máy yêu cầu Secure Settings (Quyền hệ thống sâu):"
                                     android:textColor="@color/mi_orange"
                                     android:textSize="12sp"
                                     android:textStyle="bold" />
@@ -287,7 +354,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="4dp"
-                                    android:text="• Cách 1: Dùng app Shizuku kết nối qua Gỡ lỗi không dây ngay trên máy (Không cần máy tính).\n• Cách 2: Kết nối máy tính và chạy lệnh ADB:"
+                                    android:text="Xiaomi HyperOS khóa biến giây vào Secure Settings. Nếu cấp quyền trên chưa đủ, bạn có thể cấp quyền hệ thống qua 2 cách:\n• Cách 1: Dùng app Shizuku kết nối qua Gỡ lỗi không dây (Không cần máy tính).\n• Cách 2: Kết nối máy tính và chạy lệnh ADB:"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="11sp" />
 

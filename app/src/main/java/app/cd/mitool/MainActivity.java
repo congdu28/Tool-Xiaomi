@@ -62,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvAdbCommand;
     private MaterialButton btnCopyAdb;
     private MaterialButton btnCheckSecurePerm;
+    private MaterialButton btnGrantWriteSettings;
+    private MaterialButton btnOpenMiuiStatusSettings;
 
     // Battery Views
     private TextView tvBatteryPercent;
@@ -133,6 +135,8 @@ public class MainActivity extends AppCompatActivity {
         tvAdbCommand = findViewById(R.id.tv_adb_command);
         btnCopyAdb = findViewById(R.id.btn_copy_adb);
         btnCheckSecurePerm = findViewById(R.id.btn_check_secure_perm);
+        btnGrantWriteSettings = findViewById(R.id.btn_grant_write_settings);
+        btnOpenMiuiStatusSettings = findViewById(R.id.btn_open_miui_status_settings);
 
         // Battery Views
         tvBatteryPercent = findViewById(R.id.tv_battery_percent);
@@ -203,6 +207,28 @@ public class MainActivity extends AppCompatActivity {
         final String adbCmd = SystemClockHelper.getAdbCommand(this);
         tvAdbCommand.setText(adbCmd);
 
+        btnGrantWriteSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean opened = SystemClockHelper.openWriteSettingsScreen(MainActivity.this);
+                if (opened) {
+                    Toast.makeText(MainActivity.this, "Hãy gạt bật 'Cho phép sửa đổi cài đặt hệ thống'", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "Đã cấp quyền hoặc không cần cấp.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        btnOpenMiuiStatusSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean opened = SystemClockHelper.openXiaomiStatusBarSettings(MainActivity.this);
+                if (!opened) {
+                    Toast.makeText(MainActivity.this, "Không tìm thấy trang cài đặt thanh trạng thái.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
         btnCopyAdb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -219,7 +245,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 updateSystemClockStatus();
-                if (SystemClockHelper.hasSecureSettingsPermission(MainActivity.this)) {
+                if (SystemClockHelper.hasSecureSettingsPermission(MainActivity.this)
+                        || SystemClockHelper.canWriteSystemSettings(MainActivity.this)) {
                     Toast.makeText(MainActivity.this, "Đã nhận diện quyền hệ thống thành công!", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(MainActivity.this, "Chưa nhận được quyền. Vui lòng kiểm tra lại.", Toast.LENGTH_SHORT).show();
@@ -230,21 +257,24 @@ public class MainActivity extends AppCompatActivity {
         switchSystemClock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (!SystemClockHelper.hasSecureSettingsPermission(MainActivity.this)) {
+                boolean hasSecure = SystemClockHelper.hasSecureSettingsPermission(MainActivity.this);
+                boolean canWriteSys = SystemClockHelper.canWriteSystemSettings(MainActivity.this);
+
+                if (!hasSecure && !canWriteSys) {
                     if (isChecked) {
                         switchSystemClock.setChecked(false);
-                        Toast.makeText(MainActivity.this, "Cần cấp quyền qua Shizuku hoặc ADB trước!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this, "Vui lòng bấm 'Cấp quyền trực tiếp' hoặc cấp qua Shizuku/ADB trước!", Toast.LENGTH_LONG).show();
                     }
                     return;
                 }
 
                 boolean success = SystemClockHelper.setSystemClockSeconds(MainActivity.this, isChecked);
                 if (success) {
-                    String msg = isChecked ? "Đã bật giây trên thanh trạng thái góc trên!" : "Đã tắt giây thanh trạng thái.";
+                    String msg = isChecked ? "Đã gửi lệnh bật giây vào hệ thống!" : "Đã gửi lệnh tắt giây.";
                     Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
                 } else {
                     switchSystemClock.setChecked(!isChecked);
-                    Toast.makeText(MainActivity.this, "Không thể ghi cài đặt hệ thống.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Không thể ghi cài đặt (ROM yêu cầu cấp quyền qua ADB/Shizuku).", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -272,12 +302,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateSystemClockStatus() {
-        boolean hasPerm = SystemClockHelper.hasSecureSettingsPermission(this);
-        if (hasPerm) {
-            tvSecureSettingsStatus.setText(R.string.status_granted);
+        boolean hasSecure = SystemClockHelper.hasSecureSettingsPermission(this);
+        boolean canWriteSys = SystemClockHelper.canWriteSystemSettings(this);
+
+        if (hasSecure) {
+            tvSecureSettingsStatus.setText("Đã cấp Secure Settings (ADB / Shizuku)");
             tvSecureSettingsStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
             layoutSecureSettingsGuide.setVisibility(View.GONE);
-
+            boolean isSecondsOn = SystemClockHelper.isSystemClockSecondsEnabled(this);
+            switchSystemClock.setChecked(isSecondsOn);
+        } else if (canWriteSys) {
+            tvSecureSettingsStatus.setText("Đã cấp Sửa cài đặt hệ thống (Zero-ADB)");
+            tvSecureSettingsStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
+            layoutSecureSettingsGuide.setVisibility(View.GONE);
             boolean isSecondsOn = SystemClockHelper.isSystemClockSecondsEnabled(this);
             switchSystemClock.setChecked(isSecondsOn);
         } else {

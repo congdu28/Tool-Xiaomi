@@ -47,7 +47,7 @@ jobs:
       - name: Prepare APK Files with Version
         run: |
           mkdir -p output-apks
-          TAG_NAME="${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.8' }}"
+          TAG_NAME="${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.9' }}"
           RELEASE_APK=$(find app/build/outputs/apk -type f -name "*release*.apk" | head -n 1)
           DEBUG_APK=$(find app/build/outputs/apk -type f -name "*debug*.apk" | head -n 1)
           if [ -n "$RELEASE_APK" ]; then
@@ -71,25 +71,26 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.8' }}
-          name: Mi Tool ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.8' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.9' }}
+          name: Mi Tool ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.9' }}
           draft: false
           prerelease: false
           make_latest: "true"
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
-            ## 📱 Mi Tool (Tool Xiaomi) - Phiên bản ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.8' }}
+            ## 📱 Mi Tool (Tool Xiaomi) - Phiên bản ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.9' }}
 
-            Bản cập nhật lớn tái cấu trúc giao diện và bổ sung tính năng tự động cập nhật:
-            - 🧭 **Bố cục Bottom Navigation 3 Tab chuyên nghiệp:** Phân chia thành [Đồng Hồ] - [Pin & Sạc] - [Cài Đặt], xử lý triệt để lỗi tràn viền (Edge-to-Edge) và lỗi che khuất thông tin khi cuộn.
-            - 🔄 **Tính năng Tự động kiểm tra bản cập nhật (In-App Updater):** App tự động kiểm tra bản mới từ GitHub khi mở, hoặc người dùng có thể bấm nút kiểm tra trong tab Cài đặt để tải và cài đặt trực tiếp file APK mà không cần vào trình duyệt.
-            - 🏷️ **Tên file APK đính kèm phiên bản rõ ràng:** `Mi-Tool-v1.0.8-Release.apk` giúp dễ nhận biết và quản lý khi tải về.
-            - 🕒 **Đồng hồ giây linh hoạt:** Hỗ trợ cả 3 cách: Bảng thông báo (100% không cần ADB/PC), Thanh trạng thái đỉnh máy (HyperOS Status Bar qua Shizuku/ADB) và Đồng hồ nổi kéo thả.
-            - ⚡ **Tối ưu dung lượng siêu nhẹ (~2.0 MB):** Tích hợp R8 Proguard và Resource Shrinker.
+            Bản cập nhật v1.0.9 tối ưu hóa hiệu năng, dung lượng siêu nhẹ và bổ sung kích hoạt Zero-ADB:
+            - ⚡ **Tối ưu dung lượng siêu nhẹ & R8 FullMode:** Tinh gọn ProGuard rules, loại bỏ toàn bộ mã thừa từ thư viện Google Material, kích hoạt R8 Full Mode giúp file APK cực nhẹ, mượt mà và khởi động tức thì.
+            - 🔋 **Tối ưu 0% tiêu hao pin khi tắt màn hình (Deep Sleep):** Tự động phát hiện khi tắt màn hình (`ACTION_SCREEN_OFF`) để tạm dừng ticker đồng hồ thông báo và đồng hồ nổi, đưa CPU về trạng thái ngủ sâu hoàn toàn, không tốn bất kỳ giọt pin nào khi khóa máy.
+            - 🔓 **Kích hoạt Zero-ADB trực tiếp trên điện thoại:** Thêm nút cấp quyền "Sửa cài đặt hệ thống" (`WRITE_SETTINGS`) trực tiếp trên màn hình máy để thử kích hoạt giây trực tiếp vào `Settings.System` mà không cần máy tính hay ADB (tương tự cơ chế của Oppo/Honor).
+            - 🧭 **Phím tắt mở Cài đặt Thanh trạng thái HyperOS:** Mở trực tiếp trang cài đặt gốc của Xiaomi chỉ với 1 chạm.
+            - 🏷️ **Tên file APK chuẩn hóa theo phiên bản:** `Mi-Tool-v1.0.9-Release.apk`.
+            - 🔄 **Cập nhật In-App Updater:** Tự động nhận diện và cập nhật lên bản v1.0.9 từ trong app.
 
             ### 📦 Tải về:
-            - **Mi-Tool-v1.0.8-Release.apk**: Bản phát hành chính thức đã ký số.
-            - **Mi-Tool-v1.0.8-Debug.apk**: Bản thử nghiệm.
+            - **Mi-Tool-v1.0.9-Release.apk**: Bản phát hành chính thức đã tối ưu hóa và ký số.
+            - **Mi-Tool-v1.0.9-Debug.apk**: Bản kiểm thử.
           files: |
             output-apks/Mi-Tool-*-Release.apk
             output-apks/Mi-Tool-*-Debug.apk

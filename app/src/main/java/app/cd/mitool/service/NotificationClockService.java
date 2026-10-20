@@ -5,8 +5,10 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -24,8 +26,9 @@ import app.cd.mitool.util.BatteryHelper;
 import app.cd.mitool.util.PreferencesHelper;
 
 /**
- * Lightweight notification service displaying realtime clock in the Notification Drawer.
+ * Ultra-lightweight notification service displaying realtime clock in the Notification Drawer.
  * 100% NO ADB or PC required. Pinned at top of notification shade.
+ * Zero CPU / battery drain when screen is OFF (pauses background ticker).
  */
 public class NotificationClockService extends Service {
 
@@ -42,6 +45,25 @@ public class NotificationClockService extends Service {
     private SimpleDateFormat dateFormat;
     private PreferencesHelper prefs;
 
+    private boolean isScreenOn = true;
+    private final BroadcastReceiver screenReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent == null || intent.getAction() == null) return;
+            if (Intent.ACTION_SCREEN_OFF.equals(intent.getAction())) {
+                isScreenOn = false;
+                handler.removeCallbacks(tickerRunnable);
+            } else if (Intent.ACTION_SCREEN_ON.equals(intent.getAction())) {
+                isScreenOn = true;
+                if (notificationManager != null) {
+                    notificationManager.notify(NOTIF_ID, buildClockNotification());
+                }
+                handler.removeCallbacks(tickerRunnable);
+                handler.postDelayed(tickerRunnable, 1000);
+            }
+        }
+    };
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -52,7 +74,26 @@ public class NotificationClockService extends Service {
 
         createChannel();
         startForeground(NOTIF_ID, buildClockNotification());
+        registerScreenStateReceiver();
         startTicker();
+    }
+
+    private void registerScreenStateReceiver() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        filter.addAction(Intent.ACTION_SCREEN_ON);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                registerReceiver(screenReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+            } else {
+                registerReceiver(screenReceiver, filter);
+            }
+        } catch (Exception ignored) {
+            try {
+                registerReceiver(screenReceiver, filter);
+            } catch (Exception ignored2) {
+            }
+        }
     }
 
     private void createChannel() {
@@ -101,6 +142,7 @@ public class NotificationClockService extends Service {
         tickerRunnable = new Runnable() {
             @Override
             public void run() {
+                if (!isScreenOn) return;
                 if (notificationManager != null) {
                     notificationManager.notify(NOTIF_ID, buildClockNotification());
                 }
@@ -125,6 +167,10 @@ public class NotificationClockService extends Service {
         super.onDestroy();
         if (handler != null && tickerRunnable != null) {
             handler.removeCallbacks(tickerRunnable);
+        }
+        try {
+            unregisterReceiver(screenReceiver);
+        } catch (Exception ignored) {
         }
         if (notificationManager != null) {
             notificationManager.cancel(NOTIF_ID);
