@@ -48,6 +48,47 @@
     <string name="perm_battery_saver_desc">Ngăn MIUI/HyperOS đóng tiến trình nhận sạc pin.</string>
     <string name="shortcut_battery_info">Mở trang thông số pin ẩn của Xiaomi</string>
 
+    <!-- Voice Smart Alerts -->
+    <string name="voice_alert_title">Âm Báo Sạc Giọng Nói Tiếng Việt</string>
+    <string name="voice_alert_desc">Tự động phát thông báo bằng giọng nói tiếng Việt khi cắm/rút sạc, sạc đầy, hoặc khi pin quá nóng.</string>
+    <string name="voice_alert_master">Bật âm báo giọng nói Tiếng Việt</string>
+    <string name="voice_alert_connect">Thông báo khi cắm sạc (Đọc công suất W)</string>
+    <string name="voice_alert_disconnect">Thông báo khi rút sạc (Đọc mức pin)</string>
+    <string name="voice_alert_80">Nhắc nhở khi pin đạt 80% (Bảo vệ pin)</string>
+    <string name="voice_alert_100">Thông báo khi pin sạc đầy 100%</string>
+    <string name="voice_alert_temp">Cảnh báo khi nhiệt độ pin &gt; 42°C</string>
+    <string name="voice_test_btn">🔊 Nghe thử giọng nói</string>
+
+    <!-- Refresh Rate Section -->
+    <string name="refresh_rate_title">Ép Tần Số Quét Màn Hình (FPS Cao)</string>
+    <string name="refresh_rate_desc">Khóa cứng tần số quét màn hình (60Hz / 90Hz / 120Hz / 144Hz) để chống tụt FPS xuống 60Hz khi xem YouTube, Google Maps hoặc khi máy ấm.</string>
+    <string name="refresh_rate_auto">Mặc định (Auto)</string>
+    <string name="refresh_rate_btn_settings">Mở cài đặt màn hình Xiaomi</string>
+
+    <!-- RAM & Game Turbo -->
+    <string name="ram_boost_title">Giải Phóng RAM &amp; Game Turbo</string>
+    <string name="ram_boost_desc">Dọn dẹp bộ nhớ đệm và tiến trình chạy ngầm để tăng tốc máy trước khi chơi game hoặc tác vụ nặng.</string>
+    <string name="ram_boost_btn">⚡ Tăng tốc RAM ngay</string>
+    <string name="ram_game_turbo_btn">🚀 Mở Xiaomi Game Turbo</string>
+
+    <!-- Deep Clean -->
+    <string name="deep_clean_title">Dọn Rác Chuyên Sâu MIUI (No-Ads)</string>
+    <string name="deep_clean_desc">Mở trực tiếp module dọn dẹp chuyên sâu của hệ thống Xiaomi (quét file rác lớn, video thừa, rác Zalo/Facebook) không bị làm phiền bởi quảng cáo.</string>
+    <string name="deep_clean_btn">🧹 Dọn rác chuyên sâu ngay</string>
+
+    <!-- Hidden CIT Menus -->
+    <string name="hidden_menu_title">Menu Kiểm Tra Bí Mật Xiaomi</string>
+    <string name="hidden_menu_desc">Các menu kiểm tra phần cứng ẩn chính gốc của MIUI / HyperOS.</string>
+    <string name="btn_open_cit">🛠️ Mở CIT Test (*#*#6484#*#*)</string>
+    <string name="btn_open_battery_secret">🔋 Xem Chu Kỳ Sạc (*#*#6485#*#*)</string>
+    <string name="btn_open_testing_radio">📡 Kiểm tra sóng &amp; thiết bị (*#*#4636#*#*)</string>
+
+    <!-- Disable Ads / MSA -->
+    <string name="disable_ads_title">Tắt Dịch Vụ Quảng Cáo Ngầm Xiaomi</string>
+    <string name="disable_ads_desc">Vô hiệu hóa MSA (MIUI System Ads) và trình theo dõi quảng cáo để máy mát hơn và tiết kiệm thêm 10-15% pin.</string>
+    <string name="btn_open_msa">🚫 Mở Ủy quyền &amp; Hủy bỏ (Tắt MSA)</string>
+    <string name="btn_open_ad_services">🔒 Mở Dịch vụ Quảng cáo cá nhân</string>
+
     <string name="status_granted">Đã cấp</string>
     <string name="status_missing">Chưa cấp</string>
 </resources>

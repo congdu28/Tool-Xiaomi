@@ -155,6 +155,221 @@ public class XiaomiHelper {
         }
     }
 
+    /**
+     * Open Xiaomi CIT Hardware Test screen (*#*#6484#*#*).
+     */
+    public static boolean openCITHardwareTest(Context context) {
+        String[][] components = {
+            {"com.miui.cit", "com.miui.cit.CitLauncherActivity"},
+            {"com.miui.cit", "com.miui.cit.MainActivity"},
+            {"com.qualcomm.qti.qmmi", "com.qualcomm.qti.qmmi.MainActivity"}
+        };
+        for (String[] comp : components) {
+            try {
+                Intent intent = new Intent();
+                intent.setComponent(new ComponentName(comp[0], comp[1]));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+                return true;
+            } catch (Exception ignored) {
+            }
+        }
+        try {
+            Intent dialIntent = new Intent(Intent.ACTION_DIAL);
+            dialIntent.setData(Uri.parse("tel:" + Uri.encode("*#*#6484#*#*")));
+            dialIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(dialIntent);
+            return true;
+        } catch (Exception ignored) {
+        }
+        return false;
+    }
+
+    /**
+     * Open Xiaomi Battery Info & Cycle Count Secret screen (*#*#6485#*#*).
+     */
+    public static boolean openBatterySecretInfo(Context context) {
+        String[][] components = {
+            {"com.miui.cit", "com.miui.cit.charge.ChargeActivity"},
+            {"com.miui.cit", "com.miui.cit.battery.BatteryInfoActivity"},
+            {"com.android.settings", "com.android.settings.TestingSettings"}
+        };
+        for (String[] comp : components) {
+            try {
+                Intent intent = new Intent();
+                intent.setComponent(new ComponentName(comp[0], comp[1]));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+                return true;
+            } catch (Exception ignored) {
+            }
+        }
+        try {
+            Intent dialIntent = new Intent(Intent.ACTION_DIAL);
+            dialIntent.setData(Uri.parse("tel:" + Uri.encode("*#*#6485#*#*")));
+            dialIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(dialIntent);
+            return true;
+        } catch (Exception ignored) {
+        }
+        return false;
+    }
+
+    /**
+     * Open MIUI Deep Clean (No Ads).
+     */
+    public static boolean openDeepClean(Context context) {
+        String[][] components = {
+            {"com.miui.cleanmaster", "com.miui.optimizecenter.deepclean.DeepCleanActivity"},
+            {"com.miui.cleanmaster", "com.miui.cleanmaster.MainActivity"},
+            {"com.miui.securitycenter", "com.miui.securityscan.MainActivity"}
+        };
+        for (String[] comp : components) {
+            try {
+                Intent intent = new Intent();
+                intent.setComponent(new ComponentName(comp[0], comp[1]));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+                return true;
+            } catch (Exception ignored) {
+            }
+        }
+        try {
+            Intent storageIntent = new Intent(Settings.ACTION_INTERNAL_STORAGE_SETTINGS);
+            storageIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(storageIntent);
+            return true;
+        } catch (Exception ignored) {
+        }
+        return false;
+    }
+
+    /**
+     * Open Xiaomi Game Turbo (Game Space).
+     */
+    public static boolean openGameTurbo(Context context) {
+        String[][] components = {
+            {"com.miui.securitycenter", "com.miui.gamebooster.ui.QuickDesktopMainActivity"},
+            {"com.miui.securitycenter", "com.miui.gamebooster.MainActivity"},
+            {"com.miui.gamebooster", "com.miui.gamebooster.MainActivity"}
+        };
+        for (String[] comp : components) {
+            try {
+                Intent intent = new Intent();
+                intent.setComponent(new ComponentName(comp[0], comp[1]));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+                return true;
+            } catch (Exception ignored) {
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Open Xiaomi Authorization & Revocation to disable MSA (MIUI System Ads).
+     */
+    public static boolean openAuthorizationAndRevocation(Context context) {
+        String[][] components = {
+            {"com.android.settings", "com.android.settings.Settings$PrivacySettingsActivity"},
+            {"com.miui.securitycenter", "com.miui.permcenter.permissions.PermissionsEditorActivity"}
+        };
+        for (String[] comp : components) {
+            try {
+                Intent intent = new Intent();
+                intent.setComponent(new ComponentName(comp[0], comp[1]));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+                return true;
+            } catch (Exception ignored) {
+            }
+        }
+        try {
+            Intent fallback = new Intent(Settings.ACTION_PRIVACY_SETTINGS);
+            fallback.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(fallback);
+            return true;
+        } catch (Exception ignored) {
+        }
+        return false;
+    }
+
+    /**
+     * Open Ad Services Opt-out Settings.
+     */
+    public static boolean openAdServicesSettings(Context context) {
+        String[][] components = {
+            {"com.android.settings", "com.android.settings.Settings$PersonalAdActivity"},
+            {"com.google.android.gms", "com.google.android.gms.ads.settings.AdsSettingsActivity"}
+        };
+        for (String[] comp : components) {
+            try {
+                Intent intent = new Intent();
+                intent.setComponent(new ComponentName(comp[0], comp[1]));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+                return true;
+            } catch (Exception ignored) {
+            }
+        }
+        try {
+            Intent fallback = new Intent(Settings.ACTION_SETTINGS);
+            fallback.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(fallback);
+            return true;
+        } catch (Exception ignored) {
+        }
+        return false;
+    }
+
+    /**
+     * Read battery cycle count if available via sysfs or BatteryManager API 34+.
+     * Returns -1 if not accessible.
+     */
+    public static int getBatteryCycleCount(Context context) {
+        // API 34+
+        if (Build.VERSION.SDK_INT >= 34) { // Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+            try {
+                android.os.BatteryManager bm = (android.os.BatteryManager) context.getSystemService(Context.BATTERY_SERVICE);
+                if (bm != null) {
+                    int cycles = bm.getIntProperty(android.os.BatteryManager.BATTERY_PROPERTY_CYCLE_COUNT);
+                    if (cycles > 0) return cycles;
+                }
+            } catch (Exception ignored) {
+            }
+        }
+
+        // Check common sysfs nodes
+        String[] paths = {
+            "/sys/class/power_supply/battery/cycle_count",
+            "/sys/class/power_supply/bms/battery_cycle",
+            "/sys/class/power_supply/bms/cycle_count"
+        };
+        for (String path : paths) {
+            java.io.File file = new java.io.File(path);
+            if (file.exists() && file.canRead()) {
+                BufferedReader reader = null;
+                try {
+                    reader = new BufferedReader(new java.io.FileReader(file));
+                    String line = reader.readLine();
+                    if (line != null) {
+                        int c = Integer.parseInt(line.trim());
+                        if (c > 0) return c;
+                    }
+                } catch (Exception ignored) {
+                } finally {
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (IOException ignored) {
+                        }
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+
     private static void openAppDetailsSettings(Context context) {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         intent.setData(Uri.parse("package:" + context.getPackageName()));

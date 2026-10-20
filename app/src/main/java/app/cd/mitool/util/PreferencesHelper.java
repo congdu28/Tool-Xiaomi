@@ -24,6 +24,17 @@ public class PreferencesHelper {
     public static final String KEY_LOCKSCREEN_NOTIF = "lockscreen_notif_enabled";
     public static final String KEY_LOCKSCREEN_AMBIENT = "lockscreen_ambient_enabled";
 
+    // Voice Alert Keys
+    public static final String KEY_VOICE_ALERT_MASTER = "voice_alert_master";
+    public static final String KEY_VOICE_ALERT_CONNECT = "voice_alert_connect";
+    public static final String KEY_VOICE_ALERT_DISCONNECT = "voice_alert_disconnect";
+    public static final String KEY_VOICE_ALERT_80 = "voice_alert_80";
+    public static final String KEY_VOICE_ALERT_100 = "voice_alert_100";
+    public static final String KEY_VOICE_ALERT_TEMP = "voice_alert_temp";
+
+    // Refresh Rate Key
+    public static final String KEY_TARGET_REFRESH_RATE = "target_refresh_rate";
+
     private final SharedPreferences prefs;
 
     public PreferencesHelper(Context context) {
@@ -148,5 +159,61 @@ public class PreferencesHelper {
 
     public void setLockscreenAmbientEnabled(boolean enabled) {
         prefs.edit().putBoolean(KEY_LOCKSCREEN_AMBIENT, enabled).apply();
+    }
+
+    public boolean isVoiceAlertMasterEnabled() {
+        return prefs.getBoolean(KEY_VOICE_ALERT_MASTER, false);
+    }
+
+    public void setVoiceAlertMasterEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_VOICE_ALERT_MASTER, enabled).apply();
+    }
+
+    public boolean isVoiceAlertConnectEnabled() {
+        return prefs.getBoolean(KEY_VOICE_ALERT_CONNECT, true);
+    }
+
+    public void setVoiceAlertConnectEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_VOICE_ALERT_CONNECT, enabled).apply();
+    }
+
+    public boolean isVoiceAlertDisconnectEnabled() {
+        return prefs.getBoolean(KEY_VOICE_ALERT_DISCONNECT, true);
+    }
+
+    public void setVoiceAlertDisconnectEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_VOICE_ALERT_DISCONNECT, enabled).apply();
+    }
+
+    public boolean isVoiceAlert80Enabled() {
+        return prefs.getBoolean(KEY_VOICE_ALERT_80, true);
+    }
+
+    public void setVoiceAlert80Enabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_VOICE_ALERT_80, enabled).apply();
+    }
+
+    public boolean isVoiceAlert100Enabled() {
+        return prefs.getBoolean(KEY_VOICE_ALERT_100, true);
+    }
+
+    public void setVoiceAlert100Enabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_VOICE_ALERT_100, enabled).apply();
+    }
+
+    public boolean isVoiceAlertTempEnabled() {
+        return prefs.getBoolean(KEY_VOICE_ALERT_TEMP, true);
+    }
+
+    public void setVoiceAlertTempEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_VOICE_ALERT_TEMP, enabled).apply();
+    }
+
+    public int getTargetRefreshRate() {
+        return prefs.getInt(KEY_TARGET_REFRESH_RATE, 0); // 0 = Auto/Default
+    }
+
+    public void setTargetRefreshRate(int rate) {
+        prefs.edit().putInt(KEY_TARGET_REFRESH_RATE, rate).apply();
     }
 }

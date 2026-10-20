@@ -24,6 +24,7 @@ import app.cd.mitool.MainActivity;
 import app.cd.mitool.R;
 import app.cd.mitool.util.BatteryHelper;
 import app.cd.mitool.util.PreferencesHelper;
+import app.cd.mitool.util.VoiceAlertHelper;
 
 /**
  * Real-time Lockscreen Charging & Clock Notification Service.
@@ -250,10 +251,15 @@ public class NotificationClockService extends Service {
         if (!info.isCharging) {
             alerted80 = false;
             alerted100 = false;
+            VoiceAlertHelper.resetSessionAlerts();
         }
         if (info.temperature < 40.0f) {
             alertedTemp = false;
         }
+
+        // Voice smart announcements
+        VoiceAlertHelper.checkLevelAlerts(this, info.level, info.isCharging);
+        VoiceAlertHelper.checkTempAlert(this, info.temperature);
 
         if (info.isCharging && info.level >= 80 && info.level < 85 && prefs.isAlert80Enabled() && !alerted80) {
             alerted80 = true;

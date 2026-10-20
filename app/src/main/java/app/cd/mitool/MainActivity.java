@@ -37,10 +37,14 @@ import java.util.Locale;
 
 import app.cd.mitool.service.FloatingClockService;
 import app.cd.mitool.service.NotificationClockService;
+import android.widget.ProgressBar;
 import app.cd.mitool.util.BatteryHelper;
 import app.cd.mitool.util.PreferencesHelper;
+import app.cd.mitool.util.RamBoosterHelper;
+import app.cd.mitool.util.RefreshRateHelper;
 import app.cd.mitool.util.SystemClockHelper;
 import app.cd.mitool.util.UpdateHelper;
+import app.cd.mitool.util.VoiceAlertHelper;
 import app.cd.mitool.util.XiaomiHelper;
 
 public class MainActivity extends AppCompatActivity {
@@ -52,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     // Tabs
     private View tabClockScroll;
     private View tabBatteryScroll;
+    private View tabToolsScroll;
     private View tabSettingsScroll;
     private BottomNavigationView bottomNav;
 
@@ -83,6 +88,40 @@ public class MainActivity extends AppCompatActivity {
     private MaterialButton btnPreviewLockscreen;
     private MaterialButton btnOpenLockscreenSettings;
 
+    // Voice Alert Views
+    private MaterialSwitch switchVoiceMaster;
+    private View layoutVoiceSubOptions;
+    private MaterialSwitch switchVoiceConnect;
+    private MaterialSwitch switchVoiceDisconnect;
+    private MaterialSwitch switchVoice80;
+    private MaterialSwitch switchVoice100;
+    private MaterialSwitch switchVoiceTemp;
+    private MaterialButton btnTestVoice;
+
+    // Battery Cycle & Secret Info
+    private TextView tvBatteryCycleCount;
+    private MaterialButton btnOpenBatterySecretInfo;
+
+    // Tools Views
+    private TextView tvCurrentRefreshRate;
+    private MaterialButton btnHzAuto;
+    private MaterialButton btnHz60;
+    private MaterialButton btnHz90;
+    private MaterialButton btnHz120;
+    private MaterialButton btnHz144;
+    private MaterialButton btnOpenHzSettings;
+
+    private TextView tvRamStats;
+    private ProgressBar pbRamUsage;
+    private MaterialButton btnBoostRam;
+    private MaterialButton btnOpenGameTurbo;
+
+    private MaterialButton btnOpenDeepClean;
+    private MaterialButton btnOpenCitTest;
+    private MaterialButton btnOpenRadioInfo;
+    private MaterialButton btnOpenMsaSettings;
+    private MaterialButton btnOpenAdServiceSettings;
+
     // Settings Views
     private TextView tvSettingsCurrentVersion;
     private MaterialButton btnCheckUpdateNow;
@@ -111,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
         setupNavigation();
         setupClockOptions();
         setupBatteryControls();
+        setupToolsControls();
         setupSettingsControls();
         requestNotificationPermissionIfNeeded();
 
@@ -136,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
     private void initViews() {
         tabClockScroll = findViewById(R.id.tab_clock_scroll);
         tabBatteryScroll = findViewById(R.id.tab_battery_scroll);
+        tabToolsScroll = findViewById(R.id.tab_tools_scroll);
         tabSettingsScroll = findViewById(R.id.tab_settings_scroll);
         bottomNav = findViewById(R.id.bottom_navigation);
 
@@ -167,6 +208,40 @@ public class MainActivity extends AppCompatActivity {
         btnPreviewLockscreen = findViewById(R.id.btn_preview_lockscreen);
         btnOpenLockscreenSettings = findViewById(R.id.btn_open_lockscreen_settings);
 
+        // Voice Alert Views
+        switchVoiceMaster = findViewById(R.id.switch_voice_master);
+        layoutVoiceSubOptions = findViewById(R.id.layout_voice_sub_options);
+        switchVoiceConnect = findViewById(R.id.switch_voice_connect);
+        switchVoiceDisconnect = findViewById(R.id.switch_voice_disconnect);
+        switchVoice80 = findViewById(R.id.switch_voice_80);
+        switchVoice100 = findViewById(R.id.switch_voice_100);
+        switchVoiceTemp = findViewById(R.id.switch_voice_temp);
+        btnTestVoice = findViewById(R.id.btn_test_voice);
+
+        // Battery Cycle
+        tvBatteryCycleCount = findViewById(R.id.tv_battery_cycle_count);
+        btnOpenBatterySecretInfo = findViewById(R.id.btn_open_battery_secret_info);
+
+        // Tools Views
+        tvCurrentRefreshRate = findViewById(R.id.tv_current_refresh_rate);
+        btnHzAuto = findViewById(R.id.btn_hz_auto);
+        btnHz60 = findViewById(R.id.btn_hz_60);
+        btnHz90 = findViewById(R.id.btn_hz_90);
+        btnHz120 = findViewById(R.id.btn_hz_120);
+        btnHz144 = findViewById(R.id.btn_hz_144);
+        btnOpenHzSettings = findViewById(R.id.btn_open_hz_settings);
+
+        tvRamStats = findViewById(R.id.tv_ram_stats);
+        pbRamUsage = findViewById(R.id.pb_ram_usage);
+        btnBoostRam = findViewById(R.id.btn_boost_ram);
+        btnOpenGameTurbo = findViewById(R.id.btn_open_game_turbo);
+
+        btnOpenDeepClean = findViewById(R.id.btn_open_deep_clean);
+        btnOpenCitTest = findViewById(R.id.btn_open_cit_test);
+        btnOpenRadioInfo = findViewById(R.id.btn_open_radio_info);
+        btnOpenMsaSettings = findViewById(R.id.btn_open_msa_settings);
+        btnOpenAdServiceSettings = findViewById(R.id.btn_open_ad_service_settings);
+
         // Settings Views
         tvSettingsCurrentVersion = findViewById(R.id.tv_settings_current_version);
         btnCheckUpdateNow = findViewById(R.id.btn_check_update_now);
@@ -185,17 +260,27 @@ public class MainActivity extends AppCompatActivity {
                 if (id == R.id.nav_clock) {
                     tabClockScroll.setVisibility(View.VISIBLE);
                     tabBatteryScroll.setVisibility(View.GONE);
+                    tabToolsScroll.setVisibility(View.GONE);
                     tabSettingsScroll.setVisibility(View.GONE);
                     return true;
                 } else if (id == R.id.nav_battery) {
                     tabClockScroll.setVisibility(View.GONE);
                     tabBatteryScroll.setVisibility(View.VISIBLE);
+                    tabToolsScroll.setVisibility(View.GONE);
                     tabSettingsScroll.setVisibility(View.GONE);
                     updateBatteryDisplay();
+                    return true;
+                } else if (id == R.id.nav_tools) {
+                    tabClockScroll.setVisibility(View.GONE);
+                    tabBatteryScroll.setVisibility(View.GONE);
+                    tabToolsScroll.setVisibility(View.VISIBLE);
+                    tabSettingsScroll.setVisibility(View.GONE);
+                    updateToolsDisplay();
                     return true;
                 } else if (id == R.id.nav_settings) {
                     tabClockScroll.setVisibility(View.GONE);
                     tabBatteryScroll.setVisibility(View.GONE);
+                    tabToolsScroll.setVisibility(View.GONE);
                     tabSettingsScroll.setVisibility(View.VISIBLE);
                     return true;
                 }
@@ -403,6 +488,249 @@ public class MainActivity extends AppCompatActivity {
                 openXiaomiLockscreenSettings();
             }
         });
+
+        // Voice Smart Alert Controls
+        switchVoiceMaster.setChecked(prefs.isVoiceAlertMasterEnabled());
+        layoutVoiceSubOptions.setVisibility(prefs.isVoiceAlertMasterEnabled() ? View.VISIBLE : View.GONE);
+        switchVoiceMaster.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                prefs.setVoiceAlertMasterEnabled(isChecked);
+                layoutVoiceSubOptions.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+                if (isChecked) {
+                    VoiceAlertHelper.init(MainActivity.this);
+                    Toast.makeText(MainActivity.this, "Đã bật âm báo sạc thông minh Tiếng Việt!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        switchVoiceConnect.setChecked(prefs.isVoiceAlertConnectEnabled());
+        switchVoiceConnect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                prefs.setVoiceAlertConnectEnabled(isChecked);
+            }
+        });
+
+        switchVoiceDisconnect.setChecked(prefs.isVoiceAlertDisconnectEnabled());
+        switchVoiceDisconnect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                prefs.setVoiceAlertDisconnectEnabled(isChecked);
+            }
+        });
+
+        switchVoice80.setChecked(prefs.isVoiceAlert80Enabled());
+        switchVoice80.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                prefs.setVoiceAlert80Enabled(isChecked);
+            }
+        });
+
+        switchVoice100.setChecked(prefs.isVoiceAlert100Enabled());
+        switchVoice100.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                prefs.setVoiceAlert100Enabled(isChecked);
+            }
+        });
+
+        switchVoiceTemp.setChecked(prefs.isVoiceAlertTempEnabled());
+        switchVoiceTemp.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                prefs.setVoiceAlertTempEnabled(isChecked);
+            }
+        });
+
+        btnTestVoice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                VoiceAlertHelper.testVoice(MainActivity.this);
+                Toast.makeText(MainActivity.this, "Đang phát âm báo thử nghiệm...", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Battery Cycle Secret Info
+        btnOpenBatterySecretInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean opened = XiaomiHelper.openBatterySecretInfo(MainActivity.this);
+                if (!opened) {
+                    Toast.makeText(MainActivity.this, "Bấm *#*#6485#*#* trong trình gọi điện để xem MF_02 (Chu kỳ sạc).", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void setupToolsControls() {
+        // 1. Refresh Rate Controls
+        btnHzAuto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                applyRefreshRate(0);
+            }
+        });
+        btnHz60.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                applyRefreshRate(60);
+            }
+        });
+        btnHz90.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                applyRefreshRate(90);
+            }
+        });
+        btnHz120.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                applyRefreshRate(120);
+            }
+        });
+        btnHz144.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                applyRefreshRate(144);
+            }
+        });
+        btnOpenHzSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean opened = RefreshRateHelper.openRefreshRateSettings(MainActivity.this);
+                if (!opened) {
+                    Toast.makeText(MainActivity.this, "Không tìm thấy trang cài đặt màn hình.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        // 2. RAM Booster & Game Turbo
+        btnBoostRam.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnBoostRam.setEnabled(false);
+                btnBoostRam.setText("Đang dọn dẹp...");
+                RamBoosterHelper.boostRam(MainActivity.this, new RamBoosterHelper.BoostCallback() {
+                    @Override
+                    public void onBoostComplete(long freedMb, RamBoosterHelper.MemoryStats newStats) {
+                        btnBoostRam.setEnabled(true);
+                        btnBoostRam.setText(R.string.ram_boost_btn);
+                        updateRamDisplay();
+                        Toast.makeText(MainActivity.this, "Đã giải phóng ~" + freedMb + " MB RAM, máy mượt hơn!", Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
+
+        btnOpenGameTurbo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean opened = XiaomiHelper.openGameTurbo(MainActivity.this);
+                if (!opened) {
+                    Toast.makeText(MainActivity.this, "Không tìm thấy Không gian trò chơi (Game Turbo) trên máy.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        // 3. Deep Clean
+        btnOpenDeepClean.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean opened = XiaomiHelper.openDeepClean(MainActivity.this);
+                if (!opened) {
+                    Toast.makeText(MainActivity.this, "Không thể mở module Dọn dẹp Xiaomi.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        // 4. CIT Hardware Test & Testing Radio
+        btnOpenCitTest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean opened = XiaomiHelper.openCITHardwareTest(MainActivity.this);
+                if (!opened) {
+                    Toast.makeText(MainActivity.this, "Bấm *#*#6484#*#* trong trình gọi điện để mở CIT.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        btnOpenRadioInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                XiaomiHelper.openHiddenBatteryInfo(MainActivity.this);
+            }
+        });
+
+        // 5. Disable MSA & System Ads
+        btnOpenMsaSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean opened = XiaomiHelper.openAuthorizationAndRevocation(MainActivity.this);
+                if (opened) {
+                    Toast.makeText(MainActivity.this, "Hãy tìm dòng 'msa' và gạt TẮT để loại bỏ quảng cáo ngầm!", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "Vào Cài đặt -> Mật khẩu & bảo mật -> Ủy quyền và hủy bỏ -> Tắt msa.", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        btnOpenAdServiceSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean opened = XiaomiHelper.openAdServicesSettings(MainActivity.this);
+                if (opened) {
+                    Toast.makeText(MainActivity.this, "Hãy gạt TẮT 'Dịch vụ quảng cáo cá nhân hóa'.", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "Vào Cài đặt -> Quyền riêng tư -> Dịch vụ quảng cáo -> Tắt.", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    private void applyRefreshRate(int targetRate) {
+        boolean success = RefreshRateHelper.setRefreshRate(this, targetRate);
+        if (success) {
+            prefs.setTargetRefreshRate(targetRate);
+            String msg = (targetRate == 0) ? "Đã đặt tần số quét Mặc định (Auto)." : ("Đã ép tần số quét " + targetRate + "Hz!");
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+            updateHzButtons();
+        } else {
+            Toast.makeText(this, "Cần cấp quyền WRITE_SECURE_SETTINGS qua ADB hoặc Shizuku để thay đổi!", Toast.LENGTH_LONG).show();
+            ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            if (cm != null) {
+                cm.setPrimaryClip(ClipData.newPlainText("ADB Refresh Rate", RefreshRateHelper.getAdbCommand(targetRate)));
+                Toast.makeText(this, "Đã sao chép lệnh ADB để ép tần số quét!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void updateToolsDisplay() {
+        updateHzButtons();
+        updateRamDisplay();
+    }
+
+    private void updateHzButtons() {
+        int activeRate = RefreshRateHelper.getCurrentRefreshRate(this);
+        int savedRate = prefs.getTargetRefreshRate();
+        tvCurrentRefreshRate.setText(activeRate + " Hz");
+
+        int highlightColor = ContextCompat.getColor(this, R.color.mi_orange);
+        int normalColor = ContextCompat.getColor(this, R.color.card_highlight);
+
+        btnHzAuto.setBackgroundColor(savedRate == 0 ? highlightColor : normalColor);
+        btnHz60.setBackgroundColor(savedRate == 60 ? highlightColor : normalColor);
+        btnHz90.setBackgroundColor(savedRate == 90 ? highlightColor : normalColor);
+        btnHz120.setBackgroundColor(savedRate == 120 ? highlightColor : normalColor);
+        btnHz144.setBackgroundColor(savedRate == 144 ? highlightColor : normalColor);
+    }
+
+    private void updateRamDisplay() {
+        RamBoosterHelper.MemoryStats stats = RamBoosterHelper.getMemoryStats(this);
+        tvRamStats.setText(String.format(Locale.getDefault(), "Đã dùng: %.1f GB / %.1f GB (%d%%)",
+                stats.usedMb / 1024.0f, stats.totalMb / 1024.0f, stats.percentUsed));
+        pbRamUsage.setProgress(stats.percentUsed);
     }
 
     private void openXiaomiLockscreenSettings() {
@@ -471,6 +799,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         updateSystemClockStatus();
         updateBatteryDisplay();
+        updateToolsDisplay();
         registerBatteryMonitorReceiver();
     }
 
@@ -478,6 +807,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         unregisterBatteryMonitorReceiver();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        VoiceAlertHelper.destroy();
     }
 
     private void updateBatteryDisplay() {
@@ -519,6 +854,13 @@ public class MainActivity extends AppCompatActivity {
                 tvBatteryVoltage.setText(String.format(Locale.US, "%.2f V", info.voltageMv / 1000.0f));
             } else {
                 tvBatteryVoltage.setText("-- V");
+            }
+
+            int cycles = XiaomiHelper.getBatteryCycleCount(this);
+            if (cycles > 0) {
+                tvBatteryCycleCount.setText("Số chu kỳ sạc: " + cycles + " lần sạc");
+            } else {
+                tvBatteryCycleCount.setText("Số chu kỳ sạc: Xem chi tiết tại mã 6485 (mục MF_02)");
             }
         } catch (Exception ignored) {
         }

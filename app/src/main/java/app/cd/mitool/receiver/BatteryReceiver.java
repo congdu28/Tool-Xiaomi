@@ -11,6 +11,7 @@ import app.cd.mitool.LockscreenChargingActivity;
 import app.cd.mitool.service.NotificationClockService;
 import app.cd.mitool.util.BatteryHelper;
 import app.cd.mitool.util.PreferencesHelper;
+import app.cd.mitool.util.VoiceAlertHelper;
 import app.cd.mitool.view.ChargingHudView;
 
 public class BatteryReceiver extends BroadcastReceiver {
@@ -29,6 +30,9 @@ public class BatteryReceiver extends BroadcastReceiver {
 
             // Subtle haptic feedback
             BatteryHelper.vibrateDevice(context, 80);
+
+            // Voice announcement
+            VoiceAlertHelper.onPowerConnected(context, info.plugType, info.powerWatt, info.level);
 
             // 1. Launch / Update realtime charging notification on lockscreen
             if (prefs.isLockscreenNotifEnabled() || prefs.isNotifClockEnabled()) {
@@ -63,6 +67,11 @@ public class BatteryReceiver extends BroadcastReceiver {
             }
 
         } else if (Intent.ACTION_POWER_DISCONNECTED.equals(action)) {
+            // Read realtime battery info
+            BatteryHelper.BatteryInfo info = BatteryHelper.getBatteryInfo(context);
+            // Voice announcement
+            VoiceAlertHelper.onPowerDisconnected(context, info.level);
+
             // Unplugged: Seamlessly switch notification to normal battery status without dismissing
             Intent updateIntent = new Intent(context, NotificationClockService.class);
             updateIntent.setAction(NotificationClockService.ACTION_UPDATE_BATTERY);
