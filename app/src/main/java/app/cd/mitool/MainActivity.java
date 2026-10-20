@@ -12,9 +12,12 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +38,7 @@ import com.google.android.material.navigation.NavigationBarView;
 
 import android.content.res.ColorStateList;
 import android.widget.ProgressBar;
+import java.util.List;
 import java.util.Locale;
 
 import app.cd.mitool.service.FloatingClockService;
