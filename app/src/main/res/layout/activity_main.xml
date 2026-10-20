@@ -2,74 +2,89 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_root_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_dark">
 
-    <androidx.core.widget.NestedScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:overScrollMode="never">
+        android:orientation="vertical">
 
+        <!-- Top Header Bar -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
             android:paddingStart="16dp"
             android:paddingTop="12dp"
             android:paddingEnd="16dp"
-            android:paddingBottom="24dp">
+            android:paddingBottom="8dp">
 
-            <!-- App Header -->
+            <ImageView
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:contentDescription="App Icon"
+                android:src="@drawable/ic_app_icon" />
+
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-                <ImageView
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:contentDescription="App Icon"
-                    android:src="@drawable/ic_app_icon" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:text="@string/app_name"
+                    android:textColor="@color/text_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/app_name"
-                        android:textColor="@color/text_primary"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/app_subtitle"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_subtitle"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp" />
             </LinearLayout>
 
-            <!-- ============================================== -->
-            <!-- SECTION 1: CLOCK DISPLAY (3 FLEXIBLE OPTIONS) -->
-            <!-- ============================================== -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tv_app_version_badge"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="@color/card_dark"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp">
+                android:background="@drawable/bg_floating_capsule"
+                android:paddingStart="8dp"
+                android:paddingTop="3dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="3dp"
+                android:text="v1.0.8"
+                android:textColor="@color/mi_orange"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <!-- Main Content Area with ScrollView for each Tab -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <!-- ============================================== -->
+            <!-- TAB 1: CLOCK OPTIONS                          -->
+            <!-- ============================================== -->
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/tab_clock_scroll"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:fillViewport="true"
+                android:overScrollMode="never"
+                android:paddingBottom="90dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -77,6 +92,7 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
+                    <!-- Title -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -92,59 +108,119 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
-                            android:text="Đồng Hồ Giờ : Phút : Giây"
+                            android:text="Tùy Chọn Đồng Hồ Giây"
                             android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
-                    <TextView
+                    <!-- Option 1: Notification Clock (NO ADB) -->
+                    <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Chọn phương thức hiển thị phù hợp với nhu cầu của bạn:"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
                         android:layout_marginTop="12dp"
-                        android:layout_marginBottom="12dp"
-                        android:background="@color/card_dark_stroke" />
-
-                    <!-- METHOD A: NOTIFICATION SHADE CLOCK (NO ADB) -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_card_rounded"
-                        android:backgroundTint="@color/card_highlight"
-                        android:orientation="vertical"
-                        android:padding="12dp">
+                        app:cardBackgroundColor="@color/card_dark"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
+                            android:orientation="vertical"
+                            android:padding="14dp">
 
                             <LinearLayout
-                                android:layout_width="0dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginEnd="12dp"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
 
                                 <LinearLayout
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
-                                    android:gravity="center_vertical"
-                                    android:orientation="horizontal">
+                                    android:layout_marginEnd="12dp"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <LinearLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center_vertical"
+                                        android:orientation="horizontal">
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Thanh thông báo"
+                                            android:textColor="@color/text_primary"
+                                            android:textSize="14sp"
+                                            android:textStyle="bold" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginStart="8dp"
+                                            android:background="@drawable/bg_floating_capsule"
+                                            android:paddingStart="6dp"
+                                            android:paddingTop="2dp"
+                                            android:paddingEnd="6dp"
+                                            android:paddingBottom="2dp"
+                                            android:text="Không cần ADB"
+                                            android:textColor="@color/neon_green"
+                                            android:textSize="10sp"
+                                            android:textStyle="bold" />
+                                    </LinearLayout>
 
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="Thanh thông báo"
+                                        android:layout_marginTop="4dp"
+                                        android:text="Hiện đồng hồ giây trong bảng thông báo kéo xuống của Xiaomi, kèm thông số pin và nhiệt độ."
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="12sp" />
+                                </LinearLayout>
+
+                                <com.google.android.material.materialswitch.MaterialSwitch
+                                    android:id="@+id/switch_notif_clock"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Option 2: Status Bar Clock (via Secure Settings) -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        app:cardBackgroundColor="@color/card_dark"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="14dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="12dp"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Thanh trạng thái góc đỉnh máy"
                                         android:textColor="@color/text_primary"
                                         android:textSize="14sp"
                                         android:textStyle="bold" />
@@ -152,49 +228,139 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_marginStart="8dp"
-                                        android:background="@drawable/bg_floating_capsule"
-                                        android:paddingStart="6dp"
-                                        android:paddingTop="2dp"
-                                        android:paddingEnd="6dp"
-                                        android:paddingBottom="2dp"
-                                        android:text="Không cần ADB"
-                                        android:textColor="@color/neon_green"
-                                        android:textSize="10sp"
-                                        android:textStyle="bold" />
+                                        android:layout_marginTop="4dp"
+                                        android:text="Bật giây vào chính đồng hồ góc trên của Xiaomi. Hoàn toàn không tốn pin."
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="12sp" />
                                 </LinearLayout>
+
+                                <com.google.android.material.materialswitch.MaterialSwitch
+                                    android:id="@+id/switch_system_clock"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="4dp"
-                                    android:text="Hiện đồng hồ giây trong bảng thông báo kéo xuống, kèm % pin và nhiệt độ."
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="12sp" />
+                                    android:text="Quyền hệ thống: "
+                                    android:textColor="@color/text_muted"
+                                    android:textSize="11sp" />
+
+                                <TextView
+                                    android:id="@+id/tv_secure_settings_status"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/status_missing"
+                                    android:textColor="@color/neon_red"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold" />
                             </LinearLayout>
 
-                            <com.google.android.material.materialswitch.MaterialSwitch
-                                android:id="@+id/switch_notif_clock"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-                        </LinearLayout>
-                    </LinearLayout>
+                            <!-- Guide Box (shown when permission missing) -->
+                            <LinearLayout
+                                android:id="@+id/layout_secure_settings_guide"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:background="@drawable/bg_card_rounded"
+                                android:backgroundTint="@color/card_highlight"
+                                android:orientation="vertical"
+                                android:padding="12dp">
 
-                    <!-- METHOD B: SYSTEM STATUS BAR (VIA SECURE SETTINGS) -->
-                    <LinearLayout
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Cách cấp quyền (Làm 1 lần duy nhất):"
+                                    android:textColor="@color/mi_orange"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:text="• Cách 1: Dùng app Shizuku kết nối qua Gỡ lỗi không dây ngay trên máy (Không cần máy tính).\n• Cách 2: Kết nối máy tính và chạy lệnh ADB:"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="11sp" />
+
+                                <TextView
+                                    android:id="@+id/tv_adb_command"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="6dp"
+                                    android:background="@drawable/bg_floating_capsule"
+                                    android:fontFamily="monospace"
+                                    android:padding="6dp"
+                                    android:text="adb shell pm grant app.cd.mitool android.permission.WRITE_SECURE_SETTINGS"
+                                    android:textColor="@color/neon_cyan"
+                                    android:textSize="10sp" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:orientation="horizontal">
+
+                                    <com.google.android.material.button.MaterialButton
+                                        android:id="@+id/btn_copy_adb"
+                                        android:layout_width="0dp"
+                                        android:layout_height="38dp"
+                                        android:layout_marginEnd="4dp"
+                                        android:layout_weight="1"
+                                        android:backgroundTint="@color/mi_orange"
+                                        android:insetTop="0dp"
+                                        android:insetBottom="0dp"
+                                        android:padding="0dp"
+                                        android:text="@string/btn_copy_adb"
+                                        android:textColor="#FFFFFF"
+                                        android:textSize="11sp"
+                                        app:cornerRadius="6dp" />
+
+                                    <com.google.android.material.button.MaterialButton
+                                        android:id="@+id/btn_check_secure_perm"
+                                        android:layout_width="0dp"
+                                        android:layout_height="38dp"
+                                        android:layout_marginStart="4dp"
+                                        android:layout_weight="1"
+                                        android:backgroundTint="@color/card_dark"
+                                        android:insetTop="0dp"
+                                        android:insetBottom="0dp"
+                                        android:padding="0dp"
+                                        android:text="@string/btn_check_permission"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="11sp"
+                                        app:cornerRadius="6dp"
+                                        app:strokeColor="@color/card_dark_stroke"
+                                        app:strokeWidth="1dp" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Option 3: Floating Overlay (Optional Backup) -->
+                    <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:background="@drawable/bg_card_rounded"
-                        android:backgroundTint="@color/card_highlight"
-                        android:orientation="vertical"
-                        android:padding="12dp">
+                        app:cardBackgroundColor="@color/card_dark"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            android:padding="14dp">
 
                             <LinearLayout
                                 android:layout_width="0dp"
@@ -206,182 +372,41 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Thanh trạng thái góc đỉnh máy"
+                                    android:text="Đồng hồ nổi kéo thả (Cửa sổ nổi)"
                                     android:textColor="@color/text_primary"
-                                    android:textSize="14sp"
-                                    android:textStyle="bold" />
+                                    android:textSize="14sp" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="4dp"
-                                    android:text="Bật giây vào chính đồng hồ góc trên của Xiaomi. Hoàn toàn không tốn pin."
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="12sp" />
+                                    android:layout_marginTop="2dp"
+                                    android:text="Tùy chọn tạo widget nhỏ kéo thả tự do đè trên màn hình."
+                                    android:textColor="@color/text_muted"
+                                    android:textSize="11sp" />
                             </LinearLayout>
 
                             <com.google.android.material.materialswitch.MaterialSwitch
-                                android:id="@+id/switch_system_clock"
+                                android:id="@+id/switch_floating_clock"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content" />
                         </LinearLayout>
-
-                        <!-- Status line -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Quyền hệ thống: "
-                                android:textColor="@color/text_muted"
-                                android:textSize="11sp" />
-
-                            <TextView
-                                android:id="@+id/tv_secure_settings_status"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/status_missing"
-                                android:textColor="@color/neon_red"
-                                android:textSize="11sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <!-- Guide box (visible only when permission missing) -->
-                        <LinearLayout
-                            android:id="@+id/layout_secure_settings_guide"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:background="@drawable/bg_card_rounded"
-                            android:backgroundTint="@color/card_dark"
-                            android:orientation="vertical"
-                            android:padding="10dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Cách cấp quyền (Làm 1 lần duy nhất):"
-                                android:textColor="@color/mi_orange"
-                                android:textSize="12sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:text="• Cách 1: Dùng app Shizuku kết nối không dây ngay trên điện thoại (Không cần máy tính).\n• Cách 2: Kết nối máy tính và chạy lệnh ADB bên dưới:"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="11sp" />
-
-                            <TextView
-                                android:id="@+id/tv_adb_command"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:background="@drawable/bg_floating_capsule"
-                                android:fontFamily="monospace"
-                                android:padding="6dp"
-                                android:text="adb shell pm grant app.cd.mitool android.permission.WRITE_SECURE_SETTINGS"
-                                android:textColor="@color/neon_cyan"
-                                android:textSize="10sp" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:orientation="horizontal">
-
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/btn_copy_adb"
-                                    android:layout_width="0dp"
-                                    android:layout_height="38dp"
-                                    android:layout_marginEnd="4dp"
-                                    android:layout_weight="1"
-                                    android:backgroundTint="@color/mi_orange"
-                                    android:insetTop="0dp"
-                                    android:insetBottom="0dp"
-                                    android:padding="0dp"
-                                    android:text="@string/btn_copy_adb"
-                                    android:textColor="#FFFFFF"
-                                    android:textSize="11sp"
-                                    app:cornerRadius="6dp" />
-
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/btn_check_secure_perm"
-                                    android:layout_width="0dp"
-                                    android:layout_height="38dp"
-                                    android:layout_marginStart="4dp"
-                                    android:layout_weight="1"
-                                    android:backgroundTint="@color/card_highlight"
-                                    android:insetTop="0dp"
-                                    android:insetBottom="0dp"
-                                    android:padding="0dp"
-                                    android:text="@string/btn_check_permission"
-                                    android:textColor="@color/text_primary"
-                                    android:textSize="11sp"
-                                    app:cornerRadius="6dp"
-                                    app:strokeColor="@color/card_dark_stroke"
-                                    app:strokeWidth="1dp" />
-                            </LinearLayout>
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                    <!-- METHOD C: FLOATING OVERLAY (BACKUP) -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="12dp"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Đồng hồ nổi kéo thả (Cửa sổ nổi)"
-                                android:textColor="@color/text_primary"
-                                android:textSize="14sp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:text="Tùy chọn kéo thả tự do trên màn hình."
-                                android:textColor="@color/text_muted"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-
-                        <com.google.android.material.materialswitch.MaterialSwitch
-                            android:id="@+id/switch_floating_clock"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-                    </LinearLayout>
+                    </androidx.cardview.widget.CardView>
 
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            </androidx.core.widget.NestedScrollView>
 
             <!-- ============================================== -->
-            <!-- SECTION 2: BATTERY MONITORING & CHARGING ETA  -->
+            <!-- TAB 2: BATTERY MONITORING & CHARGING ETA       -->
             <!-- ============================================== -->
-            <androidx.cardview.widget.CardView
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/tab_battery_scroll"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="@color/card_dark"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp">
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:fillViewport="true"
+                android:overScrollMode="never"
+                android:paddingBottom="90dp"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -410,250 +435,285 @@
                             android:textStyle="bold" />
                     </LinearLayout>
 
-                    <!-- Realtime Battery Stats Card -->
-                    <LinearLayout
+                    <!-- Realtime Battery Sensor Card -->
+                    <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:background="@drawable/bg_card_rounded"
-                        android:backgroundTint="@color/card_highlight"
-                        android:orientation="vertical"
-                        android:padding="14dp">
+                        app:cardBackgroundColor="@color/card_dark"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
+                            android:orientation="vertical"
+                            android:padding="16dp">
 
-                            <TextView
-                                android:id="@+id/tv_battery_percent"
-                                android:layout_width="wrap_content"
+                            <LinearLayout
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="--%"
-                                android:textColor="@color/neon_green"
-                                android:textSize="32sp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/tv_battery_percent"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="--%"
+                                    android:textColor="@color/neon_green"
+                                    android:textSize="36sp"
+                                    android:textStyle="bold" />
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="14dp"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:id="@+id/tv_battery_status"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Đang phân tích..."
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="15sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:id="@+id/tv_battery_plug_type"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="Nguồn: Đang dùng pin"
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="12sp" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <!-- ETA Banner Pill -->
+                            <TextView
+                                android:id="@+id/tv_charge_eta"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:background="@drawable/bg_floating_capsule"
+                                android:paddingStart="12dp"
+                                android:paddingTop="8dp"
+                                android:paddingEnd="12dp"
+                                android:paddingBottom="8dp"
+                                android:text="Ước lượng sạc: Đang tính toán..."
+                                android:textColor="@color/neon_cyan"
+                                android:textSize="12sp"
                                 android:textStyle="bold" />
 
+                            <!-- 3 Metrics Columns -->
                             <LinearLayout
-                                android:layout_width="0dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="14dp"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
+                                android:layout_marginTop="12dp"
+                                android:orientation="horizontal">
 
-                                <TextView
-                                    android:id="@+id/tv_battery_status"
-                                    android:layout_width="wrap_content"
+                                <LinearLayout
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
-                                    android:text="Đang phân tích..."
-                                    android:textColor="@color/text_primary"
-                                    android:textSize="15sp"
-                                    android:textStyle="bold" />
+                                    android:layout_weight="1"
+                                    android:gravity="center_horizontal"
+                                    android:orientation="vertical">
 
-                                <TextView
-                                    android:id="@+id/tv_battery_plug_type"
-                                    android:layout_width="wrap_content"
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Công suất"
+                                        android:textColor="@color/text_muted"
+                                        android:textSize="11sp" />
+
+                                    <TextView
+                                        android:id="@+id/tv_battery_power"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="-- W"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="24dp"
+                                    android:layout_gravity="center_vertical"
+                                    android:background="@color/card_dark_stroke" />
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="2dp"
-                                    android:text="Nguồn sạc: --"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="12sp" />
-                            </LinearLayout>
-                        </LinearLayout>
+                                    android:layout_weight="1"
+                                    android:gravity="center_horizontal"
+                                    android:orientation="vertical">
 
-                        <!-- ETA Pill -->
-                        <TextView
-                            android:id="@+id/tv_charge_eta"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:background="@drawable/bg_floating_capsule"
-                            android:paddingStart="10dp"
-                            android:paddingTop="6dp"
-                            android:paddingEnd="10dp"
-                            android:paddingBottom="6dp"
-                            android:text="Ước lượng sạc: Đang tính toán..."
-                            android:textColor="@color/neon_cyan"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Nhiệt độ"
+                                        android:textColor="@color/text_muted"
+                                        android:textSize="11sp" />
 
-                        <!-- Metric Chips Row (3 columns) -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:orientation="horizontal">
+                                    <TextView
+                                        android:id="@+id/tv_battery_temp"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="-- °C"
+                                        android:textColor="@color/neon_green"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
 
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center_horizontal"
-                                android:orientation="vertical">
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="24dp"
+                                    android:layout_gravity="center_vertical"
+                                    android:background="@color/card_dark_stroke" />
 
-                                <TextView
-                                    android:layout_width="wrap_content"
+                                <LinearLayout
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
-                                    android:text="Công suất"
-                                    android:textColor="@color/text_muted"
-                                    android:textSize="11sp" />
+                                    android:layout_weight="1"
+                                    android:gravity="center_horizontal"
+                                    android:orientation="vertical">
 
-                                <TextView
-                                    android:id="@+id/tv_battery_power"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="2dp"
-                                    android:text="-- W"
-                                    android:textColor="@color/text_primary"
-                                    android:textSize="13sp"
-                                    android:textStyle="bold" />
-                            </LinearLayout>
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Điện áp"
+                                        android:textColor="@color/text_muted"
+                                        android:textSize="11sp" />
 
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="24dp"
-                                android:layout_gravity="center_vertical"
-                                android:background="@color/card_dark_stroke" />
+                                    <TextView
+                                        android:id="@+id/tv_battery_voltage"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="-- V"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
 
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center_horizontal"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Nhiệt độ"
-                                    android:textColor="@color/text_muted"
-                                    android:textSize="11sp" />
-
-                                <TextView
-                                    android:id="@+id/tv_battery_temp"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="2dp"
-                                    android:text="-- °C"
-                                    android:textColor="@color/neon_green"
-                                    android:textSize="13sp"
-                                    android:textStyle="bold" />
-                            </LinearLayout>
-
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="24dp"
-                                android:layout_gravity="center_vertical"
-                                android:background="@color/card_dark_stroke" />
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center_horizontal"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Điện áp"
-                                    android:textColor="@color/text_muted"
-                                    android:textSize="11sp" />
-
-                                <TextView
-                                    android:id="@+id/tv_battery_voltage"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="2dp"
-                                    android:text="-- V"
-                                    android:textColor="@color/text_primary"
-                                    android:textSize="13sp"
-                                    android:textStyle="bold" />
                             </LinearLayout>
 
                         </LinearLayout>
-                    </LinearLayout>
+                    </androidx.cardview.widget.CardView>
 
-                    <!-- Smart Alerts -->
-                    <LinearLayout
+                    <!-- Smart Alerts Card -->
+                    <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="14dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                        app:cardBackgroundColor="@color/card_dark"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
 
-                        <TextView
-                            android:layout_width="0dp"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="12dp"
-                            android:layout_weight="1"
-                            android:text="Báo chuông khi đạt 80% (Bảo vệ pin)"
-                            android:textColor="@color/text_primary"
-                            android:textSize="13sp" />
+                            android:orientation="vertical"
+                            android:padding="16dp">
 
-                        <com.google.android.material.materialswitch.MaterialSwitch
-                            android:id="@+id/switch_alert_80"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-                    </LinearLayout>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Cảnh Báo Thông Minh"
+                                android:textColor="@color/text_primary"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
 
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="12dp"
-                            android:layout_weight="1"
-                            android:text="Báo chuông khi sạc đầy 100%"
-                            android:textColor="@color/text_primary"
-                            android:textSize="13sp" />
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="12dp"
+                                    android:layout_weight="1"
+                                    android:text="Báo chuông khi đạt 80% (Bảo vệ pin)"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="13sp" />
 
-                        <com.google.android.material.materialswitch.MaterialSwitch
-                            android:id="@+id/switch_alert_100"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-                    </LinearLayout>
+                                <com.google.android.material.materialswitch.MaterialSwitch
+                                    android:id="@+id/switch_alert_80"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+                            </LinearLayout>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
 
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="12dp"
-                            android:layout_weight="1"
-                            android:text="Cảnh báo pin quá nóng (&gt; 42°C)"
-                            android:textColor="@color/text_primary"
-                            android:textSize="13sp" />
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="12dp"
+                                    android:layout_weight="1"
+                                    android:text="Báo chuông khi sạc đầy 100%"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="13sp" />
 
-                        <com.google.android.material.materialswitch.MaterialSwitch
-                            android:id="@+id/switch_alert_temp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-                    </LinearLayout>
+                                <com.google.android.material.materialswitch.MaterialSwitch
+                                    android:id="@+id/switch_alert_100"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="12dp"
+                                    android:layout_weight="1"
+                                    android:text="Cảnh báo pin quá nóng (&gt; 42°C)"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="13sp" />
+
+                                <com.google.android.material.materialswitch.MaterialSwitch
+                                    android:id="@+id/switch_alert_temp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
 
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            </androidx.core.widget.NestedScrollView>
 
             <!-- ============================================== -->
-            <!-- SECTION 3: XIAOMI / HYPEROS SYSTEM SHORTCUTS  -->
+            <!-- TAB 3: SETTINGS & IN-APP UPDATE                -->
             <!-- ============================================== -->
-            <androidx.cardview.widget.CardView
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/tab_settings_scroll"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardBackgroundColor="@color/card_dark"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp">
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:fillViewport="true"
+                android:overScrollMode="never"
+                android:paddingBottom="90dp"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -670,129 +730,217 @@
                         <ImageView
                             android:layout_width="22dp"
                             android:layout_height="22dp"
-                            android:src="@drawable/ic_xiaomi" />
+                            android:src="@drawable/ic_settings" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
-                            android:text="Lối Tắt Hệ Thống Xiaomi"
+                            android:text="Cài Đặt &amp; Cập Nhật"
                             android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
-                    <!-- Shortcut 1: Autostart -->
-                    <LinearLayout
-                        android:id="@+id/btn_perm_autostart"
+                    <!-- Update Card -->
+                    <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:background="?attr/selectableItemBackground"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp">
+                        app:cardBackgroundColor="@color/card_dark"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
 
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            android:padding="16dp">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Tự khởi chạy (Autostart)"
+                                android:text="Cập Nhật Ứng Dụng"
                                 android:textColor="@color/text_primary"
-                                android:textSize="13sp"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
 
                             <TextView
+                                android:id="@+id/tv_settings_current_version"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:text="Giữ app tự hoạt động khi khởi động lại máy."
-                                android:textColor="@color/text_muted"
-                                android:textSize="11sp" />
+                                android:layout_marginTop="4dp"
+                                android:text="Phiên bản đang cài: v1.0.8"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_check_update_now"
+                                android:layout_width="match_parent"
+                                android:layout_height="44dp"
+                                android:layout_marginTop="12dp"
+                                android:backgroundTint="@color/mi_orange"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:text="Kiểm tra bản cập nhật mới ngay"
+                                android:textColor="#FFFFFF"
+                                android:textSize="12sp"
+                                app:cornerRadius="8dp" />
+
                         </LinearLayout>
+                    </androidx.cardview.widget.CardView>
 
-                        <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:src="@drawable/ic_arrow_right" />
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/card_dark_stroke" />
-
-                    <!-- Shortcut 2: Battery Saver No Restriction -->
-                    <LinearLayout
-                        android:id="@+id/btn_perm_battery_saver"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="?attr/selectableItemBackground"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Tiết kiệm pin: Không giới hạn"
-                                android:textColor="@color/text_primary"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:text="Ngăn Xiaomi ngắt thông báo sạc."
-                                android:textColor="@color/text_muted"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-
-                        <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:src="@drawable/ic_arrow_right" />
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/card_dark_stroke" />
-
-                    <!-- Shortcut 3: Hidden Battery Info -->
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_open_battery_info"
+                    <!-- Xiaomi System Shortcuts -->
+                    <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:backgroundTint="@color/card_highlight"
-                        android:text="Mở trang thông số pin ẩn Xiaomi"
-                        android:textColor="@color/text_primary"
-                        android:textSize="12sp"
-                        app:cornerRadius="10dp" />
+                        app:cardBackgroundColor="@color/card_dark"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Lối Tắt Hệ Thống Xiaomi"
+                                android:textColor="@color/text_primary"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                            <!-- Shortcut 1: Autostart -->
+                            <LinearLayout
+                                android:id="@+id/btn_perm_autostart"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:background="?attr/selectableItemBackground"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:paddingTop="8dp"
+                                android:paddingBottom="8dp">
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Tự khởi chạy (Autostart)"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="13sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="Giữ app tự hoạt động khi khởi động lại máy."
+                                        android:textColor="@color/text_muted"
+                                        android:textSize="11sp" />
+                                </LinearLayout>
+
+                                <ImageView
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    android:src="@drawable/ic_arrow_right" />
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="@color/card_dark_stroke" />
+
+                            <!-- Shortcut 2: Battery Saver -->
+                            <LinearLayout
+                                android:id="@+id/btn_perm_battery_saver"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="?attr/selectableItemBackground"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:paddingTop="8dp"
+                                android:paddingBottom="8dp">
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Tiết kiệm pin: Không giới hạn"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="13sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="Ngăn Xiaomi tắt ngắt thông báo sạc."
+                                        android:textColor="@color/text_muted"
+                                        android:textSize="11sp" />
+                                </LinearLayout>
+
+                                <ImageView
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    android:src="@drawable/ic_arrow_right" />
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="@color/card_dark_stroke" />
+
+                            <!-- Shortcut 3: Hidden Battery Info -->
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_open_battery_info"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:layout_marginTop="12dp"
+                                android:backgroundTint="@color/card_highlight"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:text="Mở trang thông số pin ẩn Xiaomi"
+                                android:textColor="@color/text_primary"
+                                android:textSize="12sp"
+                                app:cornerRadius="8dp" />
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
 
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            </androidx.core.widget.NestedScrollView>
 
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+        </FrameLayout>
+
+        <!-- Bottom Navigation Bar -->
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/card_dark"
+            app:elevation="8dp"
+            app:itemIconTint="@color/nav_item_color"
+            app:itemTextColor="@color/nav_item_color"
+            app:menu="@menu/bottom_nav_menu" />
+
+    </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

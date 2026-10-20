@@ -10,25 +10,31 @@ Bộ tiện ích mở rộng tối ưu chuyên biệt cho điện thoại **Xiao
 
 ## ✨ Tính Năng Nổi Bật
 
-### 1. 🕒 Đồng hồ giây trên thanh trạng thái hệ thống (Native System Status Bar Clock)
-- Kích hoạt hiển thị trực tiếp **Giờ : Phút : Giây** (`HH:mm:ss`) trên thanh thông báo / thanh trạng thái của hệ điều hành Xiaomi HyperOS & MIUI.
-- **Ưu điểm vượt trội:**
-  - Do chính **SystemUI** của hệ thống vẽ ra, không cần vẽ cửa sổ ảo đè lên màn hình.
-  - **Không tốn một chút pin hay CPU nào**, không cần chạy service nền.
-  - Đồng bộ chuẩn xác 100% với đồng hồ mạng của hệ thống.
-  - Được bật/tắt an toàn thông qua quyền hệ thống `WRITE_SECURE_SETTINGS` (cấp 1 lần duy nhất qua máy tính ADB hoặc Shizuku).
+### 1. 🕒 Đồng hồ giây linh hoạt (3 Phương thức)
+- **Cách 1: Thanh thông báo kéo xuống (Notification Drawer):**
+  - **100% KHÔNG CẦN ADB / KHÔNG CẦN MÁY TÍNH**.
+  - Ghim trực tiếp đồng hồ giây mượt mà vào bảng thông báo hệ thống của Xiaomi, hiển thị kèm % pin và nhiệt độ.
+- **Cách 2: Thanh trạng thái góc đỉnh máy (Status Bar SystemUI):**
+  - Kích hoạt hiển thị trực tiếp vào góc đồng hồ của hệ thống HyperOS & MIUI qua quyền `WRITE_SECURE_SETTINGS` (cấp qua Shizuku không dây ngay trên máy hoặc ADB).
+  - Không tốn pin, không chạy service nền.
+- **Cách 3: Cửa sổ nổi kéo thả (Floating Window):**
+  - Tùy chọn kéo thả tự do đè lên màn hình mọi ứng dụng.
 
-### 2. ⚡ Ước lượng sạc & Giám sát pin từ API hệ thống (Smart Charging)
-- Tự động nhận diện khi cắm sạc (`AC Nhanh`, `USB`, `Sạc không dây`).
-- **Ước lượng thời gian sạc đầy (ETA):** Sử dụng API `BatteryManager.computeChargeTimeRemaining()` của Android kết hợp đường cong sạc pin giảm dòng sau 80% để tính toán thời gian chính xác (*Ví dụ: Còn ~24 phút • Đầy lúc 21:15*).
-- **Thông báo sạc hệ thống:** Tự động gửi thông báo native khi vừa cắm sạc, và tự hủy khi rút sạc mà không cần chạy nền liên tục.
+### 2. ⚡ Ước lượng sạc & Giám sát pin từ cảm biến hệ thống
+- Tự động nhận diện khi cắm sạc (AC Nhanh, USB, Sạc không dây).
+- **Ước lượng thời gian sạc đầy (ETA):** Thuật toán đường cong sạc giảm dòng thông minh sau 80% kết hợp API `BatteryManager.computeChargeTimeRemaining()`.
 - **Đo công suất tức thời:** Hiển thị công suất sạc tính theo **Watt** ($V \times A$) và nhiệt độ pin (°C).
-- **Cảnh báo pin thông minh:** Báo chuông khi đạt 80% (bảo vệ pin), khi sạc đầy 100%, hoặc cảnh báo quá nhiệt (> 42°C).
+- **Cảnh báo pin:** Báo chuông khi đạt 80% (bảo vệ pin), khi sạc đầy 100%, hoặc quá nhiệt (> 42°C).
 
-### 3. 🛠️ Khắc phục tối ưu cho HyperOS & Xiaomi
-- Tương thích hoàn toàn với Android 14+ (HyperOS) với đầy đủ cờ bảo mật `RECEIVER_NOT_EXPORTED`.
-- Khởi động tức thì dưới 100ms, không gây nóng máy hay xung đột tiến trình.
-- Tích hợp sẵn nút sao chép lệnh ADB và kiểm tra quyền trực tiếp trong ứng dụng.
+### 3. 🔄 Tự Động Kiểm Tra & Cài Đặt Bản Cập Nhật (In-App Updater)
+- Tự động kiểm tra bản phát hành mới nhất từ GitHub khi mở ứng dụng.
+- Nút kiểm tra thủ công trong tab **Cài đặt**.
+- Khi có bản mới, ứng dụng tự động hiển thị danh sách thay đổi và nút **"Tải & Cài đặt ngay"** để cập nhật trực tiếp trên máy mà không cần mở trình duyệt web.
+
+### 4. 📱 Giao diện 3 Tab hiện đại & Chống tràn viền
+- Phân chia bố cục khoa học: **[Đồng Hồ] - [Pin & Sạc] - [Cài Đặt]**.
+- Xử lý triệt để vùng an toàn (Window Insets) chống tai thỏ/nốt ruồi che khuất và chống cấn phím điều hướng khi cuộn.
+- Dung lượng APK siêu nhẹ (~2.0 MB).
 
 ---
 

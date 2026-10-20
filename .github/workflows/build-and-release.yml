@@ -42,34 +42,28 @@ jobs:
         run: |
           chmod +x ./gradlew
           set -o pipefail
-          ./gradlew --no-daemon --stacktrace :app:assembleRelease :app:assembleDebug 2>&1 | tee build_log.txt || {
-            ERR=$(grep -E -i "error:|failed|exception|cause" build_log.txt | head -n 20 | tr '\r\n' ' ')
-            echo "::error title=BuildFailure::$ERR"
-            tail -n 80 build_log.txt
-            exit 1
-          }
+          ./gradlew --no-daemon --stacktrace :app:assembleRelease :app:assembleDebug
 
-      - name: Prepare APK Files
+      - name: Prepare APK Files with Version
         run: |
           mkdir -p output-apks
-          echo "=== Found APKs ==="
-          find app/build/outputs/apk -type f -name "*.apk"
+          TAG_NAME="${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.8' }}"
           RELEASE_APK=$(find app/build/outputs/apk -type f -name "*release*.apk" | head -n 1)
           DEBUG_APK=$(find app/build/outputs/apk -type f -name "*debug*.apk" | head -n 1)
           if [ -n "$RELEASE_APK" ]; then
-            cp "$RELEASE_APK" output-apks/Tool-Xiaomi-Release.apk
-            echo "Copied $RELEASE_APK to Tool-Xiaomi-Release.apk"
+            cp "$RELEASE_APK" "output-apks/Mi-Tool-${TAG_NAME}-Release.apk"
+            echo "Copied $RELEASE_APK to output-apks/Mi-Tool-${TAG_NAME}-Release.apk"
           fi
           if [ -n "$DEBUG_APK" ]; then
-            cp "$DEBUG_APK" output-apks/Tool-Xiaomi-Debug.apk
-            echo "Copied $DEBUG_APK to Tool-Xiaomi-Debug.apk"
+            cp "$DEBUG_APK" "output-apks/Mi-Tool-${TAG_NAME}-Debug.apk"
+            echo "Copied $DEBUG_APK to output-apks/Mi-Tool-${TAG_NAME}-Debug.apk"
           fi
           ls -la output-apks/
 
       - name: Upload APKs as Workflow Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Tool-Xiaomi-APK
+          name: Mi-Tool-APK
           path: output-apks/*.apk
           retention-days: 30
 
@@ -77,61 +71,25 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.7' }}
-          name: Mi Tool ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.7' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.8' }}
+          name: Mi Tool ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.8' }}
           draft: false
           prerelease: false
           make_latest: "true"
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
-            ## 📱 Mi Tool (Tool Xiaomi) - Phiên bản ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.7' }}
+            ## 📱 Mi Tool (Tool Xiaomi) - Phiên bản ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.8' }}
 
-            Bản cập nhật tối ưu hóa toàn diện giao diện và dung lượng:
-            - 🕒 **Đồng hồ giây trên thanh thông báo (100% không cần ADB/Máy tính):** Bổ sung tùy chọn ghim đồng hồ giây trực tiếp vào bảng thông báo kéo xuống của hệ thống.
-            - 🕒 **Đồng hồ giây trên thanh trạng thái (Status Bar):** Tùy chọn bật vào đồng hồ góc trên của Xiaomi (kèm hướng dẫn Shizuku không dây ngay trên điện thoại hoặc ADB).
-            - ⚡ **Tối ưu dung lượng ứng dụng:** Bật R8 ProGuard Minify + Resource Shrinking + lọc ngôn ngữ, thu nhỏ kích thước APK đáng kể.
-            - 🎨 **Giao diện Responsive chuẩn chỉnh:** Sắp xếp lại bố cục khoa học, thẻ bo tròn tinh tế, không bị tràn dòng hay lệch nút trên mọi cỡ màn hình Xiaomi.
-
-            ### 📦 Tải về:
-            - **Tool-Xiaomi-Release.apk**: Bản phát hành chính thức đã tối ưu & ký số.
-            - **Tool-Xiaomi-Debug.apk**: Bản thử nghiệm.
-
-            Bản cập nhật tối ưu hóa hệ thống sâu cho Xiaomi HyperOS / MIUI:
-            - 🕒 **Đồng hồ giây hệ thống (Native System Status Bar Seconds):** Kích hoạt hiển thị trực tiếp `Giờ : Phút : Giây` trên thanh trạng thái hệ thống của Xiaomi (AOSP SystemUI / HyperOS Status Bar). Hoạt động mượt mà, trực tiếp từ hệ điều hành, không cần chạy service nền tốn pin.
-            - ⚡ **Ước lượng sạc & Pin hệ thống:** Đọc trực tiếp từ API hệ thống và cảm biến pin, tự động gửi thông báo ước lượng thời gian sạc đầy và công suất khi cắm sạc.
-            - 🛡️ **Khắc phục lỗi crash khi mở app:** Đã bổ sung cờ `RECEIVER_NOT_EXPORTED` bắt buộc trên Android 14+ (HyperOS), loại bỏ việc tự khởi động ForegroundService gây xung đột.
-            - 📋 **Tích hợp sẵn hướng dẫn cấp quyền 1 lần:** Kèm nút sao chép lệnh ADB và kiểm tra quyền tức thì.
+            Bản cập nhật lớn tái cấu trúc giao diện và bổ sung tính năng tự động cập nhật:
+            - 🧭 **Bố cục Bottom Navigation 3 Tab chuyên nghiệp:** Phân chia thành [Đồng Hồ] - [Pin & Sạc] - [Cài Đặt], xử lý triệt để lỗi tràn viền (Edge-to-Edge) và lỗi che khuất thông tin khi cuộn.
+            - 🔄 **Tính năng Tự động kiểm tra bản cập nhật (In-App Updater):** App tự động kiểm tra bản mới từ GitHub khi mở, hoặc người dùng có thể bấm nút kiểm tra trong tab Cài đặt để tải và cài đặt trực tiếp file APK mà không cần vào trình duyệt.
+            - 🏷️ **Tên file APK đính kèm phiên bản rõ ràng:** `Mi-Tool-v1.0.8-Release.apk` giúp dễ nhận biết và quản lý khi tải về.
+            - 🕒 **Đồng hồ giây linh hoạt:** Hỗ trợ cả 3 cách: Bảng thông báo (100% không cần ADB/PC), Thanh trạng thái đỉnh máy (HyperOS Status Bar qua Shizuku/ADB) và Đồng hồ nổi kéo thả.
+            - ⚡ **Tối ưu dung lượng siêu nhẹ (~2.0 MB):** Tích hợp R8 Proguard và Resource Shrinker.
 
             ### 📦 Tải về:
-            - **Tool-Xiaomi-Release.apk**: Bản phát hành chính thức đã ký số.
-            - **Tool-Xiaomi-Debug.apk**: Bản thử nghiệm.
-
-            Ứng dụng tiện ích tối ưu chuyên dụng cho điện thoại **Xiaomi, Redmi, POCO (MIUI / HyperOS)**.
-
-            ### 🚀 Các tính năng chính:
-            1. **Đồng hồ giây nổi (Floating Clock):**
-               - Hiển thị thời gian thực `Giờ : Phút : Giây` (và tùy chọn mili-giây `.SS`).
-               - Cửa sổ nổi tự do kéo thả, ghi nhớ vị trí, tùy chỉnh kích thước chữ, màu chữ và kiểu nền.
-               - Tùy chọn khóa vị trí chống chạm nhầm và hiển thị % pin song song.
-            2. **Ước lượng thời gian sạc & Giám sát pin thông minh:**
-               - Tự động phát hiện khi cắm sạc (`AC Nhanh`, `USB`, `Không dây`).
-               - Tính toán thời gian dự kiến sạc đầy (ETA) theo thuật toán mô phỏng đường cong sạc.
-               - Đo công suất sạc tức thời (Watt), điện áp (V) và nhiệt độ pin (°C).
-               - **Charging HUD (Viên thuốc Dynamic Island)** nổi 5 giây khi vừa cắm sạc.
-            3. **Tiện ích cảnh báo âm thanh & rung:**
-               - Báo chuông khi sạc đạt 80% (để bảo vệ tuổi thọ pin).
-               - Báo khi pin đầy 100%.
-               - Cảnh báo khi nhiệt độ pin quá nóng (> 42°C).
-            4. **Trình hướng dẫn tối ưu đặc thù cho Xiaomi / HyperOS:**
-               - 1-chạm mở cài đặt cấp quyền **Hiển thị trên ứng dụng khác** (Overlay).
-               - 1-chạm mở cài đặt **Tự khởi chạy** (Autostart).
-               - 1-chạm cấu hình **Tiết kiệm pin - Không giới hạn** (No restrictions).
-               - 1-chạm mở cài đặt **Hiển thị trên màn hình khóa**.
-               - Phím tắt mở trang thông tin pin ẩn của Xiaomi.
-
-            ### 📦 Tải về cài đặt:
-            - **Tool-Xiaomi-Release.apk**: Bản phát hành chính thức đã ký số.
-            - **Tool-Xiaomi-Debug.apk**: Bản thử nghiệm.
+            - **Mi-Tool-v1.0.8-Release.apk**: Bản phát hành chính thức đã ký số.
+            - **Mi-Tool-v1.0.8-Debug.apk**: Bản thử nghiệm.
           files: |
-            output-apks/Tool-Xiaomi-Release.apk
-            output-apks/Tool-Xiaomi-Debug.apk
+            output-apks/Mi-Tool-*-Release.apk
+            output-apks/Mi-Tool-*-Debug.apk

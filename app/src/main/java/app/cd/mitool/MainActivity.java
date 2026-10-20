@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.TextView;
@@ -20,9 +21,15 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.OnApplyWindowInsetsListener;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.materialswitch.MaterialSwitch;
+import com.google.android.material.navigation.NavigationBarView;
 
 import java.util.Locale;
 
@@ -31,6 +38,7 @@ import app.cd.mitool.service.NotificationClockService;
 import app.cd.mitool.util.BatteryHelper;
 import app.cd.mitool.util.PreferencesHelper;
 import app.cd.mitool.util.SystemClockHelper;
+import app.cd.mitool.util.UpdateHelper;
 import app.cd.mitool.util.XiaomiHelper;
 
 public class MainActivity extends AppCompatActivity {
@@ -38,6 +46,12 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQ_NOTIF_PERM = 101;
 
     private PreferencesHelper prefs;
+
+    // Tabs
+    private View tabClockScroll;
+    private View tabBatteryScroll;
+    private View tabSettingsScroll;
+    private BottomNavigationView bottomNav;
 
     // Clock Views
     private MaterialSwitch switchNotifClock;
@@ -61,7 +75,9 @@ public class MainActivity extends AppCompatActivity {
     private MaterialSwitch switchAlert100;
     private MaterialSwitch switchAlertTemp;
 
-    // Xiaomi Shortcuts
+    // Settings Views
+    private TextView tvSettingsCurrentVersion;
+    private MaterialButton btnCheckUpdateNow;
     private View btnPermAutostart;
     private View btnPermBatterySaver;
     private MaterialButton btnOpenBatteryInfo;
@@ -75,15 +91,40 @@ public class MainActivity extends AppCompatActivity {
 
         prefs = new PreferencesHelper(this);
 
+        setupWindowInsets();
         initViews();
+        setupNavigation();
         setupClockOptions();
         setupBatteryControls();
-        setupXiaomiControls();
+        setupSettingsControls();
         requestNotificationPermissionIfNeeded();
+
+        // Auto check for updates from GitHub in background
+        UpdateHelper.checkForUpdate(this, false);
+    }
+
+    private void setupWindowInsets() {
+        View root = findViewById(R.id.main_root_container);
+        if (root != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(root, new OnApplyWindowInsetsListener() {
+                @NonNull
+                @Override
+                public WindowInsetsCompat onApplyWindowInsets(@NonNull View v, @NonNull WindowInsetsCompat insets) {
+                    Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                    v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
+                    return insets;
+                }
+            });
+        }
     }
 
     private void initViews() {
-        // Clock Options
+        tabClockScroll = findViewById(R.id.tab_clock_scroll);
+        tabBatteryScroll = findViewById(R.id.tab_battery_scroll);
+        tabSettingsScroll = findViewById(R.id.tab_settings_scroll);
+        bottomNav = findViewById(R.id.bottom_navigation);
+
+        // Clock Views
         switchNotifClock = findViewById(R.id.switch_notif_clock);
         switchSystemClock = findViewById(R.id.switch_system_clock);
         switchFloatingClock = findViewById(R.id.switch_floating_clock);
@@ -93,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
         btnCopyAdb = findViewById(R.id.btn_copy_adb);
         btnCheckSecurePerm = findViewById(R.id.btn_check_secure_perm);
 
-        // Battery
+        // Battery Views
         tvBatteryPercent = findViewById(R.id.tv_battery_percent);
         tvBatteryStatus = findViewById(R.id.tv_battery_status);
         tvBatteryPlugType = findViewById(R.id.tv_battery_plug_type);
@@ -105,10 +146,41 @@ public class MainActivity extends AppCompatActivity {
         switchAlert100 = findViewById(R.id.switch_alert_100);
         switchAlertTemp = findViewById(R.id.switch_alert_temp);
 
-        // Xiaomi Shortcuts
+        // Settings Views
+        tvSettingsCurrentVersion = findViewById(R.id.tv_settings_current_version);
+        btnCheckUpdateNow = findViewById(R.id.btn_check_update_now);
         btnPermAutostart = findViewById(R.id.btn_perm_autostart);
         btnPermBatterySaver = findViewById(R.id.btn_perm_battery_saver);
         btnOpenBatteryInfo = findViewById(R.id.btn_open_battery_info);
+
+        tvSettingsCurrentVersion.setText("Phiên bản đang cài: v" + UpdateHelper.getCurrentVersion());
+    }
+
+    private void setupNavigation() {
+        bottomNav.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+                if (id == R.id.nav_clock) {
+                    tabClockScroll.setVisibility(View.VISIBLE);
+                    tabBatteryScroll.setVisibility(View.GONE);
+                    tabSettingsScroll.setVisibility(View.GONE);
+                    return true;
+                } else if (id == R.id.nav_battery) {
+                    tabClockScroll.setVisibility(View.GONE);
+                    tabBatteryScroll.setVisibility(View.VISIBLE);
+                    tabSettingsScroll.setVisibility(View.GONE);
+                    updateBatteryDisplay();
+                    return true;
+                } else if (id == R.id.nav_settings) {
+                    tabClockScroll.setVisibility(View.GONE);
+                    tabBatteryScroll.setVisibility(View.GONE);
+                    tabSettingsScroll.setVisibility(View.VISIBLE);
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
     private void setupClockOptions() {
@@ -127,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // 2. System Status Bar Clock (via Secure Settings)
+        // 2. System Status Bar Clock
         final String adbCmd = SystemClockHelper.getAdbCommand(this);
         tvAdbCommand.setText(adbCmd);
 
@@ -138,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
                 if (clipboard != null) {
                     ClipData clip = ClipData.newPlainText("ADB Command", adbCmd);
                     clipboard.setPrimaryClip(clip);
-                    Toast.makeText(MainActivity.this, "Đã sao chép lệnh ADB vào bộ nhớ tạm!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Đã sao chép lệnh ADB!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -150,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
                 if (SystemClockHelper.hasSecureSettingsPermission(MainActivity.this)) {
                     Toast.makeText(MainActivity.this, "Đã nhận diện quyền hệ thống thành công!", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(MainActivity.this, "Chưa nhận được quyền. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Chưa nhận được quyền. Vui lòng kiểm tra lại.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -177,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // 3. Floating Overlay Clock (Optional Backup)
+        // 3. Floating Overlay Clock
         switchFloatingClock.setChecked(prefs.isClockEnabled());
         switchFloatingClock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -242,7 +314,15 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void setupXiaomiControls() {
+    private void setupSettingsControls() {
+        btnCheckUpdateNow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "Đang kiểm tra bản cập nhật mới từ GitHub...", Toast.LENGTH_SHORT).show();
+                UpdateHelper.checkForUpdate(MainActivity.this, true);
+            }
+        });
+
         btnPermAutostart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
