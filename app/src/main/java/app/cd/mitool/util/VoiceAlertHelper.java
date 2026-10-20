@@ -2,30 +2,39 @@ package app.cd.mitool.util;
 
 import android.content.Context;
 import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 
+import java.util.LinkedList;
 import java.util.Locale;
+import java.util.Queue;
 
 public class VoiceAlertHelper {
 
     private static final String TAG = "VoiceAlertHelper";
 
     private static TextToSpeech tts;
-    private static boolean isTtsInitialized = false;
+    private static volatile boolean isTtsInitialized = false;
+    private static volatile boolean isTtsInitializing = false;
+    private static final Queue<String> pendingQueue = new LinkedList<>();
+
     private static boolean hasAnnounced80 = false;
     private static boolean hasAnnounced100 = false;
     private static long lastTempAlertTime = 0;
+    private static long lastConnectTime = 0;
+    private static long lastDisconnectTime = 0;
 
     public static synchronized void init(Context context) {
-        if (tts != null) return;
+        if (tts != null || isTtsInitializing) return;
+        isTtsInitializing = true;
         final Context appCtx = context.getApplicationContext();
+
         try {
             tts = new TextToSpeech(appCtx, new TextToSpeech.OnInitListener() {
                 @Override
                 public void onInit(int status) {
+                    isTtsInitializing = false;
                     if (status == TextToSpeech.SUCCESS) {
                         try {
                             int result = tts.setLanguage(new Locale("vi", "VN"));
@@ -37,12 +46,22 @@ public class VoiceAlertHelper {
 
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                 AudioAttributes attrs = new AudioAttributes.Builder()
-                                        .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
+                                        .setUsage(AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE)
                                         .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
                                         .build();
                                 tts.setAudioAttributes(attrs);
                             }
                             isTtsInitialized = true;
+
+                            // Drain and speak pending messages
+                            synchronized (VoiceAlertHelper.class) {
+                                while (!pendingQueue.isEmpty()) {
+                                    String msg = pendingQueue.poll();
+                                    if (msg != null && !msg.trim().isEmpty()) {
+                                        speakDirect(msg);
+                                    }
+                                }
+                            }
                         } catch (Exception e) {
                             Log.w(TAG, "Error configuring TTS: " + e.getMessage());
                         }
@@ -52,6 +71,7 @@ public class VoiceAlertHelper {
                 }
             });
         } catch (Exception e) {
+            isTtsInitializing = false;
             Log.e(TAG, "Failed to instantiate TextToSpeech", e);
         }
     }
@@ -64,22 +84,24 @@ public class VoiceAlertHelper {
         }
 
         if (isTtsInitialized && tts != null) {
-            try {
+            speakDirect(text);
+        } else {
+            // Queue message so it will speak as soon as TTS is ready (never dropped)
+            pendingQueue.offer(text);
+        }
+    }
+
+    private static void speakDirect(String text) {
+        try {
+            if (tts != null) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "MiToolVoice_" + System.currentTimeMillis());
                 } else {
                     tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
                 }
-                return;
-            } catch (Exception e) {
-                Log.w(TAG, "TTS speak failed: " + e.getMessage());
             }
-        }
-
-        // Fallback tone if TTS is unavailable
-        try {
-            BatteryHelper.playAlertTone(context);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            Log.w(TAG, "TTS speak failed: " + e.getMessage());
         }
     }
 
@@ -88,7 +110,14 @@ public class VoiceAlertHelper {
         hasAnnounced100 = false;
     }
 
-    public static void onPowerConnected(Context context, int plugType, float powerWatt, int level) {
+    public static synchronized void onPowerConnected(Context context, int plugType, float powerWatt, int level) {
+        long now = System.currentTimeMillis();
+        // De-duplicate: Don't repeat if already announced within 3 seconds
+        if (now - lastConnectTime < 3000) {
+            return;
+        }
+        lastConnectTime = now;
+
         PreferencesHelper prefs = new PreferencesHelper(context);
         if (!prefs.isVoiceAlertMasterEnabled() || !prefs.isVoiceAlertConnectEnabled()) {
             return;
@@ -100,7 +129,14 @@ public class VoiceAlertHelper {
         speak(context, msg);
     }
 
-    public static void onPowerDisconnected(Context context, int level) {
+    public static synchronized void onPowerDisconnected(Context context, int level) {
+        long now = System.currentTimeMillis();
+        // De-duplicate: Don't repeat if already announced within 3 seconds
+        if (now - lastDisconnectTime < 3000) {
+            return;
+        }
+        lastDisconnectTime = now;
+
         resetSessionAlerts();
         PreferencesHelper prefs = new PreferencesHelper(context);
         if (!prefs.isVoiceAlertMasterEnabled() || !prefs.isVoiceAlertDisconnectEnabled()) {
@@ -155,6 +191,7 @@ public class VoiceAlertHelper {
             }
             tts = null;
             isTtsInitialized = false;
+            isTtsInitializing = false;
         }
     }
 }

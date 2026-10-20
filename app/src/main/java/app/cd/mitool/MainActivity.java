@@ -1090,6 +1090,30 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private final Handler batteryTickerHandler = new Handler(Looper.getMainLooper());
+    private Runnable batteryTickerRunnable;
+
+    private void startBatteryRealtimeTicker() {
+        if (batteryTickerRunnable != null) {
+            batteryTickerHandler.removeCallbacks(batteryTickerRunnable);
+        }
+        batteryTickerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                updateBatteryDisplay();
+                batteryTickerHandler.postDelayed(this, 1000); // Live 1-second refresh
+            }
+        };
+        batteryTickerHandler.post(batteryTickerRunnable);
+    }
+
+    private void stopBatteryRealtimeTicker() {
+        if (batteryTickerRunnable != null) {
+            batteryTickerHandler.removeCallbacks(batteryTickerRunnable);
+            batteryTickerRunnable = null;
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -1100,18 +1124,20 @@ public class MainActivity extends AppCompatActivity {
         updateBatteryDisplay();
         updateToolsDisplay();
         registerBatteryMonitorReceiver();
+        startBatteryRealtimeTicker();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         unregisterBatteryMonitorReceiver();
+        stopBatteryRealtimeTicker();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        VoiceAlertHelper.destroy();
+        stopBatteryRealtimeTicker();
     }
 
     private void updateBatteryDisplay() {
@@ -1132,12 +1158,15 @@ public class MainActivity extends AppCompatActivity {
             }
 
             tvBatteryPlugType.setText("Nguồn: " + info.plugTypeName);
-            tvChargeEta.setText("⚡ " + info.formattedEta);
 
-            if (info.powerWatt > 0) {
-                tvBatteryPower.setText(String.format(Locale.US, "%.1f W", info.powerWatt));
+            if (info.isCharging) {
+                tvChargeEta.setText("⚡ " + info.formattedEta);
+                tvBatteryPower.setText(String.format(Locale.US, "+%.1f W", info.powerWatt));
+                tvBatteryPower.setTextColor(ContextCompat.getColor(this, R.color.mi_orange));
             } else {
-                tvBatteryPower.setText("-- W");
+                tvChargeEta.setText("⏳ " + info.formattedEta);
+                tvBatteryPower.setText(String.format(Locale.US, "~%.1f W", info.powerWatt));
+                tvBatteryPower.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
             }
 
             tvBatteryTemp.setText(String.format(Locale.US, "%.1f °C", info.temperature));

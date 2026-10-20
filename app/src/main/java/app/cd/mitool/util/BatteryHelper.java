@@ -125,29 +125,35 @@ public class BatteryHelper {
         info.currentMa = currentMa;
 
         // Calculate power (W = V * A)
-        if (info.isCharging && info.voltageMv > 0 && info.currentMa > 0) {
+        if (info.voltageMv > 0 && info.currentMa > 0) {
             info.powerWatt = (info.voltageMv / 1000.0f) * (info.currentMa / 1000.0f);
         } else if (info.isCharging && info.voltageMv > 0) {
-            // Intelligent fallback when hardware doesn't report current_now
+            // Intelligent fallback when hardware doesn't report current_now while charging
             float fallbackAmp = (plugged == BatteryManager.BATTERY_PLUGGED_AC) ? 2.0f : 0.5f;
             info.powerWatt = (info.voltageMv / 1000.0f) * fallbackAmp;
+        } else if (!info.isCharging && info.voltageMv > 0) {
+            // Typical screen-on discharge consumption (~450mA)
+            info.powerWatt = (info.voltageMv / 1000.0f) * 0.45f;
         } else {
             info.powerWatt = 0.0f;
         }
 
-        // Calculate estimated minutes to full
-        if (info.isFull) {
-            info.estimatedMinutesToFull = 0;
-            info.formattedEta = "Pin đã đầy 100%";
+        // Calculate estimated minutes
+        if (info.isFull && !info.isCharging) {
+            info.estimatedMinutesToFull = -1;
+            info.formattedEta = "Pin đầy 100% (" + formatRemainingTime(100) + ")";
         } else if (!info.isCharging) {
             info.estimatedMinutesToFull = -1;
-            info.formattedEta = "Đang không sạc";
+            info.formattedEta = formatRemainingTime(info.level);
+        } else if (info.isFull) {
+            info.estimatedMinutesToFull = 0;
+            info.formattedEta = "Pin đã sạc đầy 100%";
         } else {
             info.estimatedMinutesToFull = calculateEstimatedMinutes(info.level, info.currentMa, info.plugType, systemRemainingMs, info.powerWatt);
             if (info.estimatedMinutesToFull <= 0) {
-                info.formattedEta = "Đang ước lượng...";
+                info.formattedEta = "Đang ước lượng thời gian sạc...";
             } else {
-                long fullTimestamp = System.currentTimeMillis() + (info.estimatedMinutesToFull * 60 * 1000);
+                long fullTimestamp = System.currentTimeMillis() + (info.estimatedMinutesToFull * 60 * 1000L);
                 SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
                 String fullTimeStr = timeFormat.format(new Date(fullTimestamp));
                 info.formattedEta = "Còn ~" + info.estimatedMinutesToFull + " phút (Đầy lúc " + fullTimeStr + ")";
@@ -155,6 +161,18 @@ public class BatteryHelper {
         }
 
         return info;
+    }
+
+    public static String formatRemainingTime(int level) {
+        if (level <= 0) return "Cần cắm sạc ngay";
+        int totalMinutes = Math.round(level * 5.5f);
+        int hours = totalMinutes / 60;
+        int mins = totalMinutes % 60;
+        if (hours > 0) {
+            return "Còn ~" + hours + "h " + mins + "p sử dụng";
+        } else {
+            return "Còn ~" + mins + " phút sử dụng";
+        }
     }
 
     private static long calculateEstimatedMinutes(int currentLevel, int currentMa, int plugType, long systemRemainingMs, float powerWatt) {
@@ -211,12 +229,28 @@ public class BatteryHelper {
         return Math.max(1, Math.round(minutesTotal));
     }
 
-    public static void playAlertTone(Context context) {
+    private static Ringtone activeRingtone;
+
+    public static synchronized void playAlertTone(Context context) {
         try {
+            if (activeRingtone != null && activeRingtone.isPlaying()) {
+                activeRingtone.stop();
+            }
             Uri notificationUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            Ringtone ringtone = RingtoneManager.getRingtone(context, notificationUri);
-            if (ringtone != null) {
-                ringtone.play();
+            if (notificationUri == null) {
+                notificationUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+            }
+            activeRingtone = RingtoneManager.getRingtone(context.getApplicationContext(), notificationUri);
+            if (activeRingtone != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    activeRingtone.setAudioAttributes(new android.media.AudioAttributes.Builder()
+                            .setUsage(android.media.AudioAttributes.USAGE_ALARM)
+                            .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                            .build());
+                } else {
+                    activeRingtone.setStreamType(android.media.AudioManager.STREAM_ALARM);
+                }
+                activeRingtone.play();
             }
         } catch (Exception ignored) {
         }

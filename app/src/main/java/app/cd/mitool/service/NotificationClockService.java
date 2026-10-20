@@ -64,8 +64,12 @@ public class NotificationClockService extends Service {
 
             if (Intent.ACTION_POWER_DISCONNECTED.equals(action)) {
                 // When unplugged: Seamlessly switch to battery status, keeping unified notification active
+                BatteryHelper.BatteryInfo info = BatteryHelper.getBatteryInfo(context);
+                VoiceAlertHelper.onPowerDisconnected(context, info.level);
                 updateNotification();
             } else if (Intent.ACTION_POWER_CONNECTED.equals(action)) {
+                BatteryHelper.BatteryInfo info = BatteryHelper.getBatteryInfo(context);
+                VoiceAlertHelper.onPowerConnected(context, info.plugType, info.powerWatt, info.level);
                 updateNotification();
                 startTicker();
             } else if (Intent.ACTION_SCREEN_OFF.equals(action)) {

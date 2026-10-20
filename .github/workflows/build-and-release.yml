@@ -63,7 +63,7 @@ jobs:
         if: failure() && (startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main')
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.19' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.20' }}
           name: Build Failed - Log
           body_path: gradle-build.log
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -71,7 +71,7 @@ jobs:
       - name: Prepare APK Files with Version
         run: |
           mkdir -p output-apks
-          TAG_NAME="${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.19' }}"
+          TAG_NAME="${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.20' }}"
           RELEASE_APK=$(find app/build/outputs/apk -type f -name "*release*.apk" | head -n 1)
           DEBUG_APK=$(find app/build/outputs/apk -type f -name "*debug*.apk" | head -n 1)
           if [ -n "$RELEASE_APK" ]; then
@@ -95,18 +95,18 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.19' }}
-          name: Mi Tool ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.19' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.20' }}
+          name: Mi Tool ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.20' }}
           draft: false
           prerelease: false
           make_latest: "true"
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
-            Bản cập nhật v1.0.19:
-            - ⚡ Khắc phục triệt để tình trạng delay khi chuyển đổi các mốc tần số quét (Hz).
-            - 📱 Tự động nhận diện phần cứng màn hình, cảnh báo các mốc không hỗ trợ (N/A) tránh xung đột hệ thống.
-            - 🚀 Chuyển đổi tần số tức thì bằng Window Preferred Refresh Rate và chống xung đột thứ tự thiết lập DisplayModeDirector.
-            - 🛠️ Bổ sung thực thi Root tự động cho tính năng ép tần số quét không cần gõ lệnh.
+            Bản cập nhật v1.0.20:
+            - ⚡ Cập nhật cảm biến pin thời gian thực từng giây (Điện áp, Công suất sạc/tiêu thụ W, Nhiệt độ và Thời gian sử dụng).
+            - 🔋 Bổ sung ước lượng thời gian sử dụng pin còn lại khi đang dùng pin (không sạc).
+            - 🗣️ Khắc phục triệt để hiện tượng âm báo & giọng nói không phát khi cắm/rút sạc bằng hàng đợi TTS và đồng bộ Foreground Service.
+            - 🔔 Chuông báo 80%, 100%, quá nhiệt 42°C sử dụng kênh Báo thức (Alarm) đảm bảo luôn vang to rõ ràng.
           files: |
             output-apks/Mi-Tool-*-Release.apk
             output-apks/Mi-Tool-*-Debug.apk
