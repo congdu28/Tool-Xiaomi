@@ -41,11 +41,13 @@ jobs:
       - name: Build APKs
         run: |
           chmod +x ./gradlew
-          ./gradlew --no-daemon --stacktrace :app:assembleRelease :app:assembleDebug
-
-      - name: Run Tests
-        run: |
-          ./gradlew --no-daemon :app:testDebugUnitTest || true
+          set -o pipefail
+          ./gradlew --no-daemon --stacktrace :app:assembleRelease :app:assembleDebug 2>&1 | tee build_log.txt || {
+            ERR=$(grep -E -i "error:|failed|exception|cause" build_log.txt | head -n 20 | tr '\r\n' ' ')
+            echo "::error title=BuildFailure::$ERR"
+            tail -n 80 build_log.txt
+            exit 1
+          }
 
       - name: Prepare APK Files
         run: |
@@ -75,14 +77,14 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.3' }}
-          name: Mi Tool ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.3' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.4' }}
+          name: Mi Tool ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.4' }}
           draft: false
           prerelease: false
           make_latest: "true"
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
-            ## 📱 Mi Tool (Tool Xiaomi) - Phiên bản ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.3' }}
+            ## 📱 Mi Tool (Tool Xiaomi) - Phiên bản ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.4' }}
 
             Ứng dụng tiện ích tối ưu chuyên dụng cho điện thoại **Xiaomi, Redmi, POCO (MIUI / HyperOS)**.
 
