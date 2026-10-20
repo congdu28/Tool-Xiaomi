@@ -38,16 +38,19 @@ import com.google.android.material.navigation.NavigationBarView;
 
 import android.content.res.ColorStateList;
 import android.widget.ProgressBar;
+import android.service.quicksettings.TileService;
 import java.util.List;
 import java.util.Locale;
 
 import app.cd.mitool.service.FloatingClockService;
 import app.cd.mitool.service.NotificationClockService;
+import app.cd.mitool.service.NotificationTileService;
 import app.cd.mitool.util.BatteryHelper;
 import app.cd.mitool.util.GamingFpsHelper;
 import app.cd.mitool.util.PreferencesHelper;
 import app.cd.mitool.util.RamBoosterHelper;
 import app.cd.mitool.util.RefreshRateHelper;
+import app.cd.mitool.util.ShortcutHelper;
 import app.cd.mitool.util.UpdateHelper;
 import app.cd.mitool.util.VoiceAlertHelper;
 import app.cd.mitool.util.XiaomiHelper;
@@ -332,12 +335,39 @@ public class MainActivity extends AppCompatActivity {
                 prefs.setNotifClockEnabled(isChecked);
                 if (isChecked) {
                     startNotificationClockService();
-                    Toast.makeText(MainActivity.this, "Đã bật đồng hồ giây trên thanh thông báo!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Đã bật thông báo trạng thái Mi-Tool!", Toast.LENGTH_SHORT).show();
                 } else {
                     stopNotificationClockService();
                 }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    try {
+                        TileService.requestListeningState(MainActivity.this, new ComponentName(MainActivity.this, NotificationTileService.class));
+                    } catch (Exception ignored) {
+                    }
+                }
             }
         });
+
+        // Shortcut Buttons for Notification Clock
+        MaterialButton btnPinNotifShortcut = findViewById(R.id.btn_pin_notif_shortcut);
+        if (btnPinNotifShortcut != null) {
+            btnPinNotifShortcut.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ShortcutHelper.pinNotificationToggleShortcut(MainActivity.this);
+                }
+            });
+        }
+
+        MaterialButton btnAddQsTile = findViewById(R.id.btn_add_qs_tile);
+        if (btnAddQsTile != null) {
+            btnAddQsTile.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ShortcutHelper.requestAddTileToQuickSettings(MainActivity.this);
+                }
+            });
+        }
 
         // 2. Floating Overlay Clock
         switchFloatingClock.setChecked(prefs.isClockEnabled());
@@ -1224,6 +1254,7 @@ public class MainActivity extends AppCompatActivity {
     private void startNotificationClockService() {
         try {
             Intent intent = new Intent(this, NotificationClockService.class);
+            intent.setAction(NotificationClockService.ACTION_START);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(intent);
             } else {

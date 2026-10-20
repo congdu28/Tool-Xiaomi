@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -13,6 +14,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.service.quicksettings.TileService;
 
 import androidx.core.app.NotificationCompat;
 
@@ -116,6 +118,16 @@ public class NotificationClockService extends Service {
         startForeground(NOTIF_ID, buildUnifiedNotification());
         registerStateReceivers();
         startTicker();
+        notifyTileUpdate();
+    }
+
+    private void notifyTileUpdate() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            try {
+                TileService.requestListeningState(this, new ComponentName(this, NotificationTileService.class));
+            } catch (Exception ignored) {
+            }
+        }
     }
 
     private void registerStateReceivers() {
@@ -307,6 +319,7 @@ public class NotificationClockService extends Service {
         if (prefs != null) {
             prefs.setNotifClockEnabled(false);
         }
+        notifyTileUpdate();
         stopSelf();
     }
 
@@ -317,13 +330,14 @@ public class NotificationClockService extends Service {
             if (ACTION_STOP.equals(action)) {
                 dismissAndStop();
                 return START_NOT_STICKY;
-            } else if (ACTION_START_CHARGING.equals(action) || ACTION_START.equals(action)) {
-                updateNotification();
-                startTicker();
-            } else if (ACTION_UPDATE_BATTERY.equals(action)) {
-                updateNotification();
             }
         }
+        if (prefs != null) {
+            prefs.setNotifClockEnabled(true);
+        }
+        updateNotification();
+        startTicker();
+        notifyTileUpdate();
         return START_STICKY;
     }
 
@@ -340,6 +354,7 @@ public class NotificationClockService extends Service {
         if (notificationManager != null) {
             notificationManager.cancel(NOTIF_ID);
         }
+        notifyTileUpdate();
     }
 
     @Override

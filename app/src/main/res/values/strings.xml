@@ -113,4 +113,12 @@
 
     <string name="status_granted">Đã cấp</string>
     <string name="status_missing">Chưa cấp</string>
+
+    <!-- Shortcuts & Quick Settings Tile -->
+    <string name="tile_notification_label">Thông báo Mi-Tool</string>
+    <string name="tile_notification_desc">Bật hoặc tắt nhanh thanh thông báo trạng thái Mi-Tool</string>
+    <string name="shortcut_toggle_notif_short">Bật/Tắt Thông báo</string>
+    <string name="shortcut_toggle_notif_long">Bật/Tắt Thông báo Mi-Tool</string>
+    <string name="btn_pin_shortcut">📌 Thêm ra Màn hình chính</string>
+    <string name="btn_add_qs_tile">🎛️ Thêm vào Bảng điều khiển</string>
 </resources>
