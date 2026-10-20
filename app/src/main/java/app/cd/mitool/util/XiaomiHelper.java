@@ -327,12 +327,12 @@ public class XiaomiHelper {
      * Returns -1 if not accessible.
      */
     public static int getBatteryCycleCount(Context context) {
-        // API 34+
-        if (Build.VERSION.SDK_INT >= 34) { // Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+        // BatteryManager property 7 is BATTERY_PROPERTY_CYCLE_COUNT on Android 14+
+        if (Build.VERSION.SDK_INT >= 34) {
             try {
                 android.os.BatteryManager bm = (android.os.BatteryManager) context.getSystemService(Context.BATTERY_SERVICE);
                 if (bm != null) {
-                    int cycles = bm.getIntProperty(android.os.BatteryManager.BATTERY_PROPERTY_CYCLE_COUNT);
+                    int cycles = bm.getIntProperty(7);
                     if (cycles > 0) return cycles;
                 }
             } catch (Exception ignored) {

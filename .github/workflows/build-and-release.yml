@@ -59,6 +59,15 @@ jobs:
           name: gradle-build-log
           path: gradle-build.log
 
+      - name: Report Failure to Release
+        if: failure() && (startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.14' }}
+          name: Build Failed - Log
+          body_path: gradle-build.log
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Prepare APK Files with Version
         run: |
           mkdir -p output-apks

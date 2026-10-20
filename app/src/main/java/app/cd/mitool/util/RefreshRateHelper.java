@@ -27,23 +27,19 @@ public class RefreshRateHelper {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             try {
                 WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-                Display display = null;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    display = context.getDisplay();
-                }
-                if (display == null && wm != null) {
-                    display = wm.getDefaultDisplay();
-                }
-                if (display != null) {
-                    Display.Mode[] modes = display.getSupportedModes();
-                    if (modes != null) {
-                        for (Display.Mode mode : modes) {
-                            int r = Math.round(mode.getRefreshRate());
-                            if (r >= 58 && r <= 62) rates.add(60);
-                            else if (r >= 88 && r <= 92) rates.add(90);
-                            else if (r >= 118 && r <= 122) rates.add(120);
-                            else if (r >= 142 && r <= 146) rates.add(144);
-                            else if (r > 30) rates.add(r);
+                if (wm != null) {
+                    Display display = wm.getDefaultDisplay();
+                    if (display != null) {
+                        Display.Mode[] modes = display.getSupportedModes();
+                        if (modes != null) {
+                            for (Display.Mode mode : modes) {
+                                int r = Math.round(mode.getRefreshRate());
+                                if (r >= 58 && r <= 62) rates.add(60);
+                                else if (r >= 88 && r <= 92) rates.add(90);
+                                else if (r >= 118 && r <= 122) rates.add(120);
+                                else if (r >= 142 && r <= 146) rates.add(144);
+                                else if (r > 30) rates.add(r);
+                            }
                         }
                     }
                 }
@@ -59,15 +55,11 @@ public class RefreshRateHelper {
     public static int getCurrentRefreshRate(Context context) {
         try {
             WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-            Display display = null;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                display = context.getDisplay();
-            }
-            if (display == null && wm != null) {
-                display = wm.getDefaultDisplay();
-            }
-            if (display != null) {
-                return Math.round(display.getMode().getRefreshRate());
+            if (wm != null) {
+                Display display = wm.getDefaultDisplay();
+                if (display != null) {
+                    return Math.round(display.getMode().getRefreshRate());
+                }
             }
         } catch (Exception ignored) {
         }

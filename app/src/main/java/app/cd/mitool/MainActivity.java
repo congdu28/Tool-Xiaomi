@@ -33,11 +33,12 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.navigation.NavigationBarView;
 
+import android.content.res.ColorStateList;
+import android.widget.ProgressBar;
 import java.util.Locale;
 
 import app.cd.mitool.service.FloatingClockService;
 import app.cd.mitool.service.NotificationClockService;
-import android.widget.ProgressBar;
 import app.cd.mitool.util.BatteryHelper;
 import app.cd.mitool.util.PreferencesHelper;
 import app.cd.mitool.util.RamBoosterHelper;
@@ -719,11 +720,11 @@ public class MainActivity extends AppCompatActivity {
         int highlightColor = ContextCompat.getColor(this, R.color.mi_orange);
         int normalColor = ContextCompat.getColor(this, R.color.card_highlight);
 
-        btnHzAuto.setBackgroundColor(savedRate == 0 ? highlightColor : normalColor);
-        btnHz60.setBackgroundColor(savedRate == 60 ? highlightColor : normalColor);
-        btnHz90.setBackgroundColor(savedRate == 90 ? highlightColor : normalColor);
-        btnHz120.setBackgroundColor(savedRate == 120 ? highlightColor : normalColor);
-        btnHz144.setBackgroundColor(savedRate == 144 ? highlightColor : normalColor);
+        btnHzAuto.setBackgroundTintList(ColorStateList.valueOf(savedRate == 0 ? highlightColor : normalColor));
+        btnHz60.setBackgroundTintList(ColorStateList.valueOf(savedRate == 60 ? highlightColor : normalColor));
+        btnHz90.setBackgroundTintList(ColorStateList.valueOf(savedRate == 90 ? highlightColor : normalColor));
+        btnHz120.setBackgroundTintList(ColorStateList.valueOf(savedRate == 120 ? highlightColor : normalColor));
+        btnHz144.setBackgroundTintList(ColorStateList.valueOf(savedRate == 144 ? highlightColor : normalColor));
     }
 
     private void updateRamDisplay() {
