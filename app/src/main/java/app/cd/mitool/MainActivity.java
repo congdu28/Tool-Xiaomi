@@ -1,6 +1,7 @@
 package app.cd.mitool;
 
 import android.Manifest;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -97,6 +98,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         prefs = new PreferencesHelper(this);
+
+        // Cancel old legacy notification IDs from previous versions
+        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (nm != null) {
+            nm.cancel(2002);
+            nm.cancel(3003);
+        }
 
         setupWindowInsets();
         initViews();

@@ -6,8 +6,8 @@ import android.content.Intent;
 import android.os.Build;
 import android.provider.Settings;
 
-import app.cd.mitool.service.BatteryMonitorService;
 import app.cd.mitool.service.FloatingClockService;
+import app.cd.mitool.service.NotificationClockService;
 import app.cd.mitool.util.PreferencesHelper;
 
 public class BootReceiver extends BroadcastReceiver {
@@ -21,20 +21,28 @@ public class BootReceiver extends BroadcastReceiver {
 
             // Restore floating clock if user enabled it
             if (prefs.isClockEnabled() && Settings.canDrawOverlays(context)) {
-                Intent clockIntent = new Intent(context, FloatingClockService.class);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    context.startForegroundService(clockIntent);
-                } else {
-                    context.startService(clockIntent);
+                try {
+                    Intent clockIntent = new Intent(context, FloatingClockService.class);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        context.startForegroundService(clockIntent);
+                    } else {
+                        context.startService(clockIntent);
+                    }
+                } catch (Exception ignored) {
                 }
             }
 
-            // Start battery monitor
-            Intent batteryIntent = new Intent(context, BatteryMonitorService.class);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(batteryIntent);
-            } else {
-                context.startService(batteryIntent);
+            // Restore unified single notification service if clock or battery alerts enabled
+            if (prefs.isNotifClockEnabled() || prefs.isAlert80Enabled() || prefs.isAlert100Enabled() || prefs.isAlertTempEnabled()) {
+                try {
+                    Intent notifIntent = new Intent(context, NotificationClockService.class);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        context.startForegroundService(notifIntent);
+                    } else {
+                        context.startService(notifIntent);
+                    }
+                } catch (Exception ignored) {
+                }
             }
         }
     }

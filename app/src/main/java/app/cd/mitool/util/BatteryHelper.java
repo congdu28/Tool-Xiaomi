@@ -139,7 +139,7 @@ public class BatteryHelper {
             info.estimatedMinutesToFull = -1;
             info.formattedEta = "Đang không sạc";
         } else {
-            info.estimatedMinutesToFull = calculateEstimatedMinutes(info.level, info.currentMa, info.plugType, systemRemainingMs);
+            info.estimatedMinutesToFull = calculateEstimatedMinutes(info.level, info.currentMa, info.plugType, systemRemainingMs, info.powerWatt);
             if (info.estimatedMinutesToFull <= 0) {
                 info.formattedEta = "Đang ước lượng...";
             } else {
@@ -153,49 +153,58 @@ public class BatteryHelper {
         return info;
     }
 
-    private static long calculateEstimatedMinutes(int currentLevel, int currentMa, int plugType, long systemRemainingMs) {
-        // Priority 1: System native API
-        if (systemRemainingMs > 0) {
-            long minutes = systemRemainingMs / (60 * 1000);
-            if (minutes > 0) {
+    private static long calculateEstimatedMinutes(int currentLevel, int currentMa, int plugType, long systemRemainingMs, float powerWatt) {
+        // Priority 1: System native API (computeChargeTimeRemaining) - only if realistic (< 4 hours)
+        if (systemRemainingMs > 60000 && systemRemainingMs < 4 * 3600 * 1000L) {
+            long minutes = Math.round(systemRemainingMs / 60000.0);
+            if (minutes > 0 && minutes <= 240) {
                 return minutes;
             }
         }
 
-        // Priority 2: Smart model calculation based on battery physics
         int percentRemaining = Math.max(0, 100 - currentLevel);
-        if (percentRemaining == 0) return 0;
+        if (percentRemaining <= 0) return 0;
 
-        // Standard modern Xiaomi capacity ~5000mAh
-        double capacityRemainingMah = (percentRemaining / 100.0) * 5000.0;
+        double below80 = Math.max(0, Math.min(80, 100) - currentLevel);
+        if (currentLevel >= 80) below80 = 0;
+        double above80 = percentRemaining - below80;
 
-        if (currentMa >= 300) {
-            // Constant Current (CC) phase up to 80%, Constant Voltage (CV) phase above 80%
-            double totalHours;
-            if (currentLevel < 80) {
-                double fastMah = ((80 - currentLevel) / 100.0) * 5000.0;
-                double slowMah = (20.0 / 100.0) * 5000.0;
-                double fastHours = fastMah / currentMa;
-                double slowHours = slowMah / (currentMa * 0.45); // Current tapers down near end
-                totalHours = fastHours + slowHours;
-            } else {
-                double slowMah = (percentRemaining / 100.0) * 5000.0;
-                totalHours = slowMah / (currentMa * 0.45);
-            }
-            return Math.max(1, Math.round(totalHours * 60));
-        }
+        double minutesTotal;
 
-        // Priority 3: Fallback estimation based on plug type
-        double ratePerMinute;
         if (plugType == BatteryManager.BATTERY_PLUGGED_AC) {
-            ratePerMinute = 1.3; // ~1.3% per minute for typical fast charging
+            // Xiaomi AC Fast Charging (18W, 33W, 67W, 120W)
+            double rateBelow80;
+            double rateAbove80;
+
+            if (powerWatt >= 30.0f || currentMa >= 4500) {
+                // HyperCharge / 67W - 120W (~30-40 min full charge)
+                rateBelow80 = 2.4; // 2.4% / min
+                rateAbove80 = 1.2; // 1.2% / min
+            } else if (powerWatt >= 18.0f || currentMa >= 3000) {
+                // Turbo Charge / 33W (~45-55 min full charge)
+                rateBelow80 = 1.8; // 1.8% / min
+                rateAbove80 = 0.9; // 0.9% / min
+            } else if (powerWatt >= 12.0f || currentMa >= 1800) {
+                // Quick Charge 18W (~65-75 min full charge)
+                rateBelow80 = 1.4; // 1.4% / min
+                rateAbove80 = 0.7; // 0.7% / min
+            } else {
+                // Standard AC / 10W-15W (~85-100 min full charge)
+                rateBelow80 = 1.15; // 1.15% / min
+                rateAbove80 = 0.6;  // 0.6% / min
+            }
+
+            minutesTotal = (below80 / rateBelow80) + (above80 / rateAbove80);
+
         } else if (plugType == BatteryManager.BATTERY_PLUGGED_WIRELESS) {
-            ratePerMinute = 0.8;
+            // Wireless charging (~10W - 30W)
+            minutesTotal = (below80 / 0.9) + (above80 / 0.45);
         } else {
-            ratePerMinute = 0.45; // Slow USB
+            // Slow USB computer port (5V 0.5A - 1A)
+            minutesTotal = (below80 / 0.45) + (above80 / 0.25);
         }
 
-        return Math.max(1, Math.round(percentRemaining / ratePerMinute));
+        return Math.max(1, Math.round(minutesTotal));
     }
 
     public static void playAlertTone(Context context) {

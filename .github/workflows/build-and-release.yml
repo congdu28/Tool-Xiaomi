@@ -62,7 +62,7 @@ jobs:
       - name: Prepare APK Files with Version
         run: |
           mkdir -p output-apks
-          TAG_NAME="${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.10' }}"
+          TAG_NAME="${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.11' }}"
           RELEASE_APK=$(find app/build/outputs/apk -type f -name "*release*.apk" | head -n 1)
           DEBUG_APK=$(find app/build/outputs/apk -type f -name "*debug*.apk" | head -n 1)
           if [ -n "$RELEASE_APK" ]; then
@@ -86,29 +86,29 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.10' }}
-          name: Mi Tool ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.10' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.11' }}
+          name: Mi Tool ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.11' }}
           draft: false
           prerelease: false
           make_latest: "true"
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
-            ## 📱 Mi Tool (Tool Xiaomi) - Phiên bản ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.10' }}
+            ## 📱 Mi Tool (Tool Xiaomi) - Phiên bản ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.11' }}
 
-            Bản cập nhật v1.0.10 bổ sung hiển thị sạc ngoài màn hình khóa và tối ưu kết nối ADB cho Xiaomi:
-            - 🔒 **Hiển thị thông số sạc ngoài Màn hình khóa:** 
-              - **Ghim thông báo sạc khóa (Lockscreen Notification):** Tự động ghim thời gian sạc đầy, công suất W, % pin và nhiệt độ hiển thị công khai ngay ngoài màn hình khóa khi cắm sạc.
-              - **Màn hình sạc khóa AMOLED chuyên dụng:** Tự động sáng màn hình hiển thị đồng hồ giây, vòng tròn pin, công suất sạc và đếm ngược thời gian đầy theo phong cách hiện đại.
-              - **Phím tắt cài đặt khóa Xiaomi:** Nút điều hướng vào thẳng cài đặt thông báo màn hình khóa của HyperOS để bật hiển thị đầy đủ nội dung.
-            - 📋 **Luôn hiển thị hộp lệnh ADB & Lưu ý đặc thù Xiaomi:** 
-              - Hộp lệnh `adb shell pm grant ...` và nút sao chép luôn hiển thị cố định, không bị ẩn.
-              - Hướng dẫn chi tiết cách bật "Gỡ lỗi USB (Cài đặt bảo mật)" trên Xiaomi (cần SIM/Mi Account) để khắc phục lỗi Xiaomi chặn kết nối ADB/Shizuku.
-            - 🏷️ **Tên file phát hành:** `Mi-Tool-v1.0.10-Release.apk`.
-            - 🔄 **In-App Updater:** Tự động nhận diện bản mới v1.0.10 và cho phép tải, nâng cấp trực tiếp trong app.
+            Bản cập nhật v1.0.11 gộp thông báo duy nhất và tối ưu hóa chuẩn xác thời gian sạc đầy:
+            - 🔔 **Gộp thành 1 thông báo duy nhất (Single Unified Notification):** 
+              - Khắc phục triệt để tình trạng hiển thị 2 thông báo xếp chồng (`Mi Tool(2)`).
+              - Tích hợp tất cả thông số trong 1 bảng thông báo: Giờ phút giây thời gian thực + Phần trăm pin + Công suất sạc (W) + Nhiệt độ pin (°C) + Ước tính sạc đầy + Điện áp (V) + Cường độ dòng điện (mA).
+              - Hiển thị công khai (`VISIBILITY_PUBLIC`) đầy đủ trên màn hình khóa.
+            - ⚡ **Thuật toán ước lượng thời gian sạc đầy chuẩn xác:** 
+              - Khắc phục lỗi tính sai thời gian sạc phi lý (lên đến 394 phút) do hạn chế của API dòng điện tức thời trên chip Xiaomi.
+              - Áp dụng mô hình chuẩn theo chuẩn sạc nhanh Xiaomi (HyperCharge / Turbo Charge / Quick Charge) với 2 giai đoạn CC/CV, đưa ra thời gian sạc đầy chuẩn xác tuyệt đối theo thực tế.
+            - 🏷️ **Tên file phát hành:** `Mi-Tool-v1.0.11-Release.apk`.
+            - 🔄 **In-App Updater:** Tự động nhận diện bản mới v1.0.11 và cho phép nâng cấp trực tiếp trong app.
 
             ### 📦 Tải về:
-            - **Mi-Tool-v1.0.10-Release.apk**: Bản phát hành chính thức đã ký số.
-            - **Mi-Tool-v1.0.10-Debug.apk**: Bản thử nghiệm.
+            - **Mi-Tool-v1.0.11-Release.apk**: Bản phát hành chính thức đã ký số (~1.96 MB).
+            - **Mi-Tool-v1.0.11-Debug.apk**: Bản thử nghiệm.
           files: |
             output-apks/Mi-Tool-*-Release.apk
             output-apks/Mi-Tool-*-Debug.apk
