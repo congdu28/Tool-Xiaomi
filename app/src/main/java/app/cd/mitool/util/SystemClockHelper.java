@@ -129,13 +129,22 @@ public class SystemClockHelper {
      */
     public static boolean setSystemClockSeconds(Context context, boolean enable) {
         boolean success = false;
+        String valStr = enable ? "1" : "0";
+        int valInt = enable ? 1 : 0;
 
-        // 1. Try WRITE_SECURE_SETTINGS if granted
+        // 1. Try WRITE_SECURE_SETTINGS if granted (ADB / Shizuku)
         if (hasSecureSettingsPermission(context)) {
             try {
-                Settings.Secure.putString(context.getContentResolver(), "clock_seconds", enable ? "1" : "0");
-                Settings.Secure.putInt(context.getContentResolver(), "clock_seconds", enable ? 1 : 0);
+                Settings.Secure.putString(context.getContentResolver(), "clock_seconds", valStr);
+                Settings.Secure.putInt(context.getContentResolver(), "clock_seconds", valInt);
+                Settings.Secure.putString(context.getContentResolver(), "status_bar_clock_seconds", valStr);
+                Settings.Secure.putInt(context.getContentResolver(), "status_bar_clock_seconds", valInt);
                 success = true;
+            } catch (Exception ignored) {
+            }
+            try {
+                Settings.Global.putString(context.getContentResolver(), "clock_seconds", valStr);
+                Settings.Global.putInt(context.getContentResolver(), "clock_seconds", valInt);
             } catch (Exception ignored) {
             }
         }
@@ -143,8 +152,12 @@ public class SystemClockHelper {
         // 2. Try WRITE_SETTINGS (System settings) if granted (Zero ADB / on-device toggle)
         if (canWriteSystemSettings(context)) {
             try {
-                Settings.System.putInt(context.getContentResolver(), "status_bar_show_seconds", enable ? 1 : 0);
-                Settings.System.putInt(context.getContentResolver(), "time_format_with_second", enable ? 1 : 0);
+                Settings.System.putInt(context.getContentResolver(), "status_bar_show_seconds", valInt);
+                Settings.System.putInt(context.getContentResolver(), "status_bar_show_second", valInt);
+                Settings.System.putInt(context.getContentResolver(), "show_clock_second", valInt);
+                Settings.System.putInt(context.getContentResolver(), "time_format_with_second", valInt);
+                Settings.System.putString(context.getContentResolver(), "clock_seconds", valStr);
+                Settings.System.putInt(context.getContentResolver(), "clock_seconds", valInt);
                 success = true;
             } catch (Exception ignored) {
             }

@@ -63,7 +63,7 @@ jobs:
         if: failure() && (startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main')
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.14' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.15' }}
           name: Build Failed - Log
           body_path: gradle-build.log
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -71,7 +71,7 @@ jobs:
       - name: Prepare APK Files with Version
         run: |
           mkdir -p output-apks
-          TAG_NAME="${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.14' }}"
+          TAG_NAME="${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.15' }}"
           RELEASE_APK=$(find app/build/outputs/apk -type f -name "*release*.apk" | head -n 1)
           DEBUG_APK=$(find app/build/outputs/apk -type f -name "*debug*.apk" | head -n 1)
           if [ -n "$RELEASE_APK" ]; then
@@ -95,38 +95,18 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.14' }}
-          name: Mi Tool ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.14' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.15' }}
+          name: Mi Tool ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.15' }}
           draft: false
           prerelease: false
           make_latest: "true"
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
-            ## 📱 Mi Tool (Tool Xiaomi) - Phiên bản ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.14' }}
-
-            Bản cập nhật v1.0.14 mang đến bộ công cụ tiện ích hệ thống và âm báo sạc thông minh:
-            - 🗣️ **Âm báo sạc bằng giọng nói Tiếng Việt thông minh:**
-              - Tự động phát âm thanh/giọng nói tiếng Việt khi cắm sạc (đọc công suất W, % pin), rút sạc, nhắc nhở khi sạc đạt 80% để bảo vệ tuổi thọ pin, sạc đầy 100%, hoặc cảnh báo khi pin quá nóng (> 42°C).
-              - Nút nghe thử giọng nói trực quan ngay trong tab Pin & Sạc.
-            - ⚡ **Ép tần số quét màn hình (Force Refresh Rate):**
-              - Khóa cứng tần số quét 60Hz / 90Hz / 120Hz / 144Hz chống tụt FPS xuống 60Hz khi xem YouTube, Google Maps hoặc khi máy ấm.
-            - 🚀 **Tối ưu RAM & Mở Game Turbo Xiaomi 1 chạm:**
-              - Hiển thị dung lượng RAM đã dùng / trống theo thời gian thực.
-              - Dọn dẹp cache và tiến trình thừa giúp máy nhẹ và mượt mà hơn.
-              - Khởi chạy nhanh Không gian trò chơi Game Turbo chính gốc MIUI/HyperOS.
-            - 🧹 **Dọn rác chuyên sâu MIUI (Deep Clean No-Ads):**
-              - Mở thẳng module dọn dẹp hệ thống Xiaomi để xóa rác lớn, file tạm Zalo, Facebook mà không bị dính quảng cáo.
-            - 🛠️ **Menu kiểm tra phần cứng ẩn Xiaomi & Chu kỳ sạc:**
-              - Mở giao diện CIT Hardware Test (`*#*#6484#*#*`).
-              - Hiển thị số chu kỳ sạc pin (Battery Cycle Count) và mở menu bí mật (`*#*#6485#*#*`).
-            - 🚫 **Tắt dịch vụ quảng cáo ngầm Xiaomi (MSA Disabler):**
-              - Lối tắt nhanh vào trang Cài đặt để tắt tiến trình quảng cáo ngầm `msa` và dịch vụ theo dõi quảng cáo cá nhân hóa.
-            - 🏷️ **Tên file phát hành:** `Mi-Tool-v1.0.14-Release.apk`.
-            - 🔄 **In-App Updater:** Tự động nhận diện bản mới v1.0.14 và cho phép nâng cấp trực tiếp trong app.
-
-            ### 📦 Tải về:
-            - **Mi-Tool-v1.0.14-Release.apk**: Bản phát hành chính thức đã ký số (~1.98 MB).
-            - **Mi-Tool-v1.0.14-Debug.apk**: Bản thử nghiệm.
+            Bản cập nhật v1.0.15:
+            - 🕒 Cho phép vuốt xóa/đóng thanh thông báo trạng thái bất cứ lúc nào.
+            - ⚡ Mặc định bật sẵn thanh thông báo trạng thái giờ giây & pin khi khởi chạy.
+            - 🔄 Bổ sung đầy đủ các khóa hệ thống đồng hồ giây cho HyperOS / MIUI.
+            - 📢 Tối ưu nội dung thông báo cập nhật ngắn gọn, súc tích.
           files: |
             output-apks/Mi-Tool-*-Release.apk
             output-apks/Mi-Tool-*-Debug.apk

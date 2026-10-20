@@ -161,7 +161,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginTop="4dp"
-                                        android:text="Hiện đồng hồ giây trong bảng thông báo kéo xuống của Xiaomi, kèm thông số pin và nhiệt độ."
+                                        android:text="Hiện đồng hồ giây trong bảng thông báo kéo xuống của Xiaomi, kèm thông số pin và nhiệt độ. Bạn có thể vuốt xóa bất cứ lúc nào."
                                         android:textColor="@color/text_secondary"
                                         android:textSize="12sp" />
                                 </LinearLayout>
@@ -403,7 +403,7 @@
                                     android:background="@drawable/bg_floating_capsule"
                                     android:lineSpacingExtra="2dp"
                                     android:padding="8dp"
-                                    android:text="⚠️ Lưu ý bắt buộc trên Xiaomi (HyperOS / MIUI):\nTrong Cài đặt cho nhà phát triển, bạn PHẢI BẬT đồng thời:\n1. Gỡ lỗi USB (USB debugging)\n2. Gỡ lỗi USB (Cài đặt bảo mật) — (Cần cắm SIM và đăng nhập Mi Account)\nNếu không bật mục số 2, Xiaomi sẽ chặn lệnh ADB và Shizuku!"
+                                    android:text="⚠️ Lưu ý bắt buộc trên Xiaomi (HyperOS / MIUI):\nTrong Cài đặt cho nhà phát triển, bạn PHẢI BẬT đồng thời:\n1. Gỡ lỗi USB (USB debugging)\n2. Gỡ lỗi USB (Cài đặt bảo mật) — (Cần cắm SIM và đăng nhập Mi Account)\nNếu không bật mục số 2, Xiaomi sẽ chặn lệnh ADB và Shizuku!\n\n📌 Lưu ý về đồng hồ góc trái: Xiaomi đã cố định mã nguồn đồng hồ góc trái ở định dạng Giờ:Phút để tiết kiệm pin và tránh lệch camera. Nếu sau khi cấp ADB mà góc trái máy bạn chưa hiện giây, bạn hãy dùng mục 'Thanh thông báo' (ở trên) hiển thị giây chuẩn 100% khi vuốt xuống nhé!"
                                     android:textColor="@color/mi_orange"
                                     android:textSize="11sp" />
                             </LinearLayout>

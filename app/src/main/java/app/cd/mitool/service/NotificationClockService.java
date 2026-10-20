@@ -211,13 +211,19 @@ public class NotificationClockService extends Service {
 
         int iconRes = info.isCharging ? R.drawable.ic_battery_bolt : R.drawable.ic_clock;
 
+        Intent deleteIntent = new Intent(this, NotificationClockService.class);
+        deleteIntent.setAction(ACTION_STOP);
+        PendingIntent deletePi = PendingIntent.getService(this, 1, deleteIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
         return new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(summaryText)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(bigText.toString()))
                 .setSmallIcon(iconRes)
                 .setContentIntent(pendingIntent)
-                .setOngoing(true)
+                .setDeleteIntent(deletePi)
+                .setOngoing(false)
                 .setOnlyAlertOnce(true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -292,6 +298,9 @@ public class NotificationClockService extends Service {
         if (notificationManager != null) {
             notificationManager.cancel(NOTIF_ID);
             notificationManager.cancelAll();
+        }
+        if (prefs != null) {
+            prefs.setNotifClockEnabled(false);
         }
         stopSelf();
     }

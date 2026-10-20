@@ -155,6 +155,11 @@ public class MainActivity extends AppCompatActivity {
         setupSettingsControls();
         requestNotificationPermissionIfNeeded();
 
+        // Default start notification clock service if enabled
+        if (prefs.isNotifClockEnabled()) {
+            startNotificationClockService();
+        }
+
         // Auto check for updates from GitHub in background
         UpdateHelper.checkForUpdate(this, false);
     }
@@ -798,6 +803,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if (switchNotifClock != null) {
+            switchNotifClock.setChecked(prefs.isNotifClockEnabled());
+        }
         updateSystemClockStatus();
         updateBatteryDisplay();
         updateToolsDisplay();

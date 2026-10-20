@@ -33,7 +33,7 @@ import java.util.concurrent.Executors;
 public class UpdateHelper {
 
     private static final String GITHUB_RELEASE_API = "https://api.github.com/repos/congdu28/Tool-Xiaomi/releases/latest";
-    private static final String CURRENT_VERSION = "1.0.14";
+    private static final String CURRENT_VERSION = "1.0.15";
 
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
     private static final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -154,14 +154,39 @@ public class UpdateHelper {
         }
     }
 
+    private static String formatChangelog(String raw) {
+        if (raw == null || raw.trim().isEmpty()) {
+            return "Bản cập nhật tối ưu hiệu năng và sửa lỗi.";
+        }
+        String cleaned = raw;
+        String[] cutPatterns = {
+                "### 📦 Tải về",
+                "### Tải về",
+                "## 📦 Tải về",
+                "📦 Tải về:",
+                "Tải về:",
+                "- **Mi-Tool-"
+        };
+        for (String pattern : cutPatterns) {
+            int idx = cleaned.indexOf(pattern);
+            if (idx != -1) {
+                cleaned = cleaned.substring(0, idx).trim();
+            }
+        }
+        cleaned = cleaned.replaceAll("^##?\\s+.*\\n+", "").trim();
+        return cleaned;
+    }
+
     private static void showUpdateDialog(final Context context, final String newVersion, String changelog, final String downloadUrl) {
         if (!(context instanceof Activity) || ((Activity) context).isFinishing()) {
             return;
         }
 
+        String formattedChangelog = formatChangelog(changelog);
+
         new MaterialAlertDialogBuilder(context)
                 .setTitle("🎉 Có bản cập nhật mới (" + newVersion + ")")
-                .setMessage(changelog)
+                .setMessage(formattedChangelog)
                 .setPositiveButton("Tải & Cài đặt ngay", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
