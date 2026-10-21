@@ -593,6 +593,343 @@
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
+                    <!-- Tool 5: Safe Debloater (Shizuku / Root) -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        app:cardBackgroundColor="@color/card_dark"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="14dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/debloater_title"
+                                android:textColor="@color/text_primary"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="@string/debloater_desc"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/tv_debloater_status"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="Đang kiểm tra danh sách ứng dụng..."
+                                android:textColor="@color/neon_cyan"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_debloater_open_list"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:minHeight="42dp"
+                                android:backgroundTint="@color/card_highlight"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:text="@string/btn_debloater_open_list"
+                                android:textColor="@color/neon_cyan"
+                                android:textSize="12sp"
+                                app:cornerRadius="8dp"
+                                app:strokeColor="@color/neon_cyan"
+                                app:strokeWidth="1dp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:orientation="horizontal">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_debloater_freeze_all"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="4dp"
+                                    android:layout_weight="1"
+                                    android:minHeight="42dp"
+                                    android:backgroundTint="@color/card_highlight"
+                                    android:insetTop="0dp"
+                                    android:insetBottom="0dp"
+                                    android:text="@string/btn_debloater_freeze_all"
+                                    android:textColor="@color/neon_green"
+                                    android:textSize="11sp"
+                                    app:cornerRadius="8dp"
+                                    app:strokeColor="@color/neon_green"
+                                    app:strokeWidth="1dp" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_debloater_restore_all"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="4dp"
+                                    android:layout_weight="1"
+                                    android:minHeight="42dp"
+                                    android:backgroundTint="@color/card_highlight"
+                                    android:insetTop="0dp"
+                                    android:insetBottom="0dp"
+                                    android:text="@string/btn_debloater_restore_all"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="11sp"
+                                    app:cornerRadius="8dp" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Tool 6: Private DNS Adblock -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        app:cardBackgroundColor="@color/card_dark"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="14dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/private_dns_title"
+                                android:textColor="@color/text_primary"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="@string/private_dns_desc"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/tv_private_dns_status"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="Trạng thái: Đang kiểm tra..."
+                                android:textColor="@color/neon_cyan"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_dns_adguard"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:minHeight="42dp"
+                                android:backgroundTint="@color/card_highlight"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:text="@string/btn_dns_adguard"
+                                android:textColor="@color/neon_green"
+                                android:textSize="12sp"
+                                app:cornerRadius="8dp"
+                                app:strokeColor="@color/neon_green"
+                                app:strokeWidth="1dp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_dns_cloudflare_family"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:minHeight="42dp"
+                                android:backgroundTint="@color/card_highlight"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:text="@string/btn_dns_cloudflare_family"
+                                android:textColor="@color/text_primary"
+                                android:textSize="12sp"
+                                app:cornerRadius="8dp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:orientation="horizontal">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_dns_cloudflare"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="4dp"
+                                    android:layout_weight="1"
+                                    android:minHeight="42dp"
+                                    android:backgroundTint="@color/card_highlight"
+                                    android:insetTop="0dp"
+                                    android:insetBottom="0dp"
+                                    android:text="@string/btn_dns_cloudflare"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="11sp"
+                                    app:cornerRadius="8dp" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_dns_off"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="4dp"
+                                    android:layout_weight="1"
+                                    android:minHeight="42dp"
+                                    android:backgroundTint="@color/card_highlight"
+                                    android:insetTop="0dp"
+                                    android:insetBottom="0dp"
+                                    android:text="@string/btn_dns_off"
+                                    android:textColor="@color/neon_red"
+                                    android:textSize="11sp"
+                                    app:cornerRadius="8dp" />
+                            </LinearLayout>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_open_dns_settings"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:minHeight="42dp"
+                                android:backgroundTint="@color/card_highlight"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:text="@string/btn_open_dns_settings"
+                                android:textColor="@color/neon_cyan"
+                                android:textSize="11sp"
+                                app:cornerRadius="8dp" />
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Tool 7: VoLTE & VoWiFi Carrier Check Unlock -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginBottom="16dp"
+                        app:cardBackgroundColor="@color/card_dark"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="14dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/volte_title"
+                                android:textColor="@color/text_primary"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="@string/volte_desc"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="12sp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_unlock_volte"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="4dp"
+                                    android:layout_weight="1"
+                                    android:minHeight="42dp"
+                                    android:backgroundTint="@color/card_highlight"
+                                    android:insetTop="0dp"
+                                    android:insetBottom="0dp"
+                                    android:text="@string/btn_unlock_volte"
+                                    android:textColor="@color/neon_green"
+                                    android:textSize="11sp"
+                                    app:cornerRadius="8dp"
+                                    app:strokeColor="@color/neon_green"
+                                    app:strokeWidth="1dp" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_unlock_vowifi"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="4dp"
+                                    android:layout_weight="1"
+                                    android:minHeight="42dp"
+                                    android:backgroundTint="@color/card_highlight"
+                                    android:insetTop="0dp"
+                                    android:insetBottom="0dp"
+                                    android:text="@string/btn_unlock_vowifi"
+                                    android:textColor="@color/neon_cyan"
+                                    android:textSize="11sp"
+                                    app:cornerRadius="8dp"
+                                    app:strokeColor="@color/neon_cyan"
+                                    app:strokeWidth="1dp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:orientation="horizontal">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_open_radio_testing"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="4dp"
+                                    android:layout_weight="1"
+                                    android:minHeight="42dp"
+                                    android:backgroundTint="@color/card_highlight"
+                                    android:insetTop="0dp"
+                                    android:insetBottom="0dp"
+                                    android:text="@string/btn_open_radio_testing"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="11sp"
+                                    app:cornerRadius="8dp" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_open_sim_settings"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="4dp"
+                                    android:layout_weight="1"
+                                    android:minHeight="42dp"
+                                    android:backgroundTint="@color/card_highlight"
+                                    android:insetTop="0dp"
+                                    android:insetBottom="0dp"
+                                    android:text="@string/btn_open_sim_settings"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="11sp"
+                                    app:cornerRadius="8dp" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
 

@@ -58,6 +58,15 @@ import app.cd.mitool.util.XiaomiHelper;
 import app.cd.mitool.util.ShizukuHelper;
 import app.cd.mitool.util.SystemClockHelper;
 import app.cd.mitool.service.RefreshRateTileService;
+import app.cd.mitool.util.DebloatHelper;
+import app.cd.mitool.util.PrivateDnsHelper;
+import app.cd.mitool.util.VoLteHelper;
+import androidx.appcompat.app.AlertDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import android.content.DialogInterface;
+import android.view.LayoutInflater;
+import android.widget.LinearLayout;
+import java.util.ArrayList;
 import android.media.RingtoneManager;
 import android.widget.SeekBar;
 import rikka.shizuku.Shizuku;
@@ -214,6 +223,26 @@ public class MainActivity extends AppCompatActivity {
     private MaterialButton btnOpenMsaSettings;
     private MaterialButton btnOpenAdServiceSettings;
 
+    // Debloater Views
+    private TextView tvDebloaterStatus;
+    private MaterialButton btnDebloaterOpenList;
+    private MaterialButton btnDebloaterFreezeAll;
+    private MaterialButton btnDebloaterRestoreAll;
+
+    // Private DNS Views
+    private TextView tvPrivateDnsStatus;
+    private MaterialButton btnDnsAdguard;
+    private MaterialButton btnDnsCloudflareFamily;
+    private MaterialButton btnDnsCloudflare;
+    private MaterialButton btnDnsOff;
+    private MaterialButton btnOpenDnsSettings;
+
+    // VoLTE Views
+    private MaterialButton btnUnlockVolte;
+    private MaterialButton btnUnlockVowifi;
+    private MaterialButton btnOpenRadioTesting;
+    private MaterialButton btnOpenSimSettings;
+
     // Settings Views
     private TextView tvSettingsCurrentVersion;
     private MaterialButton btnCheckUpdateNow;
@@ -357,6 +386,26 @@ public class MainActivity extends AppCompatActivity {
         btnOpenRadioInfo = findViewById(R.id.btn_open_radio_info);
         btnOpenMsaSettings = findViewById(R.id.btn_open_msa_settings);
         btnOpenAdServiceSettings = findViewById(R.id.btn_open_ad_service_settings);
+
+        // Debloater Views
+        tvDebloaterStatus = findViewById(R.id.tv_debloater_status);
+        btnDebloaterOpenList = findViewById(R.id.btn_debloater_open_list);
+        btnDebloaterFreezeAll = findViewById(R.id.btn_debloater_freeze_all);
+        btnDebloaterRestoreAll = findViewById(R.id.btn_debloater_restore_all);
+
+        // Private DNS Views
+        tvPrivateDnsStatus = findViewById(R.id.tv_private_dns_status);
+        btnDnsAdguard = findViewById(R.id.btn_dns_adguard);
+        btnDnsCloudflareFamily = findViewById(R.id.btn_dns_cloudflare_family);
+        btnDnsCloudflare = findViewById(R.id.btn_dns_cloudflare);
+        btnDnsOff = findViewById(R.id.btn_dns_off);
+        btnOpenDnsSettings = findViewById(R.id.btn_open_dns_settings);
+
+        // VoLTE Views
+        btnUnlockVolte = findViewById(R.id.btn_unlock_volte);
+        btnUnlockVowifi = findViewById(R.id.btn_unlock_vowifi);
+        btnOpenRadioTesting = findViewById(R.id.btn_open_radio_testing);
+        btnOpenSimSettings = findViewById(R.id.btn_open_sim_settings);
 
         // Settings Views
         tvSettingsCurrentVersion = findViewById(R.id.tv_settings_current_version);
@@ -1202,6 +1251,143 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        // 6. Safe Debloater Controls
+        if (btnDebloaterOpenList != null) {
+            btnDebloaterOpenList.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showDebloaterDialog();
+                }
+            });
+        }
+
+        if (btnDebloaterFreezeAll != null) {
+            btnDebloaterFreezeAll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new MaterialAlertDialogBuilder(MainActivity.this)
+                            .setTitle("Đóng băng ứng dụng rác khuyên dùng")
+                            .setMessage("Tiến hành đóng băng các dịch vụ quảng cáo và thu thập dữ liệu (MSA, Analytics, Mi Video, Quick Apps, Bug Reporter...).\n\nThao tác này 100% an toàn và bạn có thể khôi phục lại bất kỳ lúc nào.")
+                            .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    handleDebloatFreezeRecommended();
+                                }
+                            })
+                            .setNegativeButton("Hủy", null)
+                            .show();
+                }
+            });
+        }
+
+        if (btnDebloaterRestoreAll != null) {
+            btnDebloaterRestoreAll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new MaterialAlertDialogBuilder(MainActivity.this)
+                            .setTitle("Khôi phục ứng dụng")
+                            .setMessage("Kích hoạt lại toàn bộ các ứng dụng Xiaomi đã bị đóng băng?")
+                            .setPositiveButton("Khôi phục", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    handleDebloatRestoreAll();
+                                }
+                            })
+                            .setNegativeButton("Hủy", null)
+                            .show();
+                }
+            });
+        }
+
+        // 7. Private DNS Controls
+        if (btnDnsAdguard != null) {
+            btnDnsAdguard.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    applyPrivateDns(PrivateDnsHelper.MODE_HOSTNAME, PrivateDnsHelper.DNS_ADGUARD, "AdGuard DNS (Chặn quảng cáo)");
+                }
+            });
+        }
+
+        if (btnDnsCloudflareFamily != null) {
+            btnDnsCloudflareFamily.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    applyPrivateDns(PrivateDnsHelper.MODE_HOSTNAME, PrivateDnsHelper.DNS_CLOUDFLARE_FAMILY, "Cloudflare Family (Chặn web độc & QC)");
+                }
+            });
+        }
+
+        if (btnDnsCloudflare != null) {
+            btnDnsCloudflare.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    applyPrivateDns(PrivateDnsHelper.MODE_HOSTNAME, PrivateDnsHelper.DNS_CLOUDFLARE, "Cloudflare 1.1.1.1 (Tăng tốc duyệt web)");
+                }
+            });
+        }
+
+        if (btnDnsOff != null) {
+            btnDnsOff.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    applyPrivateDns(PrivateDnsHelper.MODE_AUTO, "", "Chế độ DNS Tự động");
+                }
+            });
+        }
+
+        if (btnOpenDnsSettings != null) {
+            btnOpenDnsSettings.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    boolean opened = PrivateDnsHelper.openPrivateDnsSettings(MainActivity.this);
+                    if (!opened) {
+                        Toast.makeText(MainActivity.this, "Không thể mở trang Cài đặt mạng. Hãy vào Cài đặt -> Kết nối & chia sẻ -> DNS riêng tư.", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        }
+
+        // 8. VoLTE & VoWiFi Controls
+        if (btnUnlockVolte != null) {
+            btnUnlockVolte.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    VoLteHelper.triggerSecretCode(MainActivity.this, VoLteHelper.CODE_VOLTE, "Mở khóa VoLTE");
+                }
+            });
+        }
+
+        if (btnUnlockVowifi != null) {
+            btnUnlockVowifi.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    VoLteHelper.triggerSecretCode(MainActivity.this, VoLteHelper.CODE_VOWIFI, "Mở khóa VoWiFi");
+                }
+            });
+        }
+
+        if (btnOpenRadioTesting != null) {
+            btnOpenRadioTesting.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    VoLteHelper.triggerSecretCode(MainActivity.this, VoLteHelper.CODE_TESTING, "Kiểm tra thông tin sóng / Radio");
+                }
+            });
+        }
+
+        if (btnOpenSimSettings != null) {
+            btnOpenSimSettings.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    boolean opened = VoLteHelper.openMobileNetworkSettings(MainActivity.this);
+                    if (!opened) {
+                        Toast.makeText(MainActivity.this, "Không tìm thấy trang Cài đặt SIM.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
     }
 
     private void applyRefreshRate(final int targetRate) {
@@ -1273,6 +1459,8 @@ public class MainActivity extends AppCompatActivity {
         updateHzButtons();
         updateGamingFpsDisplay();
         updateRamDisplay();
+        updateDebloaterSummary();
+        updatePrivateDnsDisplay();
     }
 
     private void updateGamingFpsDisplay() {
@@ -1371,6 +1559,199 @@ public class MainActivity extends AppCompatActivity {
         tvRamStats.setText(String.format(Locale.getDefault(), "Đã dùng: %.1f GB / %.1f GB (%d%%)",
                 stats.usedMb / 1024.0f, stats.totalMb / 1024.0f, stats.percentUsed));
         pbRamUsage.setProgress(stats.percentUsed);
+    }
+
+    private void updateDebloaterSummary() {
+        if (tvDebloaterStatus == null) return;
+        int installedCount = 0;
+        int frozenCount = 0;
+        for (DebloatHelper.BloatwareApp app : DebloatHelper.SAFE_BLOATWARE_LIST) {
+            if (DebloatHelper.isInstalled(this, app.pkg)) {
+                installedCount++;
+                if (DebloatHelper.isFrozen(this, app.pkg)) {
+                    frozenCount++;
+                }
+            }
+        }
+        if (installedCount == 0) {
+            tvDebloaterStatus.setText("Không phát hiện ứng dụng rác nào trên máy.");
+            tvDebloaterStatus.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
+        } else if (frozenCount == 0) {
+            tvDebloaterStatus.setText("Đang chạy toàn bộ (" + installedCount + " ứng dụng rác phát hiện)");
+            tvDebloaterStatus.setTextColor(ContextCompat.getColor(this, R.color.mi_orange));
+        } else {
+            tvDebloaterStatus.setText("Đã đóng băng " + frozenCount + "/" + installedCount + " ứng dụng rác");
+            tvDebloaterStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
+        }
+    }
+
+    private void updatePrivateDnsDisplay() {
+        if (tvPrivateDnsStatus == null) return;
+        String mode = PrivateDnsHelper.getCurrentDnsMode(this);
+        String specifier = PrivateDnsHelper.getCurrentDnsSpecifier(this);
+
+        if (PrivateDnsHelper.MODE_HOSTNAME.equalsIgnoreCase(mode) && !specifier.isEmpty()) {
+            String label = specifier;
+            if (PrivateDnsHelper.DNS_ADGUARD.equalsIgnoreCase(specifier)) {
+                label = "AdGuard DNS (Chặn quảng cáo)";
+            } else if (PrivateDnsHelper.DNS_CLOUDFLARE_FAMILY.equalsIgnoreCase(specifier)) {
+                label = "Cloudflare Family (Chặn độc hại & QC)";
+            } else if (PrivateDnsHelper.DNS_CLOUDFLARE.equalsIgnoreCase(specifier)) {
+                label = "Cloudflare 1.1.1.1 (Tăng tốc duyệt web)";
+            }
+            tvPrivateDnsStatus.setText("🛡️ Đang bật: " + label);
+            tvPrivateDnsStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
+        } else if (PrivateDnsHelper.MODE_OFF.equalsIgnoreCase(mode)) {
+            tvPrivateDnsStatus.setText("⭕ Đang tắt DNS riêng tư");
+            tvPrivateDnsStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_red));
+        } else {
+            tvPrivateDnsStatus.setText("⚡ Chế độ Tự động (Mặc định nhà mạng)");
+            tvPrivateDnsStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_cyan));
+        }
+    }
+
+    private void applyPrivateDns(String mode, String hostname, final String label) {
+        boolean success = PrivateDnsHelper.setPrivateDns(this, mode, hostname);
+        if (success) {
+            Toast.makeText(this, "Đã áp dụng: " + label, Toast.LENGTH_SHORT).show();
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    updatePrivateDnsDisplay();
+                }
+            }, 600);
+        }
+    }
+
+    private void handleDebloatFreezeRecommended() {
+        List<String> toFreeze = new ArrayList<>();
+        for (DebloatHelper.BloatwareApp app : DebloatHelper.SAFE_BLOATWARE_LIST) {
+            if (app.recommended && DebloatHelper.isInstalled(this, app.pkg) && !DebloatHelper.isFrozen(this, app.pkg)) {
+                toFreeze.add(app.pkg);
+            }
+        }
+        if (toFreeze.isEmpty()) {
+            Toast.makeText(this, "Tất cả ứng dụng rác khuyên dùng đã được đóng băng!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        DebloatHelper.batchFreeze(this, toFreeze, new ShizukuHelper.CommandCallback() {
+            @Override
+            public void onComplete(boolean success, final String output) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, output, Toast.LENGTH_LONG).show();
+                        updateDebloaterSummary();
+                    }
+                });
+            }
+        });
+    }
+
+    private void handleDebloatRestoreAll() {
+        List<String> toRestore = new ArrayList<>();
+        for (DebloatHelper.BloatwareApp app : DebloatHelper.SAFE_BLOATWARE_LIST) {
+            if (DebloatHelper.isInstalled(this, app.pkg) && DebloatHelper.isFrozen(this, app.pkg)) {
+                toRestore.add(app.pkg);
+            }
+        }
+        if (toRestore.isEmpty()) {
+            Toast.makeText(this, "Không có ứng dụng nào đang bị đóng băng.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        DebloatHelper.batchRestore(this, toRestore, new ShizukuHelper.CommandCallback() {
+            @Override
+            public void onComplete(boolean success, final String output) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, output, Toast.LENGTH_LONG).show();
+                        updateDebloaterSummary();
+                    }
+                });
+            }
+        });
+    }
+
+    private void showDebloaterDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_debloater_list, null);
+        final LinearLayout itemsContainer = dialogView.findViewById(R.id.layout_debloat_items);
+
+        final AlertDialog dialog = new MaterialAlertDialogBuilder(this)
+                .setView(dialogView)
+                .setPositiveButton("Đóng", null)
+                .create();
+
+        populateDebloatList(itemsContainer, dialog);
+        dialog.show();
+    }
+
+    private void populateDebloatList(final LinearLayout itemsContainer, final AlertDialog dialog) {
+        itemsContainer.removeAllViews();
+        LayoutInflater inflater = LayoutInflater.from(this);
+
+        for (final DebloatHelper.BloatwareApp app : DebloatHelper.SAFE_BLOATWARE_LIST) {
+            boolean installed = DebloatHelper.isInstalled(this, app.pkg);
+            if (!installed) continue;
+
+            final boolean frozen = DebloatHelper.isFrozen(this, app.pkg);
+            View itemView = inflater.inflate(R.layout.dialog_debloater_item, itemsContainer, false);
+
+            TextView tvName = itemView.findViewById(R.id.tv_debloat_app_name);
+            TextView tvPkg = itemView.findViewById(R.id.tv_debloat_pkg);
+            TextView tvBadge = itemView.findViewById(R.id.tv_debloat_status_badge);
+            TextView tvDesc = itemView.findViewById(R.id.tv_debloat_desc);
+            final MaterialButton btnToggle = itemView.findViewById(R.id.btn_toggle_freeze);
+
+            tvName.setText(app.name + (app.recommended ? " (Khuyên tắt)" : ""));
+            tvPkg.setText(app.pkg);
+            tvDesc.setText(app.desc);
+
+            if (frozen) {
+                tvBadge.setText("ĐÃ ĐÓNG BĂNG");
+                tvBadge.setTextColor(ContextCompat.getColor(this, R.color.neon_cyan));
+                btnToggle.setText("🔄 Khôi phục ứng dụng");
+                btnToggle.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
+                btnToggle.setStrokeColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.neon_green)));
+            } else {
+                tvBadge.setText("ĐANG HOẠT ĐỘNG");
+                tvBadge.setTextColor(ContextCompat.getColor(this, R.color.mi_orange));
+                btnToggle.setText("❄️ Đóng băng ứng dụng");
+                btnToggle.setTextColor(ContextCompat.getColor(this, R.color.neon_cyan));
+                btnToggle.setStrokeColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.neon_cyan)));
+            }
+
+            btnToggle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    btnToggle.setEnabled(false);
+                    boolean newFreeze = !frozen;
+                    DebloatHelper.setPackageState(MainActivity.this, app.pkg, newFreeze, new ShizukuHelper.CommandCallback() {
+                        @Override
+                        public void onComplete(boolean success, final String output) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(MainActivity.this, output, Toast.LENGTH_SHORT).show();
+                                    updateDebloaterSummary();
+                                    populateDebloatList(itemsContainer, dialog);
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+
+            itemsContainer.addView(itemView);
+        }
+
+        if (itemsContainer.getChildCount() == 0) {
+            TextView emptyTv = new TextView(this);
+            emptyTv.setText("Tuyệt vời! Không tìm thấy ứng dụng rác nào trên thiết bị này.");
+            emptyTv.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
+            emptyTv.setPadding(0, 30, 0, 30);
+            itemsContainer.addView(emptyTv);
+        }
     }
 
     private void openXiaomiLockscreenSettings() {

@@ -142,4 +142,28 @@
     <string name="btn_test_audio">🔊 Nghe thử</string>
     <string name="btn_stop_audio">⏹️ Dừng</string>
     <string name="btn_reset_audio">🔄 Mặc định</string>
+
+    <!-- Group 3: Safe Debloater -->
+    <string name="debloater_title">🛡️ Gỡ / Đóng Băng Ứng Dụng Rác (Debloater)</string>
+    <string name="debloater_desc">Đóng băng an toàn các ứng dụng rác, quảng cáo và thu thập dữ liệu ngầm của Xiaomi/HyperOS. 100% an toàn không lo treo logo (Bootloop).</string>
+    <string name="btn_debloater_open_list">📋 Danh sách &amp; Quản lý ứng dụng rác</string>
+    <string name="btn_debloater_freeze_all">❄️ 1-Chạm đóng băng ứng dụng rác khuyên dùng</string>
+    <string name="btn_debloater_restore_all">🔄 Khôi phục toàn bộ ứng dụng</string>
+
+    <!-- Group 3: Private DNS Adblock -->
+    <string name="private_dns_title">🛡️ Private DNS Chặn Quảng Cáo Toàn Hệ Thống</string>
+    <string name="private_dns_desc">Tự động chặn quảng cáo, banner, pop-up trong ứng dụng và trình duyệt bằng DNS bảo mật, không hao pin và không cần dùng VPN.</string>
+    <string name="btn_dns_adguard">🛡️ Bật AdGuard DNS (Khuyên dùng)</string>
+    <string name="btn_dns_cloudflare_family">👨‍👩‍👧 Bật Cloudflare Family (Chặn web đen &amp; QC)</string>
+    <string name="btn_dns_cloudflare">⚡ Bật Cloudflare 1.1.1.1 (Tăng tốc mạng)</string>
+    <string name="btn_dns_off">⭕ Tắt DNS riêng tư (Về Tự động)</string>
+    <string name="btn_open_dns_settings">⚙️ Mở Cài đặt DNS trong máy</string>
+
+    <!-- Group 3: VoLTE & VoWiFi -->
+    <string name="volte_title">📶 Mở Khóa VoLTE / VoWiFi (Xiaomi Xách Tay)</string>
+    <string name="volte_desc">Tự động vô hiệu hóa kiểm tra nhà mạng (Carrier Check) trên ROM nội địa / xách tay, khắc phục lỗi mất sóng, nghẽn cuộc gọi và không đàm thoại được trên mạng 4G/LTE.</string>
+    <string name="btn_unlock_volte">📶 Mở khóa VoLTE (*#*#86583#*#*)</string>
+    <string name="btn_unlock_vowifi">🌐 Mở khóa VoWiFi (*#*#869434#*#*)</string>
+    <string name="btn_open_radio_testing">📡 Kiểm tra cấu hình sóng (*#*#4636#*#*)</string>
+    <string name="btn_open_sim_settings">⚙️ Cài đặt Mạng di động &amp; SIM</string>
 </resources>
