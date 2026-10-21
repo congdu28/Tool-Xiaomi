@@ -38,6 +38,18 @@ jobs:
         run: |
           sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
 
+      - name: Determine Version Tag
+        id: version
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            TAG="${{ github.ref_name }}"
+          else
+            VER=$(grep "versionName" app/build.gradle | head -n 1 | awk -F"'" '{print $2}')
+            TAG="v${VER:-1.0.32}"
+          fi
+          echo "TAG_NAME=${TAG}" >> $GITHUB_ENV
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+
       - name: Build APK (Release Only)
         run: |
           chmod +x ./gradlew
@@ -58,18 +70,6 @@ jobs:
         with:
           name: gradle-build-log
           path: gradle-build.log
-
-      - name: Determine Version Tag
-        id: version
-        run: |
-          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-            TAG="${{ github.ref_name }}"
-          else
-            VER=$(grep "versionName" app/build.gradle | head -n 1 | awk -F"'" '{print $2}')
-            TAG="v${VER:-1.0.32}"
-          fi
-          echo "TAG_NAME=${TAG}" >> $GITHUB_ENV
-          echo "tag=${TAG}" >> $GITHUB_OUTPUT
 
       - name: Report Failure to Release
         if: failure() && (startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main')
