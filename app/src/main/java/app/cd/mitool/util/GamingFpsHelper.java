@@ -241,7 +241,7 @@ public class GamingFpsHelper {
     /**
      * Execute shell command with root if available.
      */
-    private static boolean runRootCommand(String command) {
+    public static boolean runRootCommand(String command) {
         Process process = null;
         DataOutputStream os = null;
         try {
