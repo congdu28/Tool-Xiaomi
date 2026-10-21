@@ -347,6 +347,15 @@ public class PreferencesHelper {
     public static final String KEY_SOT_LAST_UNPLUG_LEVEL = "sot_last_unplug_level";
     public static final String KEY_SOT_ACCUMULATED_MILLIS = "sot_accumulated_millis";
     public static final String KEY_SOT_SCREEN_ON_START = "sot_screen_on_start";
+    public static final String KEY_SOT_TRACKER_ACTIVE = "sot_tracker_active";
+
+    public boolean isSotTrackerActive() {
+        return prefs.getBoolean(KEY_SOT_TRACKER_ACTIVE, false);
+    }
+
+    public void setSotTrackerActive(boolean active) {
+        prefs.edit().putBoolean(KEY_SOT_TRACKER_ACTIVE, active).apply();
+    }
 
     public long getSotLastUnplugTime() {
         return prefs.getLong(KEY_SOT_LAST_UNPLUG_TIME, 0);

@@ -1971,7 +1971,7 @@ public class MainActivity extends AppCompatActivity {
             if (tvDuration != null) tvDuration.setText(item.formattedTime);
             if (tvPercentage != null) tvPercentage.setText(item.percentage + "% thời lượng");
             if (tvEstBattery != null) {
-                tvEstBattery.setText(String.format(Locale.getDefault(), "~%.1f%% pin", item.estimatedBatteryDrain));
+                tvEstBattery.setText(String.format(Locale.getDefault(), "~%.1f%%", item.estimatedBatteryDrain));
             }
 
             // Progress bar
@@ -1982,15 +1982,15 @@ public class MainActivity extends AppCompatActivity {
                 pbProgress.setProgressTintList(ColorStateList.valueOf(ContextCompat.getColor(this, tintRes)));
             }
 
-            // Stop button
+            // Stop button (Compact close icon button)
             if (btnStop != null) {
                 btnStop.setOnClickListener(v -> {
                     BatteryUsageHelper.forceStopApp(MainActivity.this, item.packageName, (success, msg) -> {
                         Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
                         if (success) {
-                            btnStop.setText("✓ Đã dừng");
+                            btnStop.setIconResource(R.drawable.ic_check_circle);
+                            btnStop.setIconTint(ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, R.color.neon_green)));
                             btnStop.setEnabled(false);
-                            btnStop.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.text_muted));
                         }
                     });
                 });

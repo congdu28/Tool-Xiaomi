@@ -37,6 +37,7 @@ public class SotHelper {
         } else {
             prefs.setSotScreenOnStart(0);
         }
+        prefs.setSotTrackerActive(true);
     }
 
     /**
@@ -100,8 +101,9 @@ public class SotHelper {
             }
         }
 
-        // If tracked SOT is 0 (e.g. app freshly installed or first run), fallback to UsageStats if available
-        if (accumulated <= 0 && BatteryUsageHelper.hasUsageAccessPermission(context)) {
+        // If tracker has not been activated yet (e.g. freshly installed before first unplug/reset)
+        // and accumulated is 0, estimate initial SOT from today's UsageStats
+        if (!prefs.isSotTrackerActive() && accumulated <= 0 && BatteryUsageHelper.hasUsageAccessPermission(context)) {
             long fallback = getSotFromUsageStats(context, prefs.getSotLastUnplugTime());
             if (fallback > 0) {
                 return fallback;
@@ -229,5 +231,6 @@ public class SotHelper {
         } else {
             prefs.setSotScreenOnStart(0);
         }
+        prefs.setSotTrackerActive(true);
     }
 }

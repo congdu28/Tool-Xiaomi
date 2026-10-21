@@ -201,10 +201,7 @@ public class BatteryUsageHelper {
             // Calculate estimated battery drop
             int unplugLevel = prefs.getSotLastUnplugLevel();
             int curLevel = BatteryHelper.getBatteryPercentage(context);
-            int batteryDrop = Math.max(1, unplugLevel - curLevel);
-            if (filterType == FILTER_TODAY) {
-                batteryDrop = Math.max(5, batteryDrop);
-            }
+            int batteryDrop = Math.max(0, unplugLevel - curLevel);
 
             int count = 0;
             for (Map.Entry<String, Long> entry : sortedEntries) {
@@ -217,7 +214,20 @@ public class BatteryUsageHelper {
                 Drawable icon = appIcons.get(pkg);
 
                 int percentage = Math.min(100, Math.max(1, (int) Math.round((time * 100.0) / totalValidTime)));
-                float estBattery = Math.round((batteryDrop * (time / (float) totalValidTime)) * 10.0f) / 10.0f;
+
+                float estBattery;
+                if (filterType == FILTER_SINCE_UNPLUG) {
+                    if (batteryDrop > 0) {
+                        estBattery = Math.round((batteryDrop * (time / (float) totalValidTime)) * 10.0f) / 10.0f;
+                    } else {
+                        estBattery = 0.0f;
+                    }
+                } else {
+                    // For whole day today: calculate estimated battery consumed based on screen time
+                    // Typical Xiaomi modern display uses ~11% battery per 1 hour of screen-on
+                    float hours = time / (3600 * 1000.0f);
+                    estBattery = Math.round((hours * 11.0f) * 10.0f) / 10.0f;
+                }
                 String formatted = SotHelper.formatDuration(time);
 
                 count++;

@@ -66,7 +66,7 @@ jobs:
             TAG="${{ github.ref_name }}"
           else
             VER=$(grep "versionName" app/build.gradle | head -n 1 | awk -F"'" '{print $2}')
-            TAG="v${VER:-1.0.30}"
+            TAG="v${VER:-1.0.31}"
           fi
           echo "TAG_NAME=${TAG}" >> $GITHUB_ENV
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
@@ -109,11 +109,12 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             Bản cập nhật ${{ env.TAG_NAME }}:
-            - ⏱️ Sửa Triệt Để Lỗi "Thời Gian Dùng Máy 497936 giờ": Khởi tạo an toàn mốc rút sạc ban đầu, loại bỏ hoàn toàn lỗi hiển thị epoch time khi người dùng chưa cắm rút sạc lần đầu.
-            - 🔋 Chuẩn Hóa 100% Logic 2 Tab Tiêu Hao Pin:
-              1. Tab [⚡ Từ lần rút sạc]: Ứng dụng công nghệ UsageEvents để đo chính xác từng giây thời gian hiển thị (Foreground Time) của từng app chỉ trong khoảng thời gian kể từ khi rút sạc đến hiện tại. Tổng thời gian các app luôn khớp chuẩn với thời gian SOT, không bao giờ bị lệch hay vượt quá SOT.
-              2. Tab [📅 Hôm nay (24h)]: Tổng hợp toàn bộ hoạt động của tất cả ứng dụng từ 00:00 sáng hôm nay.
-            - 📊 Tối Ưu Nhãn Hiển Thị: Chuyển đổi nhãn từ '% SOT' sang '% thời lượng' trực quan, kèm ước tính mức tiêu hao pin chuẩn xác theo tỷ lệ sử dụng.
-            - 🚀 Tối Ưu Quy Trình Release: Chỉ đóng gói và phát hành duy nhất 1 bản Release chính thức, tối ưu dung lượng và tăng tốc thời gian build CI.
+            - 🎨 Tối Ưu Responsive Giao Diện App Hao Pin:
+              1. Thay thế nút "Dừng" bằng nút icon Close (✕) nhỏ gọn chuẩn 32x32dp, mở rộng tối đa không gian cho thông số. Khi dừng thành công, icon tự động chuyển sang tích xanh tròn (✓).
+              2. Sửa lỗi badge % pin bị rớt dòng lộn xộn (thêm singleLine, maxLines=1, rút gọn nhãn hiển thị thành ~X.X% siêu gọn gàng).
+            - ⏱️ Khắc Phục Triệt Để Mâu Thuẫn SOT & Lần Rút Sạc:
+              1. Chặn đứng lỗi fallback sang UsageStats cả ngày khi vừa rút sạc, đảm bảo SOT từ lúc rút sạc luôn bắt đầu từ 0 và khớp chuẩn 100% với thời gian dùng máy.
+              2. Xóa bỏ số ảo ở tab rút sạc khi pin chưa tụt 1% nào (hiển thị ~0%).
+            - 🚀 Xuất Xưởng Bản Release Duy Nhất: Chỉ đóng gói duy nhất 1 bản Release tối ưu, tốc độ tải và build cực nhanh.
           files: |
             output-apks/Mi-Tool-*-Release.apk
