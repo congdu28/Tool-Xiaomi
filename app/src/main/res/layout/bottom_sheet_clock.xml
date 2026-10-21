@@ -304,6 +304,21 @@
             </LinearLayout>
         </LinearLayout>
 
+        <!-- Quick Settings Tile button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/bs_btn_add_clock_tile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:minHeight="44dp"
+            android:backgroundTint="@color/card_highlight"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="🎛️ Thêm phím Đồng hồ vào Trung tâm điều khiển"
+            android:textColor="@color/neon_cyan"
+            android:textSize="12sp"
+            app:cornerRadius="8dp" />
+
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

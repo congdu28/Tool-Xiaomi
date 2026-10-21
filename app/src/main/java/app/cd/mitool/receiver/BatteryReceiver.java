@@ -11,6 +11,7 @@ import app.cd.mitool.LockscreenChargingActivity;
 import app.cd.mitool.service.NotificationClockService;
 import app.cd.mitool.util.BatteryHelper;
 import app.cd.mitool.util.PreferencesHelper;
+import app.cd.mitool.util.SotHelper;
 import app.cd.mitool.util.VoiceAlertHelper;
 import app.cd.mitool.view.ChargingHudView;
 
@@ -30,6 +31,9 @@ public class BatteryReceiver extends BroadcastReceiver {
 
             // Subtle haptic feedback
             BatteryHelper.vibrateDevice(context, 80);
+
+            // Screen On Time (SOT) tracking
+            SotHelper.onPowerConnected(context, info.level);
 
             // Voice announcement
             VoiceAlertHelper.onPowerConnected(context, info.plugType, info.powerWatt, info.level);
@@ -69,6 +73,10 @@ public class BatteryReceiver extends BroadcastReceiver {
         } else if (Intent.ACTION_POWER_DISCONNECTED.equals(action)) {
             // Read realtime battery info
             BatteryHelper.BatteryInfo info = BatteryHelper.getBatteryInfo(context);
+
+            // Screen On Time (SOT) tracking - reset on unplug
+            SotHelper.onPowerDisconnected(context, info.level);
+
             // Voice announcement
             VoiceAlertHelper.onPowerDisconnected(context, info.level);
 

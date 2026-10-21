@@ -341,4 +341,42 @@ public class PreferencesHelper {
     public int getFloatingClockPreset() {
         return prefs.getInt("floating_clock_preset", 0);
     }
+
+    // Screen On Time (SOT) Tracking
+    public static final String KEY_SOT_LAST_UNPLUG_TIME = "sot_last_unplug_time";
+    public static final String KEY_SOT_LAST_UNPLUG_LEVEL = "sot_last_unplug_level";
+    public static final String KEY_SOT_ACCUMULATED_MILLIS = "sot_accumulated_millis";
+    public static final String KEY_SOT_SCREEN_ON_START = "sot_screen_on_start";
+
+    public long getSotLastUnplugTime() {
+        return prefs.getLong(KEY_SOT_LAST_UNPLUG_TIME, 0);
+    }
+
+    public void setSotLastUnplugTime(long time) {
+        prefs.edit().putLong(KEY_SOT_LAST_UNPLUG_TIME, time).apply();
+    }
+
+    public int getSotLastUnplugLevel() {
+        return prefs.getInt(KEY_SOT_LAST_UNPLUG_LEVEL, 100);
+    }
+
+    public void setSotLastUnplugLevel(int level) {
+        prefs.edit().putInt(KEY_SOT_LAST_UNPLUG_LEVEL, level).apply();
+    }
+
+    public long getSotAccumulatedMillis() {
+        return prefs.getLong(KEY_SOT_ACCUMULATED_MILLIS, 0);
+    }
+
+    public void setSotAccumulatedMillis(long millis) {
+        prefs.edit().putLong(KEY_SOT_ACCUMULATED_MILLIS, millis).apply();
+    }
+
+    public long getSotScreenOnStart() {
+        return prefs.getLong(KEY_SOT_SCREEN_ON_START, 0);
+    }
+
+    public void setSotScreenOnStart(long time) {
+        prefs.edit().putLong(KEY_SOT_SCREEN_ON_START, time).apply();
+    }
 }

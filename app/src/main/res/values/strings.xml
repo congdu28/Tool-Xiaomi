@@ -166,4 +166,23 @@
     <string name="btn_unlock_vowifi">🌐 Mở khóa VoWiFi (*#*#869434#*#*)</string>
     <string name="btn_open_radio_testing">📡 Kiểm tra cấu hình sóng (*#*#4636#*#*)</string>
     <string name="btn_open_sim_settings">⚙️ Cài đặt Mạng di động &amp; SIM</string>
+
+    <!-- SOT & Battery Drain Monitor -->
+    <string name="sot_card_title">Thời Lượng Sáng Màn Hình (On-Screen)</string>
+    <string name="sot_card_desc">Tính từ lần rút sạc gần nhất hoặc lần sạc đầy</string>
+    <string name="sot_reset_btn">🔄 Đặt lại mốc tính</string>
+    <string name="battery_drain_title">Ứng Dụng Tiêu Hao Pin Nhiều Nhất</string>
+    <string name="battery_drain_desc">Phát hiện các ứng dụng chạy ngầm &amp; chiếm dụng thời gian on-screen</string>
+    <string name="battery_drain_perm_needed">Cần cấp quyền \'Truy cập dữ liệu sử dụng\' để xem mức tiêu thụ của các ứng dụng.</string>
+    <string name="battery_drain_grant_shizuku">⚡ Cấp nhanh bằng Shizuku</string>
+    <string name="battery_drain_grant_settings">⚙️ Mở Cài đặt hệ thống</string>
+    <string name="battery_drain_empty">Chưa ghi nhận ứng dụng tiêu hao pin đáng kể</string>
+    <string name="battery_drain_btn_stop">🛑 Dừng</string>
+    <string name="battery_drain_btn_stopped">✓ Đã dừng</string>
+    <string name="battery_drain_refresh">🔄 Làm mới danh sách</string>
+
+    <!-- Quick Settings Clock Tile -->
+    <string name="tile_clock_label">Đồng hồ giây</string>
+    <string name="tile_clock_desc">Bật hoặc tắt nhanh đồng hồ giây nổi trên màn hình</string>
+    <string name="btn_add_clock_tile">🎛️ Thêm phím Đồng hồ vào Trung tâm điều khiển</string>
 </resources>

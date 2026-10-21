@@ -2,6 +2,7 @@ package app.cd.mitool;
 
 import android.Manifest;
 import android.app.NotificationManager;
+import android.app.StatusBarManager;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -12,6 +13,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.Icon;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.BatteryManager;
@@ -27,6 +29,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
@@ -56,9 +59,11 @@ import java.util.List;
 import java.util.Locale;
 
 import app.cd.mitool.service.FloatingClockService;
+import app.cd.mitool.service.FloatingClockTileService;
 import app.cd.mitool.service.NotificationClockService;
 import app.cd.mitool.service.RefreshRateTileService;
 import app.cd.mitool.util.BatteryHelper;
+import app.cd.mitool.util.BatteryUsageHelper;
 import app.cd.mitool.util.DebloatHelper;
 import app.cd.mitool.util.DeviceInfoHelper;
 import app.cd.mitool.util.GamingFpsHelper;
@@ -68,6 +73,7 @@ import app.cd.mitool.util.RamBoosterHelper;
 import app.cd.mitool.util.RefreshRateHelper;
 import app.cd.mitool.util.ShizukuHelper;
 import app.cd.mitool.util.ShortcutHelper;
+import app.cd.mitool.util.SotHelper;
 import app.cd.mitool.util.SystemClockHelper;
 import app.cd.mitool.util.UpdateHelper;
 import app.cd.mitool.util.VoiceAlertHelper;
@@ -147,6 +153,17 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvBatteryVoltage;
     private TextView tvBatteryCycleCount;
     private MaterialButton btnOpenBatterySecretInfo;
+
+    // SOT & Battery Drain Monitor Views
+    private TextView tvSotDuration;
+    private TextView tvSotUnplugInfo;
+    private MaterialButton btnResetSot;
+    private MaterialButton btnRefreshDrainApps;
+    private View layoutDrainPermNeeded;
+    private MaterialButton btnDrainGrantShizuku;
+    private MaterialButton btnDrainOpenSettings;
+    private LinearLayout layoutDrainAppsContainer;
+    private TextView tvDrainAppsEmpty;
 
     // Tab 4: Settings Views
     private TextView tvSettingsCurrentVersion;
@@ -330,6 +347,17 @@ public class MainActivity extends AppCompatActivity {
         tvBatteryVoltage = findViewById(R.id.tv_battery_voltage);
         tvBatteryCycleCount = findViewById(R.id.tv_battery_cycle_count);
         btnOpenBatterySecretInfo = findViewById(R.id.btn_open_battery_secret_info);
+
+        // SOT & Battery Drain Views
+        tvSotDuration = findViewById(R.id.tv_sot_duration);
+        tvSotUnplugInfo = findViewById(R.id.tv_sot_unplug_info);
+        btnResetSot = findViewById(R.id.btn_reset_sot);
+        btnRefreshDrainApps = findViewById(R.id.btn_refresh_drain_apps);
+        layoutDrainPermNeeded = findViewById(R.id.layout_drain_perm_needed);
+        btnDrainGrantShizuku = findViewById(R.id.btn_drain_grant_shizuku);
+        btnDrainOpenSettings = findViewById(R.id.btn_drain_open_settings);
+        layoutDrainAppsContainer = findViewById(R.id.layout_drain_apps_container);
+        tvDrainAppsEmpty = findViewById(R.id.tv_drain_apps_empty);
 
         // Settings Views
         tvSettingsCurrentVersion = findViewById(R.id.tv_settings_current_version);
@@ -1077,10 +1105,30 @@ public class MainActivity extends AppCompatActivity {
             updateToolsCardSummaries();
         });
 
-        btnTopLeft.setOnClickListener(v -> applyFloatingPreset(0));
-        btnBeside.setOnClickListener(v -> applyFloatingPreset(1));
-        btnNotch.setOnClickListener(v -> applyFloatingPreset(2));
-        btnFree.setOnClickListener(v -> applyFloatingPreset(3));
+        int activePreset = prefs.getFloatingClockPreset();
+        updatePresetButtonsHighlight(btnTopLeft, btnBeside, btnNotch, btnFree, activePreset);
+
+        btnTopLeft.setOnClickListener(v -> {
+            applyFloatingPreset(0);
+            updatePresetButtonsHighlight(btnTopLeft, btnBeside, btnNotch, btnFree, 0);
+        });
+        btnBeside.setOnClickListener(v -> {
+            applyFloatingPreset(1);
+            updatePresetButtonsHighlight(btnTopLeft, btnBeside, btnNotch, btnFree, 1);
+        });
+        btnNotch.setOnClickListener(v -> {
+            applyFloatingPreset(2);
+            updatePresetButtonsHighlight(btnTopLeft, btnBeside, btnNotch, btnFree, 2);
+        });
+        btnFree.setOnClickListener(v -> {
+            applyFloatingPreset(3);
+            updatePresetButtonsHighlight(btnTopLeft, btnBeside, btnNotch, btnFree, 3);
+        });
+
+        MaterialButton btnAddClockTile = view.findViewById(R.id.bs_btn_add_clock_tile);
+        if (btnAddClockTile != null) {
+            btnAddClockTile.setOnClickListener(v -> requestAddClockTile());
+        }
 
         swTrans.setChecked(prefs.isFloatingClockTransparent());
         swTrans.setOnCheckedChangeListener((btn, isChecked) -> {
@@ -1262,6 +1310,17 @@ public class MainActivity extends AppCompatActivity {
         if (swAlertTemp != null) {
             swAlertTemp.setChecked(prefs.isAlertTempEnabled());
             swAlertTemp.setOnCheckedChangeListener((btn, isChecked) -> prefs.setAlertTempEnabled(isChecked));
+        }
+
+        MaterialButton btnViewSot = view.findViewById(R.id.bs_btn_view_sot_stats);
+        if (btnViewSot != null) {
+            btnViewSot.setOnClickListener(v -> {
+                bs.dismiss();
+                BottomNavigationView bnv = findViewById(R.id.bottom_navigation);
+                if (bnv != null) {
+                    bnv.setSelectedItemId(R.id.nav_battery);
+                }
+            });
         }
 
         bs.setOnDismissListener(dialog -> BatteryHelper.stopAlertTone());
@@ -1540,7 +1599,7 @@ public class MainActivity extends AppCompatActivity {
                 prefs.setFloatingClockY(statusBarHeight + 4);
                 break;
             case 1:
-                prefs.setFloatingClockX(130);
+                prefs.setFloatingClockX(140);
                 prefs.setFloatingClockY(statusBarHeight + 4);
                 break;
             case 2:
@@ -1549,11 +1608,55 @@ public class MainActivity extends AppCompatActivity {
                 prefs.setFloatingClockY(statusBarHeight + 6);
                 break;
             case 3:
+                prefs.setFloatingClockLocked(false);
                 break;
         }
         if (prefs.isFloatingClockEnabled()) {
             startFloatingClockService();
         }
+    }
+
+    private void updatePresetButtonsHighlight(MaterialButton b0, MaterialButton b1, MaterialButton b2, MaterialButton b3, int active) {
+        MaterialButton[] btns = {b0, b1, b2, b3};
+        int activeColor = ContextCompat.getColor(this, R.color.neon_green);
+        int inactiveColor = ContextCompat.getColor(this, R.color.text_secondary);
+        int activeBg = ContextCompat.getColor(this, R.color.card_highlight);
+        int normalBg = ContextCompat.getColor(this, R.color.card_dark);
+        int strokeWidth = (int) (1.5f * getResources().getDisplayMetrics().density);
+
+        for (int i = 0; i < btns.length; i++) {
+            if (btns[i] == null) continue;
+            boolean isCur = (i == active);
+            btns[i].setTextColor(isCur ? activeColor : inactiveColor);
+            btns[i].setBackgroundTintList(ColorStateList.valueOf(isCur ? activeBg : normalBg));
+            btns[i].setStrokeColor(ColorStateList.valueOf(isCur ? activeColor : normalBg));
+            btns[i].setStrokeWidth(isCur ? strokeWidth : 0);
+        }
+    }
+
+    private void requestAddClockTile() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            StatusBarManager sbm = getSystemService(StatusBarManager.class);
+            if (sbm != null) {
+                sbm.requestAddTileService(
+                        new ComponentName(this, FloatingClockTileService.class),
+                        getString(R.string.tile_clock_label),
+                        Icon.createWithResource(this, R.drawable.ic_tile_clock),
+                        getMainExecutor(),
+                        resultCode -> {
+                            if (resultCode == StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ADDED) {
+                                Toast.makeText(this, "Đã thêm phím Đồng hồ vào Trung tâm điều khiển thành công!", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                );
+                return;
+            }
+        }
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("Thêm phím vào Trung tâm điều khiển")
+                .setMessage("Để thêm phím tắt Đồng hồ giây:\n\n1. Vuốt mở Trung tâm điều khiển (Bảng điều khiển).\n2. Chạm vào biểu tượng Chỉnh sửa (hình bút chì).\n3. Kéo ô 'Đồng hồ giây' lên danh sách phím kích hoạt.")
+                .setPositiveButton("Đã hiểu", null)
+                .show();
     }
 
     private int getStatusBarHeight() {
@@ -1566,7 +1669,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // =========================================================================
-    // TAB 3: BATTERY MONITORING
+    // TAB 3: BATTERY MONITORING & SCREEN ON TIME
     // =========================================================================
 
     private void setupBatteryControls() {
@@ -1577,6 +1680,197 @@ public class MainActivity extends AppCompatActivity {
                     XiaomiHelper.openHiddenBatteryInfo(MainActivity.this);
                 }
             });
+        }
+
+        if (btnResetSot != null) {
+            btnResetSot.setOnClickListener(v -> {
+                int level = BatteryHelper.getBatteryPercentage(this);
+                SotHelper.resetSot(this, level);
+                updateSotView();
+                loadBatteryDrainApps();
+                Toast.makeText(this, "Đã đặt lại mốc tính thời gian sáng màn hình!", Toast.LENGTH_SHORT).show();
+            });
+        }
+
+        if (btnRefreshDrainApps != null) {
+            btnRefreshDrainApps.setOnClickListener(v -> {
+                updateSotView();
+                loadBatteryDrainApps();
+                Toast.makeText(this, "Đã làm mới danh sách tiêu thụ pin", Toast.LENGTH_SHORT).show();
+            });
+        }
+
+        if (btnDrainGrantShizuku != null) {
+            btnDrainGrantShizuku.setOnClickListener(v -> {
+                if (!ShizukuHelper.hasShizukuPermission()) {
+                    Toast.makeText(this, "Vui lòng mở Shizuku và cấp quyền cho Mi Tool trước!", Toast.LENGTH_SHORT).show();
+                    ShizukuHelper.requestShizukuPermission(this);
+                    return;
+                }
+                ShizukuHelper.grantUsageStats(this, (success, msg) -> {
+                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+                    if (success) {
+                        updateSotView();
+                        loadBatteryDrainApps();
+                    }
+                });
+            });
+        }
+
+        if (btnDrainOpenSettings != null) {
+            btnDrainOpenSettings.setOnClickListener(v -> BatteryUsageHelper.openUsageAccessSettings(this));
+        }
+
+        updateSotView();
+        loadBatteryDrainApps();
+    }
+
+    private void updateSotView() {
+        if (tvSotDuration == null) return;
+        long sotMillis = SotHelper.getScreenOnTimeMillis(this);
+        tvSotDuration.setText(SotHelper.formatDuration(sotMillis));
+
+        if (tvSotUnplugInfo != null) {
+            int level = BatteryHelper.getBatteryPercentage(this);
+            tvSotUnplugInfo.setText(SotHelper.getUnplugSummary(this, level));
+        }
+    }
+
+    private void loadBatteryDrainApps() {
+        if (layoutDrainAppsContainer == null) return;
+
+        boolean hasPerm = BatteryUsageHelper.hasUsageAccessPermission(this);
+        if (!hasPerm) {
+            if (layoutDrainPermNeeded != null) layoutDrainPermNeeded.setVisibility(View.VISIBLE);
+            layoutDrainAppsContainer.removeAllViews();
+            if (tvDrainAppsEmpty != null) tvDrainAppsEmpty.setVisibility(View.GONE);
+            return;
+        }
+
+        if (layoutDrainPermNeeded != null) layoutDrainPermNeeded.setVisibility(View.GONE);
+        if (tvDrainAppsEmpty != null) {
+            tvDrainAppsEmpty.setVisibility(View.VISIBLE);
+            tvDrainAppsEmpty.setText("Đang phân tích dữ liệu ứng dụng & tiêu thụ pin...");
+        }
+
+        new Thread(() -> {
+            long sinceTime = prefs.getSotLastUnplugTime();
+            List<BatteryUsageHelper.AppDrainItem> items = BatteryUsageHelper.getTopDrainApps(this, sinceTime, 12);
+            runOnUiThread(() -> renderDrainAppsList(items));
+        }).start();
+    }
+
+    private void renderDrainAppsList(List<BatteryUsageHelper.AppDrainItem> items) {
+        if (layoutDrainAppsContainer == null) return;
+        layoutDrainAppsContainer.removeAllViews();
+
+        if (items == null || items.isEmpty()) {
+            if (tvDrainAppsEmpty != null) {
+                tvDrainAppsEmpty.setVisibility(View.VISIBLE);
+                tvDrainAppsEmpty.setText("Chưa ghi nhận ứng dụng tiêu hao pin đáng kể.");
+            }
+            return;
+        }
+
+        if (tvDrainAppsEmpty != null) {
+            tvDrainAppsEmpty.setVisibility(View.GONE);
+        }
+
+        int dp8 = (int) (8 * getResources().getDisplayMetrics().density);
+        int dp10 = (int) (10 * getResources().getDisplayMetrics().density);
+        int dp36 = (int) (36 * getResources().getDisplayMetrics().density);
+
+        for (int i = 0; i < items.size(); i++) {
+            final BatteryUsageHelper.AppDrainItem item = items.get(i);
+
+            LinearLayout row = new LinearLayout(this);
+            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+            row.setPadding(0, dp8, 0, dp8);
+
+            // App Icon
+            ImageView iconView = new ImageView(this);
+            LinearLayout.LayoutParams iconLp = new LinearLayout.LayoutParams(dp36, dp36);
+            iconLp.setMarginEnd(dp10);
+            iconView.setLayoutParams(iconLp);
+            if (item.icon != null) {
+                iconView.setImageDrawable(item.icon);
+            } else {
+                iconView.setImageResource(R.drawable.ic_app_icon);
+            }
+            row.addView(iconView);
+
+            // Info column
+            LinearLayout infoCol = new LinearLayout(this);
+            infoCol.setOrientation(LinearLayout.VERTICAL);
+            LinearLayout.LayoutParams colLp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+            colLp.setMarginEnd(dp8);
+            infoCol.setLayoutParams(colLp);
+
+            TextView tvName = new TextView(this);
+            tvName.setText(item.appName);
+            tvName.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
+            tvName.setTextSize(13f);
+            tvName.setTypeface(null, android.graphics.Typeface.BOLD);
+            tvName.setMaxLines(1);
+            tvName.setEllipsize(android.text.TextUtils.TruncateAt.END);
+            infoCol.addView(tvName);
+
+            TextView tvSub = new TextView(this);
+            tvSub.setText(item.formattedTime + "  •  " + item.percentage + "%");
+            tvSub.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
+            tvSub.setTextSize(11f);
+            infoCol.addView(tvSub);
+
+            ProgressBar pb = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
+            LinearLayout.LayoutParams pbLp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) (4 * getResources().getDisplayMetrics().density));
+            pbLp.topMargin = (int) (4 * getResources().getDisplayMetrics().density);
+            pb.setLayoutParams(pbLp);
+            pb.setMax(100);
+            pb.setProgress(item.percentage);
+            pb.setProgressTintList(ColorStateList.valueOf(ContextCompat.getColor(this, item.percentage > 30 ? R.color.mi_orange : R.color.neon_cyan)));
+            infoCol.addView(pb);
+
+            row.addView(infoCol);
+
+            // Stop button
+            MaterialButton btnStop = new MaterialButton(this);
+            btnStop.setText("🛑 Dừng");
+            btnStop.setTextSize(11f);
+            btnStop.setMinHeight(0);
+            btnStop.setMinimumHeight(0);
+            btnStop.setHeight((int) (32 * getResources().getDisplayMetrics().density));
+            btnStop.setInsetTop(0);
+            btnStop.setInsetBottom(0);
+            btnStop.setPadding(dp8, 0, dp8, 0);
+            btnStop.setCornerRadius((int) (6 * getResources().getDisplayMetrics().density));
+            btnStop.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.card_highlight)));
+            btnStop.setTextColor(ContextCompat.getColor(this, R.color.neon_red));
+            btnStop.setStrokeColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.card_dark_stroke)));
+            btnStop.setStrokeWidth((int) (1 * getResources().getDisplayMetrics().density));
+
+            btnStop.setOnClickListener(v -> {
+                BatteryUsageHelper.forceStopApp(MainActivity.this, item.packageName, (success, msg) -> {
+                    Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    if (success) {
+                        btnStop.setText("✓ Đã dừng");
+                        btnStop.setEnabled(false);
+                        btnStop.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.text_muted));
+                    }
+                });
+            });
+
+            row.addView(btnStop);
+            layoutDrainAppsContainer.addView(row);
+
+            // Separator
+            if (i < items.size() - 1) {
+                View sep = new View(this);
+                LinearLayout.LayoutParams sepLp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1);
+                sep.setLayoutParams(sepLp);
+                sep.setBackgroundColor(ContextCompat.getColor(this, R.color.card_dark_stroke));
+                layoutDrainAppsContainer.addView(sep);
+            }
         }
     }
 
@@ -1611,6 +1905,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         updateBatteryPowerRealtime();
+        updateSotView();
     }
 
     private void updateBatteryPowerRealtime() {
@@ -1838,12 +2133,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void startFloatingClockService() {
         Intent intent = new Intent(this, FloatingClockService.class);
-        startService(intent);
+        intent.setAction(FloatingClockService.ACTION_RELOAD_SETTINGS);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent);
+        } else {
+            startService(intent);
+        }
     }
 
     private void stopFloatingClockService() {
         Intent intent = new Intent(this, FloatingClockService.class);
-        stopService(intent);
+        intent.setAction(FloatingClockService.ACTION_STOP);
+        startService(intent);
     }
 
     private void requestNotificationPermissionIfNeeded() {
@@ -1879,6 +2180,7 @@ public class MainActivity extends AppCompatActivity {
         updateDeviceSpecsDisplay();
         updateToolsCardSummaries();
         updateBatteryDisplay();
+        loadBatteryDrainApps();
         updateShizukuDisplay();
         registerBatteryMonitorReceiver();
         startBatteryRealtimeTicker();

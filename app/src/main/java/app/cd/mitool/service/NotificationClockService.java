@@ -26,6 +26,7 @@ import app.cd.mitool.MainActivity;
 import app.cd.mitool.R;
 import app.cd.mitool.util.BatteryHelper;
 import app.cd.mitool.util.PreferencesHelper;
+import app.cd.mitool.util.SotHelper;
 import app.cd.mitool.util.VoiceAlertHelper;
 
 /**
@@ -67,20 +68,24 @@ public class NotificationClockService extends Service {
             if (Intent.ACTION_POWER_DISCONNECTED.equals(action)) {
                 // When unplugged: Seamlessly switch to battery status, keeping unified notification active
                 BatteryHelper.BatteryInfo info = BatteryHelper.getBatteryInfo(context);
+                SotHelper.onPowerDisconnected(context, info.level);
                 VoiceAlertHelper.onPowerDisconnected(context, info.level);
                 updateNotification();
             } else if (Intent.ACTION_POWER_CONNECTED.equals(action)) {
                 BatteryHelper.BatteryInfo info = BatteryHelper.getBatteryInfo(context);
+                SotHelper.onPowerConnected(context, info.level);
                 VoiceAlertHelper.onPowerConnected(context, info.plugType, info.powerWatt, info.level);
                 updateNotification();
                 startTicker();
             } else if (Intent.ACTION_SCREEN_OFF.equals(action)) {
                 isScreenOn = false;
+                SotHelper.onScreenOff(context);
                 if (tickerRunnable != null) {
                     handler.removeCallbacks(tickerRunnable);
                 }
             } else if (Intent.ACTION_SCREEN_ON.equals(action)) {
                 isScreenOn = true;
+                SotHelper.onScreenOn(context);
                 updateNotification();
                 startTicker();
             } else if (Intent.ACTION_BATTERY_CHANGED.equals(action)) {

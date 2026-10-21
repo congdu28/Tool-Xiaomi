@@ -66,7 +66,7 @@ jobs:
             TAG="${{ github.ref_name }}"
           else
             VER=$(grep "versionName" app/build.gradle | head -n 1 | awk -F"'" '{print $2}')
-            TAG="v${VER:-1.0.27}"
+            TAG="v${VER:-1.0.28}"
           fi
           echo "TAG_NAME=${TAG}" >> $GITHUB_ENV
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
@@ -114,9 +114,11 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             Bản cập nhật ${{ env.TAG_NAME }}:
-            - ⚡ Tần số quét màn hình: Mặc định Tự động (Auto) cho hệ thống tự điều tiết mượt mà và tiết kiệm pin. Bổ sung tính năng "✏️ Tùy chỉnh Hz" cho phép người dùng tự do nhập hoặc chọn bất kỳ số Hz mong muốn (30 - 240Hz). Hiển thị trực quan viền sáng chế độ đang chọn và chú thích cơ chế tự điều tiết Hz trên Xiaomi.
-            - 🗣️ Khôi phục & Nâng cấp toàn diện Thông Báo Giọng Nói Tiếng Việt (TTS) trong mục Bảo Vệ Pin: Tùy chọn thông báo khi Cắm sạc (kèm công suất W), Rút sạc, Pin đạt ngưỡng bảo vệ, Pin sạc đầy 100% và Cảnh báo quá nhiệt (> 42°C), có nút thử giọng nói trực tiếp.
-            - 📐 Tối ưu Responsive toàn diện: Khắc phục triệt để lỗi tràn dòng/xuống dòng chữ (các nút Đổi nhạc, Nghe thử, Mặc định), bọc toàn bộ BottomSheet trong NestedScrollView chống che khuất trên màn hình nhỏ hoặc khi phóng to font chữ, căn chỉnh lề Switch và TextView chuẩn mực.
+            - ⏱️ Thời Lượng Sáng Màn Hình (Screen On Time - SOT): Đo lường và hiển thị chính xác tổng thời gian màn hình bật kể từ lần rút sạc gần nhất (hoặc sạc đầy). Kèm thông tin chi tiết về thời điểm rút sạc và lượng pin tiêu thụ, có nút đặt lại mốc tính linh hoạt.
+            - 🔋 Theo Dõi & Dừng Ứng Dụng Hao Pin (Battery Drain Monitor): Quét và thống kê danh sách ứng dụng chiếm dụng thời gian và tiêu hao pin nhiều nhất kèm tỷ lệ phần trăm (%). Hỗ trợ Buộc dừng (Force Stop) 1-chạm cực nhanh qua Shizuku hoặc điều hướng cài đặt hệ thống. Hỗ trợ cấp quyền Đọc dữ liệu sử dụng tự động qua Shizuku.
+            - ⏰ Tối Ưu Hóa Đồng Hồ Giây Nổi (Capsule): Sửa triệt để lỗi không nhận cài đặt khi đồng hồ đang chạy. Highlight trực quan nút vị trí ghim sẵn (Góc trái, Cạnh giờ, Tai thỏ, Tự do), cập nhật tọa độ tức thì khi bấm chọn. Tối ưu cảm ứng kéo thả mượt mà, chống trôi ngoài màn hình.
+            - 🎛️ Phím Tắt Trung Tâm Điều Khiển (Quick Settings Tile): Bổ sung Tile "Đồng hồ giây" vào bảng điều khiển / thanh thông báo của Xiaomi HyperOS và Android. Hỗ trợ nút thêm nhanh 1-chạm trên Android 13+ (HyperOS).
+            - 📊 Tích hợp liên kết chéo tiện lợi từ BottomSheet Pin sang Tab Thống kê SOT & Hao Pin.
           files: |
             output-apks/Mi-Tool-*-Release.apk
             output-apks/Mi-Tool-*-Debug.apk

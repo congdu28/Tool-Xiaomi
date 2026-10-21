@@ -469,6 +469,20 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/bs_btn_view_sot_stats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:minHeight="44dp"
+            android:backgroundTint="@color/card_highlight"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="📊 Xem Thời gian Sáng màn hình (SOT) &amp; Hao Pin"
+            android:textColor="@color/neon_cyan"
+            android:textSize="12sp"
+            app:cornerRadius="8dp" />
+
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

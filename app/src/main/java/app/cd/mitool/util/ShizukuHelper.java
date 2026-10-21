@@ -283,4 +283,48 @@ public class ShizukuHelper {
             });
         });
     }
+
+    /**
+     * Force stop an application by package name using Shizuku.
+     */
+    public static void forceStopPackage(String packageName, CommandCallback callback) {
+        EXECUTOR.execute(() -> {
+            if (packageName == null || packageName.trim().isEmpty()) {
+                MAIN_HANDLER.post(() -> {
+                    if (callback != null) callback.onComplete(false, "Tên gói ứng dụng không hợp lệ");
+                });
+                return;
+            }
+            String cmd = "am force-stop " + packageName.trim();
+            ShellResult result = executeCommand(cmd);
+            MAIN_HANDLER.post(() -> {
+                if (result.success) {
+                    if (callback != null) callback.onComplete(true, "Đã dừng ứng dụng thành công!");
+                } else {
+                    String err = !result.stderr.isEmpty() ? result.stderr : result.stdout;
+                    if (callback != null) callback.onComplete(false, "Lỗi: " + err);
+                }
+            });
+        });
+    }
+
+    /**
+     * Grant PACKAGE_USAGE_STATS permission via Shizuku shell.
+     */
+    public static void grantUsageStats(Context context, CommandCallback callback) {
+        EXECUTOR.execute(() -> {
+            String pkg = context.getPackageName();
+            String cmd = "pm grant " + pkg + " android.permission.PACKAGE_USAGE_STATS; " +
+                         "appops set " + pkg + " GET_USAGE_STATS allow";
+            ShellResult result = executeCommand(cmd);
+            MAIN_HANDLER.post(() -> {
+                if (result.success) {
+                    if (callback != null) callback.onComplete(true, "Đã cấp quyền Đọc dữ liệu pin & thời gian sử dụng qua Shizuku!");
+                } else {
+                    String err = !result.stderr.isEmpty() ? result.stderr : result.stdout;
+                    if (callback != null) callback.onComplete(false, "Lỗi: " + err);
+                }
+            });
+        });
+    }
 }

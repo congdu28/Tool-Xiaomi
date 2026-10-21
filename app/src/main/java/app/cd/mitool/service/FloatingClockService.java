@@ -188,18 +188,26 @@ public class FloatingClockService extends Service {
         );
 
         params.gravity = Gravity.TOP | Gravity.START;
+        int sbHeight = getStatusBarHeight();
+        int initialX = prefs.getClockX();
+        int initialY = prefs.getClockY();
+        if (initialX < 0) initialX = 16;
+        if (initialY < 0) initialY = sbHeight + 4;
+
         if (prefs.isClockStatusBarMode()) {
-            params.x = prefs.getClockX();
-            int sbHeight = getStatusBarHeight();
+            params.x = initialX;
             params.y = Math.max(0, (sbHeight - (int) (18 * getResources().getDisplayMetrics().density)) / 2);
         } else {
-            params.x = prefs.getClockX();
-            params.y = prefs.getClockY();
+            params.x = initialX;
+            params.y = initialY;
         }
 
         setupTouchListener();
 
-        windowManager.addView(floatingView, params);
+        try {
+            windowManager.addView(floatingView, params);
+        } catch (Exception ignored) {
+        }
     }
 
     private int getStatusBarHeight() {
@@ -223,7 +231,7 @@ public class FloatingClockService extends Service {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (prefs.isClockLockPosition()) {
+                if (prefs.isClockLockPosition() || prefs.isClockStatusBarMode()) {
                     return false;
                 }
 
@@ -236,14 +244,22 @@ public class FloatingClockService extends Service {
                         return true;
 
                     case MotionEvent.ACTION_MOVE:
-                        params.x = initialX + (int) (event.getRawX() - initialTouchX);
-                        params.y = initialY + (int) (event.getRawY() - initialTouchY);
-                        windowManager.updateViewLayout(floatingView, params);
+                        int targetX = initialX + (int) (event.getRawX() - initialTouchX);
+                        int targetY = initialY + (int) (event.getRawY() - initialTouchY);
+                        if (targetX < 0) targetX = 0;
+                        if (targetY < 0) targetY = 0;
+                        params.x = targetX;
+                        params.y = targetY;
+                        try {
+                            windowManager.updateViewLayout(floatingView, params);
+                        } catch (Exception ignored) {
+                        }
                         return true;
 
                     case MotionEvent.ACTION_UP:
                         prefs.setClockX(params.x);
                         prefs.setClockY(params.y);
+                        prefs.setFloatingClockPreset(3); // Marked as Custom / Free position
                         return true;
                 }
                 return false;
@@ -337,31 +353,45 @@ public class FloatingClockService extends Service {
             if (ACTION_STOP.equals(action)) {
                 stopSelf();
                 return START_NOT_STICKY;
-            } else if (ACTION_RELOAD_SETTINGS.equals(action)) {
-                applyViewCustomizations();
-                if (floatingView != null && windowManager != null && params != null) {
-                    int windowFlags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                            | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-                            | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
-                    if (prefs.isClockStatusBarMode() || prefs.isClockLockPosition()) {
-                        windowFlags |= WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
-                    }
-                    params.flags = windowFlags;
-                    if (prefs.isClockStatusBarMode()) {
-                        params.x = prefs.getClockX();
-                        int sbHeight = getStatusBarHeight();
-                        params.y = Math.max(0, (sbHeight - (int) (18 * getResources().getDisplayMetrics().density)) / 2);
-                    } else {
-                        params.x = prefs.getClockX();
-                        params.y = prefs.getClockY();
-                    }
-                    try {
-                        windowManager.updateViewLayout(floatingView, params);
-                    } catch (Exception ignored) {
-                    }
-                }
             }
         }
+
+        // Always reload customizations and update window layout on any startCommand
+        applyViewCustomizations();
+        if (floatingView != null && windowManager != null && params != null) {
+            int windowFlags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                    | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                    | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
+            if (prefs.isClockStatusBarMode() || prefs.isClockLockPosition()) {
+                windowFlags |= WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
+            }
+            params.flags = windowFlags;
+
+            int sbHeight = getStatusBarHeight();
+            int posX = prefs.getClockX();
+            int posY = prefs.getClockY();
+            if (posX < 0) posX = 16;
+            if (posY < 0) posY = sbHeight + 4;
+
+            if (prefs.isClockStatusBarMode()) {
+                params.x = posX;
+                params.y = Math.max(0, (sbHeight - (int) (18 * getResources().getDisplayMetrics().density)) / 2);
+            } else {
+                params.x = posX;
+                params.y = posY;
+            }
+
+            try {
+                windowManager.updateViewLayout(floatingView, params);
+            } catch (Exception ignored) {
+            }
+        }
+
+        if (clockRunnable != null && isScreenOn) {
+            handler.removeCallbacks(clockRunnable);
+            handler.post(clockRunnable);
+        }
+
         return START_STICKY;
     }
 

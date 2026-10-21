@@ -41,11 +41,11 @@ public class UpdateHelper {
             }
         } catch (Throwable ignored) {
         }
-        return "1.0.27";
+        return "1.0.28";
     }
 
     public static String getCurrentVersion() {
-        return "1.0.27";
+        return "1.0.28";
     }
 
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
