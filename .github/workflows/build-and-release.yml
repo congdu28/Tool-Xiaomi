@@ -38,11 +38,11 @@ jobs:
         run: |
           sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
 
-      - name: Build APKs
+      - name: Build APK (Release Only)
         run: |
           chmod +x ./gradlew
           set -o pipefail
-          ./gradlew --no-daemon --stacktrace :app:assembleRelease :app:assembleDebug 2>&1 | tee gradle-build.log
+          ./gradlew --no-daemon --stacktrace :app:assembleRelease 2>&1 | tee gradle-build.log
 
       - name: Report Failure Log
         if: failure()
@@ -84,14 +84,9 @@ jobs:
         run: |
           mkdir -p output-apks
           RELEASE_APK=$(find app/build/outputs/apk -type f -name "*release*.apk" | head -n 1)
-          DEBUG_APK=$(find app/build/outputs/apk -type f -name "*debug*.apk" | head -n 1)
           if [ -n "$RELEASE_APK" ]; then
             cp "$RELEASE_APK" "output-apks/Mi-Tool-${TAG_NAME}-Release.apk"
             echo "Copied $RELEASE_APK to output-apks/Mi-Tool-${TAG_NAME}-Release.apk"
-          fi
-          if [ -n "$DEBUG_APK" ]; then
-            cp "$DEBUG_APK" "output-apks/Mi-Tool-${TAG_NAME}-Debug.apk"
-            echo "Copied $DEBUG_APK to output-apks/Mi-Tool-${TAG_NAME}-Debug.apk"
           fi
           ls -la output-apks/
 
@@ -123,4 +118,3 @@ jobs:
               2. Widget Dọn RAM 1-Chạm (1-Tap RAM Booster): Xem dung lượng RAM khả dụng và dọn dẹp tăng tốc siêu nhanh ngay từ màn hình chính mà không cần mở ứng dụng!
           files: |
             output-apks/Mi-Tool-*-Release.apk
-            output-apks/Mi-Tool-*-Debug.apk
