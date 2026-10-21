@@ -161,6 +161,39 @@
             android:exported="true"
             android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
 
+        <!-- Home Screen Widgets -->
+        <receiver
+            android:name=".widget.SotAppWidgetProvider"
+            android:exported="true"
+            android:label="Xiaomi SOT On-Screen">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="app.cd.mitool.widget.ACTION_REFRESH_SOT" />
+                <action android:name="android.intent.action.SCREEN_ON" />
+                <action android:name="android.intent.action.SCREEN_OFF" />
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_sot_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.RamBoostAppWidgetProvider"
+            android:exported="true"
+            android:label="Xiaomi Dọn RAM 1-Chạm">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="app.cd.mitool.widget.ACTION_BOOST_RAM" />
+                <action android:name="app.cd.mitool.widget.ACTION_REFRESH_RAM" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_ram_boost_info" />
+        </receiver>
+
     </application>
 
 </manifest>

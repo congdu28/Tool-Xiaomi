@@ -156,14 +156,18 @@ public class MainActivity extends AppCompatActivity {
 
     // SOT & Battery Drain Monitor Views
     private TextView tvSotDuration;
+    private TextView tvSotTotalUsed;
     private TextView tvSotUnplugInfo;
     private MaterialButton btnResetSot;
     private MaterialButton btnRefreshDrainApps;
+    private MaterialButton btnDrainFilterUnplug;
+    private MaterialButton btnDrainFilterToday;
     private View layoutDrainPermNeeded;
     private MaterialButton btnDrainGrantShizuku;
     private MaterialButton btnDrainOpenSettings;
     private LinearLayout layoutDrainAppsContainer;
     private TextView tvDrainAppsEmpty;
+    private int currentDrainFilter = BatteryUsageHelper.FILTER_SINCE_UNPLUG;
 
     // Tab 4: Settings Views
     private TextView tvSettingsCurrentVersion;
@@ -264,6 +268,23 @@ public class MainActivity extends AppCompatActivity {
 
         // Auto check for updates from GitHub in background
         UpdateHelper.checkForUpdate(this, false);
+
+        handleIncomingIntent(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleIncomingIntent(intent);
+    }
+
+    private void handleIncomingIntent(Intent intent) {
+        if (intent != null && intent.getIntExtra("extra_tab_index", -1) == 1) {
+            if (bottomNav != null) {
+                bottomNav.setSelectedItemId(R.id.nav_battery);
+            }
+        }
     }
 
     private void setupWindowInsets() {
@@ -350,9 +371,12 @@ public class MainActivity extends AppCompatActivity {
 
         // SOT & Battery Drain Views
         tvSotDuration = findViewById(R.id.tv_sot_duration);
+        tvSotTotalUsed = findViewById(R.id.tv_sot_total_used);
         tvSotUnplugInfo = findViewById(R.id.tv_sot_unplug_info);
         btnResetSot = findViewById(R.id.btn_reset_sot);
         btnRefreshDrainApps = findViewById(R.id.btn_refresh_drain_apps);
+        btnDrainFilterUnplug = findViewById(R.id.btn_drain_filter_unplug);
+        btnDrainFilterToday = findViewById(R.id.btn_drain_filter_today);
         layoutDrainPermNeeded = findViewById(R.id.layout_drain_perm_needed);
         btnDrainGrantShizuku = findViewById(R.id.btn_drain_grant_shizuku);
         btnDrainOpenSettings = findViewById(R.id.btn_drain_open_settings);
@@ -1023,29 +1047,97 @@ public class MainActivity extends AppCompatActivity {
         View view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_ram, null);
         bs.setContentView(view);
 
-        TextView tvStats = view.findViewById(R.id.bs_tv_ram_stats);
+        TextView tvShizukuStatus = view.findViewById(R.id.bs_tv_shizuku_status);
+        TextView tvLevelDesc = view.findViewById(R.id.bs_tv_ram_level_desc);
+        TextView tvPercent = view.findViewById(R.id.bs_tv_ram_percent);
         ProgressBar pbUsage = view.findViewById(R.id.bs_pb_ram_usage);
+        TextView tvUsed = view.findViewById(R.id.bs_tv_ram_used);
+        TextView tvFree = view.findViewById(R.id.bs_tv_ram_free);
+        TextView tvTotal = view.findViewById(R.id.bs_tv_ram_total);
+
+        View layoutResult = view.findViewById(R.id.bs_layout_boost_result);
+        TextView tvResultTitle = view.findViewById(R.id.bs_tv_boost_result_title);
+        TextView tvResultDesc = view.findViewById(R.id.bs_tv_boost_result_desc);
+
         MaterialButton btnBoost = view.findViewById(R.id.bs_btn_boost_ram);
         MaterialButton btnTurbo = view.findViewById(R.id.bs_btn_open_game_turbo);
+        MaterialButton btnRunningApps = view.findViewById(R.id.bs_btn_open_running_apps);
 
-        DeviceInfoHelper.MemoryStats ram = DeviceInfoHelper.getRamStats(this);
-        tvStats.setText(String.format(Locale.getDefault(), "%.1f GB / %.1f GB (%d%%)", ram.usedGb, ram.totalGb, ram.percentUsed));
-        pbUsage.setProgress(ram.percentUsed);
+        // Update Shizuku Status Banner
+        boolean hasShizuku = ShizukuHelper.isShizukuAvailable() && ShizukuHelper.hasShizukuPermission();
+        if (tvShizukuStatus != null) {
+            if (hasShizuku) {
+                tvShizukuStatus.setText("⚡ Shizuku Deep Boost: Đã sẵn sàng (Dọn sâu cấp hệ thống)");
+                tvShizukuStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
+            } else {
+                tvShizukuStatus.setText("ℹ️ Chế độ tiêu chuẩn (Kết nối Shizuku để dọn sâu toàn bộ tiến trình ngầm)");
+                tvShizukuStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_cyan));
+            }
+        }
+
+        Runnable updateRamUi = () -> {
+            RamBoosterHelper.MemoryStats stats = RamBoosterHelper.getMemoryStats(MainActivity.this);
+            float usedGb = stats.usedMb / 1024.0f;
+            float freeGb = stats.availMb / 1024.0f;
+            float totalGb = stats.totalMb / 1024.0f;
+            int pct = stats.percentUsed;
+
+            if (tvPercent != null) tvPercent.setText(pct + "%");
+            if (pbUsage != null) {
+                pbUsage.setProgress(pct);
+                int tintColor;
+                if (pct < 60) tintColor = R.color.neon_green;
+                else if (pct < 80) tintColor = R.color.neon_yellow;
+                else tintColor = R.color.neon_red;
+                pbUsage.setProgressTintList(ColorStateList.valueOf(ContextCompat.getColor(MainActivity.this, tintColor)));
+            }
+            if (tvLevelDesc != null) {
+                if (pct < 60) {
+                    tvLevelDesc.setText("Hoạt động tối ưu & mượt mà");
+                    tvLevelDesc.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_green));
+                } else if (pct < 80) {
+                    tvLevelDesc.setText("Mức tải bộ nhớ bình thường");
+                    tvLevelDesc.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_yellow));
+                } else {
+                    tvLevelDesc.setText("Bộ nhớ căng thẳng - Cần dọn dẹp");
+                    tvLevelDesc.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_red));
+                }
+            }
+            if (tvUsed != null) tvUsed.setText(String.format(Locale.getDefault(), "%.1f GB", usedGb));
+            if (tvFree != null) tvFree.setText(String.format(Locale.getDefault(), "%.1f GB", freeGb));
+            if (tvTotal != null) tvTotal.setText(String.format(Locale.getDefault(), "%.1f GB", totalGb));
+        };
+
+        updateRamUi.run();
 
         btnBoost.setOnClickListener(v -> {
             btnBoost.setEnabled(false);
-            btnBoost.setText("Đang dọn dẹp...");
-            RamBoosterHelper.boostRam(MainActivity.this, new RamBoosterHelper.BoostCallback() {
-                @Override
-                public void onBoostComplete(long freedMb, RamBoosterHelper.MemoryStats newStats) {
-                    btnBoost.setEnabled(true);
-                    btnBoost.setText("🚀 Dọn Dẹp & Tăng Tốc RAM Ngay");
-                    tvStats.setText(String.format(Locale.getDefault(), "%.1f GB / %.1f GB (%d%%)", newStats.usedMb / 1024.0f, newStats.totalMb / 1024.0f, newStats.percentUsed));
-                    pbUsage.setProgress(newStats.percentUsed);
-                    updateToolsCardSummaries();
-                    updateDeviceSpecsDisplay();
-                    Toast.makeText(MainActivity.this, "Đã giải phóng ~" + freedMb + " MB RAM!", Toast.LENGTH_SHORT).show();
+            btnBoost.setText("⏳ Đang dọn dẹp & giải phóng RAM...");
+            RamBoosterHelper.boostRamDetailed(MainActivity.this, result -> {
+                btnBoost.setEnabled(true);
+                btnBoost.setText("🚀 Dọn Dẹp & Tăng Tốc RAM Ngay");
+                updateRamUi.run();
+                updateToolsCardSummaries();
+                updateDeviceSpecsDisplay();
+                app.cd.mitool.widget.RamBoostAppWidgetProvider.updateAllWidgets(MainActivity.this);
+
+                if (layoutResult != null && tvResultTitle != null && tvResultDesc != null) {
+                    layoutResult.setVisibility(View.VISIBLE);
+                    if (result.freedMb > 0) {
+                        tvResultTitle.setText("🎉 Đã giải phóng +" + result.freedMb + " MB RAM!");
+                        tvResultTitle.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_green));
+                        String desc = "Đã dọn dẹp bộ nhớ đệm và đóng " + result.killedCount + " tiến trình chạy nền.";
+                        if (result.usedShizuku) {
+                            desc += " (Đã dọn cấp hệ thống qua Shizuku Deep Boost)";
+                        }
+                        tvResultDesc.setText(desc);
+                    } else {
+                        tvResultTitle.setText("⚡ Bộ nhớ RAM đã ở trạng thái tối ưu!");
+                        tvResultTitle.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_cyan));
+                        tvResultDesc.setText("Hệ thống đã dọn dẹp bộ nhớ đệm và tối ưu các tiến trình chạy nền.");
+                    }
                 }
+                Toast.makeText(MainActivity.this, result.freedMb > 0 ? "Đã giải phóng ~" + result.freedMb + " MB RAM!" : "RAM đang ở trạng thái mượt mà!", Toast.LENGTH_SHORT).show();
             });
         });
 
@@ -1053,6 +1145,17 @@ public class MainActivity extends AppCompatActivity {
             XiaomiHelper.openGameTurbo(MainActivity.this);
             bs.dismiss();
         });
+
+        if (btnRunningApps != null) {
+            btnRunningApps.setOnClickListener(v -> {
+                try {
+                    Intent it = new Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS);
+                    startActivity(it);
+                } catch (Exception e) {
+                    Toast.makeText(MainActivity.this, "Không thể mở Cài đặt ứng dụng", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
 
         bs.show();
     }
@@ -1688,6 +1791,7 @@ public class MainActivity extends AppCompatActivity {
                 SotHelper.resetSot(this, level);
                 updateSotView();
                 loadBatteryDrainApps();
+                app.cd.mitool.widget.SotAppWidgetProvider.updateAllWidgets(this);
                 Toast.makeText(this, "Đã đặt lại mốc tính thời gian sáng màn hình!", Toast.LENGTH_SHORT).show();
             });
         }
@@ -1697,6 +1801,26 @@ public class MainActivity extends AppCompatActivity {
                 updateSotView();
                 loadBatteryDrainApps();
                 Toast.makeText(this, "Đã làm mới danh sách tiêu thụ pin", Toast.LENGTH_SHORT).show();
+            });
+        }
+
+        if (btnDrainFilterUnplug != null && btnDrainFilterToday != null) {
+            btnDrainFilterUnplug.setOnClickListener(v -> {
+                currentDrainFilter = BatteryUsageHelper.FILTER_SINCE_UNPLUG;
+                btnDrainFilterUnplug.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.mi_orange)));
+                btnDrainFilterUnplug.setTextColor(ContextCompat.getColor(this, R.color.white));
+                btnDrainFilterToday.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.card_highlight)));
+                btnDrainFilterToday.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
+                loadBatteryDrainApps();
+            });
+
+            btnDrainFilterToday.setOnClickListener(v -> {
+                currentDrainFilter = BatteryUsageHelper.FILTER_TODAY;
+                btnDrainFilterToday.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.mi_orange)));
+                btnDrainFilterToday.setTextColor(ContextCompat.getColor(this, R.color.white));
+                btnDrainFilterUnplug.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.card_highlight)));
+                btnDrainFilterUnplug.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
+                loadBatteryDrainApps();
             });
         }
 
@@ -1730,10 +1854,18 @@ public class MainActivity extends AppCompatActivity {
         long sotMillis = SotHelper.getScreenOnTimeMillis(this);
         tvSotDuration.setText(SotHelper.formatDuration(sotMillis));
 
+        if (tvSotTotalUsed != null) {
+            long lastUnplug = prefs.getSotLastUnplugTime();
+            long diff = Math.max(0, System.currentTimeMillis() - lastUnplug);
+            tvSotTotalUsed.setText(SotHelper.formatDuration(diff) + " trước");
+        }
+
         if (tvSotUnplugInfo != null) {
             int level = BatteryHelper.getBatteryPercentage(this);
             tvSotUnplugInfo.setText(SotHelper.getUnplugSummary(this, level));
         }
+
+        app.cd.mitool.widget.SotAppWidgetProvider.updateAllWidgets(this);
     }
 
     private void loadBatteryDrainApps() {
@@ -1754,8 +1886,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         new Thread(() -> {
-            long sinceTime = prefs.getSotLastUnplugTime();
-            List<BatteryUsageHelper.AppDrainItem> items = BatteryUsageHelper.getTopDrainApps(this, sinceTime, 12);
+            List<BatteryUsageHelper.AppDrainItem> items = BatteryUsageHelper.getDrainApps(this, currentDrainFilter, 12);
             runOnUiThread(() -> renderDrainAppsList(items));
         }).start();
     }
@@ -1776,101 +1907,74 @@ public class MainActivity extends AppCompatActivity {
             tvDrainAppsEmpty.setVisibility(View.GONE);
         }
 
-        int dp8 = (int) (8 * getResources().getDisplayMetrics().density);
-        int dp10 = (int) (10 * getResources().getDisplayMetrics().density);
-        int dp36 = (int) (36 * getResources().getDisplayMetrics().density);
+        LayoutInflater inflater = LayoutInflater.from(this);
 
         for (int i = 0; i < items.size(); i++) {
             final BatteryUsageHelper.AppDrainItem item = items.get(i);
+            View itemView = inflater.inflate(R.layout.item_battery_drain_app, layoutDrainAppsContainer, false);
 
-            LinearLayout row = new LinearLayout(this);
-            row.setOrientation(LinearLayout.HORIZONTAL);
-            row.setGravity(android.view.Gravity.CENTER_VERTICAL);
-            row.setPadding(0, dp8, 0, dp8);
+            TextView tvRank = itemView.findViewById(R.id.item_tv_rank);
+            ImageView ivIcon = itemView.findViewById(R.id.item_iv_icon);
+            TextView tvName = itemView.findViewById(R.id.item_tv_name);
+            TextView tvDuration = itemView.findViewById(R.id.item_tv_duration);
+            TextView tvPercentage = itemView.findViewById(R.id.item_tv_percentage);
+            TextView tvEstBattery = itemView.findViewById(R.id.item_tv_est_battery);
+            ProgressBar pbProgress = itemView.findViewById(R.id.item_pb_progress);
+            MaterialButton btnStop = itemView.findViewById(R.id.item_btn_stop);
+
+            // Rank format (medal or number)
+            if (tvRank != null) {
+                if (item.rank == 1) {
+                    tvRank.setText("🥇");
+                } else if (item.rank == 2) {
+                    tvRank.setText("🥈");
+                } else if (item.rank == 3) {
+                    tvRank.setText("🥉");
+                } else {
+                    tvRank.setText(String.valueOf(item.rank));
+                }
+            }
 
             // App Icon
-            ImageView iconView = new ImageView(this);
-            LinearLayout.LayoutParams iconLp = new LinearLayout.LayoutParams(dp36, dp36);
-            iconLp.setMarginEnd(dp10);
-            iconView.setLayoutParams(iconLp);
-            if (item.icon != null) {
-                iconView.setImageDrawable(item.icon);
-            } else {
-                iconView.setImageResource(R.drawable.ic_app_icon);
+            if (ivIcon != null) {
+                if (item.icon != null) {
+                    ivIcon.setImageDrawable(item.icon);
+                } else {
+                    ivIcon.setImageResource(R.drawable.ic_app_icon);
+                }
             }
-            row.addView(iconView);
 
-            // Info column
-            LinearLayout infoCol = new LinearLayout(this);
-            infoCol.setOrientation(LinearLayout.VERTICAL);
-            LinearLayout.LayoutParams colLp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
-            colLp.setMarginEnd(dp8);
-            infoCol.setLayoutParams(colLp);
+            // App info
+            if (tvName != null) tvName.setText(item.appName);
+            if (tvDuration != null) tvDuration.setText(item.formattedTime);
+            if (tvPercentage != null) tvPercentage.setText(item.percentage + "% SOT");
+            if (tvEstBattery != null) {
+                tvEstBattery.setText(String.format(Locale.getDefault(), "~%.1f%% pin", item.estimatedBatteryDrain));
+            }
 
-            TextView tvName = new TextView(this);
-            tvName.setText(item.appName);
-            tvName.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
-            tvName.setTextSize(13f);
-            tvName.setTypeface(null, android.graphics.Typeface.BOLD);
-            tvName.setMaxLines(1);
-            tvName.setEllipsize(android.text.TextUtils.TruncateAt.END);
-            infoCol.addView(tvName);
-
-            TextView tvSub = new TextView(this);
-            tvSub.setText(item.formattedTime + "  •  " + item.percentage + "%");
-            tvSub.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
-            tvSub.setTextSize(11f);
-            infoCol.addView(tvSub);
-
-            ProgressBar pb = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
-            LinearLayout.LayoutParams pbLp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) (4 * getResources().getDisplayMetrics().density));
-            pbLp.topMargin = (int) (4 * getResources().getDisplayMetrics().density);
-            pb.setLayoutParams(pbLp);
-            pb.setMax(100);
-            pb.setProgress(item.percentage);
-            pb.setProgressTintList(ColorStateList.valueOf(ContextCompat.getColor(this, item.percentage > 30 ? R.color.mi_orange : R.color.neon_cyan)));
-            infoCol.addView(pb);
-
-            row.addView(infoCol);
+            // Progress bar
+            if (pbProgress != null) {
+                pbProgress.setMax(100);
+                pbProgress.setProgress(item.percentage);
+                int tintRes = item.percentage > 25 ? R.color.mi_orange : R.color.neon_cyan;
+                pbProgress.setProgressTintList(ColorStateList.valueOf(ContextCompat.getColor(this, tintRes)));
+            }
 
             // Stop button
-            MaterialButton btnStop = new MaterialButton(this);
-            btnStop.setText("🛑 Dừng");
-            btnStop.setTextSize(11f);
-            btnStop.setMinHeight(0);
-            btnStop.setMinimumHeight(0);
-            btnStop.setHeight((int) (32 * getResources().getDisplayMetrics().density));
-            btnStop.setInsetTop(0);
-            btnStop.setInsetBottom(0);
-            btnStop.setPadding(dp8, 0, dp8, 0);
-            btnStop.setCornerRadius((int) (6 * getResources().getDisplayMetrics().density));
-            btnStop.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.card_highlight)));
-            btnStop.setTextColor(ContextCompat.getColor(this, R.color.neon_red));
-            btnStop.setStrokeColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.card_dark_stroke)));
-            btnStop.setStrokeWidth((int) (1 * getResources().getDisplayMetrics().density));
-
-            btnStop.setOnClickListener(v -> {
-                BatteryUsageHelper.forceStopApp(MainActivity.this, item.packageName, (success, msg) -> {
-                    Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
-                    if (success) {
-                        btnStop.setText("✓ Đã dừng");
-                        btnStop.setEnabled(false);
-                        btnStop.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.text_muted));
-                    }
+            if (btnStop != null) {
+                btnStop.setOnClickListener(v -> {
+                    BatteryUsageHelper.forceStopApp(MainActivity.this, item.packageName, (success, msg) -> {
+                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+                        if (success) {
+                            btnStop.setText("✓ Đã dừng");
+                            btnStop.setEnabled(false);
+                            btnStop.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.text_muted));
+                        }
+                    });
                 });
-            });
-
-            row.addView(btnStop);
-            layoutDrainAppsContainer.addView(row);
-
-            // Separator
-            if (i < items.size() - 1) {
-                View sep = new View(this);
-                LinearLayout.LayoutParams sepLp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1);
-                sep.setLayoutParams(sepLp);
-                sep.setBackgroundColor(ContextCompat.getColor(this, R.color.card_dark_stroke));
-                layoutDrainAppsContainer.addView(sep);
             }
+
+            layoutDrainAppsContainer.addView(itemView);
         }
     }
 

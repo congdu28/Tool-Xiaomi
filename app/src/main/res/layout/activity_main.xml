@@ -1681,7 +1681,7 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:text="⏱️ Thời Gian Sáng Màn Hình (On-Screen)"
+                                    android:text="⏱️ Thời Gian Bật Màn Hình (SOT)"
                                     android:textColor="@color/mi_orange"
                                     android:textSize="14sp"
                                     android:textStyle="bold" />
@@ -1696,7 +1696,7 @@
                                     android:insetBottom="0dp"
                                     android:paddingLeft="10dp"
                                     android:paddingRight="10dp"
-                                    android:text="🔄 Đặt lại"
+                                    android:text="🔄 Đặt lại mốc"
                                     android:textColor="@color/text_primary"
                                     android:textSize="11sp"
                                     app:cornerRadius="6dp" />
@@ -1707,32 +1707,82 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
-                                android:text="Tính từ lần rút sạc gần nhất hoặc lần sạc đầy"
+                                android:text="Đếm tổng thời gian on-screen kể từ lần rút sạc hoặc sạc đầy gần nhất"
                                 android:textColor="@color/text_muted"
                                 android:textSize="11sp" />
 
+                            <!-- Two Columns SOT Dashboard -->
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="12dp"
-                                android:gravity="center_vertical"
                                 android:orientation="horizontal">
 
-                                <TextView
-                                    android:id="@+id/tv_sot_duration"
-                                    android:layout_width="wrap_content"
+                                <!-- Col 1: SOT Time -->
+                                <LinearLayout
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
-                                    android:fontFamily="sans-serif-black"
-                                    android:text="-- giờ -- phút"
-                                    android:textColor="@color/neon_cyan"
-                                    android:textSize="28sp" />
+                                    android:layout_weight="1.1"
+                                    android:background="@drawable/bg_card_rounded"
+                                    android:orientation="vertical"
+                                    android:padding="12dp">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="On-Screen (SOT)"
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="11sp" />
+
+                                    <TextView
+                                        android:id="@+id/tv_sot_duration"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:fontFamily="sans-serif-black"
+                                        android:text="-- giờ -- phút"
+                                        android:textColor="@color/neon_cyan"
+                                        android:textSize="22sp" />
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="8dp"
+                                    android:layout_height="match_parent" />
+
+                                <!-- Col 2: Total Time Since Unplug -->
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="0.9"
+                                    android:background="@drawable/bg_card_rounded"
+                                    android:orientation="vertical"
+                                    android:padding="12dp">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Thời gian dùng máy"
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="11sp" />
+
+                                    <TextView
+                                        android:id="@+id/tv_sot_total_used"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:fontFamily="sans-serif-medium"
+                                        android:text="-- giờ trước"
+                                        android:textColor="@color/neon_green"
+                                        android:textSize="16sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
                             </LinearLayout>
 
                             <TextView
                                 android:id="@+id/tv_sot_unplug_info"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
+                                android:layout_marginTop="10dp"
                                 android:text="Đang tính toán mốc rút sạc..."
                                 android:textColor="@color/text_secondary"
                                 android:textSize="12sp" />
@@ -1755,6 +1805,7 @@
                             android:orientation="vertical"
                             android:padding="16dp">
 
+                            <!-- Header -->
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -1779,7 +1830,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginTop="2dp"
-                                        android:text="Ứng dụng dùng nhiều thời gian &amp; cho phép buộc dừng nhanh"
+                                        android:text="Xếp hạng theo thời gian hoạt động &amp; mức tiêu thụ ước tính"
                                         android:textColor="@color/text_muted"
                                         android:textSize="11sp" />
                                 </LinearLayout>
@@ -1794,10 +1845,51 @@
                                     android:insetBottom="0dp"
                                     android:paddingLeft="10dp"
                                     android:paddingRight="10dp"
-                                    android:text="🔄"
+                                    android:text="🔄 Làm mới"
                                     android:textColor="@color/text_primary"
-                                    android:textSize="12sp"
+                                    android:textSize="11sp"
                                     app:cornerRadius="6dp" />
+                            </LinearLayout>
+
+                            <!-- Filter Selector Tabs -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:orientation="horizontal">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_drain_filter_unplug"
+                                    android:layout_width="0dp"
+                                    android:layout_height="34dp"
+                                    android:layout_marginEnd="4dp"
+                                    android:layout_weight="1"
+                                    android:backgroundTint="@color/mi_orange"
+                                    android:insetTop="0dp"
+                                    android:insetBottom="0dp"
+                                    android:minHeight="0dp"
+                                    android:minWidth="0dp"
+                                    android:text="⚡ Từ lần rút sạc"
+                                    android:textColor="@color/white"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold"
+                                    app:cornerRadius="8dp" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_drain_filter_today"
+                                    android:layout_width="0dp"
+                                    android:layout_height="34dp"
+                                    android:layout_marginStart="4dp"
+                                    android:layout_weight="1"
+                                    android:backgroundTint="@color/card_highlight"
+                                    android:insetTop="0dp"
+                                    android:insetBottom="0dp"
+                                    android:minHeight="0dp"
+                                    android:minWidth="0dp"
+                                    android:text="📅 Hôm nay (24h)"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="11sp"
+                                    app:cornerRadius="8dp" />
                             </LinearLayout>
 
                             <!-- Permission Missing Banner -->
@@ -1861,7 +1953,7 @@
                                 android:id="@+id/layout_drain_apps_container"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="10dp"
+                                android:layout_marginTop="12dp"
                                 android:orientation="vertical" />
 
                             <TextView

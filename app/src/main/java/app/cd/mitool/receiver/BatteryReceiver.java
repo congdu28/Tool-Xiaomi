@@ -34,6 +34,8 @@ public class BatteryReceiver extends BroadcastReceiver {
 
             // Screen On Time (SOT) tracking
             SotHelper.onPowerConnected(context, info.level);
+            app.cd.mitool.widget.SotAppWidgetProvider.updateAllWidgets(context);
+            app.cd.mitool.widget.RamBoostAppWidgetProvider.updateAllWidgets(context);
 
             // Voice announcement
             VoiceAlertHelper.onPowerConnected(context, info.plugType, info.powerWatt, info.level);
@@ -76,6 +78,8 @@ public class BatteryReceiver extends BroadcastReceiver {
 
             // Screen On Time (SOT) tracking - reset on unplug
             SotHelper.onPowerDisconnected(context, info.level);
+            app.cd.mitool.widget.SotAppWidgetProvider.updateAllWidgets(context);
+            app.cd.mitool.widget.RamBoostAppWidgetProvider.updateAllWidgets(context);
 
             // Voice announcement
             VoiceAlertHelper.onPowerDisconnected(context, info.level);

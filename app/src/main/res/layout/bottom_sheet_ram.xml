@@ -21,95 +21,326 @@
             android:layout_marginBottom="16dp"
             android:background="@drawable/bg_drag_handle" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="🚀 Tăng Tốc &amp; Giải Phóng RAM"
-            android:textColor="@color/text_primary"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Giải phóng bộ nhớ đệm, đóng các tiến trình ngầm không cần thiết để tăng tốc độ phản hồi cho máy và game."
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp" />
-
-        <!-- RAM Stat Card -->
+        <!-- Header -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:background="@color/card_highlight"
-            android:orientation="vertical"
-            android:padding="14dp">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:contentDescription="RAM Icon"
+                android:src="@drawable/ic_ram"
+                app:tint="@color/mi_orange" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:text="Tăng Tốc &amp; Giải Phóng RAM"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Giải phóng bộ nhớ cache và tiến trình ngầm. Hỗ trợ dọn dẹp cấp hệ thống qua Shizuku giúp tăng tốc thiết bị và chiến game mượt mà."
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp" />
+
+        <!-- Shizuku Boost Status Pill -->
+        <LinearLayout
+            android:id="@+id/bs_layout_shizuku_badge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_card_rounded"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="12dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="8dp">
+
+            <TextView
+                android:id="@+id/bs_tv_shizuku_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="⚡ Shizuku Deep Boost: Đang kiểm tra..."
+                android:textColor="@color/neon_cyan"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <!-- Main RAM Card -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_card_rounded"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Top Row: Percent & Status -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Tình trạng bộ nhớ RAM:"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="13sp" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mức Tải Bộ Nhớ RAM"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/bs_tv_ram_level_desc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Hoạt động tối ưu"
+                        android:textColor="@color/neon_green"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
 
                 <TextView
-                    android:id="@+id/bs_tv_ram_stats"
+                    android:id="@+id/bs_tv_ram_percent"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="monospace"
-                    android:text="6.2 GB / 12.0 GB (52%)"
-                    android:textColor="@color/neon_green"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
+                    android:fontFamily="sans-serif-black"
+                    android:text="52%"
+                    android:textColor="@color/text_primary"
+                    android:textSize="28sp" />
             </LinearLayout>
 
+            <!-- RAM Progress Bar -->
             <ProgressBar
                 android:id="@+id/bs_pb_ram_usage"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
-                android:layout_height="8dp"
-                android:layout_marginTop="10dp"
+                android:layout_height="10dp"
+                android:layout_marginTop="12dp"
                 android:max="100"
                 android:progress="52"
                 android:progressTint="@color/neon_green" />
+
+            <!-- 3 Columns Stats Grid: Used | Free | Total -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
+
+                <!-- Used RAM -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/card_highlight"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Đang dùng"
+                        android:textColor="@color/text_muted"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:id="@+id/bs_tv_ram_used"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="-- GB"
+                        android:textColor="@color/mi_orange"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="6dp"
+                    android:layout_height="match_parent" />
+
+                <!-- Free RAM -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/card_highlight"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Còn trống"
+                        android:textColor="@color/text_muted"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:id="@+id/bs_tv_ram_free"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="-- GB"
+                        android:textColor="@color/neon_green"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="6dp"
+                    android:layout_height="match_parent" />
+
+                <!-- Total RAM -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/card_highlight"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tổng RAM"
+                        android:textColor="@color/text_muted"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:id="@+id/bs_tv_ram_total"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="-- GB"
+                        android:textColor="@color/text_primary"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Legacy tv for compatibility -->
+            <TextView
+                android:id="@+id/bs_tv_ram_stats"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="monospace"
+                android:text="-- / --"
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp"
+                android:visibility="gone" />
+
         </LinearLayout>
 
+        <!-- Result Box (Hidden by default) -->
+        <LinearLayout
+            android:id="@+id/bs_layout_boost_result"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_card_rounded"
+            android:orientation="vertical"
+            android:padding="12dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/bs_tv_boost_result_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🎉 Đã giải phóng RAM thành công!"
+                android:textColor="@color/neon_green"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/bs_tv_boost_result_desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Đã giải phóng +280 MB RAM và đóng 6 tiến trình nền."
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <!-- Action Buttons -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/bs_btn_boost_ram"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:minHeight="46dp"
+            android:layout_marginTop="16dp"
+            android:minHeight="48dp"
             android:backgroundTint="@color/mi_orange"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:text="🚀 Dọn Dẹp &amp; Tăng Tốc RAM Ngay"
-            android:textColor="@color/text_primary"
-            android:textSize="13sp"
+            android:textColor="@color/white"
+            android:textSize="14sp"
             android:textStyle="bold"
-            app:cornerRadius="8dp" />
+            app:cornerRadius="10dp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/bs_btn_open_game_turbo"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:minHeight="44dp"
-            android:backgroundTint="@color/card_highlight"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:text="🎮 Mở Game Turbo Xiaomi"
-            android:textColor="@color/neon_cyan"
-            android:textSize="12sp"
-            app:cornerRadius="8dp" />
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/bs_btn_open_game_turbo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:minHeight="42dp"
+                android:backgroundTint="@color/card_highlight"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="🎮 Game Turbo"
+                android:textColor="@color/neon_cyan"
+                android:textSize="12sp"
+                app:cornerRadius="8dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/bs_btn_open_running_apps"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_weight="1"
+                android:minHeight="42dp"
+                android:backgroundTint="@color/card_highlight"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="⚙️ Quản lý ứng dụng"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
 
     </LinearLayout>
 

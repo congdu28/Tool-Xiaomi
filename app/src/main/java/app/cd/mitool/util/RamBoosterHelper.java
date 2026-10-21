@@ -25,8 +25,28 @@ public class RamBoosterHelper {
         }
     }
 
+    public static class BoostResult {
+        public final long freedMb;
+        public final MemoryStats beforeStats;
+        public final MemoryStats afterStats;
+        public final int killedCount;
+        public final boolean usedShizuku;
+
+        public BoostResult(long freedMb, MemoryStats beforeStats, MemoryStats afterStats, int killedCount, boolean usedShizuku) {
+            this.freedMb = freedMb;
+            this.beforeStats = beforeStats;
+            this.afterStats = afterStats;
+            this.killedCount = killedCount;
+            this.usedShizuku = usedShizuku;
+        }
+    }
+
     public interface BoostCallback {
         void onBoostComplete(long freedMb, MemoryStats newStats);
+    }
+
+    public interface DetailedBoostCallback {
+        void onBoostComplete(BoostResult result);
     }
 
     public static MemoryStats getMemoryStats(Context context) {
@@ -46,45 +66,72 @@ public class RamBoosterHelper {
         return new MemoryStats(4096, 2048, 2048, 50);
     }
 
-    public static void boostRam(final Context context, final BoostCallback callback) {
-        final Handler mainHandler = new Handler(Looper.getMainLooper());
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final MemoryStats before = getMemoryStats(context);
+    /**
+     * Synchronously execute RAM clean and return BoostResult (can be called from background threads / widgets).
+     */
+    public static BoostResult boostRamSync(Context context) {
+        final MemoryStats before = getMemoryStats(context);
+        int killedCount = 0;
+        boolean usedShizuku = false;
+
+        try {
+            ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+            PackageManager pm = context.getPackageManager();
+
+            // 1. Shizuku Deep Boost if available
+            if (ShizukuHelper.hasShizukuPermission()) {
                 try {
-                    ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-                    PackageManager pm = context.getPackageManager();
-                    if (am != null && pm != null) {
-                        List<ApplicationInfo> packages = pm.getInstalledApplications(0);
-                        String myPkg = context.getPackageName();
-                        for (ApplicationInfo app : packages) {
-                            if ((app.flags & ApplicationInfo.FLAG_SYSTEM) == 0 && !app.packageName.equals(myPkg)) {
-                                try {
-                                    am.killBackgroundProcesses(app.packageName);
-                                } catch (Exception ignored) {
-                                }
-                            }
-                        }
-                    }
-                    System.gc();
-                    Thread.sleep(350);
-                } catch (Exception ignored) {
+                    ShizukuHelper.executeCommand("am kill-all && pm trim-caches 999999999");
+                    usedShizuku = true;
+                } catch (Throwable ignored) {
                 }
+            }
 
-                final MemoryStats after = getMemoryStats(context);
-                long diff = after.availMb - before.availMb;
-                final long freed = (diff > 0) ? diff : Math.max(120, (long) (Math.random() * 150 + 100));
-
-                mainHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (callback != null) {
-                            callback.onBoostComplete(freed, after);
+            // 2. Standard killBackgroundProcesses on non-system third-party packages
+            if (am != null && pm != null) {
+                List<ApplicationInfo> packages = pm.getInstalledApplications(0);
+                String myPkg = context.getPackageName();
+                for (ApplicationInfo app : packages) {
+                    if ((app.flags & ApplicationInfo.FLAG_SYSTEM) == 0 && !app.packageName.equals(myPkg)) {
+                        try {
+                            am.killBackgroundProcesses(app.packageName);
+                            killedCount++;
+                        } catch (Exception ignored) {
                         }
                     }
-                });
+                }
             }
+
+            // 3. JVM Garbage collection
+            System.gc();
+            Thread.sleep(300);
+        } catch (Exception ignored) {
+        }
+
+        final MemoryStats after = getMemoryStats(context);
+        long diff = after.availMb - before.availMb;
+        long freed = Math.max(0, diff);
+
+        return new BoostResult(freed, before, after, killedCount, usedShizuku);
+    }
+
+    public static void boostRam(final Context context, final BoostCallback callback) {
+        boostRamDetailed(context, result -> {
+            if (callback != null) {
+                callback.onBoostComplete(result.freedMb, result.afterStats);
+            }
+        });
+    }
+
+    public static void boostRamDetailed(final Context context, final DetailedBoostCallback callback) {
+        final Handler mainHandler = new Handler(Looper.getMainLooper());
+        new Thread(() -> {
+            final BoostResult result = boostRamSync(context);
+            mainHandler.post(() -> {
+                if (callback != null) {
+                    callback.onBoostComplete(result);
+                }
+            });
         }).start();
     }
 }

@@ -66,7 +66,7 @@ jobs:
             TAG="${{ github.ref_name }}"
           else
             VER=$(grep "versionName" app/build.gradle | head -n 1 | awk -F"'" '{print $2}')
-            TAG="v${VER:-1.0.28}"
+            TAG="v${VER:-1.0.29}"
           fi
           echo "TAG_NAME=${TAG}" >> $GITHUB_ENV
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
@@ -114,11 +114,13 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             Bản cập nhật ${{ env.TAG_NAME }}:
-            - ⏱️ Thời Lượng Sáng Màn Hình (Screen On Time - SOT): Đo lường và hiển thị chính xác tổng thời gian màn hình bật kể từ lần rút sạc gần nhất (hoặc sạc đầy). Kèm thông tin chi tiết về thời điểm rút sạc và lượng pin tiêu thụ, có nút đặt lại mốc tính linh hoạt.
-            - 🔋 Theo Dõi & Dừng Ứng Dụng Hao Pin (Battery Drain Monitor): Quét và thống kê danh sách ứng dụng chiếm dụng thời gian và tiêu hao pin nhiều nhất kèm tỷ lệ phần trăm (%). Hỗ trợ Buộc dừng (Force Stop) 1-chạm cực nhanh qua Shizuku hoặc điều hướng cài đặt hệ thống. Hỗ trợ cấp quyền Đọc dữ liệu sử dụng tự động qua Shizuku.
-            - ⏰ Tối Ưu Hóa Đồng Hồ Giây Nổi (Capsule): Sửa triệt để lỗi không nhận cài đặt khi đồng hồ đang chạy. Highlight trực quan nút vị trí ghim sẵn (Góc trái, Cạnh giờ, Tai thỏ, Tự do), cập nhật tọa độ tức thì khi bấm chọn. Tối ưu cảm ứng kéo thả mượt mà, chống trôi ngoài màn hình.
-            - 🎛️ Phím Tắt Trung Tâm Điều Khiển (Quick Settings Tile): Bổ sung Tile "Đồng hồ giây" vào bảng điều khiển / thanh thông báo của Xiaomi HyperOS và Android. Hỗ trợ nút thêm nhanh 1-chạm trên Android 13+ (HyperOS).
-            - 📊 Tích hợp liên kết chéo tiện lợi từ BottomSheet Pin sang Tab Thống kê SOT & Hao Pin.
+            - 🚀 Tối Ưu Lõi Dọn Dẹp RAM & Shizuku Deep Boost: Giải phóng RAM thực tế (loại bỏ hoàn toàn số ảo ngẫu nhiên). Hỗ trợ dọn dẹp cấp hệ thống chuyên sâu qua Shizuku (am kill-all & pm trim-caches). Thống kê chính xác số MB thực tế thu hồi và số tiến trình đã đóng.
+            - 📱 Nâng Cấp Giao Diện RAM & Tab Pin: Thiết kế lại toàn diện BottomSheet RAM theo chuẩn Xiaomi HyperOS với 3 khối số liệu (Used / Free / Total), thanh tiến trình đổi màu theo mức tải bộ nhớ, nút truy cập nhanh Quản lý ứng dụng & Game Turbo.
+            - ⏱️ Dashboard SOT 2 Cột: Bố cục trực quan hiển thị thời gian On-Screen và tổng thời lượng dùng máy kể từ khi rút sạc, cùng thông số sụt giảm pin chi tiết.
+            - 🔋 Đồng Bộ & Bộ Lọc Danh Sách Hao Pin: Thêm bộ lọc linh hoạt [⚡ Từ lần rút sạc] và [📅 Hôm nay (24h)]. Tự động khắc phục lỗi rỗng danh sách khi vừa rút sạc dưới 10 phút. Bổ sung huy chương xếp hạng (🥇, 🥈, 🥉), thanh tỷ lệ SOT và ước tính % pin hao hụt của từng ứng dụng.
+            - 🧩 Bộ Tiện Ích Màn Hình Chính (Home Screen Widgets):
+              1. Widget SOT & Pin (2x1): Xem thời gian On-Screen và mức pin ngay trên màn hình chính, 1 chạm mở thẳng tab Pin trong app hoặc làm mới tức thì.
+              2. Widget Dọn RAM 1-Chạm (1-Tap RAM Booster): Xem dung lượng RAM khả dụng và dọn dẹp tăng tốc siêu nhanh ngay từ màn hình chính mà không cần mở ứng dụng!
           files: |
             output-apks/Mi-Tool-*-Release.apk
             output-apks/Mi-Tool-*-Debug.apk

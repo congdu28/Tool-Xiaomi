@@ -23,22 +23,41 @@ import java.util.Map;
 
 public class BatteryUsageHelper {
 
+    public static final int FILTER_SINCE_UNPLUG = 0;
+    public static final int FILTER_TODAY = 1;
+
     public static class AppDrainItem {
+        public int rank;
         public final String packageName;
         public final String appName;
         public final Drawable icon;
         public final long foregroundTimeMillis;
         public int percentage;
+        public float estimatedBatteryDrain; // estimated % of battery consumed
         public final String formattedTime;
         public boolean isStopped = false;
 
-        public AppDrainItem(String packageName, String appName, Drawable icon, long foregroundTimeMillis, int percentage, String formattedTime) {
+        public AppDrainItem(int rank, String packageName, String appName, Drawable icon, long foregroundTimeMillis, int percentage, float estimatedBatteryDrain, String formattedTime) {
+            this.rank = rank;
             this.packageName = packageName;
             this.appName = appName;
             this.icon = icon;
             this.foregroundTimeMillis = foregroundTimeMillis;
             this.percentage = percentage;
+            this.estimatedBatteryDrain = estimatedBatteryDrain;
             this.formattedTime = formattedTime;
+        }
+    }
+
+    public static class DrainQueryResult {
+        public final List<AppDrainItem> items;
+        public final String timeRangeLabel;
+        public final long totalForegroundMillis;
+
+        public DrainQueryResult(List<AppDrainItem> items, String timeRangeLabel, long totalForegroundMillis) {
+            this.items = items;
+            this.timeRangeLabel = timeRangeLabel;
+            this.totalForegroundMillis = totalForegroundMillis;
         }
     }
 
@@ -81,47 +100,79 @@ public class BatteryUsageHelper {
     }
 
     /**
-     * Retrieve top apps consuming battery/foreground time since given timestamp.
-     * Note: Should be called off main thread.
+     * Query top battery draining apps with specified filter (FILTER_SINCE_UNPLUG or FILTER_TODAY).
      */
-    public static List<AppDrainItem> getTopDrainApps(Context context, long sinceTime, int limit) {
-        List<AppDrainItem> result = new ArrayList<>();
+    public static DrainQueryResult getTopDrainAppsDetailed(Context context, int filterType, int limit) {
+        List<AppDrainItem> resultList = new ArrayList<>();
         if (context == null || !hasUsageAccessPermission(context)) {
-            return result;
+            return new DrainQueryResult(resultList, "Chưa cấp quyền đọc dữ liệu", 0);
         }
 
         try {
             UsageStatsManager usm = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
-            if (usm == null) return result;
+            if (usm == null) return new DrainQueryResult(resultList, "Không tìm thấy UsageStatsManager", 0);
 
+            PreferencesHelper prefs = new PreferencesHelper(context);
             long now = System.currentTimeMillis();
-            long start = sinceTime;
-            // Fallback to start of today if unplug time is invalid or too old (> 48h)
-            if (start <= 0 || (now - start) > (48 * 3600 * 1000L) || start > now) {
+            long start;
+            String rangeLabel;
+
+            long unplugTime = prefs.getSotLastUnplugTime();
+            long timeSinceUnplug = now - unplugTime;
+
+            if (filterType == FILTER_SINCE_UNPLUG && unplugTime > 0 && timeSinceUnplug > (10 * 60 * 1000L) && timeSinceUnplug < (48 * 3600 * 1000L)) {
+                start = unplugTime;
+                long mins = timeSinceUnplug / (60 * 1000L);
+                if (mins < 60) {
+                    rangeLabel = "Kể từ khi rút sạc (" + mins + " phút trước)";
+                } else {
+                    rangeLabel = "Kể từ khi rút sạc (" + (mins / 60) + "h " + (mins % 60) + "p trước)";
+                }
+            } else {
+                // Today since 00:00
                 Calendar cal = Calendar.getInstance();
                 cal.set(Calendar.HOUR_OF_DAY, 0);
                 cal.set(Calendar.MINUTE, 0);
                 cal.set(Calendar.SECOND, 0);
+                cal.set(Calendar.MILLISECOND, 0);
                 start = cal.getTimeInMillis();
+                rangeLabel = (filterType == FILTER_SINCE_UNPLUG)
+                        ? "Hôm nay (Do vừa rút sạc chưa lâu)"
+                        : "Toàn bộ trong ngày hôm nay";
             }
 
-            List<UsageStats> statsList = usm.queryUsageStats(UsageStatsManager.INTERVAL_BEST, start, now);
-            if (statsList == null || statsList.isEmpty()) {
-                return result;
-            }
-
-            // Aggregate by package
             Map<String, Long> aggregated = new HashMap<>();
-            for (UsageStats stat : statsList) {
-                long time = stat.getTotalTimeInForeground();
-                if (time > 1000) { // At least 1 second
-                    String pkg = stat.getPackageName();
-                    Long current = aggregated.get(pkg);
-                    aggregated.put(pkg, (current == null ? 0 : current) + time);
+
+            // 1. First attempt: queryAndAggregateUsageStats
+            try {
+                Map<String, UsageStats> aggMap = usm.queryAndAggregateUsageStats(start, now);
+                if (aggMap != null && !aggMap.isEmpty()) {
+                    for (Map.Entry<String, UsageStats> e : aggMap.entrySet()) {
+                        long time = e.getValue().getTotalTimeInForeground();
+                        if (time > 1000) {
+                            aggregated.put(e.getKey(), time);
+                        }
+                    }
+                }
+            } catch (Throwable ignored) {
+            }
+
+            // 2. Complement / fallback with queryUsageStats
+            if (aggregated.isEmpty()) {
+                List<UsageStats> statsList = usm.queryUsageStats(UsageStatsManager.INTERVAL_BEST, start, now);
+                if (statsList != null) {
+                    for (UsageStats stat : statsList) {
+                        long time = stat.getTotalTimeInForeground();
+                        if (time > 1000) {
+                            String pkg = stat.getPackageName();
+                            Long cur = aggregated.get(pkg);
+                            aggregated.put(pkg, (cur == null ? 0 : cur) + time);
+                        }
+                    }
                 }
             }
 
-            // Exclude our own app and pure system components with no UI
+            // Exclude our own app
             String myPkg = context.getPackageName();
             aggregated.remove(myPkg);
 
@@ -129,13 +180,7 @@ public class BatteryUsageHelper {
             long totalUsageTime = 0;
 
             List<Map.Entry<String, Long>> sortedEntries = new ArrayList<>(aggregated.entrySet());
-            // Sort descending
-            Collections.sort(sortedEntries, new Comparator<Map.Entry<String, Long>>() {
-                @Override
-                public int compare(Map.Entry<String, Long> o1, Map.Entry<String, Long> o2) {
-                    return Long.compare(o2.getValue(), o1.getValue());
-                }
-            });
+            Collections.sort(sortedEntries, (o1, o2) -> Long.compare(o2.getValue(), o1.getValue()));
 
             for (Map.Entry<String, Long> entry : sortedEntries) {
                 totalUsageTime += entry.getValue();
@@ -143,14 +188,19 @@ public class BatteryUsageHelper {
 
             if (totalUsageTime <= 0) totalUsageTime = 1;
 
+            // Calculate estimated battery drop
+            int unplugLevel = prefs.getSotLastUnplugLevel();
+            int curLevel = BatteryHelper.getBatteryPercentage(context);
+            int batteryDrop = Math.max(1, unplugLevel - curLevel);
+
             int count = 0;
             for (Map.Entry<String, Long> entry : sortedEntries) {
                 if (count >= limit) break;
                 String pkg = entry.getKey();
                 long time = entry.getValue();
 
-                // Only consider apps with at least 5 seconds of usage
-                if (time < 5000) continue;
+                // Skip internal android system processes that have no launchable UI unless significant
+                if (time < 3000) continue;
 
                 String appName = pkg;
                 Drawable icon = null;
@@ -159,24 +209,32 @@ public class BatteryUsageHelper {
                     appName = pm.getApplicationLabel(appInfo).toString();
                     icon = pm.getApplicationIcon(appInfo);
                 } catch (PackageManager.NameNotFoundException ignored) {
-                    // Uninstalled or hidden package, continue
                     continue;
                 } catch (Throwable t) {
-                    // Fallback icon
                     icon = pm.getDefaultActivityIcon();
                 }
 
                 int percentage = Math.min(100, Math.max(1, (int) Math.round((time * 100.0) / totalUsageTime)));
+                float estBattery = Math.round((batteryDrop * (time / (float) totalUsageTime)) * 10.0f) / 10.0f;
                 String formatted = SotHelper.formatDuration(time);
 
-                result.add(new AppDrainItem(pkg, appName, icon, time, percentage, formatted));
                 count++;
+                resultList.add(new AppDrainItem(count, pkg, appName, icon, time, percentage, estBattery, formatted));
             }
+
+            return new DrainQueryResult(resultList, rangeLabel, totalUsageTime);
 
         } catch (Throwable ignored) {
         }
 
-        return result;
+        return new DrainQueryResult(resultList, "Đang tải dữ liệu...", 0);
+    }
+
+    /**
+     * Legacy convenience overload.
+     */
+    public static List<AppDrainItem> getTopDrainApps(Context context, long sinceTime, int limit) {
+        return getTopDrainAppsDetailed(context, FILTER_SINCE_UNPLUG, limit).items;
     }
 
     /**
