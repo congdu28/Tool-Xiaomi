@@ -384,7 +384,7 @@ public class MainActivity extends AppCompatActivity {
         // Hz Tile View
         btnAddHzTile = findViewById(R.id.btn_add_hz_tile);
 
-        tvSettingsCurrentVersion.setText("Phiên bản đang cài: v" + UpdateHelper.getCurrentVersion());
+        tvSettingsCurrentVersion.setText("Phiên bản đang cài: v" + UpdateHelper.getCurrentVersion(this));
     }
 
     private void setupNavigation() {
@@ -677,12 +677,95 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupBatteryControls() {
         switchAlert80.setChecked(prefs.isAlert80Enabled());
+        if (layoutAlertLevelSlider != null) {
+            layoutAlertLevelSlider.setVisibility(prefs.isAlert80Enabled() ? View.VISIBLE : View.GONE);
+        }
         switchAlert80.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 prefs.setAlert80Enabled(isChecked);
+                if (layoutAlertLevelSlider != null) {
+                    layoutAlertLevelSlider.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+                }
             }
         });
+
+        int currentAlertLevel = prefs.getBatteryAlertLevel();
+        if (tvAlertLevelValue != null) {
+            tvAlertLevelValue.setText(currentAlertLevel + "%");
+        }
+        if (tvAlert80Title != null) {
+            tvAlert80Title.setText("Báo chuông khi pin sạc đạt " + currentAlertLevel + "%");
+        }
+        if (sbBatteryAlertLevel != null) {
+            sbBatteryAlertLevel.setProgress(Math.max(0, Math.min(45, currentAlertLevel - 50)));
+            sbBatteryAlertLevel.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    int level = 50 + progress;
+                    if (tvAlertLevelValue != null) {
+                        tvAlertLevelValue.setText(level + "%");
+                    }
+                    if (tvAlert80Title != null) {
+                        tvAlert80Title.setText("Báo chuông khi pin sạc đạt " + level + "%");
+                    }
+                    prefs.setBatteryAlertLevel(level);
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {}
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    int level = 50 + seekBar.getProgress();
+                    Toast.makeText(MainActivity.this, "Đã đặt mức cảnh báo pin: " + level + "%", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        updateAudioToneDisplay();
+
+        if (btnPickAudio != null) {
+            btnPickAudio.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showAudioPickerOptionDialog();
+                }
+            });
+        }
+
+        if (btnTestAudio != null) {
+            btnTestAudio.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (BatteryHelper.isAlertTonePlaying()) {
+                        BatteryHelper.stopAlertTone();
+                        btnTestAudio.setText(R.string.btn_test_audio);
+                        Toast.makeText(MainActivity.this, "Đã dừng chuông báo", Toast.LENGTH_SHORT).show();
+                    } else {
+                        BatteryHelper.playAlertTone(MainActivity.this);
+                        btnTestAudio.setText("⏹ Dừng");
+                        Toast.makeText(MainActivity.this, "Đang phát thử âm báo...", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+
+        if (btnResetAudio != null) {
+            btnResetAudio.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    BatteryHelper.stopAlertTone();
+                    prefs.setCustomAlertToneUri("");
+                    prefs.setCustomAlertToneName("");
+                    updateAudioToneDisplay();
+                    if (btnTestAudio != null) {
+                        btnTestAudio.setText(R.string.btn_test_audio);
+                    }
+                    Toast.makeText(MainActivity.this, "Đã đặt lại âm báo Mặc định hệ thống!", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
 
         switchAlert100.setChecked(prefs.isAlert100Enabled());
         switchAlert100.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -813,6 +896,83 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void updateAudioToneDisplay() {
+        if (tvSelectedAudioTone == null) return;
+        String name = prefs.getCustomAlertToneName();
+        if (name == null || name.trim().isEmpty()) {
+            tvSelectedAudioTone.setText("Mặc định hệ thống");
+            tvSelectedAudioTone.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
+        } else {
+            tvSelectedAudioTone.setText("🎵 " + name);
+            tvSelectedAudioTone.setTextColor(ContextCompat.getColor(this, R.color.neon_cyan));
+        }
+    }
+
+    private void showAudioPickerOptionDialog() {
+        String[] options = new String[]{"🔔 Nhạc chuông / Thông báo hệ thống", "📁 File âm thanh trong máy (MP3, WAV, M4A)"};
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle("Chọn âm thanh cảnh báo sạc")
+                .setItems(options, new android.content.DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(android.content.DialogInterface dialog, int which) {
+                        if (which == 0) {
+                            Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+                            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION | RingtoneManager.TYPE_ALARM | RingtoneManager.TYPE_RINGTONE);
+                            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Chọn âm báo sạc");
+                            String currentUri = prefs.getCustomAlertToneUri();
+                            if (currentUri != null && !currentUri.isEmpty()) {
+                                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, Uri.parse(currentUri));
+                            }
+                            startActivityForResult(intent, REQ_PICK_RINGTONE);
+                        } else {
+                            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                            intent.addCategory(Intent.CATEGORY_OPENABLE);
+                            intent.setType("audio/*");
+                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+                            startActivityForResult(intent, REQ_PICK_RINGTONE);
+                        }
+                    }
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQ_PICK_RINGTONE && resultCode == RESULT_OK && data != null) {
+            Uri uri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+            if (uri == null) {
+                uri = data.getData();
+            }
+            if (uri != null) {
+                try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        final int takeFlags = data.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION;
+                        if (takeFlags != 0) {
+                            getContentResolver().takePersistableUriPermission(uri, takeFlags);
+                        }
+                    }
+                } catch (Exception ignored) {
+                }
+
+                String title = "Tùy chỉnh";
+                try {
+                    android.media.Ringtone r = RingtoneManager.getRingtone(this, uri);
+                    if (r != null) {
+                        title = r.getTitle(this);
+                    }
+                } catch (Exception ignored) {
+                }
+
+                prefs.setCustomAlertToneUri(uri.toString());
+                prefs.setCustomAlertToneName(title);
+                updateAudioToneDisplay();
+                Toast.makeText(this, "Đã chọn âm báo: " + title, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     private void setupToolsControls() {
         // 1. Refresh Rate Controls
         btnHzAuto.setOnClickListener(new View.OnClickListener() {
@@ -854,6 +1014,48 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        if (btnAddHzTile != null) {
+            btnAddHzTile.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        try {
+                            android.app.StatusBarManager sbm = (android.app.StatusBarManager) getSystemService(Context.STATUS_BAR_SERVICE);
+                            if (sbm != null) {
+                                sbm.requestAddTileService(
+                                        new ComponentName(MainActivity.this, RefreshRateTileService.class),
+                                        getString(R.string.tile_hz_label),
+                                        android.graphics.drawable.Icon.createWithResource(MainActivity.this, R.drawable.ic_tile_hz),
+                                        getMainExecutor(),
+                                        new java.util.function.Consumer<Integer>() {
+                                            @Override
+                                            public void accept(Integer result) {
+                                                if (result == android.app.StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ADDED) {
+                                                    Toast.makeText(MainActivity.this, "Đã thêm phím Tần số quét vào thanh điều khiển!", Toast.LENGTH_SHORT).show();
+                                                } else if (result == android.app.StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ALREADY_ADDED) {
+                                                    Toast.makeText(MainActivity.this, "Phím Tần số quét đã có trên thanh điều khiển.", Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        }
+                                );
+                                return;
+                            }
+                        } catch (Throwable ignored) {
+                        }
+                    }
+
+                    new com.google.android.material.dialog.MaterialAlertDialogBuilder(MainActivity.this)
+                            .setTitle("Thêm phím Tần số quét vào Trung tâm điều khiển")
+                            .setMessage("Để thêm nút chuyển 60Hz / 120Hz vào thanh trạng thái kéo xuống của HyperOS / MIUI:\n\n"
+                                    + "1. Kéo thanh trạng thái (Trung tâm điều khiển) xuống.\n"
+                                    + "2. Bấm vào biểu tượng Sửa / Cây bút (chỉnh sửa ô chức năng).\n"
+                                    + "3. Tìm ô 'Tần số quét Hz' của Mi Tool ở bên dưới và kéo lên thanh chính.")
+                            .setPositiveButton("Đã hiểu", null)
+                            .show();
+                }
+            });
+        }
 
         // 2. Game 120 FPS Unlocker
         btnGame120Mode.setOnClickListener(new View.OnClickListener() {
@@ -1405,6 +1607,7 @@ public class MainActivity extends AppCompatActivity {
         updateBatteryDisplay();
         updateToolsDisplay();
         updateShizukuDisplay();
+        updateAudioToneDisplay();
         registerBatteryMonitorReceiver();
         startBatteryRealtimeTicker();
     }
@@ -1414,6 +1617,10 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         unregisterBatteryMonitorReceiver();
         stopBatteryRealtimeTicker();
+        BatteryHelper.stopAlertTone();
+        if (btnTestAudio != null) {
+            btnTestAudio.setText(R.string.btn_test_audio);
+        }
     }
 
     @Override

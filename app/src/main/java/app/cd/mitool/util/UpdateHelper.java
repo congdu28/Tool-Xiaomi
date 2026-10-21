@@ -33,7 +33,20 @@ import java.util.concurrent.Executors;
 public class UpdateHelper {
 
     private static final String GITHUB_RELEASE_API = "https://api.github.com/repos/congdu28/Tool-Xiaomi/releases/latest";
-    private static final String CURRENT_VERSION = "1.0.22";
+
+    public static String getCurrentVersion(Context context) {
+        try {
+            if (context != null) {
+                return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+            }
+        } catch (Throwable ignored) {
+        }
+        return "1.0.24";
+    }
+
+    public static String getCurrentVersion() {
+        return "1.0.24";
+    }
 
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
     private static final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -94,7 +107,8 @@ public class UpdateHelper {
                         }
 
                         final String finalApkUrl = apkUrl;
-                        final boolean isNewer = isVersionNewer(tagName, CURRENT_VERSION);
+                        final String currentVersion = getCurrentVersion(context);
+                        final boolean isNewer = isVersionNewer(tagName, currentVersion);
 
                         mainHandler.post(new Runnable() {
                             @Override
@@ -102,7 +116,7 @@ public class UpdateHelper {
                                 if (isNewer && finalApkUrl != null) {
                                     showUpdateDialog(context, tagName, body, finalApkUrl);
                                 } else if (isManualCheck) {
-                                    Toast.makeText(context, "Bạn đang dùng phiên bản mới nhất (v" + CURRENT_VERSION + ")", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(context, "Bạn đang dùng phiên bản mới nhất (v" + currentVersion + ")", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });

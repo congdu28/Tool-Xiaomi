@@ -47,12 +47,17 @@ public class ShizukuHelper {
      * Check if the Shizuku manager app is installed on this device.
      */
     public static boolean isShizukuInstalled(Context context) {
+        if (isShizukuRunning()) return true;
         if (context == null) return false;
         try {
             context.getPackageManager().getPackageInfo(SHIZUKU_PKG, 0);
             return true;
         } catch (PackageManager.NameNotFoundException e) {
-            return false;
+            try {
+                return context.getPackageManager().getLaunchIntentForPackage(SHIZUKU_PKG) != null;
+            } catch (Throwable ignored) {
+                return false;
+            }
         } catch (Throwable t) {
             return false;
         }
