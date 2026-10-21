@@ -286,8 +286,4 @@ public class UpdateHelper {
             Toast.makeText(context, "Không thể mở trình cài đặt: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
-
-    public static String getCurrentVersion() {
-        return CURRENT_VERSION;
-    }
 }
