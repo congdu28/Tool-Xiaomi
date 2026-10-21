@@ -27,4 +27,17 @@ public class BatteryHelperTest {
         float powerW = voltageV * (currentMa / 1000.0f);
         assertEquals(12.75f, powerW, 0.01f);
     }
+
+    @Test
+    public void testBatteryAlertBounds() {
+        int level = 80;
+        int bounded = Math.max(50, Math.min(95, level));
+        assertEquals(80, bounded);
+
+        int lowLevel = 30;
+        assertEquals(50, Math.max(50, Math.min(95, lowLevel)));
+
+        int highLevel = 99;
+        assertEquals(95, Math.max(50, Math.min(95, highLevel)));
+    }
 }

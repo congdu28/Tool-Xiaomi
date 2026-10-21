@@ -60,7 +60,6 @@ public class GamingFpsHelper {
 
             return JoyoseStatus.ACTIVE_LOCKED;
         } catch (PackageManager.NameNotFoundException e) {
-            // Either uninstalled or not Xiaomi
             return JoyoseStatus.NOT_FOUND;
         } catch (Exception e) {
             return JoyoseStatus.NOT_FOUND;
@@ -113,28 +112,44 @@ public class GamingFpsHelper {
     }
 
     /**
-     * Try disabling Joyose directly with root, or copy ADB command to clipboard.
-     * Returns true if root succeeded, false if copied to clipboard.
+     * Try disabling Joyose directly with root, or Shizuku 1-tap, or copy ADB command to clipboard.
+     * Returns true if root or Shizuku succeeded, false if copied to clipboard.
      */
     public static boolean handleDisableJoyose(Context context) {
         boolean rootSuccess = runRootCommand("pm disable-user --user 0 " + JOYOSE_PKG);
         if (rootSuccess) {
             Toast.makeText(context, "🔥 Đã vô hiệu hóa Joyose bằng quyền Root! Khóa 89 FPS đã được gỡ bỏ.", Toast.LENGTH_LONG).show();
             return true;
+        } else if (ShizukuHelper.hasShizukuPermission()) {
+            ShizukuHelper.setJoyoseEnabled(false, new ShizukuHelper.CommandCallback() {
+                @Override
+                public void onComplete(boolean success, String message) {
+                    Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+                }
+            });
+            return true;
         } else {
             copyToClipboard(context, "Lệnh tắt Joyose", CMD_DISABLE_JOYOSE);
-            Toast.makeText(context, "📋 Đã sao chép lệnh ADB tắt Joyose! Hãy chạy lệnh này trên máy tính để mở khóa 120 FPS.", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "📋 Đã sao chép lệnh ADB tắt Joyose! Hãy chạy lệnh trên máy tính hoặc dùng Shizuku 1-chạm.", Toast.LENGTH_LONG).show();
             return false;
         }
     }
 
     /**
-     * Try enabling Joyose directly with root, or copy ADB command to clipboard.
+     * Try enabling Joyose directly with root, or Shizuku 1-tap, or copy ADB command to clipboard.
      */
     public static boolean handleEnableJoyose(Context context) {
         boolean rootSuccess = runRootCommand("pm enable " + JOYOSE_PKG);
         if (rootSuccess) {
             Toast.makeText(context, "🔄 Đã bật lại Joyose bằng quyền Root.", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (ShizukuHelper.hasShizukuPermission()) {
+            ShizukuHelper.setJoyoseEnabled(true, new ShizukuHelper.CommandCallback() {
+                @Override
+                public void onComplete(boolean success, String message) {
+                    Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+                }
+            });
             return true;
         } else {
             copyToClipboard(context, "Lệnh bật Joyose", CMD_ENABLE_JOYOSE);

@@ -55,10 +55,81 @@ import app.cd.mitool.util.ShortcutHelper;
 import app.cd.mitool.util.UpdateHelper;
 import app.cd.mitool.util.VoiceAlertHelper;
 import app.cd.mitool.util.XiaomiHelper;
+import app.cd.mitool.util.ShizukuHelper;
+import app.cd.mitool.util.SystemClockHelper;
+import app.cd.mitool.service.RefreshRateTileService;
+import android.media.RingtoneManager;
+import android.widget.SeekBar;
+import rikka.shizuku.Shizuku;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQ_NOTIF_PERM = 101;
+    private static final int REQ_PICK_RINGTONE = 7701;
+
+    // Shizuku Views
+    private TextView tvShizukuStatus;
+    private TextView tvShizukuBadge;
+    private MaterialButton btnShizukuGrantAuto;
+    private MaterialButton btnShizukuOpen;
+
+    // Custom Battery Alert Views
+    private TextView tvAlert80Title;
+    private View layoutAlertLevelSlider;
+    private TextView tvAlertLevelValue;
+    private SeekBar sbBatteryAlertLevel;
+    private TextView tvSelectedAudioTone;
+    private MaterialButton btnPickAudio;
+    private MaterialButton btnTestAudio;
+    private MaterialButton btnResetAudio;
+
+    // Refresh Rate Tile View
+    private MaterialButton btnAddHzTile;
+
+    private final Shizuku.OnRequestPermissionResultListener shizukuPermissionListener =
+            new Shizuku.OnRequestPermissionResultListener() {
+                @Override
+                public void onRequestPermissionResult(int requestCode, int grantResult) {
+                    if (requestCode == ShizukuHelper.SHIZUKU_REQ_CODE) {
+                        if (grantResult == PackageManager.PERMISSION_GRANTED) {
+                            Toast.makeText(MainActivity.this, "Đã cấp quyền Shizuku thành công!", Toast.LENGTH_SHORT).show();
+                            updateShizukuDisplay();
+                            updateToolsDisplay();
+                        } else {
+                            Toast.makeText(MainActivity.this, "Từ chối quyền Shizuku", Toast.LENGTH_SHORT).show();
+                            updateShizukuDisplay();
+                        }
+                    }
+                }
+            };
+
+    private final Shizuku.OnBinderReceivedListener shizukuBinderReceivedListener =
+            new Shizuku.OnBinderReceivedListener() {
+                @Override
+                public void onBinderReceived() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateShizukuDisplay();
+                            updateToolsDisplay();
+                        }
+                    });
+                }
+            };
+
+    private final Shizuku.OnBinderDeadListener shizukuBinderDeadListener =
+            new Shizuku.OnBinderDeadListener() {
+                @Override
+                public void onBinderDead() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateShizukuDisplay();
+                            updateToolsDisplay();
+                        }
+                    });
+                }
+            };
 
     private PreferencesHelper prefs;
 
@@ -173,6 +244,13 @@ public class MainActivity extends AppCompatActivity {
         setupBatteryControls();
         setupToolsControls();
         setupSettingsControls();
+        setupShizukuControls();
+        try {
+            Shizuku.addRequestPermissionResultListener(shizukuPermissionListener);
+            Shizuku.addBinderReceivedListenerSticky(shizukuBinderReceivedListener);
+            Shizuku.addBinderDeadListener(shizukuBinderDeadListener);
+        } catch (Throwable ignored) {
+        }
         requestNotificationPermissionIfNeeded();
 
         // Default start notification clock service if enabled
@@ -286,6 +364,25 @@ public class MainActivity extends AppCompatActivity {
         btnPermAutostart = findViewById(R.id.btn_perm_autostart);
         btnPermBatterySaver = findViewById(R.id.btn_perm_battery_saver);
         btnOpenBatteryInfo = findViewById(R.id.btn_open_battery_info);
+
+        // Shizuku Views
+        tvShizukuStatus = findViewById(R.id.tv_shizuku_status);
+        tvShizukuBadge = findViewById(R.id.tv_shizuku_badge);
+        btnShizukuGrantAuto = findViewById(R.id.btn_shizuku_grant_auto);
+        btnShizukuOpen = findViewById(R.id.btn_shizuku_open);
+
+        // Custom Battery Alert Views
+        tvAlert80Title = findViewById(R.id.tv_alert_80_title);
+        layoutAlertLevelSlider = findViewById(R.id.layout_alert_level_slider);
+        tvAlertLevelValue = findViewById(R.id.tv_alert_level_value);
+        sbBatteryAlertLevel = findViewById(R.id.sb_battery_alert_level);
+        tvSelectedAudioTone = findViewById(R.id.tv_selected_audio_tone);
+        btnPickAudio = findViewById(R.id.btn_pick_audio);
+        btnTestAudio = findViewById(R.id.btn_test_audio);
+        btnResetAudio = findViewById(R.id.btn_reset_audio);
+
+        // Hz Tile View
+        btnAddHzTile = findViewById(R.id.btn_add_hz_tile);
 
         tvSettingsCurrentVersion.setText("Phiên bản đang cài: v" + UpdateHelper.getCurrentVersion());
     }
@@ -929,7 +1026,13 @@ public class MainActivity extends AppCompatActivity {
         updateHzButtons();
 
         // 4. Apply system-wide refresh rate (via Root or ContentResolver)
-        boolean success = RefreshRateHelper.setRefreshRate(this, targetRate);
+        boolean success;
+        if (ShizukuHelper.hasShizukuPermission()) {
+            ShizukuHelper.setRefreshRateViaShizuku(targetRate, null);
+            success = true;
+        } else {
+            success = RefreshRateHelper.setRefreshRate(this, targetRate);
+        }
         if (success) {
             String msg = (targetRate == 0) ? "Đã đặt tần số quét Mặc định (Auto)." : ("Đã ép tần số quét " + targetRate + "Hz!");
             Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
@@ -986,6 +1089,14 @@ public class MainActivity extends AppCompatActivity {
                 tvJoyoseStatus.setText("Joyose: Không có / Đã gỡ");
                 tvJoyoseStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_cyan));
                 break;
+        }
+
+        if (ShizukuHelper.hasShizukuPermission()) {
+            if (btnCopyDisableJoyose != null) btnCopyDisableJoyose.setText("⚡ Vô hiệu hóa Joyose (1-Chạm Shizuku)");
+            if (btnCopyEnableJoyose != null) btnCopyEnableJoyose.setText("🔄 Bật lại Joyose (1-Chạm Shizuku)");
+        } else {
+            if (btnCopyDisableJoyose != null) btnCopyDisableJoyose.setText(R.string.game_fps_btn_copy_disable);
+            if (btnCopyEnableJoyose != null) btnCopyEnableJoyose.setText(R.string.game_fps_btn_copy_enable);
         }
 
         if (btnLaunchAov != null) {

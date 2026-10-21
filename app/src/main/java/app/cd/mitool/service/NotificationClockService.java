@@ -271,11 +271,21 @@ public class NotificationClockService extends Service {
     }
 
     private void checkBatteryAlerts(BatteryHelper.BatteryInfo info) {
+        int targetLevel = prefs != null ? prefs.getBatteryAlertLevel() : 80;
+
         if (!info.isCharging) {
             alerted80 = false;
             alerted100 = false;
             VoiceAlertHelper.resetSessionAlerts();
+        } else {
+            if (info.level < targetLevel - 5) {
+                alerted80 = false;
+            }
+            if (info.level < 95) {
+                alerted100 = false;
+            }
         }
+
         if (info.temperature < 40.0f) {
             alertedTemp = false;
         }
@@ -284,19 +294,19 @@ public class NotificationClockService extends Service {
         VoiceAlertHelper.checkLevelAlerts(this, info.level, info.isCharging);
         VoiceAlertHelper.checkTempAlert(this, info.temperature);
 
-        if (info.isCharging && info.level >= 80 && info.level < 85 && prefs.isAlert80Enabled() && !alerted80) {
+        if (info.isCharging && info.level >= targetLevel && info.level < targetLevel + 5 && (prefs != null && prefs.isAlert80Enabled()) && !alerted80) {
             alerted80 = true;
             BatteryHelper.playAlertTone(this);
             BatteryHelper.vibrateDevice(this, 800);
         }
 
-        if (info.isFull && prefs.isAlert100Enabled() && !alerted100) {
+        if (info.isFull && (prefs != null && prefs.isAlert100Enabled()) && !alerted100) {
             alerted100 = true;
             BatteryHelper.playAlertTone(this);
             BatteryHelper.vibrateDevice(this, 1200);
         }
 
-        if (info.temperature >= 42.0f && prefs.isAlertTempEnabled() && !alertedTemp) {
+        if (info.temperature >= 42.0f && (prefs != null && prefs.isAlertTempEnabled()) && !alertedTemp) {
             alertedTemp = true;
             BatteryHelper.playAlertTone(this);
             BatteryHelper.vibrateDevice(this, 1500);

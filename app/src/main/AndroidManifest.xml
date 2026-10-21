@@ -76,6 +76,17 @@
         </service>
 
         <service
+            android:name=".service.RefreshRateTileService"
+            android:icon="@drawable/ic_tile_hz"
+            android:label="@string/tile_hz_label"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <service
             android:name=".service.FloatingClockService"
             android:enabled="true"
             android:exported="false"

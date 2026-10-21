@@ -100,7 +100,112 @@
                             android:textStyle="bold" />
                     </LinearLayout>
 
-                    <!-- Option 1: Notification Clock (NO ADB) -->
+                                        <!-- Shizuku 1-Tap Card -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        app:cardBackgroundColor="@color/card_dark"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="14dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/shizuku_title"
+                                    android:textColor="@color/neon_cyan"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tv_shizuku_badge"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/bg_floating_capsule"
+                                    android:paddingStart="8dp"
+                                    android:paddingTop="3dp"
+                                    android:paddingEnd="8dp"
+                                    android:paddingBottom="3dp"
+                                    android:text="Shizuku"
+                                    android:textColor="@color/neon_cyan"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tv_shizuku_status"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="@string/shizuku_status_not_running"
+                                android:textColor="@color/text_primary"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:lineSpacingExtra="2dp"
+                                android:text="@string/shizuku_desc"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="11sp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_shizuku_grant_auto"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="4dp"
+                                    android:layout_weight="1.2"
+                                    android:minHeight="42dp"
+                                    android:backgroundTint="@color/neon_cyan"
+                                    android:insetTop="0dp"
+                                    android:insetBottom="0dp"
+                                    android:text="@string/btn_shizuku_grant_auto"
+                                    android:textColor="@color/bg_dark"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold"
+                                    app:cornerRadius="8dp" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_shizuku_open"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="4dp"
+                                    android:layout_weight="0.8"
+                                    android:minHeight="42dp"
+                                    android:backgroundTint="@color/card_highlight"
+                                    android:insetTop="0dp"
+                                    android:insetBottom="0dp"
+                                    android:text="@string/btn_shizuku_open"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="11sp"
+                                    app:cornerRadius="8dp" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+<!-- Option 1: Notification Clock (NO ADB) -->
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -743,11 +848,12 @@
                                 android:orientation="horizontal">
 
                                 <TextView
+                                    android:id="@+id/tv_alert_80_title"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_marginEnd="12dp"
                                     android:layout_weight="1"
-                                    android:text="Báo chuông khi đạt 80% (Bảo vệ pin)"
+                                    android:text="Báo chuông khi đạt ngưỡng bảo vệ pin (80%)"
                                     android:textColor="@color/text_primary"
                                     android:textSize="13sp" />
 
@@ -755,6 +861,56 @@
                                     android:id="@+id/switch_alert_80"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content" />
+                            </LinearLayout>
+
+                            <!-- Alert Level Slider Container -->
+                            <LinearLayout
+                                android:id="@+id/layout_alert_level_slider"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:background="#151A22"
+                                android:orientation="vertical"
+                                android:padding="10dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Tùy chỉnh mức pin cảnh báo:"
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="11sp" />
+
+                                    <TextView
+                                        android:id="@+id/tv_alert_level_value"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="80%"
+                                        android:textColor="@color/neon_green"
+                                        android:textSize="13sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <SeekBar
+                                    android:id="@+id/sb_battery_alert_level"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="6dp"
+                                    android:max="45"
+                                    android:progress="30" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Kéo để chọn mức sạc mong muốn (50% - 95%). Đề xuất: 80%."
+                                    android:textColor="@color/text_muted"
+                                    android:textSize="10sp" />
                             </LinearLayout>
 
                             <LinearLayout
@@ -799,6 +955,95 @@
                                     android:id="@+id/switch_alert_temp"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content" />
+                            </LinearLayout>
+
+                            <!-- Custom Alert Audio Tone Section -->
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="12dp"
+                                android:layout_marginBottom="10dp"
+                                android:background="@color/card_dark_stroke" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Âm thanh chuông báo sạc:"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tv_selected_audio_tone"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:ellipsize="end"
+                                    android:maxLines="1"
+                                    android:text="Mặc định hệ thống"
+                                    android:textColor="@color/neon_cyan"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:orientation="horizontal">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_pick_audio"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="4dp"
+                                    android:layout_weight="1.2"
+                                    android:minHeight="38dp"
+                                    android:backgroundTint="@color/card_highlight"
+                                    android:insetTop="0dp"
+                                    android:insetBottom="0dp"
+                                    android:text="@string/btn_pick_audio"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="11sp"
+                                    app:cornerRadius="6dp" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_test_audio"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="4dp"
+                                    android:layout_marginEnd="4dp"
+                                    android:layout_weight="0.9"
+                                    android:minHeight="38dp"
+                                    android:backgroundTint="@color/card_highlight"
+                                    android:insetTop="0dp"
+                                    android:insetBottom="0dp"
+                                    android:text="@string/btn_test_audio"
+                                    android:textColor="@color/neon_green"
+                                    android:textSize="11sp"
+                                    app:cornerRadius="6dp"
+                                    app:strokeColor="@color/neon_green"
+                                    app:strokeWidth="1dp" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_reset_audio"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="4dp"
+                                    android:layout_weight="0.9"
+                                    android:minHeight="38dp"
+                                    android:backgroundTint="@color/card_highlight"
+                                    android:insetTop="0dp"
+                                    android:insetBottom="0dp"
+                                    android:text="@string/btn_reset_audio"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="11sp"
+                                    app:cornerRadius="6dp" />
                             </LinearLayout>
 
                         </LinearLayout>
@@ -1442,6 +1687,22 @@
                                 android:textSize="11sp"
                                 app:cornerRadius="8dp"
                                 app:strokeColor="@color/mi_orange"
+                                app:strokeWidth="1dp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_add_hz_tile"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:minHeight="42dp"
+                                android:backgroundTint="@color/card_highlight"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:text="@string/btn_add_hz_qs_tile"
+                                android:textColor="@color/neon_cyan"
+                                android:textSize="11sp"
+                                app:cornerRadius="8dp"
+                                app:strokeColor="@color/neon_cyan"
                                 app:strokeWidth="1dp" />
 
                         </LinearLayout>

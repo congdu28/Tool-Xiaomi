@@ -18,6 +18,7 @@ import java.util.concurrent.Executor;
 import app.cd.mitool.R;
 import app.cd.mitool.ToggleNotificationActivity;
 import app.cd.mitool.service.NotificationTileService;
+import app.cd.mitool.service.RefreshRateTileService;
 
 public class ShortcutHelper {
 
@@ -58,7 +59,7 @@ public class ShortcutHelper {
     }
 
     /**
-     * Request adding Quick Settings Tile directly (Android 13+ / HyperOS)
+     * Request adding Quick Settings Notification Tile directly (Android 13+ / HyperOS)
      */
     public static void requestAddTileToQuickSettings(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -87,5 +88,37 @@ public class ShortcutHelper {
             }
         }
         Toast.makeText(context, "💡 Cách thêm: Vuốt thanh thông báo xuống -> Chạm biểu tượng Bút chì ✏️ -> Tìm 'Thông báo Mi-Tool' và kéo lên!", Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * Request adding Quick Settings Refresh Rate (Hz) Tile directly (Android 13+ / HyperOS)
+     */
+    public static void requestAddHzTileToQuickSettings(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            try {
+                StatusBarManager statusBarManager = context.getSystemService(StatusBarManager.class);
+                if (statusBarManager != null) {
+                    ComponentName componentName = new ComponentName(context, RefreshRateTileService.class);
+                    Icon icon = Icon.createWithResource(context, R.drawable.ic_tile_hz);
+                    Executor executor = ContextCompat.getMainExecutor(context);
+                    statusBarManager.requestAddTileService(
+                            componentName,
+                            context.getString(R.string.tile_hz_label),
+                            icon,
+                            executor,
+                            resultCode -> {
+                                if (resultCode == StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ADDED) {
+                                    Toast.makeText(context, "Đã thêm nút 'Tần số quét' vào Bảng điều khiển!", Toast.LENGTH_SHORT).show();
+                                } else if (resultCode == StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ALREADY_ADDED) {
+                                    Toast.makeText(context, "Nút 'Tần số quét' đã có trong Bảng điều khiển của bạn!", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                    );
+                    return;
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        Toast.makeText(context, "💡 Cách thêm: Vuốt thanh thông báo xuống -> Chạm biểu tượng Bút chì ✏️ -> Tìm 'Tần số quét' và kéo lên!", Toast.LENGTH_LONG).show();
     }
 }

@@ -10,3 +10,9 @@
 -keep class androidx.cardview.widget.** { *; }
 -keep class androidx.coordinatorlayout.widget.** { *; }
 -keep class androidx.core.widget.** { *; }
+
+# Shizuku
+-keep class rikka.shizuku.** { *; }
+-keepclassmembers class rikka.shizuku.Shizuku {
+    private static rikka.shizuku.ShizukuRemoteProcess newProcess(java.lang.String[], java.lang.String[], java.lang.String);
+}

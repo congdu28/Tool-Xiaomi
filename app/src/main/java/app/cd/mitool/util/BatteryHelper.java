@@ -233,14 +233,20 @@ public class BatteryHelper {
 
     public static synchronized void playAlertTone(Context context) {
         try {
-            if (activeRingtone != null && activeRingtone.isPlaying()) {
-                activeRingtone.stop();
+            stopAlertTone();
+            PreferencesHelper prefs = new PreferencesHelper(context);
+            String customUriStr = prefs.getCustomAlertToneUri();
+            Uri alertUri = null;
+            if (customUriStr != null && !customUriStr.trim().isEmpty()) {
+                alertUri = Uri.parse(customUriStr);
             }
-            Uri notificationUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            if (notificationUri == null) {
-                notificationUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+            if (alertUri == null) {
+                alertUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                if (alertUri == null) {
+                    alertUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+                }
             }
-            activeRingtone = RingtoneManager.getRingtone(context.getApplicationContext(), notificationUri);
+            activeRingtone = RingtoneManager.getRingtone(context.getApplicationContext(), alertUri);
             if (activeRingtone != null) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     activeRingtone.setAudioAttributes(new android.media.AudioAttributes.Builder()
@@ -254,6 +260,38 @@ public class BatteryHelper {
             }
         } catch (Exception ignored) {
         }
+    }
+
+    public static synchronized void stopAlertTone() {
+        try {
+            if (activeRingtone != null && activeRingtone.isPlaying()) {
+                activeRingtone.stop();
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    public static synchronized boolean isAlertTonePlaying() {
+        try {
+            return activeRingtone != null && activeRingtone.isPlaying();
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
+
+    public static String getRingtoneTitle(Context context, Uri uri) {
+        if (uri == null) return "Mặc định hệ thống";
+        try {
+            Ringtone r = RingtoneManager.getRingtone(context, uri);
+            if (r != null) {
+                String title = r.getTitle(context);
+                if (title != null && !title.trim().isEmpty()) {
+                    return title;
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return "Âm thanh tùy chọn";
     }
 
     public static void vibrateDevice(Context context, long durationMs) {

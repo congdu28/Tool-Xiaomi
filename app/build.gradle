@@ -10,8 +10,8 @@ android {
         applicationId 'app.cd.mitool'
         minSdk 24
         targetSdk 35
-        versionCode 22
-        versionName '1.0.22'
+        versionCode 23
+        versionName '1.0.23'
         resConfigs "vi", "en"
     }
 
@@ -51,5 +51,10 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.cardview:cardview:1.0.0'
+
+    // Shizuku API
+    implementation 'dev.rikka.shizuku:api:13.1.5'
+    implementation 'dev.rikka.shizuku:provider:13.1.5'
+
     testImplementation 'junit:junit:4.13.2'
 }

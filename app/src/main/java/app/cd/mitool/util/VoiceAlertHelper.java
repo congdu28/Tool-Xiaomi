@@ -138,6 +138,7 @@ public class VoiceAlertHelper {
         lastDisconnectTime = now;
 
         resetSessionAlerts();
+
         PreferencesHelper prefs = new PreferencesHelper(context);
         if (!prefs.isVoiceAlertMasterEnabled() || !prefs.isVoiceAlertDisconnectEnabled()) {
             return;
@@ -153,9 +154,14 @@ public class VoiceAlertHelper {
             return;
         }
 
-        if (level >= 80 && level < 85 && prefs.isVoiceAlert80Enabled() && !hasAnnounced80) {
+        int targetLevel = prefs.getBatteryAlertLevel();
+        if (level >= targetLevel && level < targetLevel + 5 && prefs.isVoiceAlert80Enabled() && !hasAnnounced80) {
             hasAnnounced80 = true;
-            speak(context, "Pin đã đạt 80 phần trăm. Bạn có thể rút sạc để bảo vệ tuổi thọ pin tối ưu.");
+            speak(context, "Pin đã sạc đạt " + targetLevel + " phần trăm. Bạn có thể rút sạc để bảo vệ tuổi thọ pin tối ưu.");
+        }
+
+        if (level < targetLevel - 5) {
+            hasAnnounced80 = false;
         }
 
         if (level >= 100 && prefs.isVoiceAlert100Enabled() && !hasAnnounced100) {

@@ -24,6 +24,11 @@ public class PreferencesHelper {
     public static final String KEY_LOCKSCREEN_NOTIF = "lockscreen_notif_enabled";
     public static final String KEY_LOCKSCREEN_AMBIENT = "lockscreen_ambient_enabled";
 
+    // Battery Alert Customization
+    public static final String KEY_BATTERY_ALERT_LEVEL = "battery_alert_level"; // default 80
+    public static final String KEY_CUSTOM_ALERT_URI = "custom_alert_tone_uri";
+    public static final String KEY_CUSTOM_ALERT_NAME = "custom_alert_tone_name";
+
     // Voice Alert Keys
     public static final String KEY_VOICE_ALERT_MASTER = "voice_alert_master";
     public static final String KEY_VOICE_ALERT_CONNECT = "voice_alert_connect";
@@ -103,7 +108,7 @@ public class PreferencesHelper {
     }
 
     public int getClockX() {
-        return prefs.getInt(KEY_CLOCK_X, 100);
+        return prefs.getInt(KEY_CLOCK_X, -1);
     }
 
     public void setClockX(int x) {
@@ -111,34 +116,34 @@ public class PreferencesHelper {
     }
 
     public int getClockY() {
-        return prefs.getInt(KEY_CLOCK_Y, 200);
+        return prefs.getInt(KEY_CLOCK_Y, -1);
     }
 
     public void setClockY(int y) {
         prefs.edit().putInt(KEY_CLOCK_Y, y).apply();
     }
 
-    public boolean isClockStatusBarMode() {
-        return prefs.getBoolean(KEY_CLOCK_STATUS_BAR_MODE, false);
+    public int getClockStatusBarMode() {
+        return prefs.getInt(KEY_CLOCK_STATUS_BAR_MODE, 0); // 0: Normal, 1: Top-Left, 2: Beside Notch
     }
 
-    public void setClockStatusBarMode(boolean mode) {
-        prefs.edit().putBoolean(KEY_CLOCK_STATUS_BAR_MODE, mode).apply();
+    public void setClockStatusBarMode(int mode) {
+        prefs.edit().putInt(KEY_CLOCK_STATUS_BAR_MODE, mode).apply();
     }
 
     public boolean isClockTransparentBg() {
         return prefs.getBoolean(KEY_CLOCK_TRANSPARENT_BG, false);
     }
 
-    public void setClockTransparentBg(boolean trans) {
-        prefs.edit().putBoolean(KEY_CLOCK_TRANSPARENT_BG, trans).apply();
+    public void setClockTransparentBg(boolean transparent) {
+        prefs.edit().putBoolean(KEY_CLOCK_TRANSPARENT_BG, transparent).apply();
     }
 
-    public boolean isHideSystemClock() {
+    public boolean isClockHideSystemClock() {
         return prefs.getBoolean(KEY_CLOCK_HIDE_SYSTEM_CLOCK, false);
     }
 
-    public void setHideSystemClock(boolean hide) {
+    public void setClockHideSystemClock(boolean hide) {
         prefs.edit().putBoolean(KEY_CLOCK_HIDE_SYSTEM_CLOCK, hide).apply();
     }
 
@@ -156,6 +161,31 @@ public class PreferencesHelper {
 
     public void setAlert80Enabled(boolean enabled) {
         prefs.edit().putBoolean(KEY_ALERT_80, enabled).apply();
+    }
+
+    public int getBatteryAlertLevel() {
+        return prefs.getInt(KEY_BATTERY_ALERT_LEVEL, 80);
+    }
+
+    public void setBatteryAlertLevel(int level) {
+        int bounded = Math.max(50, Math.min(95, level));
+        prefs.edit().putInt(KEY_BATTERY_ALERT_LEVEL, bounded).apply();
+    }
+
+    public String getCustomAlertToneUri() {
+        return prefs.getString(KEY_CUSTOM_ALERT_URI, "");
+    }
+
+    public void setCustomAlertToneUri(String uri) {
+        prefs.edit().putString(KEY_CUSTOM_ALERT_URI, uri != null ? uri : "").apply();
+    }
+
+    public String getCustomAlertToneName() {
+        return prefs.getString(KEY_CUSTOM_ALERT_NAME, "");
+    }
+
+    public void setCustomAlertToneName(String name) {
+        prefs.edit().putString(KEY_CUSTOM_ALERT_NAME, name != null ? name : "").apply();
     }
 
     public boolean isAlert100Enabled() {

@@ -35,7 +35,7 @@
 
     <string name="enable_charging_notification">Tự động thông báo khi cắm sạc</string>
     <string name="charging_notif_desc">Khi cắm sạc, hệ thống gửi thông báo ước lượng thời gian sạc đầy và công suất sạc.</string>
-    <string name="battery_protect_alert">Chuông báo khi pin đạt 80% (Bảo vệ pin)</string>
+    <string name="battery_protect_alert">Chuông báo khi pin đạt ngưỡng bảo vệ</string>
     <string name="battery_full_alert">Chuông báo khi sạc đầy 100%</string>
     <string name="battery_temp_alert">Cảnh báo khi nhiệt độ pin quá nóng (&gt; 42°C)</string>
 
@@ -54,7 +54,7 @@
     <string name="voice_alert_master">Bật âm báo giọng nói Tiếng Việt</string>
     <string name="voice_alert_connect">Thông báo khi cắm sạc (Đọc công suất W)</string>
     <string name="voice_alert_disconnect">Thông báo khi rút sạc (Đọc mức pin)</string>
-    <string name="voice_alert_80">Nhắc nhở khi pin đạt 80% (Bảo vệ pin)</string>
+    <string name="voice_alert_80">Nhắc nhở khi pin đạt ngưỡng bảo vệ</string>
     <string name="voice_alert_100">Thông báo khi pin sạc đầy 100%</string>
     <string name="voice_alert_temp">Cảnh báo khi nhiệt độ pin &gt; 42°C</string>
     <string name="voice_test_btn">🔊 Nghe thử giọng nói</string>
@@ -94,9 +94,9 @@
     <string name="game_fps_desc">Khắc phục triệt để lỗi Xiaomi khóa 89-90 FPS trong Liên Quân Mobile (AOV) dù màn hình đã bật 120Hz và game đã bật 120 FPS.</string>
     <string name="game_fps_btn_speed_mode">⚡ Kích hoạt Game Mode 120Hz &amp; Tối Đa Hiệu Năng</string>
     <string name="game_fps_joyose_title">⚠️ Thủ phạm khóa 89 FPS: Dịch vụ Joyose (Xiaomi)</string>
-    <string name="game_fps_joyose_desc">Joyose là dịch vụ ngầm của Xiaomi tự ý bóp GPU/FPS xuống 89-90 FPS để hạ nhiệt khi chơi Liên Quân. Bạn hãy sao chép lệnh ADB dưới đây và chạy 1 lần trên máy tính để gỡ bỏ triệt để giới hạn:</string>
-    <string name="game_fps_btn_copy_disable">📋 Chép lệnh TẮT Joyose (120 FPS)</string>
-    <string name="game_fps_btn_copy_enable">🔄 Chép lệnh BẬT lại Joyose</string>
+    <string name="game_fps_joyose_desc">Joyose là dịch vụ ngầm của Xiaomi tự ý bóp GPU/FPS xuống 89-90 FPS để hạ nhiệt khi chơi Liên Quân. Bạn hãy dùng Shizuku 1-chạm hoặc sao chép lệnh ADB dưới đây để gỡ bỏ triệt để giới hạn:</string>
+    <string name="game_fps_btn_copy_disable">📋 Vô hiệu hóa Joyose (120 FPS)</string>
+    <string name="game_fps_btn_copy_enable">🔄 Bật lại Joyose</string>
     <string name="game_fps_btn_powerkeeper">🔋 Xóa dữ liệu Pin &amp; Hiệu suất</string>
     <string name="game_fps_btn_per_app_hz">📱 Ứng dụng dùng 120Hz</string>
     <string name="game_fps_btn_launch_aov">⚔️ Mở Liên Quân Mobile (AOV)</string>
@@ -117,8 +117,29 @@
     <!-- Shortcuts & Quick Settings Tile -->
     <string name="tile_notification_label">Thông báo Mi-Tool</string>
     <string name="tile_notification_desc">Bật hoặc tắt nhanh thanh thông báo trạng thái Mi-Tool</string>
+    <string name="tile_hz_label">Tần số quét</string>
+    <string name="tile_hz_desc">Chuyển đổi nhanh 60Hz và 120Hz</string>
     <string name="shortcut_toggle_notif_short">Bật/Tắt Thông báo</string>
     <string name="shortcut_toggle_notif_long">Bật/Tắt Thông báo Mi-Tool</string>
     <string name="btn_pin_shortcut">📌 Thêm ra Màn hình chính</string>
-    <string name="btn_add_qs_tile">🎛️ Thêm vào Bảng điều khiển</string>
+    <string name="btn_add_qs_tile">🎛️ Thêm nút Thông báo vào Bảng điều khiển</string>
+    <string name="btn_add_hz_qs_tile">🎛️ Thêm nút đổi 60/120Hz vào Bảng điều khiển</string>
+
+    <!-- Shizuku Direct 1-Tap Permissions -->
+    <string name="shizuku_title">⚡ Cấp Quyền Tự Động Bằng Shizuku (1-Chạm)</string>
+    <string name="shizuku_desc">Nếu máy bạn đã chạy ứng dụng Shizuku, bạn có thể cấp quyền hệ thống WRITE_SECURE_SETTINGS chỉ với 1 click ngay trên điện thoại mà không cần dùng máy tính.</string>
+    <string name="shizuku_status_granted">🟢 Shizuku đang chạy &amp; Đã cấp quyền cho Mi Tool</string>
+    <string name="shizuku_status_running_no_perm">🟡 Shizuku đang chạy (Chưa cấp quyền cho Mi Tool)</string>
+    <string name="shizuku_status_not_running">🔴 Shizuku chưa chạy hoặc chưa cài đặt</string>
+    <string name="btn_shizuku_grant_auto">⚡ 1-Chạm Cấp Quyền WRITE_SECURE_SETTINGS</string>
+    <string name="btn_shizuku_open">🚀 Mở ứng dụng Shizuku</string>
+
+    <!-- Custom Battery Alerts -->
+    <string name="battery_alert_custom_level_title">Ngưỡng cảnh báo bảo vệ pin</string>
+    <string name="battery_alert_tone_title">Âm thanh chuông báo sạc</string>
+    <string name="battery_alert_tone_default">Mặc định hệ thống</string>
+    <string name="btn_pick_audio">🎵 Chọn nhạc chuông</string>
+    <string name="btn_test_audio">🔊 Nghe thử</string>
+    <string name="btn_stop_audio">⏹️ Dừng</string>
+    <string name="btn_reset_audio">🔄 Mặc định</string>
 </resources>
