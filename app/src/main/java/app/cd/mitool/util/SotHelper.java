@@ -167,6 +167,24 @@ public class SotHelper {
     }
 
     /**
+     * Ensure SOT preferences have a valid baseline timestamp when app is first installed/opened.
+     */
+    public static void ensureInitialized(Context context) {
+        if (context == null) return;
+        try {
+            PreferencesHelper prefs = new PreferencesHelper(context);
+            long unplugTime = prefs.getSotLastUnplugTime();
+            long now = System.currentTimeMillis();
+            if (unplugTime <= 0 || unplugTime > now) {
+                int level = BatteryHelper.getBatteryPercentage(context);
+                prefs.setSotLastUnplugTime(now);
+                prefs.setSotLastUnplugLevel(level > 0 ? level : 100);
+            }
+        } catch (Throwable ignored) {
+        }
+    }
+
+    /**
      * Format unplug moment and battery consumption delta.
      */
     public static String getUnplugSummary(Context context, int currentLevel) {
@@ -174,16 +192,23 @@ public class SotHelper {
         PreferencesHelper prefs = new PreferencesHelper(context);
         long unplugTime = prefs.getSotLastUnplugTime();
         int unplugLevel = prefs.getSotLastUnplugLevel();
+        long now = System.currentTimeMillis();
 
-        if (unplugTime <= 0) {
-            return "Chưa ghi nhận lần rút sạc (Đang đếm từ khi mở ứng dụng)";
+        if (unplugTime <= 0 || unplugTime > now) {
+            return "Đang theo dõi pin từ khi cài đặt ứng dụng";
+        }
+
+        long diff = now - unplugTime;
+        int drainPercent = Math.max(0, unplugLevel - currentLevel);
+
+        if (diff < 60000L) {
+            return "Vừa mới rút sạc ở mức " + unplugLevel + "% • Đã tiêu thụ " + drainPercent + "% pin";
         }
 
         Date date = new Date(unplugTime);
         String timeStr = TIME_FORMAT.format(date);
         String dateStr = DATE_FORMAT.format(date);
 
-        int drainPercent = Math.max(0, unplugLevel - currentLevel);
         return "Rút sạc lúc " + timeStr + " (" + dateStr + ") ở mức " + unplugLevel + "% • Đã tiêu thụ " + drainPercent + "% pin";
     }
 

@@ -167,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
     private MaterialButton btnDrainOpenSettings;
     private LinearLayout layoutDrainAppsContainer;
     private TextView tvDrainAppsEmpty;
+    private TextView tvDrainAppsSubtitle;
     private int currentDrainFilter = BatteryUsageHelper.FILTER_SINCE_UNPLUG;
 
     // Tab 4: Settings Views
@@ -249,6 +250,7 @@ public class MainActivity extends AppCompatActivity {
         setupNavigation();
         setupDeviceSpecs();
         setupToolsCards();
+        SotHelper.ensureInitialized(this);
         setupBatteryControls();
         setupSettingsControls();
         setupShizukuControls();
@@ -382,6 +384,7 @@ public class MainActivity extends AppCompatActivity {
         btnDrainOpenSettings = findViewById(R.id.btn_drain_open_settings);
         layoutDrainAppsContainer = findViewById(R.id.layout_drain_apps_container);
         tvDrainAppsEmpty = findViewById(R.id.tv_drain_apps_empty);
+        tvDrainAppsSubtitle = findViewById(R.id.tv_drain_apps_subtitle);
 
         // Settings Views
         tvSettingsCurrentVersion = findViewById(R.id.tv_settings_current_version);
@@ -1856,8 +1859,19 @@ public class MainActivity extends AppCompatActivity {
 
         if (tvSotTotalUsed != null) {
             long lastUnplug = prefs.getSotLastUnplugTime();
-            long diff = Math.max(0, System.currentTimeMillis() - lastUnplug);
-            tvSotTotalUsed.setText(SotHelper.formatDuration(diff) + " trước");
+            long now = System.currentTimeMillis();
+            if (lastUnplug <= 0 || lastUnplug > now) {
+                tvSotTotalUsed.setText("Vừa mới đây");
+            } else {
+                long diff = now - lastUnplug;
+                if (diff < 60000L) {
+                    tvSotTotalUsed.setText("Vừa mới rút");
+                } else if (diff > 7 * 86400000L) {
+                    tvSotTotalUsed.setText("> 7 ngày trước");
+                } else {
+                    tvSotTotalUsed.setText(SotHelper.formatDuration(diff) + " trước");
+                }
+            }
         }
 
         if (tvSotUnplugInfo != null) {
@@ -1870,6 +1884,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadBatteryDrainApps() {
         if (layoutDrainAppsContainer == null) return;
+
+        if (tvDrainAppsSubtitle != null) {
+            if (currentDrainFilter == BatteryUsageHelper.FILTER_SINCE_UNPLUG) {
+                tvDrainAppsSubtitle.setText("Tính từ lần rút sạc gần nhất (hoặc từ khi đặt lại mốc)");
+            } else {
+                tvDrainAppsSubtitle.setText("Tổng hợp toàn bộ hoạt động từ 00:00 sáng hôm nay");
+            }
+        }
 
         boolean hasPerm = BatteryUsageHelper.hasUsageAccessPermission(this);
         if (!hasPerm) {
@@ -1947,7 +1969,7 @@ public class MainActivity extends AppCompatActivity {
             // App info
             if (tvName != null) tvName.setText(item.appName);
             if (tvDuration != null) tvDuration.setText(item.formattedTime);
-            if (tvPercentage != null) tvPercentage.setText(item.percentage + "% SOT");
+            if (tvPercentage != null) tvPercentage.setText(item.percentage + "% thời lượng");
             if (tvEstBattery != null) {
                 tvEstBattery.setText(String.format(Locale.getDefault(), "~%.1f%% pin", item.estimatedBatteryDrain));
             }

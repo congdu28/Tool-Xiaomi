@@ -66,7 +66,7 @@ jobs:
             TAG="${{ github.ref_name }}"
           else
             VER=$(grep "versionName" app/build.gradle | head -n 1 | awk -F"'" '{print $2}')
-            TAG="v${VER:-1.0.29}"
+            TAG="v${VER:-1.0.30}"
           fi
           echo "TAG_NAME=${TAG}" >> $GITHUB_ENV
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
@@ -109,12 +109,11 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             Bản cập nhật ${{ env.TAG_NAME }}:
-            - 🚀 Tối Ưu Lõi Dọn Dẹp RAM & Shizuku Deep Boost: Giải phóng RAM thực tế (loại bỏ hoàn toàn số ảo ngẫu nhiên). Hỗ trợ dọn dẹp cấp hệ thống chuyên sâu qua Shizuku (am kill-all & pm trim-caches). Thống kê chính xác số MB thực tế thu hồi và số tiến trình đã đóng.
-            - 📱 Nâng Cấp Giao Diện RAM & Tab Pin: Thiết kế lại toàn diện BottomSheet RAM theo chuẩn Xiaomi HyperOS với 3 khối số liệu (Used / Free / Total), thanh tiến trình đổi màu theo mức tải bộ nhớ, nút truy cập nhanh Quản lý ứng dụng & Game Turbo.
-            - ⏱️ Dashboard SOT 2 Cột: Bố cục trực quan hiển thị thời gian On-Screen và tổng thời lượng dùng máy kể từ khi rút sạc, cùng thông số sụt giảm pin chi tiết.
-            - 🔋 Đồng Bộ & Bộ Lọc Danh Sách Hao Pin: Thêm bộ lọc linh hoạt [⚡ Từ lần rút sạc] và [📅 Hôm nay (24h)]. Tự động khắc phục lỗi rỗng danh sách khi vừa rút sạc dưới 10 phút. Bổ sung huy chương xếp hạng (🥇, 🥈, 🥉), thanh tỷ lệ SOT và ước tính % pin hao hụt của từng ứng dụng.
-            - 🧩 Bộ Tiện Ích Màn Hình Chính (Home Screen Widgets):
-              1. Widget SOT & Pin (2x1): Xem thời gian On-Screen và mức pin ngay trên màn hình chính, 1 chạm mở thẳng tab Pin trong app hoặc làm mới tức thì.
-              2. Widget Dọn RAM 1-Chạm (1-Tap RAM Booster): Xem dung lượng RAM khả dụng và dọn dẹp tăng tốc siêu nhanh ngay từ màn hình chính mà không cần mở ứng dụng!
+            - ⏱️ Sửa Triệt Để Lỗi "Thời Gian Dùng Máy 497936 giờ": Khởi tạo an toàn mốc rút sạc ban đầu, loại bỏ hoàn toàn lỗi hiển thị epoch time khi người dùng chưa cắm rút sạc lần đầu.
+            - 🔋 Chuẩn Hóa 100% Logic 2 Tab Tiêu Hao Pin:
+              1. Tab [⚡ Từ lần rút sạc]: Ứng dụng công nghệ UsageEvents để đo chính xác từng giây thời gian hiển thị (Foreground Time) của từng app chỉ trong khoảng thời gian kể từ khi rút sạc đến hiện tại. Tổng thời gian các app luôn khớp chuẩn với thời gian SOT, không bao giờ bị lệch hay vượt quá SOT.
+              2. Tab [📅 Hôm nay (24h)]: Tổng hợp toàn bộ hoạt động của tất cả ứng dụng từ 00:00 sáng hôm nay.
+            - 📊 Tối Ưu Nhãn Hiển Thị: Chuyển đổi nhãn từ '% SOT' sang '% thời lượng' trực quan, kèm ước tính mức tiêu hao pin chuẩn xác theo tỷ lệ sử dụng.
+            - 🚀 Tối Ưu Quy Trình Release: Chỉ đóng gói và phát hành duy nhất 1 bản Release chính thức, tối ưu dung lượng và tăng tốc thời gian build CI.
           files: |
             output-apks/Mi-Tool-*-Release.apk
