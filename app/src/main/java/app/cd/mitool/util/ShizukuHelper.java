@@ -74,6 +74,10 @@ public class ShizukuHelper {
         }
     }
 
+    public static boolean isShizukuAvailable() {
+        return isShizukuRunning();
+    }
+
     /**
      * Check if Shizuku permission has been granted to this application.
      */

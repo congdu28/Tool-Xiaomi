@@ -231,6 +231,13 @@ public class BatteryUsageHelper {
     }
 
     /**
+     * Convenience method to get drain apps list with filter type.
+     */
+    public static List<AppDrainItem> getDrainApps(Context context, int filterType, int limit) {
+        return getTopDrainAppsDetailed(context, filterType, limit).items;
+    }
+
+    /**
      * Legacy convenience overload.
      */
     public static List<AppDrainItem> getTopDrainApps(Context context, long sinceTime, int limit) {
