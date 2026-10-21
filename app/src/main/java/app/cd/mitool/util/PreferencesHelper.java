@@ -275,4 +275,70 @@ public class PreferencesHelper {
     public void setTargetRefreshRate(int rate) {
         prefs.edit().putInt(KEY_TARGET_REFRESH_RATE, rate).apply();
     }
+
+    // Aliases and convenience methods for Floating Clock and Battery
+    public boolean isFloatingClockEnabled() {
+        return isClockEnabled();
+    }
+
+    public void setFloatingClockEnabled(boolean enabled) {
+        setClockEnabled(enabled);
+    }
+
+    public boolean isFloatingClockTransparent() {
+        return isClockTransparentBg();
+    }
+
+    public void setFloatingClockTransparent(boolean transparent) {
+        setClockTransparentBg(transparent);
+    }
+
+    public boolean isFloatingClockLocked() {
+        return isClockLockPosition();
+    }
+
+    public void setFloatingClockLocked(boolean lock) {
+        setClockLockPosition(lock);
+    }
+
+    public boolean isFloatingClockMs() {
+        return isClockShowMs();
+    }
+
+    public void setFloatingClockMs(boolean show) {
+        setClockShowMs(show);
+    }
+
+    public boolean isBatteryAlertLevelEnabled() {
+        return isAlert80Enabled();
+    }
+
+    public void setBatteryAlertLevelEnabled(boolean enabled) {
+        setAlert80Enabled(enabled);
+    }
+
+    public String getCustomAlertToneTitle() {
+        String name = getCustomAlertToneName();
+        return (name != null && !name.isEmpty()) ? name : "Mặc định hệ thống";
+    }
+
+    public void setCustomAlertToneTitle(String title) {
+        setCustomAlertToneName(title);
+    }
+
+    public void setFloatingClockX(int x) {
+        setClockX(x);
+    }
+
+    public void setFloatingClockY(int y) {
+        setClockY(y);
+    }
+
+    public void setFloatingClockPreset(int preset) {
+        prefs.edit().putInt("floating_clock_preset", preset).apply();
+    }
+
+    public int getFloatingClockPreset() {
+        return prefs.getInt("floating_clock_preset", 0);
+    }
 }

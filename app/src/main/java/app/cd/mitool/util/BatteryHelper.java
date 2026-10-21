@@ -307,4 +307,82 @@ public class BatteryHelper {
         } catch (Exception ignored) {
         }
     }
+
+    public static int getBatteryPercentage(Context context) {
+        return getBatteryInfo(context).level;
+    }
+
+    public static boolean isCharging(Context context) {
+        return getBatteryInfo(context).isCharging;
+    }
+
+    public static float getBatteryTemperature(Context context) {
+        return getBatteryInfo(context).temperature;
+    }
+
+    public static float getBatteryVoltage(Context context) {
+        return getBatteryInfo(context).voltageMv / 1000.0f;
+    }
+
+    public static int getPlugType(Context context) {
+        return getBatteryInfo(context).plugType;
+    }
+
+    public static String getEstimatedChargeTime(Context context) {
+        return getBatteryInfo(context).formattedEta;
+    }
+
+    public static float getBatteryPowerWatts(Context context) {
+        return getBatteryInfo(context).powerWatt;
+    }
+
+    public static int getBatteryCurrentNow(Context context) {
+        return getBatteryInfo(context).currentMa;
+    }
+
+    public static int getBatteryCycleCount() {
+        try {
+            java.io.File file = new java.io.File("/sys/class/power_supply/battery/cycle_count");
+            if (file.exists() && file.canRead()) {
+                java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file));
+                String line = br.readLine();
+                br.close();
+                if (line != null && !line.trim().isEmpty()) {
+                    return Integer.parseInt(line.trim());
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+        return -1;
+    }
+
+    public static boolean isPlayingAlert() {
+        return isAlertTonePlaying();
+    }
+
+    public static synchronized void playAlertTone(Context context, String uriStr) {
+        try {
+            stopAlertTone();
+            Uri alertUri = null;
+            if (uriStr != null && !uriStr.trim().isEmpty()) {
+                alertUri = Uri.parse(uriStr);
+            }
+            if (alertUri == null) {
+                alertUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            }
+            activeRingtone = RingtoneManager.getRingtone(context.getApplicationContext(), alertUri);
+            if (activeRingtone != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    activeRingtone.setAudioAttributes(new android.media.AudioAttributes.Builder()
+                            .setUsage(android.media.AudioAttributes.USAGE_ALARM)
+                            .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                            .build());
+                } else {
+                    activeRingtone.setStreamType(android.media.AudioManager.STREAM_ALARM);
+                }
+                activeRingtone.play();
+            }
+        } catch (Exception ignored) {
+        }
+    }
 }
