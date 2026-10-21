@@ -1254,7 +1254,7 @@ public class MainActivity extends AppCompatActivity {
 
                     btnShizukuGrantAuto.setEnabled(false);
                     btnShizukuGrantAuto.setText("Đang cấp quyền qua Shizuku...");
-                    ShizukuHelper.grantSecureSettingsViaShizuku(new ShizukuHelper.CommandCallback() {
+                    ShizukuHelper.grantSecureSettings(MainActivity.this, new ShizukuHelper.CommandCallback() {
                         @Override
                         public void onComplete(final boolean success, final String message) {
                             runOnUiThread(new Runnable() {
