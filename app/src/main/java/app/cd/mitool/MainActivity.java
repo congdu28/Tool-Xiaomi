@@ -1232,6 +1232,145 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void setupShizukuControls() {
+        if (btnShizukuGrantAuto != null) {
+            btnShizukuGrantAuto.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!ShizukuHelper.isShizukuInstalled(MainActivity.this)) {
+                        Toast.makeText(MainActivity.this, "Đang mở trang tải Shizuku...", Toast.LENGTH_SHORT).show();
+                        ShizukuHelper.openShizukuDownload(MainActivity.this);
+                        return;
+                    }
+                    if (!ShizukuHelper.isShizukuRunning()) {
+                        Toast.makeText(MainActivity.this, "Shizuku chưa chạy. Vui lòng mở Shizuku và bấm Bắt đầu (Start) trước!", Toast.LENGTH_LONG).show();
+                        ShizukuHelper.openShizukuApp(MainActivity.this);
+                        return;
+                    }
+                    if (!ShizukuHelper.hasShizukuPermission()) {
+                        ShizukuHelper.requestShizukuPermission(MainActivity.this);
+                        return;
+                    }
+
+                    btnShizukuGrantAuto.setEnabled(false);
+                    btnShizukuGrantAuto.setText("Đang cấp quyền qua Shizuku...");
+                    ShizukuHelper.grantSecureSettingsViaShizuku(new ShizukuHelper.CommandCallback() {
+                        @Override
+                        public void onComplete(final boolean success, final String message) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    btnShizukuGrantAuto.setEnabled(true);
+                                    updateShizukuDisplay();
+                                    updateToolsDisplay();
+                                    Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        if (btnShizukuOpen != null) {
+            btnShizukuOpen.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (ShizukuHelper.isShizukuInstalled(MainActivity.this)) {
+                        boolean opened = ShizukuHelper.openShizukuApp(MainActivity.this);
+                        if (!opened) {
+                            Toast.makeText(MainActivity.this, "Không thể mở ứng dụng Shizuku.", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        ShizukuHelper.openShizukuDownload(MainActivity.this);
+                    }
+                }
+            });
+        }
+
+        updateShizukuDisplay();
+    }
+
+    private void updateShizukuDisplay() {
+        if (tvShizukuStatus == null) return;
+
+        boolean isInstalled = ShizukuHelper.isShizukuInstalled(this);
+        boolean isRunning = ShizukuHelper.isShizukuRunning();
+        boolean hasShizukuPerm = ShizukuHelper.hasShizukuPermission();
+        boolean hasSecureSettings = SystemClockHelper.hasSecureSettingsPermission(this);
+
+        if (!isInstalled) {
+            tvShizukuStatus.setText(R.string.shizuku_status_not_running);
+            tvShizukuStatus.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
+            if (tvShizukuBadge != null) {
+                tvShizukuBadge.setText("Chưa cài đặt");
+                tvShizukuBadge.setTextColor(ContextCompat.getColor(this, R.color.neon_red));
+            }
+            if (btnShizukuGrantAuto != null) {
+                btnShizukuGrantAuto.setText("📥 Tải và Cài đặt Shizuku");
+                btnShizukuGrantAuto.setEnabled(true);
+            }
+            if (btnShizukuOpen != null) {
+                btnShizukuOpen.setVisibility(View.GONE);
+            }
+        } else if (!isRunning) {
+            tvShizukuStatus.setText("🔴 Shizuku đã cài nhưng chưa chạy (Hãy mở Shizuku và bấm Start)");
+            tvShizukuStatus.setTextColor(ContextCompat.getColor(this, R.color.mi_orange));
+            if (tvShizukuBadge != null) {
+                tvShizukuBadge.setText("Chưa chạy");
+                tvShizukuBadge.setTextColor(ContextCompat.getColor(this, R.color.mi_orange));
+            }
+            if (btnShizukuGrantAuto != null) {
+                btnShizukuGrantAuto.setText("🚀 Mở Shizuku để khởi chạy");
+                btnShizukuGrantAuto.setEnabled(true);
+            }
+            if (btnShizukuOpen != null) {
+                btnShizukuOpen.setVisibility(View.VISIBLE);
+                btnShizukuOpen.setText(R.string.btn_shizuku_open);
+            }
+        } else if (!hasShizukuPerm) {
+            tvShizukuStatus.setText(R.string.shizuku_status_running_no_perm);
+            tvShizukuStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_yellow));
+            if (tvShizukuBadge != null) {
+                tvShizukuBadge.setText("Chờ cấp quyền");
+                tvShizukuBadge.setTextColor(ContextCompat.getColor(this, R.color.neon_yellow));
+            }
+            if (btnShizukuGrantAuto != null) {
+                btnShizukuGrantAuto.setText("🔑 Cấp quyền Shizuku cho Mi Tool");
+                btnShizukuGrantAuto.setEnabled(true);
+            }
+            if (btnShizukuOpen != null) {
+                btnShizukuOpen.setVisibility(View.VISIBLE);
+                btnShizukuOpen.setText(R.string.btn_shizuku_open);
+            }
+        } else {
+            if (tvShizukuBadge != null) {
+                tvShizukuBadge.setText("Đã kết nối");
+                tvShizukuBadge.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
+            }
+            if (btnShizukuOpen != null) {
+                btnShizukuOpen.setVisibility(View.VISIBLE);
+                btnShizukuOpen.setText(R.string.btn_shizuku_open);
+            }
+
+            if (hasSecureSettings) {
+                tvShizukuStatus.setText("🟢 Shizuku đang chạy & Đã có quyền WRITE_SECURE_SETTINGS");
+                tvShizukuStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
+                if (btnShizukuGrantAuto != null) {
+                    btnShizukuGrantAuto.setText("✅ Đã cấp quyền hệ thống thành công");
+                    btnShizukuGrantAuto.setEnabled(false);
+                }
+            } else {
+                tvShizukuStatus.setText(R.string.shizuku_status_granted);
+                tvShizukuStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_cyan));
+                if (btnShizukuGrantAuto != null) {
+                    btnShizukuGrantAuto.setText(R.string.btn_shizuku_grant_auto);
+                    btnShizukuGrantAuto.setEnabled(true);
+                }
+            }
+        }
+    }
+
     private final Handler batteryTickerHandler = new Handler(Looper.getMainLooper());
     private Runnable batteryTickerRunnable;
 
@@ -1265,6 +1404,7 @@ public class MainActivity extends AppCompatActivity {
         updateFloatingPresetButtons();
         updateBatteryDisplay();
         updateToolsDisplay();
+        updateShizukuDisplay();
         registerBatteryMonitorReceiver();
         startBatteryRealtimeTicker();
     }
@@ -1280,6 +1420,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         stopBatteryRealtimeTicker();
+        try {
+            Shizuku.removeRequestPermissionResultListener(shizukuPermissionListener);
+            Shizuku.removeBinderReceivedListener(shizukuBinderReceivedListener);
+            Shizuku.removeBinderDeadListener(shizukuBinderDeadListener);
+        } catch (Throwable ignored) {
+        }
     }
 
     private void updateBatteryDisplay() {

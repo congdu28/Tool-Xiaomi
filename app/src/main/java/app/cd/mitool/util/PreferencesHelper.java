@@ -123,12 +123,12 @@ public class PreferencesHelper {
         prefs.edit().putInt(KEY_CLOCK_Y, y).apply();
     }
 
-    public int getClockStatusBarMode() {
-        return prefs.getInt(KEY_CLOCK_STATUS_BAR_MODE, 0); // 0: Normal, 1: Top-Left, 2: Beside Notch
+    public boolean isClockStatusBarMode() {
+        return prefs.getBoolean(KEY_CLOCK_STATUS_BAR_MODE, false);
     }
 
-    public void setClockStatusBarMode(int mode) {
-        prefs.edit().putInt(KEY_CLOCK_STATUS_BAR_MODE, mode).apply();
+    public void setClockStatusBarMode(boolean mode) {
+        prefs.edit().putBoolean(KEY_CLOCK_STATUS_BAR_MODE, mode).apply();
     }
 
     public boolean isClockTransparentBg() {
