@@ -62,11 +62,21 @@ public class SotAppWidgetProvider extends AppWidgetProvider {
         long sotMillis = SotHelper.getScreenOnTimeMillis(context);
         String sotTimeStr = SotHelper.formatDuration(sotMillis);
         int batteryPct = BatteryHelper.getBatteryPercentage(context);
+        float temp = BatteryHelper.getBatteryTemperature(context);
         String summary = SotHelper.getUnplugSummary(context, batteryPct);
+        SotHelper.BatteryEstimate estimate = SotHelper.getBatteryEstimate(context);
 
         views.setTextViewText(R.id.widget_tv_sot_time, sotTimeStr);
         views.setTextViewText(R.id.widget_tv_sot_battery, "🔋 " + batteryPct + "%");
-        views.setTextViewText(R.id.widget_tv_sot_sub, summary);
+        views.setTextViewText(R.id.widget_tv_sot_temp, String.format(java.util.Locale.getDefault(), "🌡️ %.1f°C", temp));
+
+        String subText;
+        if (estimate != null && estimate.remainSotMinutes > 0) {
+            subText = "⚡ Còn ~" + estimate.formattedSot + " • " + summary;
+        } else {
+            subText = summary;
+        }
+        views.setTextViewText(R.id.widget_tv_sot_sub, subText);
 
         // Click on widget root -> Open MainActivity into Tab 1 (Pin)
         Intent openAppIntent = new Intent(context, MainActivity.class);

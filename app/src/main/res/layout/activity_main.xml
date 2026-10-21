@@ -1450,7 +1450,9 @@
                             android:textStyle="bold" />
                     </LinearLayout>
 
-                    <!-- Realtime Battery Sensor Card -->
+                    <!-- ============================================== -->
+                    <!-- CARD 1: CHARGING TESTER & BATTERY SENSORS      -->
+                    <!-- ============================================== -->
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -1465,9 +1467,42 @@
                             android:orientation="vertical"
                             android:padding="16dp">
 
+                            <!-- Top Header with Protocol Badge -->
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="⚡ Cảm Biến &amp; Công Suất Sạc"
+                                    android:textColor="@color/mi_orange"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tv_charging_protocol_badge"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/bg_badge_rounded"
+                                    android:paddingStart="8dp"
+                                    android:paddingTop="3dp"
+                                    android:paddingEnd="8dp"
+                                    android:paddingBottom="3dp"
+                                    android:text="🔋 DÙNG PIN"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <!-- Big Battery % & Power Readout -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
 
@@ -1488,12 +1523,22 @@
                                     android:orientation="vertical">
 
                                     <TextView
+                                        android:id="@+id/tv_battery_power"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="sans-serif-black"
+                                        android:text="0.0 W (0 mA)"
+                                        android:textColor="@color/neon_cyan"
+                                        android:textSize="20sp" />
+
+                                    <TextView
                                         android:id="@+id/tv_battery_status"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
                                         android:text="@string/battery_status_discharging"
                                         android:textColor="@color/text_primary"
-                                        android:textSize="14sp"
+                                        android:textSize="13sp"
                                         android:textStyle="bold" />
 
                                     <TextView
@@ -1503,7 +1548,7 @@
                                         android:layout_marginTop="2dp"
                                         android:text="Nguồn: Pin thiết bị"
                                         android:textColor="@color/text_secondary"
-                                        android:textSize="12sp" />
+                                        android:textSize="11sp" />
                                 </LinearLayout>
                             </LinearLayout>
 
@@ -1514,9 +1559,110 @@
                                 android:layout_marginBottom="12dp"
                                 android:background="@color/card_dark_stroke" />
 
+                            <!-- 3-Column Realtime Sensor Dashboard -->
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <!-- Col 1: Voltage -->
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/bg_card_rounded"
+                                    android:orientation="vertical"
+                                    android:padding="10dp">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Điện áp"
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="11sp" />
+
+                                    <TextView
+                                        android:id="@+id/tv_battery_voltage"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:fontFamily="monospace"
+                                        android:text="-- V"
+                                        android:textColor="@color/neon_cyan"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="6dp"
+                                    android:layout_height="match_parent" />
+
+                                <!-- Col 2: Current -->
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/bg_card_rounded"
+                                    android:orientation="vertical"
+                                    android:padding="10dp">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Dòng nạp"
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="11sp" />
+
+                                    <TextView
+                                        android:id="@+id/tv_charging_current_val"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:fontFamily="monospace"
+                                        android:text="-- mA"
+                                        android:textColor="@color/neon_green"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="6dp"
+                                    android:layout_height="match_parent" />
+
+                                <!-- Col 3: Temp -->
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/bg_card_rounded"
+                                    android:orientation="vertical"
+                                    android:padding="10dp">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Nhiệt độ"
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="11sp" />
+
+                                    <TextView
+                                        android:id="@+id/tv_battery_temp"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:fontFamily="monospace"
+                                        android:text="-- °C"
+                                        android:textColor="@color/neon_yellow"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <!-- ETA Row -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
 
@@ -1538,81 +1684,7 @@
                                     android:textStyle="bold" />
                             </LinearLayout>
 
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
-
-                                <TextView
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="@string/charging_power_title"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="12sp" />
-
-                                <TextView
-                                    android:id="@+id/tv_battery_power"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="monospace"
-                                    android:text="0.0 W (0 mA)"
-                                    android:textColor="@color/neon_cyan"
-                                    android:textSize="13sp"
-                                    android:textStyle="bold" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
-
-                                <TextView
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="@string/battery_temp_title"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="12sp" />
-
-                                <TextView
-                                    android:id="@+id/tv_battery_temp"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="-- °C"
-                                    android:textColor="@color/text_primary"
-                                    android:textSize="12sp" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
-
-                                <TextView
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="@string/battery_voltage_title"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="12sp" />
-
-                                <TextView
-                                    android:id="@+id/tv_battery_voltage"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="-- V"
-                                    android:textColor="@color/text_primary"
-                                    android:textSize="12sp" />
-                            </LinearLayout>
-
-                            <!-- Cycle Count -->
+                            <!-- Cycle Count Row -->
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -1639,12 +1711,103 @@
                                     android:textStyle="bold" />
                             </LinearLayout>
 
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="12dp"
+                                android:layout_marginBottom="12dp"
+                                android:background="@color/card_dark_stroke" />
+
+                            <!-- Cable & Charger Quality Tester Section -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="🔌 Đánh Giá Chất Lượng Củ Cáp"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_test_cable"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="32dp"
+                                    android:backgroundTint="@color/mi_orange"
+                                    android:insetTop="0dp"
+                                    android:insetBottom="0dp"
+                                    android:paddingLeft="10dp"
+                                    android:paddingRight="10dp"
+                                    android:text="🔍 Đo chất lượng (10s)"
+                                    android:textColor="@color/white"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold"
+                                    app:cornerRadius="6dp" />
+                            </LinearLayout>
+
+                            <ProgressBar
+                                android:id="@+id/pb_cable_test"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="6dp"
+                                android:layout_marginTop="8dp"
+                                android:max="10"
+                                android:progress="0"
+                                android:progressTint="@color/mi_orange"
+                                android:visibility="gone" />
+
+                            <!-- Cable Test Result Container -->
+                            <LinearLayout
+                                android:id="@+id/layout_cable_test_result"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:background="@drawable/bg_card_rounded"
+                                android:orientation="vertical"
+                                android:padding="12dp"
+                                android:visibility="gone">
+
+                                <TextView
+                                    android:id="@+id/tv_cable_rating_stars"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="sans-serif-black"
+                                    android:text="⭐⭐⭐⭐⭐ XUẤT SẮC"
+                                    android:textColor="@color/mi_orange"
+                                    android:textSize="13sp" />
+
+                                <TextView
+                                    android:id="@+id/tv_cable_rating_desc"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:lineSpacingExtra="2dp"
+                                    android:text="Dây cáp và củ sạc tiếp xúc tốt..."
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="11sp" />
+
+                                <TextView
+                                    android:id="@+id/tv_cable_rating_metrics"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="6dp"
+                                    android:fontFamily="monospace"
+                                    android:text="Dòng đỉnh: -- mA • Ổn định: --%"
+                                    android:textColor="@color/neon_cyan"
+                                    android:textSize="10sp" />
+                            </LinearLayout>
+
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btn_open_battery_secret_info"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="12dp"
-                                android:minHeight="42dp"
+                                android:minHeight="40dp"
                                 android:backgroundTint="@color/card_highlight"
                                 android:insetTop="0dp"
                                 android:insetBottom="0dp"
@@ -1656,7 +1819,9 @@
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
-                    <!-- Card: Screen On Time (SOT) -->
+                    <!-- ============================================== -->
+                    <!-- CARD 2: SCREEN ON TIME (SOT) & ESTIMATOR       -->
+                    <!-- ============================================== -->
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -1707,7 +1872,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
-                                android:text="Đếm tổng thời gian on-screen kể từ lần rút sạc hoặc sạc đầy gần nhất"
+                                android:text="Đếm tổng thời gian on-screen kể từ lần rút sạc gần nhất"
                                 android:textColor="@color/text_muted"
                                 android:textSize="11sp" />
 
@@ -1778,6 +1943,68 @@
                                 </LinearLayout>
                             </LinearLayout>
 
+                            <!-- Battery Estimator Section -->
+                            <LinearLayout
+                                android:id="@+id/layout_sot_estimate"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:background="@drawable/bg_card_rounded"
+                                android:orientation="vertical"
+                                android:padding="12dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="💡 Dự Đoán Thời Lượng Còn Lại"
+                                        android:textColor="@color/neon_yellow"
+                                        android:textSize="12sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:id="@+id/tv_sot_drain_rate"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="monospace"
+                                        android:text="~--% / giờ"
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="11sp" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:id="@+id/tv_sot_estimate_screen_on"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="⚡ On-Screen: ~--h --m"
+                                        android:textColor="@color/neon_cyan"
+                                        android:textSize="12sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:id="@+id/tv_sot_estimate_mixed"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="🔋 Hỗn hợp: ~--h"
+                                        android:textColor="@color/neon_green"
+                                        android:textSize="12sp" />
+                                </LinearLayout>
+                            </LinearLayout>
+
                             <TextView
                                 android:id="@+id/tv_sot_unplug_info"
                                 android:layout_width="wrap_content"
@@ -1786,6 +2013,59 @@
                                 android:text="Đang tính toán mốc rút sạc..."
                                 android:textColor="@color/text_secondary"
                                 android:textSize="12sp" />
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- ============================================== -->
+                    <!-- CARD 3: 24-HOUR BATTERY DRAIN CHART            -->
+                    <!-- ============================================== -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        app:cardBackgroundColor="@color/card_dark"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="📈 Biểu Đồ Sụt Pin 24 Giờ"
+                                android:textColor="@color/mi_orange"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="Biểu đồ trực quan phát hiện khung giờ máy bị tụt pin hoặc wakelock ngầm"
+                                android:textColor="@color/text_muted"
+                                android:textSize="11sp" />
+
+                            <app.cd.mitool.view.BatteryDrainChartView
+                                android:id="@+id/chart_battery_drain"
+                                android:layout_width="match_parent"
+                                android:layout_height="170dp"
+                                android:layout_marginTop="8dp" />
+
+                            <TextView
+                                android:id="@+id/tv_drain_chart_summary"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:background="@drawable/bg_card_rounded"
+                                android:padding="8dp"
+                                android:text="Đang phân tích dữ liệu tiêu hao pin..."
+                                android:textColor="@color/text_secondary"
+                                android:textSize="11sp" />
 
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>

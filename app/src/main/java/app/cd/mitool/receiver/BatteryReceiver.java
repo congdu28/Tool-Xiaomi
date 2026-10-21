@@ -32,6 +32,9 @@ public class BatteryReceiver extends BroadcastReceiver {
             // Subtle haptic feedback
             BatteryHelper.vibrateDevice(context, 80);
 
+            // Battery history record
+            app.cd.mitool.util.BatteryHistoryHelper.recordSnapshot(context, info.level, true);
+
             // Screen On Time (SOT) tracking
             SotHelper.onPowerConnected(context, info.level);
             app.cd.mitool.widget.SotAppWidgetProvider.updateAllWidgets(context);
@@ -75,6 +78,9 @@ public class BatteryReceiver extends BroadcastReceiver {
         } else if (Intent.ACTION_POWER_DISCONNECTED.equals(action)) {
             // Read realtime battery info
             BatteryHelper.BatteryInfo info = BatteryHelper.getBatteryInfo(context);
+
+            // Battery history record
+            app.cd.mitool.util.BatteryHistoryHelper.recordSnapshot(context, info.level, false);
 
             // Screen On Time (SOT) tracking - reset on unplug
             SotHelper.onPowerDisconnected(context, info.level);

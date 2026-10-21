@@ -388,4 +388,12 @@ public class PreferencesHelper {
     public void setSotScreenOnStart(long time) {
         prefs.edit().putLong(KEY_SOT_SCREEN_ON_START, time).apply();
     }
+
+    public String getCustomString(String key, String defValue) {
+        return prefs.getString(key, defValue);
+    }
+
+    public void setCustomString(String key, String value) {
+        prefs.edit().putString(key, value).apply();
+    }
 }

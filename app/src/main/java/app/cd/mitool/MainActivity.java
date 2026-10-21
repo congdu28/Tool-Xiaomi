@@ -72,6 +72,8 @@ import app.cd.mitool.util.PrivateDnsHelper;
 import app.cd.mitool.util.RamBoosterHelper;
 import app.cd.mitool.util.RefreshRateHelper;
 import app.cd.mitool.util.ShizukuHelper;
+import app.cd.mitool.util.BatteryHistoryHelper;
+import app.cd.mitool.util.ChargingTesterHelper;
 import app.cd.mitool.util.ShortcutHelper;
 import app.cd.mitool.util.SotHelper;
 import app.cd.mitool.util.SystemClockHelper;
@@ -79,6 +81,7 @@ import app.cd.mitool.util.UpdateHelper;
 import app.cd.mitool.util.VoiceAlertHelper;
 import app.cd.mitool.util.VoLteHelper;
 import app.cd.mitool.util.XiaomiHelper;
+import app.cd.mitool.view.BatteryDrainChartView;
 import rikka.shizuku.Shizuku;
 
 public class MainActivity extends AppCompatActivity {
@@ -154,10 +157,25 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvBatteryCycleCount;
     private MaterialButton btnOpenBatterySecretInfo;
 
+    // Charging Tester & Protocol Views
+    private TextView tvChargingProtocolBadge;
+    private TextView tvChargingCurrentVal;
+    private MaterialButton btnTestCable;
+    private ProgressBar pbCableTest;
+    private LinearLayout layoutCableTestResult;
+    private TextView tvCableRatingStars;
+    private TextView tvCableRatingDesc;
+    private TextView tvCableRatingMetrics;
+
     // SOT & Battery Drain Monitor Views
     private TextView tvSotDuration;
     private TextView tvSotTotalUsed;
     private TextView tvSotUnplugInfo;
+    private TextView tvSotEstimateScreenOn;
+    private TextView tvSotEstimateMixed;
+    private TextView tvSotDrainRate;
+    private BatteryDrainChartView chartBatteryDrain;
+    private TextView tvDrainChartSummary;
     private MaterialButton btnResetSot;
     private MaterialButton btnRefreshDrainApps;
     private MaterialButton btnDrainFilterUnplug;
@@ -371,10 +389,25 @@ public class MainActivity extends AppCompatActivity {
         tvBatteryCycleCount = findViewById(R.id.tv_battery_cycle_count);
         btnOpenBatterySecretInfo = findViewById(R.id.btn_open_battery_secret_info);
 
+        // Charging Tester & Protocol Views
+        tvChargingProtocolBadge = findViewById(R.id.tv_charging_protocol_badge);
+        tvChargingCurrentVal = findViewById(R.id.tv_charging_current_val);
+        btnTestCable = findViewById(R.id.btn_test_cable);
+        pbCableTest = findViewById(R.id.pb_cable_test);
+        layoutCableTestResult = findViewById(R.id.layout_cable_test_result);
+        tvCableRatingStars = findViewById(R.id.tv_cable_rating_stars);
+        tvCableRatingDesc = findViewById(R.id.tv_cable_rating_desc);
+        tvCableRatingMetrics = findViewById(R.id.tv_cable_rating_metrics);
+
         // SOT & Battery Drain Views
         tvSotDuration = findViewById(R.id.tv_sot_duration);
         tvSotTotalUsed = findViewById(R.id.tv_sot_total_used);
         tvSotUnplugInfo = findViewById(R.id.tv_sot_unplug_info);
+        tvSotEstimateScreenOn = findViewById(R.id.tv_sot_estimate_screen_on);
+        tvSotEstimateMixed = findViewById(R.id.tv_sot_estimate_mixed);
+        tvSotDrainRate = findViewById(R.id.tv_sot_drain_rate);
+        chartBatteryDrain = findViewById(R.id.chart_battery_drain);
+        tvDrainChartSummary = findViewById(R.id.tv_drain_chart_summary);
         btnResetSot = findViewById(R.id.btn_reset_sot);
         btnRefreshDrainApps = findViewById(R.id.btn_refresh_drain_apps);
         btnDrainFilterUnplug = findViewById(R.id.btn_drain_filter_unplug);
@@ -1848,6 +1881,81 @@ public class MainActivity extends AppCompatActivity {
             btnDrainOpenSettings.setOnClickListener(v -> BatteryUsageHelper.openUsageAccessSettings(this));
         }
 
+        if (btnTestCable != null) {
+            btnTestCable.setOnClickListener(v -> {
+                if (ChargingTesterHelper.isTesting()) {
+                    ChargingTesterHelper.stopCableTest();
+                    btnTestCable.setText("🔍 Đo chất lượng (10s)");
+                    if (pbCableTest != null) pbCableTest.setVisibility(View.GONE);
+                    Toast.makeText(this, "Đã hủy kiểm tra củ cáp", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                btnTestCable.setEnabled(false);
+                btnTestCable.setText("⏳ Đang đo (0/10s)...");
+                if (pbCableTest != null) {
+                    pbCableTest.setVisibility(View.VISIBLE);
+                    pbCableTest.setProgress(0);
+                }
+                if (layoutCableTestResult != null) {
+                    layoutCableTestResult.setVisibility(View.GONE);
+                }
+
+                ChargingTesterHelper.startCableTest(this, new ChargingTesterHelper.CableTestListener() {
+                    @Override
+                    public void onProgress(int currentSample, int totalSamples, ChargingTesterHelper.RealtimeChargingState liveData) {
+                        runOnUiThread(() -> {
+                            btnTestCable.setEnabled(true);
+                            btnTestCable.setText(String.format(Locale.getDefault(), "⏳ Đang đo (%d/%ds)...", currentSample, totalSamples));
+                            if (pbCableTest != null) {
+                                pbCableTest.setProgress(currentSample);
+                            }
+                            updateChargingTesterUI(liveData);
+                        });
+                    }
+
+                    @Override
+                    public void onComplete(ChargingTesterHelper.CableTestResult result) {
+                        runOnUiThread(() -> {
+                            btnTestCable.setText("🔄 Đo lại củ cáp (10s)");
+                            btnTestCable.setEnabled(true);
+                            if (pbCableTest != null) {
+                                pbCableTest.setVisibility(View.GONE);
+                            }
+                            if (layoutCableTestResult != null) {
+                                layoutCableTestResult.setVisibility(View.VISIBLE);
+                            }
+                            if (tvCableRatingStars != null) {
+                                tvCableRatingStars.setText(result.stars + " " + result.title);
+                                tvCableRatingStars.setTextColor(ContextCompat.getColor(MainActivity.this, result.color));
+                            }
+                            if (tvCableRatingDesc != null) {
+                                tvCableRatingDesc.setText(result.description);
+                            }
+                            if (tvCableRatingMetrics != null) {
+                                tvCableRatingMetrics.setText(String.format(Locale.getDefault(),
+                                        "Dòng đỉnh: %d mA • Dòng TB: %d mA • Ổn định: %d%% • Công suất: %.1f W",
+                                        result.maxCurrentMa, result.avgCurrentMa, result.stabilityPercent, result.avgPowerW));
+                            }
+                            Toast.makeText(MainActivity.this, "Đã hoàn thành đánh giá chất lượng củ cáp!", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        runOnUiThread(() -> {
+                            btnTestCable.setText("🔍 Đo chất lượng (10s)");
+                            btnTestCable.setEnabled(true);
+                            if (pbCableTest != null) {
+                                pbCableTest.setVisibility(View.GONE);
+                            }
+                            Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+                        });
+                    }
+                });
+            });
+        }
+
         updateSotView();
         loadBatteryDrainApps();
     }
@@ -1879,7 +1987,36 @@ public class MainActivity extends AppCompatActivity {
             tvSotUnplugInfo.setText(SotHelper.getUnplugSummary(this, level));
         }
 
+        // Update Battery Estimator (On-screen & Mixed duration)
+        SotHelper.BatteryEstimate estimate = SotHelper.getBatteryEstimate(this);
+        if (tvSotEstimateScreenOn != null) {
+            tvSotEstimateScreenOn.setText("⚡ On-Screen: ~" + estimate.formattedSot);
+        }
+        if (tvSotEstimateMixed != null) {
+            tvSotEstimateMixed.setText("🔋 Hỗn hợp: ~" + estimate.formattedMixed);
+        }
+        if (tvSotDrainRate != null) {
+            tvSotDrainRate.setText(estimate.formattedRate);
+        }
+
+        updateDrainChart();
         app.cd.mitool.widget.SotAppWidgetProvider.updateAllWidgets(this);
+    }
+
+    private void updateDrainChart() {
+        if (chartBatteryDrain == null) return;
+        List<BatteryHistoryHelper.BatteryPoint> history = BatteryHistoryHelper.getHistory(this);
+        chartBatteryDrain.setData(history);
+
+        if (tvDrainChartSummary != null) {
+            BatteryHistoryHelper.DrainAnalysis analysis = BatteryHistoryHelper.analyzeDrain(history);
+            tvDrainChartSummary.setText(analysis.summary);
+            if (analysis.hasAbnormalDrain) {
+                tvDrainChartSummary.setTextColor(ContextCompat.getColor(this, R.color.neon_red));
+            } else {
+                tvDrainChartSummary.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
+            }
+        }
     }
 
     private void loadBatteryDrainApps() {
@@ -2031,6 +2168,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         updateBatteryPowerRealtime();
+        updateChargingTesterUI(null);
         updateSotView();
     }
 
@@ -2042,11 +2180,22 @@ public class MainActivity extends AppCompatActivity {
 
         if (powerW > 0.0f) {
             String prefix = isCharging ? "+" : "-";
-            tvBatteryPower.setText(String.format(Locale.getDefault(), "%s%.2f W (%s%d mA)", prefix, powerW, prefix, Math.abs(currentMa)));
+            tvBatteryPower.setText(String.format(Locale.getDefault(), "%s%.1f W", prefix, powerW));
             tvBatteryPower.setTextColor(ContextCompat.getColor(this, isCharging ? R.color.neon_green : R.color.neon_cyan));
         } else {
-            tvBatteryPower.setText("0.0 W (Cảm biến đang chờ...)");
+            tvBatteryPower.setText("0.0 W");
             tvBatteryPower.setTextColor(ContextCompat.getColor(this, R.color.text_muted));
+        }
+
+        if (tvChargingCurrentVal != null) {
+            if (currentMa > 0) {
+                String prefix = isCharging ? "+" : "-";
+                tvChargingCurrentVal.setText(prefix + Math.abs(currentMa) + " mA");
+                tvChargingCurrentVal.setTextColor(ContextCompat.getColor(this, isCharging ? R.color.neon_green : R.color.neon_cyan));
+            } else {
+                tvChargingCurrentVal.setText("-- mA");
+                tvChargingCurrentVal.setTextColor(ContextCompat.getColor(this, R.color.text_muted));
+            }
         }
 
         if (tvBatteryCycleCount != null) {
@@ -2056,6 +2205,23 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 tvBatteryCycleCount.setText("Bấm xem thông tin ẩn bên dưới");
             }
+        }
+    }
+
+    private void updateChargingTesterUI(ChargingTesterHelper.RealtimeChargingState overrideState) {
+        ChargingTesterHelper.RealtimeChargingState state = overrideState != null
+                ? overrideState
+                : ChargingTesterHelper.getRealtimeChargingState(this);
+
+        if (tvChargingProtocolBadge != null) {
+            tvChargingProtocolBadge.setText(state.protocolBadge);
+            tvChargingProtocolBadge.setTextColor(ContextCompat.getColor(this, state.protocolColor));
+        }
+
+        if (tvChargingCurrentVal != null && state.currentMa > 0) {
+            String prefix = state.isCharging ? "+" : "-";
+            tvChargingCurrentVal.setText(prefix + state.currentMa + " mA");
+            tvChargingCurrentVal.setTextColor(ContextCompat.getColor(this, state.isCharging ? R.color.neon_green : R.color.neon_cyan));
         }
     }
 
@@ -2092,10 +2258,11 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     updateBatteryPowerRealtime();
-                    batteryTickerHandler.postDelayed(this, 2000);
+                    updateChargingTesterUI(null);
+                    batteryTickerHandler.postDelayed(this, 1000);
                 }
             };
-            batteryTickerHandler.postDelayed(batteryTickerRunnable, 2000);
+            batteryTickerHandler.postDelayed(batteryTickerRunnable, 1000);
         }
     }
 

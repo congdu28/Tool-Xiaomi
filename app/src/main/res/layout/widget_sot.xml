@@ -18,7 +18,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="⏱️ ON-SCREEN (SOT)"
+            android:text="⏱️ SOT HYPEROS"
             android:textColor="@color/mi_orange"
             android:textSize="11sp"
             android:textStyle="bold" />
@@ -34,6 +34,21 @@
             android:paddingBottom="2dp"
             android:text="🔋 --%"
             android:textColor="@color/neon_green"
+            android:textSize="10sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/widget_tv_sot_temp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:background="@drawable/bg_widget_pill"
+            android:paddingStart="6dp"
+            android:paddingTop="2dp"
+            android:paddingEnd="6dp"
+            android:paddingBottom="2dp"
+            android:text="🌡️ --°C"
+            android:textColor="@color/neon_cyan"
             android:textSize="10sp"
             android:textStyle="bold" />
 

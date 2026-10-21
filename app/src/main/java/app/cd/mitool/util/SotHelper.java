@@ -233,4 +233,80 @@ public class SotHelper {
         }
         prefs.setSotTrackerActive(true);
     }
+
+    public static class BatteryEstimate {
+        public final long remainSotMinutes;
+        public final long remainMixedMinutes;
+        public final float drainRatePerHour;
+        public final String formattedSot;
+        public final String formattedMixed;
+        public final String formattedRate;
+
+        public BatteryEstimate(long remainSotMinutes, long remainMixedMinutes, float drainRatePerHour,
+                               String formattedSot, String formattedMixed, String formattedRate) {
+            this.remainSotMinutes = remainSotMinutes;
+            this.remainMixedMinutes = remainMixedMinutes;
+            this.drainRatePerHour = drainRatePerHour;
+            this.formattedSot = formattedSot;
+            this.formattedMixed = formattedMixed;
+            this.formattedRate = formattedRate;
+        }
+    }
+
+    /**
+     * Estimates remaining on-screen and mixed battery usage based on actual consumption since unplug.
+     */
+    public static BatteryEstimate getBatteryEstimate(Context context) {
+        if (context == null) {
+            return new BatteryEstimate(0, 0, 0f, "--", "--", "--");
+        }
+        PreferencesHelper prefs = new PreferencesHelper(context);
+        int currentLevel = BatteryHelper.getBatteryPercentage(context);
+        if (currentLevel <= 0) {
+            return new BatteryEstimate(0, 0, 0f, "0 phút", "0 phút", "0%");
+        }
+
+        long lastUnplug = prefs.getSotLastUnplugTime();
+        int lastLevel = prefs.getSotLastUnplugLevel();
+        if (lastLevel <= 0) lastLevel = 100;
+
+        int drop = Math.max(0, lastLevel - currentLevel);
+        long sotMillis = getScreenOnTimeMillis(context);
+        long now = System.currentTimeMillis();
+        long totalElapsed = Math.max(0, now - lastUnplug);
+
+        double rateSotMin;
+        double rateMixedMin;
+        float drainRatePerHour = 0f;
+
+        if (drop >= 2 && sotMillis >= 5 * 60 * 1000L && totalElapsed > 0) {
+            // Real measured rate based on actual device usage
+            rateSotMin = (sotMillis / (double) drop) / 60000.0;
+            // Clamp between 3.5 min/1% (heavy gaming) and 10.0 min/1% (reading/dark mode)
+            rateSotMin = Math.max(3.5, Math.min(10.0, rateSotMin));
+
+            rateMixedMin = (totalElapsed / (double) drop) / 60000.0;
+            rateMixedMin = Math.max(rateSotMin, Math.min(30.0, rateMixedMin));
+
+            drainRatePerHour = (float) ((drop * 3600000.0) / Math.max(60000L, totalElapsed));
+        } else {
+            // Intelligent Xiaomi standard baseline (~6 min/1% for 10h total SOT)
+            rateSotMin = 6.0;
+            rateMixedMin = 15.0; // ~25h total standby/mixed
+            if (drop > 0 && totalElapsed > 10 * 60 * 1000L) {
+                drainRatePerHour = (float) ((drop * 3600000.0) / totalElapsed);
+            }
+        }
+
+        long remainSotMins = Math.round(currentLevel * rateSotMin);
+        long remainMixedMins = Math.round(currentLevel * rateMixedMin);
+
+        String formattedSot = formatDuration(remainSotMins * 60000L);
+        String formattedMixed = formatDuration(remainMixedMins * 60000L);
+        String formattedRate = drainRatePerHour > 0.05f 
+                ? String.format(Locale.getDefault(), "~%.1f%% / giờ", drainRatePerHour) 
+                : "Đang tính...";
+
+        return new BatteryEstimate(remainSotMins, remainMixedMins, drainRatePerHour, formattedSot, formattedMixed, formattedRate);
+    }
 }

@@ -92,6 +92,7 @@ public class NotificationClockService extends Service {
                 BatteryHelper.BatteryInfo info = BatteryHelper.getBatteryInfo(context, intent);
                 checkBatteryAlerts(info);
                 updateNotification();
+                app.cd.mitool.util.BatteryHistoryHelper.recordSnapshot(context, info.level, info.isCharging);
             }
         }
     };

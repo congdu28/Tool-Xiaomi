@@ -66,7 +66,7 @@ jobs:
             TAG="${{ github.ref_name }}"
           else
             VER=$(grep "versionName" app/build.gradle | head -n 1 | awk -F"'" '{print $2}')
-            TAG="v${VER:-1.0.31}"
+            TAG="v${VER:-1.0.32}"
           fi
           echo "TAG_NAME=${TAG}" >> $GITHUB_ENV
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
@@ -109,12 +109,14 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             Bản cập nhật ${{ env.TAG_NAME }}:
-            - 🎨 Tối Ưu Responsive Giao Diện App Hao Pin:
-              1. Thay thế nút "Dừng" bằng nút icon Close (✕) nhỏ gọn chuẩn 32x32dp, mở rộng tối đa không gian cho thông số. Khi dừng thành công, icon tự động chuyển sang tích xanh tròn (✓).
-              2. Sửa lỗi badge % pin bị rớt dòng lộn xộn (thêm singleLine, maxLines=1, rút gọn nhãn hiển thị thành ~X.X% siêu gọn gàng).
-            - ⏱️ Khắc Phục Triệt Để Mâu Thuẫn SOT & Lần Rút Sạc:
-              1. Chặn đứng lỗi fallback sang UsageStats cả ngày khi vừa rút sạc, đảm bảo SOT từ lúc rút sạc luôn bắt đầu từ 0 và khớp chuẩn 100% với thời gian dùng máy.
-              2. Xóa bỏ số ảo ở tab rút sạc khi pin chưa tụt 1% nào (hiển thị ~0%).
-            - 🚀 Xuất Xưởng Bản Release Duy Nhất: Chỉ đóng gói duy nhất 1 bản Release tối ưu, tốc độ tải và build cực nhanh.
+            - ⏱️ Tối Ưu Giám Sát Pin & SOT Màn Hình:
+              1. 💡 Dự đoán thời lượng pin còn lại (Battery Estimator): Tính toán thông minh thời gian On-screen lướt web và thời gian dùng hỗn hợp còn lại dựa trên tốc độ tiêu thụ thực tế (%/giờ).
+              2. 📈 Biểu đồ sụt pin trực quan 24 giờ (Battery Drain History): Đồ thị đường cong Bezier mượt mà, trực quan theo từng mốc giờ, tự động phát hiện và cảnh báo khung giờ tụt pin ngầm (Wakelock).
+              3. 🎨 Widget SOT chuẩn phong cách HyperOS Blur: Giao diện Glassmorphism trong suốt hiện đại, hiển thị đồng thời SOT + % Pin + Nhiệt độ hiện tại + Ước tính thời lượng còn lại.
+            - ⚡ Đo Công Suất Sạc & Kiểm Tra Củ Cáp (Charging Tester):
+              1. Đo công suất sạc thời gian thực (Watt = V x A) cập nhật mỗi giây.
+              2. Tự động nhận diện chuẩn sạc: Mi Turbo Charge (33W - 120W+), Sạc nhanh QC/PD (18W - 27W), Sạc tiêu chuẩn (10W), Sạc chậm.
+              3. Bài kiểm tra chất lượng củ cáp 10 giây: Đánh giá độ ổn định dòng điện, đo dòng nạp cực đại, xếp hạng sao (1 - 5⭐) và đưa ra chẩn đoán cáp chập chờn / suy hao / tiếp xúc kém.
+            - 🚀 Xuất xưởng duy nhất 1 bản Release APK chuẩn tối ưu.
           files: |
             output-apks/Mi-Tool-*-Release.apk
