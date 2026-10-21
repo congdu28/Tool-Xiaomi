@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_bottom_sheet"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <!-- Drag Handle -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_drag_handle" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🎮 Mở Khóa 120 FPS Game &amp; Joyose"
+        android:textColor="@color/text_primary"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Vô hiệu hóa tiến trình Joyose ngầm của HyperOS/MIUI để gỡ bỏ triệt để giới hạn khóa 89 FPS trong Liên Quân, Tốc Chiến, PUBG."
+        android:textColor="@color/text_secondary"
+        android:textSize="12sp" />
+
+    <!-- Joyose Status Badge -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:background="@color/card_highlight"
+        android:gravity="center_vertical"
+        android:padding="12dp">
+
+        <TextView
+            android:id="@+id/bs_tv_joyose_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Joyose: Đang kiểm tra..."
+            android:textColor="@color/neon_cyan"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/bs_btn_game_120_mode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:minHeight="44dp"
+        android:backgroundTint="@color/mi_orange"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:text="⚡ 1-Chạm Kích Hoạt Game Mode 120Hz"
+        android:textColor="@color/text_primary"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        app:cornerRadius="8dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/bs_btn_copy_disable_joyose"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="1"
+            android:minHeight="44dp"
+            android:backgroundTint="@color/card_highlight"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="⚡ Tắt Joyose (Shizuku)"
+            android:textColor="@color/neon_green"
+            android:textSize="11sp"
+            app:cornerRadius="8dp"
+            app:strokeColor="@color/neon_green"
+            app:strokeWidth="1dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/bs_btn_copy_enable_joyose"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:minHeight="44dp"
+            android:backgroundTint="@color/card_highlight"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="🔄 Bật lại Joyose"
+            android:textColor="@color/text_primary"
+            android:textSize="11sp"
+            app:cornerRadius="8dp" />
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/bs_btn_clear_powerkeeper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:minHeight="44dp"
+        android:backgroundTint="@color/card_highlight"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:text="🗑️ Xóa dữ liệu Pin &amp; Hiệu suất (PowerKeeper)"
+        android:textColor="@color/neon_cyan"
+        android:textSize="12sp"
+        app:cornerRadius="8dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/bs_btn_open_per_app_hz"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="1"
+            android:minHeight="44dp"
+            android:backgroundTint="@color/card_highlight"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="🎯 Chọn app 120Hz"
+            android:textColor="@color/text_primary"
+            android:textSize="11sp"
+            app:cornerRadius="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/bs_btn_launch_aov"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:minHeight="44dp"
+            android:backgroundTint="@color/card_highlight"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="⚔️ Mở Liên Quân (AOV)"
+            android:textColor="@color/mi_orange"
+            android:textSize="11sp"
+            app:cornerRadius="8dp"
+            app:strokeColor="@color/mi_orange"
+            app:strokeWidth="1dp" />
+    </LinearLayout>
+
+</LinearLayout>

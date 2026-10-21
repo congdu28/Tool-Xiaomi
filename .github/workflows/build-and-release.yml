@@ -66,7 +66,7 @@ jobs:
             TAG="${{ github.ref_name }}"
           else
             VER=$(grep "versionName" app/build.gradle | head -n 1 | awk -F"'" '{print $2}')
-            TAG="v${VER:-1.0.25}"
+            TAG="v${VER:-1.0.26}"
           fi
           echo "TAG_NAME=${TAG}" >> $GITHUB_ENV
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
@@ -114,9 +114,18 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             Bản cập nhật ${{ env.TAG_NAME }}:
-            - 🛡️ Trình Quản lý & Đóng băng ứng dụng rác (Safe Debloater): 1-chạm đóng băng các ứng dụng quảng cáo, tin tức rác và theo dõi ngầm của Xiaomi/HyperOS (MSA, Analytics, Mi Video, Mi Music, Mi Browser, App Vault, Quick Apps, Bug Reporter...) qua Shizuku hoặc Root mà không sợ treo logo (Bootloop), khôi phục tức thì bất kỳ lúc nào.
-            - 🛡️ Cài đặt nhanh Private DNS chặn quảng cáo toàn hệ thống: Tự động cấu hình AdGuard DNS, Cloudflare Family, Cloudflare 1.1.1.1 hoặc Tắt/Tự động chỉ với 1 thao tác, chặn banner và pop-up rác trong app/trình duyệt không hao pin, không cần VPN.
-            - 📶 Phím tắt Mở khóa VoLTE & VoWiFi Xiaomi: Tự động vô hiệu hóa kiểm tra nhà mạng (Carrier Check) trên máy Xiaomi/Redmi xách tay và ROM nội địa qua mã USSD ẩn (*#*#86583#*#*, *#*#869434#*#*), kiểm tra sóng (*#*#4636#*#*) và mở Cài đặt mạng SIM để khắc phục triệt để lỗi mất sóng, mất cuộc gọi.
+            - 📱 Màn hình chính Dashboard Cấu hình thiết bị: Khi mở app, hiển thị đầy đủ thông số phần cứng & hệ thống chuyên sâu (Model thiết bị, Tên mã thiết bị, Phiên bản Xiaomi HyperOS/MIUI, Android, Bản vá bảo mật, Bộ vi xử lý SoC/CPU Snapdragon/Dimensity, Kiến trúc, Màn hình độ phân giải/Tần số quét Hz/DPI, Dung lượng RAM & Bộ nhớ trong ROM kèm thanh tỷ lệ trực quan, Trạng thái pin & Nhiệt độ, cùng 4 phím tắt tối ưu nhanh).
+            - 🗂️ Tái cấu trúc toàn bộ giao diện Tính năng theo chuẩn HyperOS: Gom gọn mỗi tính năng thành một mục riêng biệt (Card bo góc, icon tròn nổi bật, tiêu đề, dòng trạng thái trực tiếp và mũi tên điều hướng), bấm vào mở BottomSheet bảng điều khiển chuyên sâu.
+            - ⚙️ Bộ tính năng chuyên biệt trong BottomSheet:
+              + Tần số quét màn hình (60, 90, 120, 144Hz, Ép màn hình, Quick Settings Tile).
+              + Mở khóa 120 FPS Game Turbo & Joyose (Fix drop fps Liên Quân, PUBG, Tắt Joyose qua Shizuku, Cấu hình tần số quét từng app).
+              + Quản lý & Đóng băng ứng dụng rác (Safe Debloater Xiaomi 1-chạm không lo Bootloop).
+              + Private DNS chặn quảng cáo toàn diện (AdGuard, Cloudflare).
+              + Mở khóa VoLTE & VoWiFi Xiaomi (Fix lỗi mất sóng, mất cuộc gọi).
+              + Giải phóng & Tối ưu RAM (Dọn dẹp đa nhiệm, quản lý RAM trống).
+              + Đồng hồ giây & Capsule thông minh (Đồng hồ chính xác mili-giây, thông báo ngầm, capsule nổi trên màn hình).
+              + Chuông cảnh báo & Hiệu ứng sạc HyperOS (Cảnh báo đầy/nóng, HUD Dynamic Island sạc HyperOS).
+              + Tiện ích hệ thống Xiaomi (Dọn dẹp sâu Deep Clean, Menu kiểm tra phần cứng CIT ẩn, Tắt MSA quảng cáo).
           files: |
             output-apks/Mi-Tool-*-Release.apk
             output-apks/Mi-Tool-*-Debug.apk
