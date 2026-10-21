@@ -1824,7 +1824,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="Phiên bản đang cài: v1.0.26"
+                                android:text="Phiên bản đang cài: v1.0.27"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="12sp" />
 

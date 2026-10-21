@@ -1,108 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_bottom_sheet"
-    android:orientation="vertical"
-    android:padding="20dp">
+    android:fillViewport="true"
+    android:overScrollMode="never">
 
-    <!-- Drag Handle -->
-    <View
-        android:layout_width="40dp"
-        android:layout_height="4dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/bg_drag_handle" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="🚀 Tăng Tốc &amp; Giải Phóng RAM"
-        android:textColor="@color/text_primary"
-        android:textSize="18sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="Giải phóng bộ nhớ đệm, đóng các tiến trình ngầm không cần thiết để tăng tốc độ phản hồi cho máy và game."
-        android:textColor="@color/text_secondary"
-        android:textSize="12sp" />
-
-    <!-- RAM Stat Card -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:background="@color/card_highlight"
         android:orientation="vertical"
-        android:padding="14dp">
+        android:padding="20dp">
 
+        <!-- Drag Handle -->
+        <View
+            android:layout_width="40dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_drag_handle" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🚀 Tăng Tốc &amp; Giải Phóng RAM"
+            android:textColor="@color/text_primary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Giải phóng bộ nhớ đệm, đóng các tiến trình ngầm không cần thiết để tăng tốc độ phản hồi cho máy và game."
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp" />
+
+        <!-- RAM Stat Card -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:layout_marginTop="14dp"
+            android:background="@color/card_highlight"
+            android:orientation="vertical"
+            android:padding="14dp">
 
-            <TextView
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Tình trạng bộ nhớ RAM:"
-                android:textColor="@color/text_secondary"
-                android:textSize="13sp" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/bs_tv_ram_stats"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="monospace"
-                android:text="6.2 GB / 12.0 GB (52%)"
-                android:textColor="@color/neon_green"
-                android:textSize="13sp"
-                android:textStyle="bold" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Tình trạng bộ nhớ RAM:"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/bs_tv_ram_stats"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:text="6.2 GB / 12.0 GB (52%)"
+                    android:textColor="@color/neon_green"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/bs_pb_ram_usage"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_marginTop="10dp"
+                android:max="100"
+                android:progress="52"
+                android:progressTint="@color/neon_green" />
         </LinearLayout>
 
-        <ProgressBar
-            android:id="@+id/bs_pb_ram_usage"
-            style="?android:attr/progressBarStyleHorizontal"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/bs_btn_boost_ram"
             android:layout_width="match_parent"
-            android:layout_height="8dp"
-            android:layout_marginTop="10dp"
-            android:max="100"
-            android:progress="52"
-            android:progressTint="@color/neon_green" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:minHeight="46dp"
+            android:backgroundTint="@color/mi_orange"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="🚀 Dọn Dẹp &amp; Tăng Tốc RAM Ngay"
+            android:textColor="@color/text_primary"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            app:cornerRadius="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/bs_btn_open_game_turbo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:minHeight="44dp"
+            android:backgroundTint="@color/card_highlight"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="🎮 Mở Game Turbo Xiaomi"
+            android:textColor="@color/neon_cyan"
+            android:textSize="12sp"
+            app:cornerRadius="8dp" />
+
     </LinearLayout>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/bs_btn_boost_ram"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:minHeight="46dp"
-        android:backgroundTint="@color/mi_orange"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:text="🚀 Dọn Dẹp &amp; Tăng Tốc RAM Ngay"
-        android:textColor="@color/text_primary"
-        android:textSize="13sp"
-        android:textStyle="bold"
-        app:cornerRadius="8dp" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/bs_btn_open_game_turbo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:minHeight="44dp"
-        android:backgroundTint="@color/card_highlight"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:text="🎮 Mở Không Gian Trò Chơi (Game Turbo)"
-        android:textColor="@color/neon_cyan"
-        android:textSize="12sp"
-        app:cornerRadius="8dp" />
-
-</LinearLayout>
+</androidx.core.widget.NestedScrollView>

@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.CompoundButton;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
@@ -69,6 +70,7 @@ import app.cd.mitool.util.ShizukuHelper;
 import app.cd.mitool.util.ShortcutHelper;
 import app.cd.mitool.util.SystemClockHelper;
 import app.cd.mitool.util.UpdateHelper;
+import app.cd.mitool.util.VoiceAlertHelper;
 import app.cd.mitool.util.VoLteHelper;
 import app.cd.mitool.util.XiaomiHelper;
 import rikka.shizuku.Shizuku;
@@ -533,8 +535,13 @@ public class MainActivity extends AppCompatActivity {
         if (tvToolHzSub != null) {
             int currentHz = RefreshRateHelper.getCurrentRefreshRate(this);
             int targetHz = prefs.getTargetRefreshRate();
-            String modeStr = targetHz == 0 ? "Tự động (Auto)" : (targetHz + " Hz");
-            tvToolHzSub.setText("Đang chạy: " + currentHz + " Hz • Chế độ: " + modeStr);
+            if (targetHz == 0) {
+                tvToolHzSub.setText("Chế độ: Tự động (Auto) • Màn hình: " + currentHz + " Hz");
+                tvToolHzSub.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
+            } else {
+                tvToolHzSub.setText("Chế độ: Cố định " + targetHz + " Hz • Màn hình: " + currentHz + " Hz");
+                tvToolHzSub.setTextColor(ContextCompat.getColor(this, R.color.neon_cyan));
+            }
         }
 
         // Game FPS Card
@@ -616,7 +623,20 @@ public class MainActivity extends AppCompatActivity {
         if (tvToolBatteryAlertSub != null) {
             int level = prefs.getBatteryAlertLevel();
             boolean alertOn = prefs.isBatteryAlertLevelEnabled();
-            tvToolBatteryAlertSub.setText(alertOn ? ("Chuông báo khi sạc đến " + level + "% (Đang bật)") : "Cảnh báo pin & Màn hình sạc HUD HyperOS");
+            boolean voiceOn = prefs.isVoiceAlertMasterEnabled();
+            if (voiceOn && alertOn) {
+                tvToolBatteryAlertSub.setText("Đang bật: Cả Giọng nói TTS & Chuông sạc (" + level + "%)");
+                tvToolBatteryAlertSub.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
+            } else if (voiceOn) {
+                tvToolBatteryAlertSub.setText("Đang bật: Thông báo giọng nói Tiếng Việt");
+                tvToolBatteryAlertSub.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
+            } else if (alertOn) {
+                tvToolBatteryAlertSub.setText("Đang bật: Chuông báo sạc đạt " + level + "%");
+                tvToolBatteryAlertSub.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
+            } else {
+                tvToolBatteryAlertSub.setText("Giọng nói sạc, chuông báo & HUD Ambient");
+                tvToolBatteryAlertSub.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
+            }
         }
     }
 
@@ -632,43 +652,189 @@ public class MainActivity extends AppCompatActivity {
         MaterialButton btn90 = view.findViewById(R.id.bs_btn_hz_90);
         MaterialButton btn120 = view.findViewById(R.id.bs_btn_hz_120);
         MaterialButton btn144 = view.findViewById(R.id.bs_btn_hz_144);
+        MaterialButton btnCustom = view.findViewById(R.id.bs_btn_hz_custom);
         MaterialButton btnAddTile = view.findViewById(R.id.bs_btn_add_hz_tile);
         MaterialButton btnSettings = view.findViewById(R.id.bs_btn_open_hz_settings);
 
         int currentHz = RefreshRateHelper.getCurrentRefreshRate(this);
-        tvHz.setText(currentHz + " Hz");
+        if (tvHz != null) tvHz.setText(currentHz + " Hz");
 
         List<Integer> supp = RefreshRateHelper.getSupportedRefreshRates(this);
-        if (!supp.contains(90)) {
+        if (btn90 != null && !supp.contains(90)) {
             btn90.setEnabled(false);
             btn90.setAlpha(0.35f);
         }
-        if (!supp.contains(120)) {
+        if (btn120 != null && !supp.contains(120)) {
             btn120.setEnabled(false);
             btn120.setAlpha(0.35f);
         }
-        if (!supp.contains(144)) {
+        if (btn144 != null && !supp.contains(144)) {
             btn144.setEnabled(false);
             btn144.setAlpha(0.35f);
         }
 
-        btnAuto.setOnClickListener(v -> { applyRefreshRate(0); bs.dismiss(); });
-        btn60.setOnClickListener(v -> { applyRefreshRate(60); bs.dismiss(); });
-        btn90.setOnClickListener(v -> { applyRefreshRate(90); bs.dismiss(); });
-        btn120.setOnClickListener(v -> { applyRefreshRate(120); bs.dismiss(); });
-        btn144.setOnClickListener(v -> { applyRefreshRate(144); bs.dismiss(); });
+        updateHzButtonsHighlight(view, prefs.getTargetRefreshRate());
 
-        btnAddTile.setOnClickListener(v -> {
-            requestAddHzTile();
-            bs.dismiss();
-        });
+        if (btnAuto != null) {
+            btnAuto.setOnClickListener(v -> {
+                applyRefreshRate(0);
+                updateHzButtonsHighlight(view, 0);
+                scheduleHzRefresh(tvHz);
+            });
+        }
+        if (btn60 != null) {
+            btn60.setOnClickListener(v -> {
+                applyRefreshRate(60);
+                updateHzButtonsHighlight(view, 60);
+                scheduleHzRefresh(tvHz);
+            });
+        }
+        if (btn90 != null) {
+            btn90.setOnClickListener(v -> {
+                applyRefreshRate(90);
+                updateHzButtonsHighlight(view, 90);
+                scheduleHzRefresh(tvHz);
+            });
+        }
+        if (btn120 != null) {
+            btn120.setOnClickListener(v -> {
+                applyRefreshRate(120);
+                updateHzButtonsHighlight(view, 120);
+                scheduleHzRefresh(tvHz);
+            });
+        }
+        if (btn144 != null) {
+            btn144.setOnClickListener(v -> {
+                applyRefreshRate(144);
+                updateHzButtonsHighlight(view, 144);
+                scheduleHzRefresh(tvHz);
+            });
+        }
+        if (btnCustom != null) {
+            btnCustom.setOnClickListener(v -> showCustomHzDialog(view, tvHz));
+        }
 
-        btnSettings.setOnClickListener(v -> {
-            RefreshRateHelper.openRefreshRateSettings(MainActivity.this);
-            bs.dismiss();
-        });
+        if (btnAddTile != null) {
+            btnAddTile.setOnClickListener(v -> {
+                requestAddHzTile();
+                bs.dismiss();
+            });
+        }
+
+        if (btnSettings != null) {
+            btnSettings.setOnClickListener(v -> {
+                RefreshRateHelper.openRefreshRateSettings(MainActivity.this);
+                bs.dismiss();
+            });
+        }
 
         bs.show();
+    }
+
+    private void scheduleHzRefresh(final TextView tvHz) {
+        if (tvHz == null) return;
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            int hz = RefreshRateHelper.getCurrentRefreshRate(MainActivity.this);
+            tvHz.setText(hz + " Hz");
+        }, 500);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            int hz = RefreshRateHelper.getCurrentRefreshRate(MainActivity.this);
+            tvHz.setText(hz + " Hz");
+        }, 1200);
+    }
+
+    private void updateHzButtonsHighlight(View view, int selectedRate) {
+        if (view == null) return;
+        MaterialButton btnAuto = view.findViewById(R.id.bs_btn_hz_auto);
+        MaterialButton btn60 = view.findViewById(R.id.bs_btn_hz_60);
+        MaterialButton btn90 = view.findViewById(R.id.bs_btn_hz_90);
+        MaterialButton btn120 = view.findViewById(R.id.bs_btn_hz_120);
+        MaterialButton btn144 = view.findViewById(R.id.bs_btn_hz_144);
+        MaterialButton btnCustom = view.findViewById(R.id.bs_btn_hz_custom);
+        TextView tvMode = view.findViewById(R.id.bs_tv_hz_current_mode);
+
+        MaterialButton[] allBtns = new MaterialButton[]{btnAuto, btn60, btn90, btn120, btn144, btnCustom};
+        int activeColor = ContextCompat.getColor(this, R.color.neon_cyan);
+        int normalColor = ContextCompat.getColor(this, R.color.text_primary);
+        int strokeW = (int) (1.5f * getResources().getDisplayMetrics().density);
+
+        for (MaterialButton b : allBtns) {
+            if (b != null) {
+                b.setStrokeWidth(0);
+                b.setTextColor(normalColor);
+            }
+        }
+
+        MaterialButton targetBtn = btnAuto;
+        String modeText = "Chế độ đã chọn: Tự động (Auto - Mặc định hệ thống)";
+
+        if (selectedRate == 0) {
+            targetBtn = btnAuto;
+            modeText = "Chế độ đã chọn: Tự động (Auto - Mặc định hệ thống)";
+        } else if (selectedRate == 60) {
+            targetBtn = btn60;
+            modeText = "Chế độ đã chọn: Cố định 60 Hz";
+        } else if (selectedRate == 90) {
+            targetBtn = btn90;
+            modeText = "Chế độ đã chọn: Cố định 90 Hz";
+        } else if (selectedRate == 120) {
+            targetBtn = btn120;
+            modeText = "Chế độ đã chọn: Cố định 120 Hz";
+        } else if (selectedRate == 144) {
+            targetBtn = btn144;
+            modeText = "Chế độ đã chọn: Cố định 144 Hz";
+        } else if (selectedRate > 0) {
+            targetBtn = btnCustom;
+            if (btnCustom != null) btnCustom.setText(selectedRate + " Hz");
+            modeText = "Chế độ đã chọn: Tùy chỉnh " + selectedRate + " Hz";
+        }
+
+        if (targetBtn != null) {
+            targetBtn.setStrokeWidth(strokeW);
+            targetBtn.setStrokeColor(ColorStateList.valueOf(activeColor));
+            targetBtn.setTextColor(activeColor);
+        }
+
+        if (tvMode != null) {
+            tvMode.setText(modeText);
+        }
+    }
+
+    private void showCustomHzDialog(final View bsView, final TextView tvHz) {
+        final android.widget.EditText input = new android.widget.EditText(this);
+        input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+        int currentTarget = prefs.getTargetRefreshRate();
+        input.setText(currentTarget > 0 ? String.valueOf(currentTarget) : "120");
+        input.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
+        input.setHintTextColor(ContextCompat.getColor(this, R.color.text_muted));
+
+        FrameLayout container = new FrameLayout(this);
+        int pad = (int) (20 * getResources().getDisplayMetrics().density);
+        container.setPadding(pad, pad / 2, pad, pad / 2);
+        container.addView(input);
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("✏️ Tùy chỉnh Tần số quét (Hz)")
+                .setMessage("Nhập số Hz mong muốn (hoặc 0 để quay về chế độ Tự động):")
+                .setView(container)
+                .setPositiveButton("Áp dụng", (dialog, which) -> {
+                    String str = input.getText().toString().trim();
+                    try {
+                        int rate = Integer.parseInt(str);
+                        applyRefreshRate(rate);
+                        updateHzButtonsHighlight(bsView, rate);
+                        scheduleHzRefresh(tvHz);
+                    } catch (NumberFormatException e) {
+                        Toast.makeText(MainActivity.this, "Số Hz không hợp lệ!", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNeutralButton("Về Tự Động (0Hz)", (dialog, which) -> {
+                    applyRefreshRate(0);
+                    updateHzButtonsHighlight(bsView, 0);
+                    scheduleHzRefresh(tvHz);
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
     }
 
     // --- BottomSheet 2: Game 120 FPS ---
@@ -943,6 +1109,18 @@ public class MainActivity extends AppCompatActivity {
         View view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_battery_alert, null);
         bs.setContentView(view);
 
+        // Voice Alert Views
+        MaterialSwitch swVoiceMaster = view.findViewById(R.id.bs_switch_voice_master);
+        View layoutVoiceSub = view.findViewById(R.id.bs_layout_voice_sub_options);
+        MaterialButton btnTestVoice = view.findViewById(R.id.bs_btn_test_voice);
+        MaterialSwitch swVoiceConnect = view.findViewById(R.id.bs_switch_voice_connect);
+        MaterialSwitch swVoiceDisconnect = view.findViewById(R.id.bs_switch_voice_disconnect);
+        MaterialSwitch swVoice80 = view.findViewById(R.id.bs_switch_voice_80);
+        TextView tvVoice80Label = view.findViewById(R.id.bs_tv_voice_80_label);
+        MaterialSwitch swVoice100 = view.findViewById(R.id.bs_switch_voice_100);
+        MaterialSwitch swVoiceTemp = view.findViewById(R.id.bs_switch_voice_temp);
+
+        // Ringtone & Threshold Views
         TextView tvTitle = view.findViewById(R.id.bs_tv_alert_80_title);
         MaterialSwitch swAlert80 = view.findViewById(R.id.bs_switch_alert_80);
         View sliderLayout = view.findViewById(R.id.bs_layout_alert_level_slider);
@@ -954,77 +1132,139 @@ public class MainActivity extends AppCompatActivity {
         MaterialButton btnTest = view.findViewById(R.id.bs_btn_test_audio);
         MaterialButton btnReset = view.findViewById(R.id.bs_btn_reset_audio);
 
+        // Extra Toggles
         MaterialSwitch swAmbient = view.findViewById(R.id.bs_switch_lockscreen_ambient);
         MaterialSwitch swAlert100 = view.findViewById(R.id.bs_switch_alert_100);
         MaterialSwitch swAlertTemp = view.findViewById(R.id.bs_switch_alert_temp);
 
+        // Setup Voice Alerts
+        boolean voiceMaster = prefs.isVoiceAlertMasterEnabled();
+        if (swVoiceMaster != null) {
+            swVoiceMaster.setChecked(voiceMaster);
+            if (layoutVoiceSub != null) layoutVoiceSub.setVisibility(voiceMaster ? View.VISIBLE : View.GONE);
+            swVoiceMaster.setOnCheckedChangeListener((btn, isChecked) -> {
+                prefs.setVoiceAlertMasterEnabled(isChecked);
+                if (layoutVoiceSub != null) layoutVoiceSub.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+                if (isChecked) {
+                    VoiceAlertHelper.init(MainActivity.this);
+                    Toast.makeText(MainActivity.this, "Đã bật thông báo giọng nói Tiếng Việt!", Toast.LENGTH_SHORT).show();
+                }
+                updateToolsCardSummaries();
+            });
+        }
+
+        if (btnTestVoice != null) {
+            btnTestVoice.setOnClickListener(v -> VoiceAlertHelper.testVoice(MainActivity.this));
+        }
+
+        if (swVoiceConnect != null) {
+            swVoiceConnect.setChecked(prefs.isVoiceAlertConnectEnabled());
+            swVoiceConnect.setOnCheckedChangeListener((btn, isChecked) -> prefs.setVoiceAlertConnectEnabled(isChecked));
+        }
+        if (swVoiceDisconnect != null) {
+            swVoiceDisconnect.setChecked(prefs.isVoiceAlertDisconnectEnabled());
+            swVoiceDisconnect.setOnCheckedChangeListener((btn, isChecked) -> prefs.setVoiceAlertDisconnectEnabled(isChecked));
+        }
+        if (swVoice80 != null) {
+            swVoice80.setChecked(prefs.isVoiceAlert80Enabled());
+            swVoice80.setOnCheckedChangeListener((btn, isChecked) -> prefs.setVoiceAlert80Enabled(isChecked));
+        }
+        if (swVoice100 != null) {
+            swVoice100.setChecked(prefs.isVoiceAlert100Enabled());
+            swVoice100.setOnCheckedChangeListener((btn, isChecked) -> prefs.setVoiceAlert100Enabled(isChecked));
+        }
+        if (swVoiceTemp != null) {
+            swVoiceTemp.setChecked(prefs.isVoiceAlertTempEnabled());
+            swVoiceTemp.setOnCheckedChangeListener((btn, isChecked) -> prefs.setVoiceAlertTempEnabled(isChecked));
+        }
+
+        // Setup Ringtone & Threshold
         int currentLevel = prefs.getBatteryAlertLevel();
         boolean enabled = prefs.isBatteryAlertLevelEnabled();
-        swAlert80.setChecked(enabled);
-        tvTitle.setText("Ngưỡng chuông báo bảo vệ pin (" + currentLevel + "%)");
-        tvLevelValue.setText(currentLevel + "%");
-        sbLevel.setProgress(Math.max(0, Math.min(45, currentLevel - 50)));
-        sliderLayout.setVisibility(enabled ? View.VISIBLE : View.GONE);
+        if (swAlert80 != null) {
+            swAlert80.setChecked(enabled);
+            swAlert80.setOnCheckedChangeListener((btn, isChecked) -> {
+                prefs.setBatteryAlertLevelEnabled(isChecked);
+                if (sliderLayout != null) sliderLayout.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+                updateToolsCardSummaries();
+            });
+        }
 
-        swAlert80.setOnCheckedChangeListener((btn, isChecked) -> {
-            prefs.setBatteryAlertLevelEnabled(isChecked);
-            sliderLayout.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-            updateToolsCardSummaries();
-        });
+        if (tvTitle != null) tvTitle.setText("Ngưỡng chuông báo bảo vệ pin (" + currentLevel + "%)");
+        if (tvVoice80Label != null) tvVoice80Label.setText("Khi sạc đạt ngưỡng bảo vệ (" + currentLevel + "%)");
+        if (tvLevelValue != null) tvLevelValue.setText(currentLevel + "%");
+        if (sbLevel != null) sbLevel.setProgress(Math.max(0, Math.min(45, currentLevel - 50)));
+        if (sliderLayout != null) sliderLayout.setVisibility(enabled ? View.VISIBLE : View.GONE);
 
-        sbLevel.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                int target = 50 + progress;
-                tvLevelValue.setText(target + "%");
-                tvTitle.setText("Ngưỡng chuông báo bảo vệ pin (" + target + "%)");
-                if (fromUser) {
-                    prefs.setBatteryAlertLevel(target);
-                    updateToolsCardSummaries();
+        if (sbLevel != null) {
+            sbLevel.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    int target = 50 + progress;
+                    if (tvLevelValue != null) tvLevelValue.setText(target + "%");
+                    if (tvTitle != null) tvTitle.setText("Ngưỡng chuông báo bảo vệ pin (" + target + "%)");
+                    if (tvVoice80Label != null) tvVoice80Label.setText("Khi sạc đạt ngưỡng bảo vệ (" + target + "%)");
+                    if (fromUser) {
+                        prefs.setBatteryAlertLevel(target);
+                        updateToolsCardSummaries();
+                    }
                 }
-            }
-            @Override public void onStartTrackingTouch(SeekBar seekBar) {}
-            @Override public void onStopTrackingTouch(SeekBar seekBar) {}
-        });
+                @Override public void onStartTrackingTouch(SeekBar seekBar) {}
+                @Override public void onStopTrackingTouch(SeekBar seekBar) {}
+            });
+        }
 
-        tvTone.setText(prefs.getCustomAlertToneTitle());
+        if (tvTone != null) tvTone.setText(prefs.getCustomAlertToneTitle());
 
-        btnPick.setOnClickListener(v -> {
-            Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
-            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION | RingtoneManager.TYPE_RINGTONE);
-            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Chọn âm báo bảo vệ pin");
-            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
-            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false);
-            startActivityForResult(intent, REQ_PICK_RINGTONE);
-            bs.dismiss();
-        });
+        if (btnPick != null) {
+            btnPick.setOnClickListener(v -> {
+                Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION | RingtoneManager.TYPE_RINGTONE);
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Chọn âm báo bảo vệ pin");
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false);
+                startActivityForResult(intent, REQ_PICK_RINGTONE);
+                bs.dismiss();
+            });
+        }
 
-        btnTest.setOnClickListener(v -> {
-            if (BatteryHelper.isPlayingAlert()) {
-                BatteryHelper.stopAlertTone();
-                btnTest.setText("🔊 Nghe thử");
-            } else {
-                BatteryHelper.playAlertTone(MainActivity.this, prefs.getCustomAlertToneUri());
-                btnTest.setText("⏹️ Dừng");
-            }
-        });
+        if (btnTest != null) {
+            btnTest.setOnClickListener(v -> {
+                if (BatteryHelper.isPlayingAlert()) {
+                    BatteryHelper.stopAlertTone();
+                    btnTest.setText("🔊 Nghe thử");
+                } else {
+                    BatteryHelper.playAlertTone(MainActivity.this, prefs.getCustomAlertToneUri());
+                    btnTest.setText("⏹️ Dừng");
+                }
+            });
+        }
 
-        btnReset.setOnClickListener(v -> {
-            prefs.setCustomAlertToneUri(null);
-            prefs.setCustomAlertToneTitle("Mặc định hệ thống");
-            tvTone.setText("Mặc định hệ thống");
-            Toast.makeText(MainActivity.this, "Đã đặt lại âm báo về mặc định", Toast.LENGTH_SHORT).show();
-        });
+        if (btnReset != null) {
+            btnReset.setOnClickListener(v -> {
+                prefs.setCustomAlertToneUri(null);
+                prefs.setCustomAlertToneTitle("Mặc định hệ thống");
+                if (tvTone != null) tvTone.setText("Mặc định hệ thống");
+                Toast.makeText(MainActivity.this, "Đã đặt lại âm báo về mặc định", Toast.LENGTH_SHORT).show();
+            });
+        }
 
-        swAmbient.setChecked(prefs.isLockscreenAmbientEnabled());
-        swAmbient.setOnCheckedChangeListener((btn, isChecked) -> prefs.setLockscreenAmbientEnabled(isChecked));
+        if (swAmbient != null) {
+            swAmbient.setChecked(prefs.isLockscreenAmbientEnabled());
+            swAmbient.setOnCheckedChangeListener((btn, isChecked) -> prefs.setLockscreenAmbientEnabled(isChecked));
+        }
 
-        swAlert100.setChecked(prefs.isAlert100Enabled());
-        swAlert100.setOnCheckedChangeListener((btn, isChecked) -> prefs.setAlert100Enabled(isChecked));
+        if (swAlert100 != null) {
+            swAlert100.setChecked(prefs.isAlert100Enabled());
+            swAlert100.setOnCheckedChangeListener((btn, isChecked) -> prefs.setAlert100Enabled(isChecked));
+        }
 
-        swAlertTemp.setChecked(prefs.isAlertTempEnabled());
-        swAlertTemp.setOnCheckedChangeListener((btn, isChecked) -> prefs.setAlertTempEnabled(isChecked));
+        if (swAlertTemp != null) {
+            swAlertTemp.setChecked(prefs.isAlertTempEnabled());
+            swAlertTemp.setOnCheckedChangeListener((btn, isChecked) -> prefs.setAlertTempEnabled(isChecked));
+        }
 
+        bs.setOnDismissListener(dialog -> BatteryHelper.stopAlertTone());
         bs.show();
     }
 
@@ -1073,9 +1313,8 @@ public class MainActivity extends AppCompatActivity {
     // =========================================================================
 
     private void applyRefreshRate(final int targetRate) {
-        List<Integer> supportedRates = RefreshRateHelper.getSupportedRefreshRates(this);
-        if (targetRate > 0 && !supportedRates.contains(targetRate)) {
-            Toast.makeText(this, "Màn hình không hỗ trợ mốc " + targetRate + "Hz! Mốc hỗ trợ: " + supportedRates, Toast.LENGTH_LONG).show();
+        if (targetRate > 0 && (targetRate < 30 || targetRate > 240)) {
+            Toast.makeText(this, "Tần số quét phải từ 30Hz đến 240Hz!", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -1099,12 +1338,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (success) {
-            String msg = (targetRate == 0) ? "Đã đặt tần số quét Mặc định (Auto)." : ("Đã ép tần số quét " + targetRate + "Hz!");
+            String msg = (targetRate == 0) ? "Đã đặt tần số quét Mặc định (Auto - Hệ thống tự điều tiết)." : ("Đã cố định tần số quét " + targetRate + "Hz!");
             Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 
             final Handler h = new Handler(Looper.getMainLooper());
-            h.postDelayed(() -> { updateToolsCardSummaries(); updateDeviceSpecsDisplay(); }, 500);
-            h.postDelayed(() -> { updateToolsCardSummaries(); updateDeviceSpecsDisplay(); }, 1200);
+            h.postDelayed(() -> { updateToolsCardSummaries(); updateDeviceSpecsDisplay(); }, 400);
+            h.postDelayed(() -> { updateToolsCardSummaries(); updateDeviceSpecsDisplay(); }, 1000);
         } else {
             Toast.makeText(this, "Cần cấp quyền WRITE_SECURE_SETTINGS qua Shizuku hoặc Root!", Toast.LENGTH_LONG).show();
             ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);

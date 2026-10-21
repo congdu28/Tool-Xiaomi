@@ -1,113 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_bottom_sheet"
-    android:orientation="vertical"
-    android:padding="20dp">
-
-    <!-- Drag Handle -->
-    <View
-        android:layout_width="40dp"
-        android:layout_height="4dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/bg_drag_handle" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="⚙️ Tiện Ích Ẩn MIUI / HyperOS"
-        android:textColor="@color/text_primary"
-        android:textSize="18sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="Lối tắt truy cập các menu ẩn của Xiaomi: kiểm tra phần cứng, dọn dẹp bộ nhớ chuyên sâu và vô hiệu hóa các dịch vụ quảng cáo ngầm."
-        android:textColor="@color/text_secondary"
-        android:textSize="12sp" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/bs_btn_open_deep_clean"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:minHeight="44dp"
-        android:backgroundTint="@color/card_highlight"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:text="🧹 Dọn Dẹp Chuyên Sâu Xiaomi (Deep Clean)"
-        android:textColor="@color/neon_green"
-        android:textSize="12sp"
-        app:cornerRadius="8dp" />
+    android:fillViewport="true"
+    android:overScrollMode="never">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:padding="20dp">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/bs_btn_open_cit_test"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
-            android:layout_weight="1"
-            android:minHeight="44dp"
-            android:backgroundTint="@color/card_highlight"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:text="🛠️ Menu CIT Ẩn\n(*#*#6484#*#*)"
-            android:textColor="@color/neon_cyan"
-            android:textSize="11sp"
-            app:cornerRadius="8dp" />
+        <!-- Drag Handle -->
+        <View
+            android:layout_width="40dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_drag_handle" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/bs_btn_open_radio_info"
-            android:layout_width="0dp"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_weight="1"
-            android:minHeight="44dp"
-            android:backgroundTint="@color/card_highlight"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:text="📡 Thông Tin Sóng\n&amp; Pin Ẩn"
+            android:text="⚙️ Tiện Ích Ẩn MIUI / HyperOS"
             android:textColor="@color/text_primary"
-            android:textSize="11sp"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Lối tắt truy cập các menu ẩn của Xiaomi: kiểm tra phần cứng, dọn dẹp bộ nhớ chuyên sâu và vô hiệu hóa các dịch vụ quảng cáo ngầm."
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/bs_btn_open_deep_clean"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:minHeight="44dp"
+            android:backgroundTint="@color/card_highlight"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="🧹 Dọn Dẹp Chuyên Sâu Xiaomi (Deep Clean)"
+            android:textColor="@color/neon_green"
+            android:textSize="12sp"
             app:cornerRadius="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/bs_btn_open_cit_test"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:minHeight="44dp"
+                android:backgroundTint="@color/card_highlight"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:insetLeft="0dp"
+                android:insetRight="0dp"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:text="🛠️ Menu CIT Ẩn\n(*#*#6484#*#*)"
+                android:textColor="@color/neon_cyan"
+                android:textSize="11sp"
+                app:cornerRadius="8dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/bs_btn_open_radio_info"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_weight="1"
+                android:minHeight="44dp"
+                android:backgroundTint="@color/card_highlight"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:insetLeft="0dp"
+                android:insetRight="0dp"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:text="📡 Sóng &amp; Pin\n(*#*#4636#*#*)"
+                android:textColor="@color/text_primary"
+                android:textSize="11sp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/bs_btn_open_msa_settings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:minHeight="44dp"
+            android:backgroundTint="@color/card_highlight"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="🚫 Tắt Dịch Vụ Quảng Cáo Xiaomi (msa)"
+            android:textColor="@color/text_primary"
+            android:textSize="12sp"
+            app:cornerRadius="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/bs_btn_open_ad_service_settings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:minHeight="44dp"
+            android:backgroundTint="@color/card_highlight"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="🔒 Cài Đặt Quyền Riêng Tư &amp; Quảng Cáo"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            app:cornerRadius="8dp" />
+
     </LinearLayout>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/bs_btn_open_msa_settings"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:minHeight="44dp"
-        android:backgroundTint="@color/card_highlight"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:text="🚫 Tắt Ủy Quyền Dịch Vụ Quảng Cáo (msa)"
-        android:textColor="@color/text_primary"
-        android:textSize="12sp"
-        app:cornerRadius="8dp" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/bs_btn_open_ad_service_settings"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:minHeight="44dp"
-        android:backgroundTint="@color/card_highlight"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:text="🚫 Tắt Quảng Cáo Cá Nhân Hóa (Ad Services)"
-        android:textColor="@color/text_primary"
-        android:textSize="12sp"
-        app:cornerRadius="8dp" />
-
-</LinearLayout>
+</androidx.core.widget.NestedScrollView>

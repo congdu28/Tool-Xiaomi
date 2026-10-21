@@ -66,7 +66,7 @@ jobs:
             TAG="${{ github.ref_name }}"
           else
             VER=$(grep "versionName" app/build.gradle | head -n 1 | awk -F"'" '{print $2}')
-            TAG="v${VER:-1.0.26}"
+            TAG="v${VER:-1.0.27}"
           fi
           echo "TAG_NAME=${TAG}" >> $GITHUB_ENV
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
@@ -114,18 +114,9 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             Bản cập nhật ${{ env.TAG_NAME }}:
-            - 📱 Màn hình chính Dashboard Cấu hình thiết bị: Khi mở app, hiển thị đầy đủ thông số phần cứng & hệ thống chuyên sâu (Model thiết bị, Tên mã thiết bị, Phiên bản Xiaomi HyperOS/MIUI, Android, Bản vá bảo mật, Bộ vi xử lý SoC/CPU Snapdragon/Dimensity, Kiến trúc, Màn hình độ phân giải/Tần số quét Hz/DPI, Dung lượng RAM & Bộ nhớ trong ROM kèm thanh tỷ lệ trực quan, Trạng thái pin & Nhiệt độ, cùng 4 phím tắt tối ưu nhanh).
-            - 🗂️ Tái cấu trúc toàn bộ giao diện Tính năng theo chuẩn HyperOS: Gom gọn mỗi tính năng thành một mục riêng biệt (Card bo góc, icon tròn nổi bật, tiêu đề, dòng trạng thái trực tiếp và mũi tên điều hướng), bấm vào mở BottomSheet bảng điều khiển chuyên sâu.
-            - ⚙️ Bộ tính năng chuyên biệt trong BottomSheet:
-              + Tần số quét màn hình (60, 90, 120, 144Hz, Ép màn hình, Quick Settings Tile).
-              + Mở khóa 120 FPS Game Turbo & Joyose (Fix drop fps Liên Quân, PUBG, Tắt Joyose qua Shizuku, Cấu hình tần số quét từng app).
-              + Quản lý & Đóng băng ứng dụng rác (Safe Debloater Xiaomi 1-chạm không lo Bootloop).
-              + Private DNS chặn quảng cáo toàn diện (AdGuard, Cloudflare).
-              + Mở khóa VoLTE & VoWiFi Xiaomi (Fix lỗi mất sóng, mất cuộc gọi).
-              + Giải phóng & Tối ưu RAM (Dọn dẹp đa nhiệm, quản lý RAM trống).
-              + Đồng hồ giây & Capsule thông minh (Đồng hồ chính xác mili-giây, thông báo ngầm, capsule nổi trên màn hình).
-              + Chuông cảnh báo & Hiệu ứng sạc HyperOS (Cảnh báo đầy/nóng, HUD Dynamic Island sạc HyperOS).
-              + Tiện ích hệ thống Xiaomi (Dọn dẹp sâu Deep Clean, Menu kiểm tra phần cứng CIT ẩn, Tắt MSA quảng cáo).
+            - ⚡ Tần số quét màn hình: Mặc định Tự động (Auto) cho hệ thống tự điều tiết mượt mà và tiết kiệm pin. Bổ sung tính năng "✏️ Tùy chỉnh Hz" cho phép người dùng tự do nhập hoặc chọn bất kỳ số Hz mong muốn (30 - 240Hz). Hiển thị trực quan viền sáng chế độ đang chọn và chú thích cơ chế tự điều tiết Hz trên Xiaomi.
+            - 🗣️ Khôi phục & Nâng cấp toàn diện Thông Báo Giọng Nói Tiếng Việt (TTS) trong mục Bảo Vệ Pin: Tùy chọn thông báo khi Cắm sạc (kèm công suất W), Rút sạc, Pin đạt ngưỡng bảo vệ, Pin sạc đầy 100% và Cảnh báo quá nhiệt (> 42°C), có nút thử giọng nói trực tiếp.
+            - 📐 Tối ưu Responsive toàn diện: Khắc phục triệt để lỗi tràn dòng/xuống dòng chữ (các nút Đổi nhạc, Nghe thử, Mặc định), bọc toàn bộ BottomSheet trong NestedScrollView chống che khuất trên màn hình nhỏ hoặc khi phóng to font chữ, căn chỉnh lề Switch và TextView chuẩn mực.
           files: |
             output-apks/Mi-Tool-*-Release.apk
             output-apks/Mi-Tool-*-Debug.apk
