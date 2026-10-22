@@ -33,6 +33,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -112,7 +114,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvSpecOs;
     private TextView tvSpecAndroid;
     private TextView tvSpecSecurity;
+    private TextView tvSpecCpuVendor;
     private TextView tvSpecCpuModel;
+    private TextView tvSpecCpuPlatform;
     private TextView tvSpecCpuCores;
     private TextView tvSpecCpuArch;
     private TextView tvSpecDisplaySize;
@@ -363,7 +367,9 @@ public class MainActivity extends AppCompatActivity {
         tvSpecOs = findViewById(R.id.tv_spec_os);
         tvSpecAndroid = findViewById(R.id.tv_spec_android);
         tvSpecSecurity = findViewById(R.id.tv_spec_security);
+        tvSpecCpuVendor = findViewById(R.id.tv_spec_cpu_vendor);
         tvSpecCpuModel = findViewById(R.id.tv_spec_cpu_model);
+        tvSpecCpuPlatform = findViewById(R.id.tv_spec_cpu_platform);
         tvSpecCpuCores = findViewById(R.id.tv_spec_cpu_cores);
         tvSpecCpuArch = findViewById(R.id.tv_spec_cpu_arch);
         tvSpecDisplaySize = findViewById(R.id.tv_spec_display_size);
@@ -606,7 +612,13 @@ public class MainActivity extends AppCompatActivity {
             }
 
             // CPU / SoC
+            if (tvSpecCpuVendor != null) {
+                tvSpecCpuVendor.setText(DeviceInfoHelper.getCpuVendor());
+            }
             tvSpecCpuModel.setText(DeviceInfoHelper.getCpuModel());
+            if (tvSpecCpuPlatform != null) {
+                tvSpecCpuPlatform.setText(DeviceInfoHelper.getCpuPlatform());
+            }
             tvSpecCpuCores.setText(DeviceInfoHelper.getCpuFrequencySummary());
             tvSpecCpuArch.setText(DeviceInfoHelper.getCpuArchitecture());
 
@@ -1642,6 +1654,112 @@ public class MainActivity extends AppCompatActivity {
         bs.show();
     }
 
+    // --- BottomSheet: Widget SOT & Battery Customization ---
+    private void showWidgetCustomizeDialog() {
+        BottomSheetDialog bs = new BottomSheetDialog(this);
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_customize_widget, null);
+        bs.setContentView(view);
+        configureBottomSheet(bs);
+
+        PreferencesHelper prefs = new PreferencesHelper(this);
+
+        RadioButton rbStyleHyperos = view.findViewById(R.id.rb_style_hyperos);
+        RadioButton rbStyleMinimal = view.findViewById(R.id.rb_style_minimal);
+        RadioButton rbStyleDashboard = view.findViewById(R.id.rb_style_dashboard);
+
+        int currentStyle = prefs.getWidgetStyle();
+        if (currentStyle == PreferencesHelper.WIDGET_STYLE_MINIMAL) {
+            rbStyleMinimal.setChecked(true);
+        } else if (currentStyle == PreferencesHelper.WIDGET_STYLE_DASHBOARD) {
+            rbStyleDashboard.setChecked(true);
+        } else {
+            rbStyleHyperos.setChecked(true);
+        }
+
+        RadioButton rbThemeSystem = view.findViewById(R.id.rb_theme_system);
+        RadioButton rbThemeDark = view.findViewById(R.id.rb_theme_dark);
+        RadioButton rbThemeLight = view.findViewById(R.id.rb_theme_light);
+
+        int currentTheme = prefs.getWidgetThemeMode();
+        if (currentTheme == PreferencesHelper.WIDGET_THEME_DARK) {
+            rbThemeDark.setChecked(true);
+        } else if (currentTheme == PreferencesHelper.WIDGET_THEME_LIGHT) {
+            rbThemeLight.setChecked(true);
+        } else {
+            rbThemeSystem.setChecked(true);
+        }
+
+        RadioButton rbInterval15 = view.findViewById(R.id.rb_interval_15);
+        RadioButton rbInterval30 = view.findViewById(R.id.rb_interval_30);
+        RadioButton rbInterval60 = view.findViewById(R.id.rb_interval_60);
+        RadioButton rbIntervalEvent = view.findViewById(R.id.rb_interval_event);
+
+        int currentInterval = prefs.getWidgetRefreshInterval();
+        if (currentInterval == 15) {
+            rbInterval15.setChecked(true);
+        } else if (currentInterval == 60) {
+            rbInterval60.setChecked(true);
+        } else if (currentInterval == 0) {
+            rbIntervalEvent.setChecked(true);
+        } else {
+            rbInterval30.setChecked(true);
+        }
+
+        MaterialSwitch swShowTemp = view.findViewById(R.id.sw_widget_show_temp);
+        MaterialSwitch swShowEstimate = view.findViewById(R.id.sw_widget_show_estimate);
+
+        if (swShowTemp != null) swShowTemp.setChecked(prefs.isWidgetShowTemp());
+        if (swShowEstimate != null) swShowEstimate.setChecked(prefs.isWidgetShowEstimate());
+
+        View btnSave = view.findViewById(R.id.btn_widget_save);
+        View btnClose = view.findViewById(R.id.btn_widget_close);
+
+        if (btnClose != null) {
+            btnClose.setOnClickListener(v -> bs.dismiss());
+        }
+
+        if (btnSave != null) {
+            btnSave.setOnClickListener(v -> {
+                int selectedStyle = PreferencesHelper.WIDGET_STYLE_HYPEROS;
+                if (rbStyleMinimal.isChecked()) {
+                    selectedStyle = PreferencesHelper.WIDGET_STYLE_MINIMAL;
+                } else if (rbStyleDashboard.isChecked()) {
+                    selectedStyle = PreferencesHelper.WIDGET_STYLE_DASHBOARD;
+                }
+                prefs.setWidgetStyle(selectedStyle);
+
+                int selectedTheme = PreferencesHelper.WIDGET_THEME_SYSTEM;
+                if (rbThemeDark.isChecked()) {
+                    selectedTheme = PreferencesHelper.WIDGET_THEME_DARK;
+                } else if (rbThemeLight.isChecked()) {
+                    selectedTheme = PreferencesHelper.WIDGET_THEME_LIGHT;
+                }
+                prefs.setWidgetThemeMode(selectedTheme);
+
+                int selectedInterval = 30;
+                if (rbInterval15.isChecked()) {
+                    selectedInterval = 15;
+                } else if (rbInterval60.isChecked()) {
+                    selectedInterval = 60;
+                } else if (rbIntervalEvent.isChecked()) {
+                    selectedInterval = 0;
+                }
+                prefs.setWidgetRefreshInterval(selectedInterval);
+
+                if (swShowTemp != null) prefs.setWidgetShowTemp(swShowTemp.isChecked());
+                if (swShowEstimate != null) prefs.setWidgetShowEstimate(swShowEstimate.isChecked());
+
+                app.cd.mitool.widget.SotWidgetScheduler.scheduleNext(this);
+                app.cd.mitool.widget.SotAppWidgetProvider.updateAllWidgets(this);
+
+                Toast.makeText(this, "Đã lưu tùy biến & cập nhật Widget!", Toast.LENGTH_SHORT).show();
+                bs.dismiss();
+            });
+        }
+
+        bs.show();
+    }
+
     // --- BottomSheet 8: Hidden MIUI / HyperOS Utils ---
     private void showMiuiUtilsBottomSheet() {
         BottomSheetDialog bs = new BottomSheetDialog(this);
@@ -2047,6 +2165,11 @@ public class MainActivity extends AppCompatActivity {
                 app.cd.mitool.widget.SotAppWidgetProvider.updateAllWidgets(this);
                 Toast.makeText(this, "Đã đặt lại mốc tính thời gian sáng màn hình!", Toast.LENGTH_SHORT).show();
             });
+        }
+
+        MaterialButton btnCustomizeSotWidget = findViewById(R.id.btn_customize_sot_widget);
+        if (btnCustomizeSotWidget != null) {
+            btnCustomizeSotWidget.setOnClickListener(v -> showWidgetCustomizeDialog());
         }
 
         if (btnRefreshDrainApps != null) {

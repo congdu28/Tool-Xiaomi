@@ -349,6 +349,10 @@ public class BatteryHelper {
         public int cycleCount;
     }
 
+    private static BatteryCapacityData cachedCapacityData = null;
+    private static long lastCapacityDataFetchTime = 0;
+    private static final long CAPACITY_CACHE_TTL_MS = 15000; // 15 seconds cache
+
     public static int getBatteryDesignCapacity(Context context) {
         if (context != null) {
             try {
@@ -366,7 +370,8 @@ public class BatteryHelper {
 
         String[] designPaths = {
                 "/sys/class/power_supply/battery/charge_full_design",
-                "/sys/class/power_supply/bms/charge_full_design"
+                "/sys/class/power_supply/bms/charge_full_design",
+                "/sys/class/power_supply/battery/fg_design_cap"
         };
         for (String path : designPaths) {
             long val = readSysfsLong(path);
@@ -380,30 +385,79 @@ public class BatteryHelper {
     }
 
     public static BatteryCapacityData getBatteryCapacityData(Context context) {
+        long now = System.currentTimeMillis();
+        if (cachedCapacityData != null && (now - lastCapacityDataFetchTime) < CAPACITY_CACHE_TTL_MS) {
+            return cachedCapacityData;
+        }
+
         BatteryCapacityData data = new BatteryCapacityData();
         data.designMah = getBatteryDesignCapacity(context);
         data.cycleCount = getBatteryCycleCount();
 
-        // 1. Sysfs charge_full
-        String[] fullPaths = {
-                "/sys/class/power_supply/battery/charge_full",
-                "/sys/class/power_supply/bms/charge_full",
-                "/sys/class/power_supply/battery/charge_counter_ext"
-        };
+        int level = (context != null) ? getBatteryPercentage(context) : 50;
         long actualVal = -1;
-        for (String path : fullPaths) {
-            long val = readSysfsLong(path);
-            if (val > 0) {
-                if (val > 50000) val /= 1000;
-                if (val >= 500 && val <= 30000) {
-                    actualVal = val;
-                    break;
+
+        // 1. If Shizuku is granted, parse dumpsys battery for Xiaomi HyperOS official stats
+        if (ShizukuHelper.hasShizukuPermission()) {
+            try {
+                ShizukuHelper.ShellResult res = ShizukuHelper.executeCommand("dumpsys battery");
+                if (res != null && res.success && res.stdout != null) {
+                    String[] lines = res.stdout.split("\n");
+                    for (String line : lines) {
+                        String trimmed = line.trim();
+                        if (trimmed.startsWith("mSavedBatteryAsoc:")) {
+                            String v = trimmed.substring("mSavedBatteryAsoc:".length()).trim();
+                            try {
+                                int asoc = Integer.parseInt(v);
+                                if (asoc > 0 && asoc <= 100) {
+                                    data.healthPercent = asoc;
+                                }
+                            } catch (Exception ignored) {}
+                        } else if (trimmed.startsWith("mSavedBatteryUsage:")) {
+                            String v = trimmed.substring("mSavedBatteryUsage:".length()).trim();
+                            try {
+                                int usage = Integer.parseInt(v);
+                                if (usage >= 0 && usage < 10000) {
+                                    data.cycleCount = usage;
+                                }
+                            } catch (Exception ignored) {}
+                        } else if (trimmed.startsWith("Charge counter:")) {
+                            String v = trimmed.substring("Charge counter:".length()).trim();
+                            try {
+                                long counter = Long.parseLong(v);
+                                if (counter > 50000) counter /= 1000;
+                                if (counter > 50 && counter < 30000 && level > 5) {
+                                    actualVal = Math.round((counter / (float) level) * 100);
+                                }
+                            } catch (Exception ignored) {}
+                        }
+                    }
+                }
+            } catch (Throwable ignored) {
+            }
+        }
+
+        // 2. Sysfs charge_full & CIT nodes
+        if (actualVal <= 0) {
+            String[] fullPaths = {
+                    "/sys/class/power_supply/battery/charge_full",
+                    "/sys/class/power_supply/bms/charge_full",
+                    "/sys/class/power_supply/battery/fg_fullcap",
+                    "/sys/class/power_supply/battery/charge_counter_ext"
+            };
+            for (String path : fullPaths) {
+                long val = readSysfsLong(path);
+                if (val > 0) {
+                    if (val > 50000) val /= 1000;
+                    if (val >= 500 && val <= 30000) {
+                        actualVal = val;
+                        break;
+                    }
                 }
             }
         }
 
-        // 2. BatteryManager CHARGE_COUNTER
-        int level = (context != null) ? getBatteryPercentage(context) : 50;
+        // 3. BatteryManager CHARGE_COUNTER
         if (actualVal <= 0 && context != null && level > 5) {
             try {
                 BatteryManager bm = (BatteryManager) context.getSystemService(Context.BATTERY_SERVICE);
@@ -420,12 +474,18 @@ public class BatteryHelper {
             }
         }
 
-        // 3. Sysfs State Of Health (SOH)
-        long soh = readSysfsLong("/sys/class/power_supply/battery/soh");
-        if (soh <= 0) soh = readSysfsLong("/sys/class/power_supply/bms/soh");
+        // 4. Sysfs State Of Health (SOH) if healthPercent not yet parsed from ASOC
+        if (data.healthPercent <= 0) {
+            long soh = readSysfsLong("/sys/class/power_supply/battery/soh");
+            if (soh <= 0) soh = readSysfsLong("/sys/class/power_supply/bms/soh");
 
-        if (soh > 0 && soh <= 100) {
-            data.healthPercent = (float) soh;
+            if (soh > 0 && soh <= 100) {
+                data.healthPercent = (float) soh;
+            }
+        }
+
+        // Finalize healthPercent and actualMah
+        if (data.healthPercent > 0) {
             if (actualVal <= 0) {
                 actualVal = Math.round(data.designMah * (data.healthPercent / 100.0f));
             }
@@ -453,6 +513,8 @@ public class BatteryHelper {
             data.healthDescription = "Đã chai (" + Math.round(data.healthPercent) + "%)";
         }
 
+        cachedCapacityData = data;
+        lastCapacityDataFetchTime = now;
         return data;
     }
 
@@ -479,15 +541,30 @@ public class BatteryHelper {
         try {
             java.io.File file = new java.io.File(path);
             if (file.exists() && file.canRead()) {
-                java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file));
-                String line = br.readLine();
-                br.close();
-                if (line != null && !line.trim().isEmpty()) {
-                    return Long.parseLong(line.trim());
+                try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file))) {
+                    String line = br.readLine();
+                    if (line != null && !line.trim().isEmpty()) {
+                        return Long.parseLong(line.trim());
+                    }
                 }
             }
         } catch (Throwable ignored) {
         }
+
+        // Shizuku fallback if direct permission denied
+        try {
+            if (ShizukuHelper.hasShizukuPermission()) {
+                ShizukuHelper.ShellResult res = ShizukuHelper.executeCommand("cat " + path);
+                if (res != null && res.success && res.stdout != null) {
+                    String line = res.stdout.trim();
+                    if (!line.isEmpty()) {
+                        return Long.parseLong(line);
+                    }
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+
         return -1;
     }
 

@@ -27,45 +27,100 @@ public class DeviceInfoHelper {
     private static final Map<String, String> SOC_MAP = new HashMap<>();
 
     static {
-        // Qualcomm Snapdragon flagship & premium
-        SOC_MAP.put("SM8850", "Snapdragon 8 Elite (Gen 4/5)");
-        SOC_MAP.put("SM8850-AB", "Snapdragon 8 Elite");
-        SOC_MAP.put("SM8750", "Snapdragon 8 Elite (Gen 4)");
+        // Qualcomm Snapdragon 8 series (Flagship)
+        SOC_MAP.put("SM8850", "Snapdragon 8 Elite Gen 5");
+        SOC_MAP.put("SM8850-AB", "Snapdragon 8 Elite Gen 5");
+        SOC_MAP.put("8850", "Snapdragon 8 Elite Gen 5");
+
+        SOC_MAP.put("SM8750", "Snapdragon 8 Elite");
         SOC_MAP.put("SM8750-AB", "Snapdragon 8 Elite");
+        SOC_MAP.put("SM8750-AC", "Snapdragon 8 Elite (Leading)");
+        SOC_MAP.put("8750", "Snapdragon 8 Elite");
+
         SOC_MAP.put("SM8650", "Snapdragon 8 Gen 3");
+        SOC_MAP.put("SM8650-AB", "Snapdragon 8 Gen 3");
+        SOC_MAP.put("SM8650-AC", "Snapdragon 8 Gen 3 (Leading)");
+        SOC_MAP.put("8650", "Snapdragon 8 Gen 3");
+
         SOC_MAP.put("SM8550", "Snapdragon 8 Gen 2");
+        SOC_MAP.put("SM8550-AB", "Snapdragon 8 Gen 2");
+        SOC_MAP.put("SM8550-AC", "Snapdragon 8 Gen 2 (Leading)");
+        SOC_MAP.put("8550", "Snapdragon 8 Gen 2");
+
         SOC_MAP.put("SM8475", "Snapdragon 8+ Gen 1");
+        SOC_MAP.put("8475", "Snapdragon 8+ Gen 1");
+
         SOC_MAP.put("SM8450", "Snapdragon 8 Gen 1");
-        SOC_MAP.put("SM8350", "Snapdragon 888 / 888+");
-        SOC_MAP.put("SM8250", "Snapdragon 865 / 870");
+        SOC_MAP.put("8450", "Snapdragon 8 Gen 1");
+
+        SOC_MAP.put("SM8350", "Snapdragon 888 5G");
+        SOC_MAP.put("SM8350-AC", "Snapdragon 888+ 5G");
+        SOC_MAP.put("8350", "Snapdragon 888 5G");
+
+        SOC_MAP.put("SM8250", "Snapdragon 865 5G");
+        SOC_MAP.put("SM8250-AC", "Snapdragon 870 5G");
+        SOC_MAP.put("8250", "Snapdragon 865 / 870 5G");
+
         SOC_MAP.put("SM8150", "Snapdragon 855 / 855+");
+        SOC_MAP.put("8150", "Snapdragon 855 / 855+");
 
         // Qualcomm Snapdragon 7 series
         SOC_MAP.put("SM7675", "Snapdragon 7+ Gen 3");
+        SOC_MAP.put("7675", "Snapdragon 7+ Gen 3");
+
         SOC_MAP.put("SM7550", "Snapdragon 7 Gen 3");
+        SOC_MAP.put("7550", "Snapdragon 7 Gen 3");
+
         SOC_MAP.put("SM7475", "Snapdragon 7+ Gen 2");
+        SOC_MAP.put("7475", "Snapdragon 7+ Gen 2");
+
         SOC_MAP.put("SM7435", "Snapdragon 7s Gen 2");
-        SOC_MAP.put("SM7325", "Snapdragon 778G / 778G+");
-        SOC_MAP.put("SM7225", "Snapdragon 750G");
+        SOC_MAP.put("7435", "Snapdragon 7s Gen 2");
+
+        SOC_MAP.put("SM7325", "Snapdragon 778G 5G");
+        SOC_MAP.put("SM7325-AE", "Snapdragon 778G+ 5G");
+        SOC_MAP.put("7325", "Snapdragon 778G 5G");
+
+        SOC_MAP.put("SM7225", "Snapdragon 750G 5G");
+        SOC_MAP.put("7225", "Snapdragon 750G 5G");
+
         SOC_MAP.put("SM7150", "Snapdragon 730 / 732G");
+        SOC_MAP.put("7150", "Snapdragon 730 / 732G");
+
         SOC_MAP.put("SM7125", "Snapdragon 720G");
+        SOC_MAP.put("7125", "Snapdragon 720G");
 
         // Qualcomm Snapdragon 6 & 4 series
         SOC_MAP.put("SM6450", "Snapdragon 6 Gen 1");
+        SOC_MAP.put("6450", "Snapdragon 6 Gen 1");
+
         SOC_MAP.put("SM6375", "Snapdragon 695 5G");
+        SOC_MAP.put("6375", "Snapdragon 695 5G");
+
         SOC_MAP.put("SM6225", "Snapdragon 680 4G");
+        SOC_MAP.put("6225", "Snapdragon 680 4G");
+
         SOC_MAP.put("SM6115", "Snapdragon 662");
+        SOC_MAP.put("6115", "Snapdragon 662");
+
         SOC_MAP.put("SM4450", "Snapdragon 4 Gen 2");
+        SOC_MAP.put("4450", "Snapdragon 4 Gen 2");
+
         SOC_MAP.put("SM4375", "Snapdragon 4 Gen 1");
+        SOC_MAP.put("4375", "Snapdragon 4 Gen 1");
+
         SOC_MAP.put("SM4350", "Snapdragon 480 5G");
+        SOC_MAP.put("4350", "Snapdragon 480 5G");
 
         // Qualcomm Board Platform Codenames
         SOC_MAP.put("SUN", "Snapdragon 8 Elite");
         SOC_MAP.put("PINEAPPLE", "Snapdragon 8 Gen 3");
         SOC_MAP.put("KALAMA", "Snapdragon 8 Gen 2");
+        SOC_MAP.put("CAPE", "Snapdragon 8+ Gen 1");
         SOC_MAP.put("TARO", "Snapdragon 8 Gen 1");
         SOC_MAP.put("LAHAINA", "Snapdragon 888");
         SOC_MAP.put("KONA", "Snapdragon 865 / 870");
+        SOC_MAP.put("MSMNILE", "Snapdragon 855");
         SOC_MAP.put("LITO", "Snapdragon 765G");
         SOC_MAP.put("CLIFFS", "Snapdragon 7+ Gen 3");
         SOC_MAP.put("CROW", "Snapdragon 7 Gen 3");
@@ -74,23 +129,53 @@ public class DeviceInfoHelper {
 
         // MediaTek Dimensity
         SOC_MAP.put("MT6991", "Dimensity 9400");
+        SOC_MAP.put("6991", "Dimensity 9400");
+
         SOC_MAP.put("MT6989", "Dimensity 9300 / 9300+");
+        SOC_MAP.put("6989", "Dimensity 9300 / 9300+");
+
         SOC_MAP.put("MT6985", "Dimensity 9200 / 9200+");
+        SOC_MAP.put("6985", "Dimensity 9200 / 9200+");
+
         SOC_MAP.put("MT6983", "Dimensity 9000 / 9000+");
+        SOC_MAP.put("6983", "Dimensity 9000 / 9000+");
+
         SOC_MAP.put("MT6897", "Dimensity 8300-Ultra");
+        SOC_MAP.put("6897", "Dimensity 8300-Ultra");
+
         SOC_MAP.put("MT6896", "Dimensity 8200-Ultra");
+        SOC_MAP.put("6896", "Dimensity 8200-Ultra");
+
         SOC_MAP.put("MT6895", "Dimensity 8100 / 8200");
+        SOC_MAP.put("6895", "Dimensity 8100 / 8200");
+
         SOC_MAP.put("MT6893", "Dimensity 1200");
+        SOC_MAP.put("6893", "Dimensity 1200");
+
         SOC_MAP.put("MT6886", "Dimensity 7200-Ultra");
+        SOC_MAP.put("6886", "Dimensity 7200-Ultra");
+
         SOC_MAP.put("MT6877", "Dimensity 7050 / 1080 / 900");
+        SOC_MAP.put("6877", "Dimensity 7050 / 1080 / 900");
+
         SOC_MAP.put("MT6855", "Dimensity 930 / 7020");
+        SOC_MAP.put("6855", "Dimensity 930 / 7020");
+
         SOC_MAP.put("MT6833", "Dimensity 700 / 6020 / 6080");
+        SOC_MAP.put("6833", "Dimensity 700 / 6020 / 6080");
 
         // MediaTek Helio
         SOC_MAP.put("MT6789", "Helio G99 / G99-Ultra");
+        SOC_MAP.put("6789", "Helio G99 / G99-Ultra");
+
         SOC_MAP.put("MT6769", "Helio G88 / G85");
+        SOC_MAP.put("6769", "Helio G88 / G85");
+
         SOC_MAP.put("MT6768", "Helio G80");
+        SOC_MAP.put("6768", "Helio G80");
+
         SOC_MAP.put("MT6765", "Helio G36 / G35");
+        SOC_MAP.put("6765", "Helio G36 / G35");
     }
 
     public static String getSystemProperty(String propName) {
@@ -158,25 +243,130 @@ public class DeviceInfoHelper {
         return (patch != null && !patch.isEmpty()) ? patch : "Không rõ";
     }
 
-    public static String getCpuModel() {
+    public static String getCpuVendor() {
+        String mfg = getSystemProperty("ro.soc.manufacturer");
+        if (mfg != null && !mfg.trim().isEmpty()) {
+            String upper = mfg.toUpperCase(Locale.US);
+            if (upper.contains("QUALCOMM") || upper.contains("QTI")) return "Qualcomm Technologies, Inc.";
+            if (upper.contains("MEDIATEK") || upper.contains("MTK")) return "MediaTek Inc.";
+            if (upper.contains("SAMSUNG")) return "Samsung Semiconductor";
+            if (upper.contains("GOOGLE")) return "Google Tensor";
+            return mfg.trim();
+        }
+
         String soc = getSystemProperty("ro.soc.model");
-        if (soc != null && !soc.isEmpty()) {
+        if (soc != null && !soc.trim().isEmpty()) {
             String upper = soc.toUpperCase(Locale.US);
-            if (SOC_MAP.containsKey(upper)) {
-                return SOC_MAP.get(upper) + " (" + upper + ")";
+            if (upper.startsWith("SM") || upper.startsWith("SDM") || upper.startsWith("MSM") || upper.startsWith("APQ")) {
+                return "Qualcomm Technologies, Inc.";
             }
-            return soc;
+            if (upper.startsWith("MT")) {
+                return "MediaTek Inc.";
+            }
         }
 
         String platform = getSystemProperty("ro.board.platform");
-        if (platform != null && !platform.isEmpty()) {
+        if (platform != null && !platform.trim().isEmpty()) {
             String upper = platform.toUpperCase(Locale.US);
-            if (SOC_MAP.containsKey(upper)) {
-                return SOC_MAP.get(upper);
+            if (upper.startsWith("MT")) return "MediaTek Inc.";
+            if (upper.contains("QCOM") || upper.equals("KALAMA") || upper.equals("PINEAPPLE")
+                    || upper.equals("SUN") || upper.equals("TARO") || upper.equals("CAPE")
+                    || upper.equals("LAHAINA") || upper.equals("KONA") || upper.equals("CLIFFS")
+                    || upper.equals("CROW") || upper.equals("PARROT") || upper.equals("SKY")
+                    || upper.equals("LITO") || upper.equals("MSMNILE")) {
+                return "Qualcomm Technologies, Inc.";
             }
         }
 
-        // Check hardware from /proc/cpuinfo
+        // Check /proc/cpuinfo
+        try (BufferedReader br = new BufferedReader(new FileReader("/proc/cpuinfo"))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.startsWith("Hardware")) {
+                    String upper = line.toUpperCase(Locale.US);
+                    if (upper.contains("QUALCOMM") || upper.contains("QTI")) return "Qualcomm Technologies, Inc.";
+                    if (upper.contains("MT") || upper.contains("MEDIATEK")) return "MediaTek Inc.";
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+
+        if (Build.HARDWARE != null) {
+            String upper = Build.HARDWARE.toUpperCase(Locale.US);
+            if (upper.contains("QCOM")) return "Qualcomm Technologies, Inc.";
+            if (upper.startsWith("MT")) return "MediaTek Inc.";
+        }
+
+        return "Qualcomm Technologies, Inc.";
+    }
+
+    public static String getCpuPlatform() {
+        String soc = getSystemProperty("ro.soc.model");
+        String platform = getSystemProperty("ro.board.platform");
+        if (soc != null && !soc.trim().isEmpty()) {
+            String s = soc.trim();
+            if (platform != null && !platform.trim().isEmpty() && !platform.equalsIgnoreCase(s)) {
+                return s + " (" + platform.trim() + ")";
+            }
+            return s;
+        }
+        if (platform != null && !platform.trim().isEmpty()) {
+            return platform.trim();
+        }
+        return Build.HARDWARE != null ? Build.HARDWARE : "ARMv8/v9";
+    }
+
+    public static String getCpuModel() {
+        // 1. Direct sysfs check for Qualcomm soc machine name (e.g. "Snapdragon 8 Gen 2")
+        try {
+            File machineFile = new File("/sys/devices/soc0/machine");
+            if (machineFile.exists() && machineFile.canRead()) {
+                try (BufferedReader br = new BufferedReader(new FileReader(machineFile))) {
+                    String line = br.readLine();
+                    if (line != null && !line.trim().isEmpty()) {
+                        String clean = line.trim();
+                        if (clean.toLowerCase(Locale.US).contains("snapdragon") || clean.toLowerCase(Locale.US).contains("dimensity")) {
+                            return clean;
+                        }
+                    }
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+
+        // 2. Check ro.soc.model
+        String soc = getSystemProperty("ro.soc.model");
+        if (soc != null && !soc.trim().isEmpty()) {
+            String upper = soc.trim().toUpperCase(Locale.US);
+            if (SOC_MAP.containsKey(upper)) {
+                String mapped = SOC_MAP.get(upper);
+                if (mapped.contains("(") || upper.contains("-")) {
+                    return mapped;
+                }
+                return mapped + " (" + upper + ")";
+            }
+            // Check without "SM" prefix if numbers
+            String stripped = upper.replace("SM", "").replace("MT", "");
+            if (SOC_MAP.containsKey(stripped)) {
+                return SOC_MAP.get(stripped) + " (" + upper + ")";
+            }
+            return soc.trim();
+        }
+
+        // 3. Check ro.board.platform
+        String platform = getSystemProperty("ro.board.platform");
+        if (platform != null && !platform.trim().isEmpty()) {
+            String upper = platform.trim().toUpperCase(Locale.US);
+            if (SOC_MAP.containsKey(upper)) {
+                return SOC_MAP.get(upper);
+            }
+            String stripped = upper.replace("SM", "").replace("MT", "");
+            if (SOC_MAP.containsKey(stripped)) {
+                return SOC_MAP.get(stripped);
+            }
+        }
+
+        // 4. Check hardware from /proc/cpuinfo
         try (BufferedReader br = new BufferedReader(new FileReader("/proc/cpuinfo"))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -185,8 +375,10 @@ public class DeviceInfoHelper {
                     if (parts.length > 1) {
                         String hw = parts[1].trim();
                         String upper = hw.toUpperCase(Locale.US);
-                        if (SOC_MAP.containsKey(upper)) {
-                            return SOC_MAP.get(upper) + " (" + hw + ")";
+                        for (Map.Entry<String, String> entry : SOC_MAP.entrySet()) {
+                            if (upper.contains(entry.getKey())) {
+                                return entry.getValue() + " (" + entry.getKey() + ")";
+                            }
                         }
                         return hw;
                     }
@@ -195,7 +387,7 @@ public class DeviceInfoHelper {
         } catch (Throwable ignored) {
         }
 
-        return Build.HARDWARE != null ? Build.HARDWARE : "Qualcomm / MediaTek Octa-core";
+        return Build.HARDWARE != null ? Build.HARDWARE : "Qualcomm Octa-Core";
     }
 
     public static int getCpuCoreCount() {

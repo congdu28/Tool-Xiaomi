@@ -411,6 +411,61 @@ public class PreferencesHelper {
         prefs.edit().putInt(KEY_APP_THEME_MODE, mode).apply();
     }
 
+    // Widget SOT Customization
+    public static final String KEY_WIDGET_STYLE = "widget_sot_style"; // 0: HyperOS Glass, 1: Minimalist, 2: Dashboard
+    public static final int WIDGET_STYLE_HYPEROS = 0;
+    public static final int WIDGET_STYLE_MINIMAL = 1;
+    public static final int WIDGET_STYLE_DASHBOARD = 2;
+
+    public static final String KEY_WIDGET_THEME_MODE = "widget_sot_theme_mode"; // 0: System, 1: Dark, 2: Light
+    public static final int WIDGET_THEME_SYSTEM = 0;
+    public static final int WIDGET_THEME_DARK = 1;
+    public static final int WIDGET_THEME_LIGHT = 2;
+
+    public static final String KEY_WIDGET_REFRESH_INTERVAL = "widget_sot_refresh_interval"; // minutes: 15, 30, 60, 0
+    public static final String KEY_WIDGET_SHOW_TEMP = "widget_sot_show_temp";
+    public static final String KEY_WIDGET_SHOW_ESTIMATE = "widget_sot_show_estimate";
+
+    public int getWidgetStyle() {
+        return prefs.getInt(KEY_WIDGET_STYLE, WIDGET_STYLE_HYPEROS);
+    }
+
+    public void setWidgetStyle(int style) {
+        prefs.edit().putInt(KEY_WIDGET_STYLE, style).apply();
+    }
+
+    public int getWidgetThemeMode() {
+        return prefs.getInt(KEY_WIDGET_THEME_MODE, WIDGET_THEME_SYSTEM);
+    }
+
+    public void setWidgetThemeMode(int mode) {
+        prefs.edit().putInt(KEY_WIDGET_THEME_MODE, mode).apply();
+    }
+
+    public int getWidgetRefreshInterval() {
+        return prefs.getInt(KEY_WIDGET_REFRESH_INTERVAL, 30);
+    }
+
+    public void setWidgetRefreshInterval(int minutes) {
+        prefs.edit().putInt(KEY_WIDGET_REFRESH_INTERVAL, minutes).apply();
+    }
+
+    public boolean isWidgetShowTemp() {
+        return prefs.getBoolean(KEY_WIDGET_SHOW_TEMP, true);
+    }
+
+    public void setWidgetShowTemp(boolean show) {
+        prefs.edit().putBoolean(KEY_WIDGET_SHOW_TEMP, show).apply();
+    }
+
+    public boolean isWidgetShowEstimate() {
+        return prefs.getBoolean(KEY_WIDGET_SHOW_ESTIMATE, true);
+    }
+
+    public void setWidgetShowEstimate(boolean show) {
+        prefs.edit().putBoolean(KEY_WIDGET_SHOW_ESTIMATE, show).apply();
+    }
+
     // App Updater state
     public static final String KEY_LAST_UPDATE_CHECK_TIME = "last_update_check_time";
 

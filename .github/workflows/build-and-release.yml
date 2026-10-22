@@ -43,7 +43,7 @@ jobs:
             TAG="${{ github.ref_name }}"
           else
             VER=$(grep "versionName" app/build.gradle | head -n 1 | awk -F"'" '{print $2}')
-            TAG="v${VER:-1.0.42}"
+            TAG="v${VER:-1.0.43}"
           fi
           echo "TAG_NAME=${TAG}" >> $GITHUB_ENV
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
@@ -98,13 +98,17 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             Bản cập nhật ${{ env.TAG_NAME }}:
-            - ⚡ Tối Ưu Bố Cục Cảm Biến & Công Suất Sạc (Tab Pin & Sạc):
-              1. Loại bỏ text trùng lặp "Đang dùng pin", giữ lại badge nhận diện chuẩn giao thức sạc phong cách HyperOS.
-              2. Sắp xếp đối xứng cân đối: % pin lớn bên trái, công suất thời gian thực (W) và nguồn cấp bên phải.
-            - 💾 Tối Ưu Hiển Thị RAM, ZRAM & ROM (Tab Thiết Bị):
-              1. Chia bố cục làm 2 dòng riêng biệt: Dòng trên là tiêu đề, dòng dưới là dung lượng chi tiết.
-              2. Chống triệt để tình trạng nhảy dòng hay co cụm chữ trên màn hình nhỏ.
-            - 📱 Tinh Chỉnh Responsive Toàn Trang:
-              1. Rút gọn nhãn thông số màn hình, kiến trúc CPU và dung lượng pin giúp các hàng hiển thị ngay ngắn, thẳng hàng.
+            - ⚡ Nhận Diện Chuẩn Xác Vi Xử Lý (CPU / SoC) & Nhà Cung Cấp:
+              1. Hiển thị rõ ràng Nhà cung cấp (Qualcomm Technologies, MediaTek...), Vi xử lý chính thức (Snapdragon 8 Elite Gen 5, Snapdragon 8 Elite, Snapdragon 8 Gen 2/3...) và Mã chip/Platform (SM8850, SM8750, SM8550 kalama...).
+              2. Khắc phục triệt để hiển thị nhập nhằng "(gen4/5)" trước đây.
+            - 🔋 Chuẩn Hóa Dung Lượng Pin Thực Tế & Chu Kỳ Sạc:
+              1. Bổ sung đọc trực tiếp từ HyperOS Battery Service (`dumpsys battery` ASOC & cycle count) qua Shizuku.
+              2. Tích hợp sâu các node CIT/BMS sysfs của Xiaomi và tối ưu hóa bộ nhớ đệm (Cache) chống gián đoạn.
+            - ⏱️ Nâng Cấp Toàn Diện Widget SOT & Tùy Biến:
+              1. 3 phong cách widget mới: Chuẩn HyperOS Kính mờ, Tối giản (Minimalist), Bảng điều khiển (Full Dashboard).
+              2. Nhận diện thích ứng tự động theo Theme hệ thống (Sáng/Tối) hoặc tùy chỉnh cố định.
+              3. Bổ sung nút bấm nhỏ cập nhật thông số tức thì có phản hồi rung nhẹ (Haptic).
+              4. Tự động cập nhật định kỳ (15p, 30p, 60p hoặc theo sự kiện màn hình/sạc).
+              5. Tích hợp BottomSheet tùy biến widget trực tiếp ngay trong tab Pin & Sạc.
             - 🚀 Xuất xưởng duy nhất 1 bản Release APK chuẩn tối ưu.
           files: output-apks/*.apk

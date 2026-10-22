@@ -15,6 +15,7 @@
         android:orientation="horizontal">
 
         <TextView
+            android:id="@+id/widget_tv_sot_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -28,9 +29,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_widget_pill"
-            android:paddingStart="6dp"
+            android:paddingStart="7dp"
             android:paddingTop="2dp"
-            android:paddingEnd="6dp"
+            android:paddingEnd="7dp"
             android:paddingBottom="2dp"
             android:text="🔋 --%"
             android:textColor="@color/neon_green"
@@ -41,11 +42,11 @@
             android:id="@+id/widget_tv_sot_temp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="5dp"
             android:background="@drawable/bg_widget_pill"
-            android:paddingStart="6dp"
+            android:paddingStart="7dp"
             android:paddingTop="2dp"
-            android:paddingEnd="6dp"
+            android:paddingEnd="7dp"
             android:paddingBottom="2dp"
             android:text="🌡️ --°C"
             android:textColor="@color/neon_cyan"
@@ -54,12 +55,12 @@
 
         <ImageView
             android:id="@+id/widget_btn_sot_refresh"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
-            android:layout_marginStart="4dp"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_marginStart="5dp"
             android:contentDescription="Refresh"
-            android:padding="2dp"
-            android:src="@drawable/ic_clean" />
+            android:padding="3dp"
+            android:src="@drawable/ic_widget_sync" />
     </LinearLayout>
 
     <!-- Main Value Row -->

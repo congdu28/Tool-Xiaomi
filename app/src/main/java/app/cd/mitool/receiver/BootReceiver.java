@@ -9,6 +9,8 @@ import android.provider.Settings;
 import app.cd.mitool.service.FloatingClockService;
 import app.cd.mitool.service.NotificationClockService;
 import app.cd.mitool.util.PreferencesHelper;
+import app.cd.mitool.widget.SotAppWidgetProvider;
+import app.cd.mitool.widget.SotWidgetScheduler;
 
 public class BootReceiver extends BroadcastReceiver {
 
@@ -43,6 +45,13 @@ public class BootReceiver extends BroadcastReceiver {
                     }
                 } catch (Exception ignored) {
                 }
+            }
+
+            // Restore SOT widget scheduler & refresh widgets
+            try {
+                SotWidgetScheduler.scheduleNext(context);
+                SotAppWidgetProvider.updateAllWidgets(context);
+            } catch (Exception ignored) {
             }
         }
     }
