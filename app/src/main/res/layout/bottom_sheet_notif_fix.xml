@@ -136,6 +136,24 @@
                 app:cornerRadius="8dp" />
         </LinearLayout>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/bs_btn_open_fcm_diag"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:minHeight="42dp"
+            android:backgroundTint="@color/card_highlight"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:text="🔍 Kiểm Tra Kết Nối FCM Google (*#*#426#*#*)"
+            android:textColor="@color/neon_cyan"
+            android:textSize="12sp"
+            app:cornerRadius="8dp" />
+
         <!-- Apps Section Title -->
         <LinearLayout
             android:layout_width="match_parent"

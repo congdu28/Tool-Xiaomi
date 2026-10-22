@@ -1906,6 +1906,7 @@ public class MainActivity extends AppCompatActivity {
         MaterialButton btnBatchFix = view.findViewById(R.id.bs_btn_batch_fix);
         MaterialButton btnOpenAutostart = view.findViewById(R.id.bs_btn_open_autostart);
         MaterialButton btnOpenPowerKeeper = view.findViewById(R.id.bs_btn_open_powerkeeper);
+        MaterialButton btnOpenFcmDiag = view.findViewById(R.id.bs_btn_open_fcm_diag);
         TextView tvSelectAll = view.findViewById(R.id.bs_tv_select_all);
         LinearLayout layoutApps = view.findViewById(R.id.bs_layout_notif_apps);
         TextView tvEmpty = view.findViewById(R.id.bs_tv_notif_empty);
@@ -2057,6 +2058,9 @@ public class MainActivity extends AppCompatActivity {
 
         btnOpenAutostart.setOnClickListener(v -> NotificationFixHelper.openMiuiAutostart(MainActivity.this));
         btnOpenPowerKeeper.setOnClickListener(v -> NotificationFixHelper.openMiuiBatterySaverList(MainActivity.this));
+        if (btnOpenFcmDiag != null) {
+            btnOpenFcmDiag.setOnClickListener(v -> NotificationFixHelper.openFcmDiagnostics(MainActivity.this));
+        }
 
         bs.show();
     }

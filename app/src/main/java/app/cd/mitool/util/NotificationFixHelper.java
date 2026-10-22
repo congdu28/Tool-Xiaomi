@@ -140,6 +140,24 @@ public class NotificationFixHelper {
         }
 
         EXECUTOR.execute(() -> {
+            // 0. Deep GMS / FCM Infrastructure Unlocking (Global ROM Push Hub)
+            StringBuilder gmsCmd = new StringBuilder();
+            gmsCmd.append("dumpsys deviceidle whitelist +com.google.android.gms ; ");
+            gmsCmd.append("dumpsys deviceidle whitelist +com.google.android.gsf ; ");
+            gmsCmd.append("dumpsys deviceidle whitelist +com.google.android.gms.persistent ; ");
+            gmsCmd.append("cmd appops set com.google.android.gms WAKE_LOCK allow ; ");
+            gmsCmd.append("cmd appops set com.google.android.gms RUN_ANY_IN_BACKGROUND allow ; ");
+            gmsCmd.append("cmd appops set com.google.android.gms 10008 allow ; ");
+            gmsCmd.append("cmd appops set com.google.android.gms AUTO_START allow ; ");
+            gmsCmd.append("cmd appops set com.google.android.gsf RUN_ANY_IN_BACKGROUND allow ; ");
+            gmsCmd.append("cmd appops set com.google.android.gsf 10008 allow ; ");
+            gmsCmd.append("am set-standby-bucket com.google.android.gms active ; ");
+            gmsCmd.append("am set-standby-bucket com.google.android.gsf active");
+            ShizukuHelper.executeCommand(gmsCmd.toString());
+
+            // 0.1 Inject into Xiaomi's hidden MILLET_NO_RESTRICT_APP (Greezer Anti-Freeze List)
+            injectMilletNoRestrictApps(packageNames);
+
             int successCount = 0;
             int total = packageNames.size();
 
@@ -319,6 +337,66 @@ public class NotificationFixHelper {
         } catch (Throwable t) {
             Toast.makeText(context, "Không thể mở thông tin ứng dụng", Toast.LENGTH_SHORT).show();
             return false;
+        }
+    }
+
+    /**
+     * Inject packages into Xiaomi's hidden MILLET_NO_RESTRICT_APP settings list.
+     * Prevents Xiaomi's Greezer engine from freezing GMS and critical messaging apps.
+     */
+    public static void injectMilletNoRestrictApps(List<String> packages) {
+        try {
+            ShizukuHelper.ShellResult res = ShizukuHelper.executeCommand("settings get system MILLET_NO_RESTRICT_APP");
+            String current = (res != null && res.stdout != null) ? res.stdout.trim() : "";
+            java.util.LinkedHashSet<String> set = new java.util.LinkedHashSet<>();
+            if (!current.isEmpty() && !current.equals("null")) {
+                for (String p : current.split(",")) {
+                    if (!p.trim().isEmpty()) set.add(p.trim());
+                }
+            }
+            set.add("com.google.android.gms");
+            set.add("com.google.android.gsf");
+            set.add("com.google.android.gms.persistent");
+            if (packages != null) {
+                for (String p : packages) {
+                    if (p != null && !p.trim().isEmpty()) set.add(p.trim());
+                }
+            }
+            StringBuilder sb = new StringBuilder();
+            for (String p : set) {
+                if (sb.length() > 0) sb.append(",");
+                sb.append(p);
+            }
+            ShizukuHelper.executeCommand("settings put system MILLET_NO_RESTRICT_APP \"" + sb.toString() + "\"");
+        } catch (Throwable ignored) {
+        }
+    }
+
+    /**
+     * Open Google Play Services FCM Diagnostics screen (*#*#426#*#*).
+     */
+    public static boolean openFcmDiagnostics(Context context) {
+        if (context == null) return false;
+        try {
+            Intent intent = new Intent();
+            intent.setComponent(new ComponentName(
+                    "com.google.android.gms",
+                    "com.google.android.gms.gcm.GcmDiagnostics"
+            ));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+            return true;
+        } catch (Throwable ignored) {
+            try {
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:*%23*%23426%23*%23*"));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+                return true;
+            } catch (Throwable t) {
+                Toast.makeText(context, "Không thể mở trang kiểm tra FCM", Toast.LENGTH_SHORT).show();
+                return false;
+            }
         }
     }
 }
