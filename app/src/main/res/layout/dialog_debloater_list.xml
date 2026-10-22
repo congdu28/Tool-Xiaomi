@@ -23,9 +23,11 @@
         android:textSize="11sp" />
 
     <ScrollView
+        android:id="@+id/scroll_debloat"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:layout_marginTop="10dp">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:overScrollMode="never">
 
         <LinearLayout
             android:id="@+id/layout_debloat_items"

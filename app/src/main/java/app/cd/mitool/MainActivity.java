@@ -159,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Charging Tester & Protocol Views
     private TextView tvChargingProtocolBadge;
+    private TextView tvChargingCurrentLabel;
     private TextView tvChargingCurrentVal;
     private MaterialButton btnTestCable;
     private ProgressBar pbCableTest;
@@ -391,6 +392,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Charging Tester & Protocol Views
         tvChargingProtocolBadge = findViewById(R.id.tv_charging_protocol_badge);
+        tvChargingCurrentLabel = findViewById(R.id.tv_charging_current_label);
         tvChargingCurrentVal = findViewById(R.id.tv_charging_current_val);
         btnTestCable = findViewById(R.id.btn_test_cable);
         pbCableTest = findViewById(R.id.pb_cable_test);
@@ -1649,6 +1651,11 @@ public class MainActivity extends AppCompatActivity {
     private void showDebloaterDialog() {
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_debloater_list, null);
         final LinearLayout itemsContainer = dialogView.findViewById(R.id.layout_debloat_items);
+        View scroll = dialogView.findViewById(R.id.scroll_debloat);
+        if (scroll != null) {
+            int maxH = (int) (getResources().getDisplayMetrics().heightPixels * 0.55f);
+            scroll.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, maxH));
+        }
 
         final AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                 .setView(dialogView)
@@ -1975,9 +1982,9 @@ public class MainActivity extends AppCompatActivity {
                 if (diff < 60000L) {
                     tvSotTotalUsed.setText("Vừa mới rút");
                 } else if (diff > 7 * 86400000L) {
-                    tvSotTotalUsed.setText("> 7 ngày trước");
+                    tvSotTotalUsed.setText("> 7 ngày");
                 } else {
-                    tvSotTotalUsed.setText(SotHelper.formatDuration(diff) + " trước");
+                    tvSotTotalUsed.setText(SotHelper.formatDuration(diff));
                 }
             }
         }
@@ -1990,10 +1997,10 @@ public class MainActivity extends AppCompatActivity {
         // Update Battery Estimator (On-screen & Mixed duration)
         SotHelper.BatteryEstimate estimate = SotHelper.getBatteryEstimate(this);
         if (tvSotEstimateScreenOn != null) {
-            tvSotEstimateScreenOn.setText("⚡ On-Screen: ~" + estimate.formattedSot);
+            tvSotEstimateScreenOn.setText("~" + estimate.formattedSot);
         }
         if (tvSotEstimateMixed != null) {
-            tvSotEstimateMixed.setText("🔋 Hỗn hợp: ~" + estimate.formattedMixed);
+            tvSotEstimateMixed.setText("~" + estimate.formattedMixed);
         }
         if (tvSotDrainRate != null) {
             tvSotDrainRate.setText(estimate.formattedRate);
@@ -2106,7 +2113,7 @@ public class MainActivity extends AppCompatActivity {
             // App info
             if (tvName != null) tvName.setText(item.appName);
             if (tvDuration != null) tvDuration.setText(item.formattedTime);
-            if (tvPercentage != null) tvPercentage.setText(item.percentage + "% thời lượng");
+            if (tvPercentage != null) tvPercentage.setText("(" + item.percentage + "%)");
             if (tvEstBattery != null) {
                 tvEstBattery.setText(String.format(Locale.getDefault(), "~%.1f%%", item.estimatedBatteryDrain));
             }
@@ -2187,9 +2194,13 @@ public class MainActivity extends AppCompatActivity {
             tvBatteryPower.setTextColor(ContextCompat.getColor(this, R.color.text_muted));
         }
 
+        if (tvChargingCurrentLabel != null) {
+            tvChargingCurrentLabel.setText(isCharging ? "Dòng nạp" : "Dòng tiêu thụ");
+        }
+
         if (tvChargingCurrentVal != null) {
             if (currentMa > 0) {
-                String prefix = isCharging ? "+" : "-";
+                String prefix = isCharging ? "+" : "";
                 tvChargingCurrentVal.setText(prefix + Math.abs(currentMa) + " mA");
                 tvChargingCurrentVal.setTextColor(ContextCompat.getColor(this, isCharging ? R.color.neon_green : R.color.neon_cyan));
             } else {
@@ -2203,7 +2214,7 @@ public class MainActivity extends AppCompatActivity {
             if (cycle > 0) {
                 tvBatteryCycleCount.setText(cycle + " chu kỳ");
             } else {
-                tvBatteryCycleCount.setText("Bấm xem thông tin ẩn bên dưới");
+                tvBatteryCycleCount.setText("Xem tại CIT");
             }
         }
     }
@@ -2218,8 +2229,12 @@ public class MainActivity extends AppCompatActivity {
             tvChargingProtocolBadge.setTextColor(ContextCompat.getColor(this, state.protocolColor));
         }
 
+        if (tvChargingCurrentLabel != null) {
+            tvChargingCurrentLabel.setText(state.isCharging ? "Dòng nạp" : "Dòng tiêu thụ");
+        }
+
         if (tvChargingCurrentVal != null && state.currentMa > 0) {
-            String prefix = state.isCharging ? "+" : "-";
+            String prefix = state.isCharging ? "+" : "";
             tvChargingCurrentVal.setText(prefix + state.currentMa + " mA");
             tvChargingCurrentVal.setTextColor(ContextCompat.getColor(this, state.isCharging ? R.color.neon_green : R.color.neon_cyan));
         }
@@ -2252,13 +2267,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private int batteryRealtimeTickCounter = 0;
+
     private void startBatteryRealtimeTicker() {
         if (batteryTickerRunnable == null) {
+            batteryRealtimeTickCounter = 0;
             batteryTickerRunnable = new Runnable() {
                 @Override
                 public void run() {
                     updateBatteryPowerRealtime();
                     updateChargingTesterUI(null);
+                    batteryRealtimeTickCounter++;
+                    if (batteryRealtimeTickCounter % 15 == 0) {
+                        updateSotView();
+                    }
                     batteryTickerHandler.postDelayed(this, 1000);
                 }
             };
