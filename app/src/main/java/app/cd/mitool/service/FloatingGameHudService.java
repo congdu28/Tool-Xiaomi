@@ -20,6 +20,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.provider.Settings;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.Choreographer;
 import android.view.ContextThemeWrapper;
 import android.view.Display;
@@ -47,6 +49,7 @@ import app.cd.mitool.util.PreferencesHelper;
 public class FloatingGameHudService extends Service {
 
     public static final String ACTION_STOP = "app.cd.mitool.STOP_GAME_HUD";
+    public static final String ACTION_RELOAD_SETTINGS = "app.cd.mitool.RELOAD_GAME_HUD_SETTINGS";
 
     private static final String CHANNEL_ID = "mitool_game_hud_channel_v1";
     public static final int NOTIFICATION_ID = 5005;
@@ -64,18 +67,40 @@ public class FloatingGameHudService extends Service {
     private View hudRootView;
     private WindowManager.LayoutParams params;
 
+    // Compact Mode Views
     private View layoutCompact;
-    private View layoutExpanded;
+    private ImageView ivCompactIcon;
     private TextView tvCompactFps;
+    private TextView tvCompactDot;
     private TextView tvCompactTemp;
     private ImageView btnCloseCompact;
 
+    // Expanded Mode Views
+    private View layoutExpanded;
+    private View layoutExpHeader;
+    private ImageView ivExpIcon;
+    private TextView tvExpTitle;
     private TextView tvExpFps;
-    private TextView tvExpCpu;
-    private TextView tvExpRam;
-    private TextView tvExpTemp;
-    private TextView tvExpPower;
     private ImageView btnCloseExp;
+    private View vExpDivider;
+
+    private View layoutExpRow1;
+    private View layoutExpCpu;
+    private TextView tvExpCpuLabel;
+    private TextView tvExpCpu;
+    private View layoutExpRam;
+    private TextView tvExpRamLabel;
+    private TextView tvExpRam;
+
+    private View layoutExpRow2;
+    private View layoutExpTemp;
+    private TextView tvExpTempLabel;
+    private TextView tvExpTemp;
+    private View layoutExpPower;
+    private TextView tvExpPowerLabel;
+    private TextView tvExpPower;
+
+    private TextView tvExpHint;
 
     private PreferencesHelper prefs;
     private ActivityManager activityManager;
@@ -292,19 +317,40 @@ public class FloatingGameHudService extends Service {
             LayoutInflater inflater = LayoutInflater.from(themeWrapper);
             hudRootView = inflater.inflate(R.layout.layout_floating_game_hud, null);
 
+            // Bind Compact Views
             layoutCompact = hudRootView.findViewById(R.id.layout_hud_compact);
-            layoutExpanded = hudRootView.findViewById(R.id.layout_hud_expanded);
-
+            ivCompactIcon = hudRootView.findViewById(R.id.iv_hud_compact_icon);
             tvCompactFps = hudRootView.findViewById(R.id.tv_hud_compact_fps);
+            tvCompactDot = hudRootView.findViewById(R.id.tv_hud_compact_dot);
             tvCompactTemp = hudRootView.findViewById(R.id.tv_hud_compact_temp);
             btnCloseCompact = hudRootView.findViewById(R.id.btn_hud_close_compact);
 
+            // Bind Expanded Views
+            layoutExpanded = hudRootView.findViewById(R.id.layout_hud_expanded);
+            layoutExpHeader = hudRootView.findViewById(R.id.layout_hud_exp_header);
+            ivExpIcon = hudRootView.findViewById(R.id.iv_hud_exp_icon);
+            tvExpTitle = hudRootView.findViewById(R.id.tv_hud_exp_title);
             tvExpFps = hudRootView.findViewById(R.id.tv_hud_exp_fps);
-            tvExpCpu = hudRootView.findViewById(R.id.tv_hud_exp_cpu);
-            tvExpRam = hudRootView.findViewById(R.id.tv_hud_exp_ram);
-            tvExpTemp = hudRootView.findViewById(R.id.tv_hud_exp_temp);
-            tvExpPower = hudRootView.findViewById(R.id.tv_hud_exp_power);
             btnCloseExp = hudRootView.findViewById(R.id.btn_hud_close_exp);
+            vExpDivider = hudRootView.findViewById(R.id.v_hud_exp_divider);
+
+            layoutExpRow1 = hudRootView.findViewById(R.id.layout_hud_exp_row1);
+            layoutExpCpu = hudRootView.findViewById(R.id.layout_hud_exp_cpu);
+            tvExpCpuLabel = hudRootView.findViewById(R.id.tv_hud_exp_cpu_label);
+            tvExpCpu = hudRootView.findViewById(R.id.tv_hud_exp_cpu);
+            layoutExpRam = hudRootView.findViewById(R.id.layout_hud_exp_ram);
+            tvExpRamLabel = hudRootView.findViewById(R.id.tv_hud_exp_ram_label);
+            tvExpRam = hudRootView.findViewById(R.id.tv_hud_exp_ram);
+
+            layoutExpRow2 = hudRootView.findViewById(R.id.layout_hud_exp_row2);
+            layoutExpTemp = hudRootView.findViewById(R.id.layout_hud_exp_temp);
+            tvExpTempLabel = hudRootView.findViewById(R.id.tv_hud_exp_temp_label);
+            tvExpTemp = hudRootView.findViewById(R.id.tv_hud_exp_temp);
+            layoutExpPower = hudRootView.findViewById(R.id.layout_hud_exp_power);
+            tvExpPowerLabel = hudRootView.findViewById(R.id.tv_hud_exp_power_label);
+            tvExpPower = hudRootView.findViewById(R.id.tv_hud_exp_power);
+
+            tvExpHint = hudRootView.findViewById(R.id.tv_hud_exp_hint);
 
             isExpanded = prefs.isGameHudExpanded();
             updateDisplayMode();
@@ -327,7 +373,7 @@ public class FloatingGameHudService extends Service {
             int savedX = prefs.getGameHudX();
             int savedY = prefs.getGameHudY();
 
-            android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+            DisplayMetrics dm = getResources().getDisplayMetrics();
             int screenWidth = dm != null ? dm.widthPixels : 1080;
             int screenHeight = dm != null ? dm.heightPixels : 2400;
 
@@ -342,11 +388,106 @@ public class FloatingGameHudService extends Service {
             if (btnCloseCompact != null) btnCloseCompact.setOnClickListener(closeListener);
             if (btnCloseExp != null) btnCloseExp.setOnClickListener(closeListener);
 
+            applyHudCustomizations();
+
             windowManager.addView(hudRootView, params);
             prefs.setGameHudEnabled(true);
         } catch (Throwable t) {
             hudRootView = null;
             stopSelf();
+        }
+    }
+
+    public void applyHudCustomizations() {
+        if (hudRootView == null || prefs == null) return;
+        try {
+            // 1. Opacity / Transparency
+            int opacityPercent = prefs.getGameHudOpacity();
+            float alpha = Math.max(0.2f, Math.min(1.0f, opacityPercent / 100.0f));
+            hudRootView.setAlpha(alpha);
+            if (params != null) {
+                params.alpha = alpha;
+            }
+
+            // 2. Metrics visibility
+            boolean showFps = prefs.isGameHudShowFps();
+            boolean showTemp = prefs.isGameHudShowTemp();
+            boolean showCpu = prefs.isGameHudShowCpu();
+            boolean showRam = prefs.isGameHudShowRam();
+            boolean showPower = prefs.isGameHudShowPower();
+
+            // Compact mode visibility
+            if (tvCompactFps != null) tvCompactFps.setVisibility(showFps ? View.VISIBLE : View.GONE);
+            if (tvCompactTemp != null) tvCompactTemp.setVisibility(showTemp ? View.VISIBLE : View.GONE);
+            if (tvCompactDot != null) tvCompactDot.setVisibility((showFps && showTemp) ? View.VISIBLE : View.GONE);
+
+            // Expanded mode visibility
+            if (tvExpFps != null) tvExpFps.setVisibility(showFps ? View.VISIBLE : View.GONE);
+            if (layoutExpCpu != null) layoutExpCpu.setVisibility(showCpu ? View.VISIBLE : View.GONE);
+            if (layoutExpRam != null) layoutExpRam.setVisibility(showRam ? View.VISIBLE : View.GONE);
+            if (layoutExpRow1 != null) layoutExpRow1.setVisibility((showCpu || showRam) ? View.VISIBLE : View.GONE);
+
+            if (layoutExpTemp != null) layoutExpTemp.setVisibility(showTemp ? View.VISIBLE : View.GONE);
+            if (layoutExpPower != null) layoutExpPower.setVisibility(showPower ? View.VISIBLE : View.GONE);
+            if (layoutExpRow2 != null) layoutExpRow2.setVisibility((showTemp || showPower) ? View.VISIBLE : View.GONE);
+
+            // 3. Scaling / Size (Scale text sizes, paddings, and widths proportionally)
+            int scalePercent = prefs.getGameHudScale();
+            float factor = Math.max(0.65f, Math.min(1.6f, scalePercent / 100.0f));
+            DisplayMetrics dm = getResources().getDisplayMetrics();
+            float density = (dm != null) ? dm.density : 2.5f;
+
+            // Scale text sizes
+            if (tvCompactFps != null) tvCompactFps.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f * factor);
+            if (tvCompactTemp != null) tvCompactTemp.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f * factor);
+            if (tvCompactDot != null) tvCompactDot.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f * factor);
+
+            if (tvExpTitle != null) tvExpTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f * factor);
+            if (tvExpFps != null) tvExpFps.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f * factor);
+            if (tvExpCpuLabel != null) tvExpCpuLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f * factor);
+            if (tvExpCpu != null) tvExpCpu.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f * factor);
+            if (tvExpRamLabel != null) tvExpRamLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f * factor);
+            if (tvExpRam != null) tvExpRam.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f * factor);
+            if (tvExpTempLabel != null) tvExpTempLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f * factor);
+            if (tvExpTemp != null) tvExpTemp.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f * factor);
+            if (tvExpPowerLabel != null) tvExpPowerLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f * factor);
+            if (tvExpPower != null) tvExpPower.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f * factor);
+            if (tvExpHint != null) tvExpHint.setTextSize(TypedValue.COMPLEX_UNIT_SP, 9f * factor);
+
+            // Scale capsule padding
+            int padH = Math.round(14 * density * factor);
+            int padV = Math.round(8 * density * factor);
+            hudRootView.setPadding(padH, padV, padH, padV);
+
+            // Scale expanded layout width
+            if (layoutExpanded != null && layoutExpanded.getLayoutParams() != null) {
+                layoutExpanded.getLayoutParams().width = Math.round(210 * density * factor);
+            }
+
+            // Scale icon sizes
+            int iconSize = Math.round(16 * density * factor);
+            int closeSize = Math.round(20 * density * factor);
+            if (ivCompactIcon != null && ivCompactIcon.getLayoutParams() != null) {
+                ivCompactIcon.getLayoutParams().width = iconSize;
+                ivCompactIcon.getLayoutParams().height = iconSize;
+            }
+            if (btnCloseCompact != null && btnCloseCompact.getLayoutParams() != null) {
+                btnCloseCompact.getLayoutParams().width = closeSize;
+                btnCloseCompact.getLayoutParams().height = closeSize;
+            }
+            if (ivExpIcon != null && ivExpIcon.getLayoutParams() != null) {
+                ivExpIcon.getLayoutParams().width = iconSize;
+                ivExpIcon.getLayoutParams().height = iconSize;
+            }
+            if (btnCloseExp != null && btnCloseExp.getLayoutParams() != null) {
+                btnCloseExp.getLayoutParams().width = closeSize;
+                btnCloseExp.getLayoutParams().height = closeSize;
+            }
+
+            if (windowManager != null && params != null) {
+                windowManager.updateViewLayout(hudRootView, params);
+            }
+        } catch (Throwable ignored) {
         }
     }
 
@@ -393,7 +534,7 @@ public class FloatingGameHudService extends Service {
                             params.x = initialX + (int) (event.getRawX() - initialTouchX);
                             params.y = initialY + (int) (event.getRawY() - initialTouchY);
                             try {
-                                android.util.DisplayMetrics dmCurrent = getResources().getDisplayMetrics();
+                                DisplayMetrics dmCurrent = getResources().getDisplayMetrics();
                                 if (dmCurrent != null) {
                                     params.x = Math.max(0, Math.min(params.x, dmCurrent.widthPixels - 40));
                                     params.y = Math.max(0, Math.min(params.y, dmCurrent.heightPixels - 40));
@@ -460,13 +601,19 @@ public class FloatingGameHudService extends Service {
             @Override
             public void run() {
                 if (isScreenOn) {
-                    int hwFps = readHardwareFps();
-                    if (hwFps > 0) {
-                        currentFps = hwFps;
-                        updateFpsViews();
+                    if (prefs.isGameHudShowFps()) {
+                        int hwFps = readHardwareFps();
+                        if (hwFps > 0) {
+                            currentFps = hwFps;
+                            updateFpsViews();
+                        }
                     }
-                    measureCpuUsage();
-                    measureBatteryMetrics();
+                    if (prefs.isGameHudShowCpu()) {
+                        measureCpuUsage();
+                    }
+                    if (prefs.isGameHudShowTemp() || prefs.isGameHudShowPower()) {
+                        measureBatteryMetrics();
+                    }
                     updateMetricsViews();
                 }
                 metricsHandler.postDelayed(this, 1000);
@@ -544,6 +691,7 @@ public class FloatingGameHudService extends Service {
     }
 
     private void updateFpsViews() {
+        if (!prefs.isGameHudShowFps()) return;
         String fpsText = currentFps + " FPS";
         int fpsColor = Color.parseColor("#00E676"); // Default Neon Green
         if (currentFps < 55) {
@@ -565,7 +713,7 @@ public class FloatingGameHudService extends Service {
     private void updateMetricsViews() {
         String tempText = String.format(Locale.getDefault(), "%.1f°C", currentTemp);
 
-        if (tvCompactTemp != null) {
+        if (prefs.isGameHudShowTemp() && tvCompactTemp != null) {
             tvCompactTemp.setText(tempText);
             if (currentTemp >= 43.0f) {
                 tvCompactTemp.setTextColor(Color.parseColor("#FF5252"));
@@ -577,16 +725,16 @@ public class FloatingGameHudService extends Service {
         }
 
         if (isExpanded) {
-            if (tvExpCpu != null) {
+            if (prefs.isGameHudShowCpu() && tvExpCpu != null) {
                 tvExpCpu.setText(currentCpuUsage + "%");
             }
-            if (tvExpRam != null) {
+            if (prefs.isGameHudShowRam() && tvExpRam != null) {
                 tvExpRam.setText(getRamUsagePercent() + "%");
             }
-            if (tvExpTemp != null) {
+            if (prefs.isGameHudShowTemp() && tvExpTemp != null) {
                 tvExpTemp.setText(tempText);
             }
-            if (tvExpPower != null) {
+            if (prefs.isGameHudShowPower() && tvExpPower != null) {
                 if (currentPowerW > 0.05f) {
                     String pfx = isCharging ? "⚡ +" : "-";
                     tvExpPower.setText(String.format(Locale.getDefault(), "%s%.1fW", pfx, currentPowerW));
@@ -599,9 +747,15 @@ public class FloatingGameHudService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent != null && ACTION_STOP.equals(intent.getAction())) {
-            stopSelf();
-            return START_NOT_STICKY;
+        if (intent != null) {
+            String action = intent.getAction();
+            if (ACTION_STOP.equals(action)) {
+                stopSelf();
+                return START_NOT_STICKY;
+            } else if (ACTION_RELOAD_SETTINGS.equals(action)) {
+                applyHudCustomizations();
+                return START_NOT_STICKY;
+            }
         }
 
         if (hudRootView == null && Settings.canDrawOverlays(this)) {
@@ -618,7 +772,7 @@ public class FloatingGameHudService extends Service {
         super.onConfigurationChanged(newConfig);
         if (windowManager != null && hudRootView != null && params != null) {
             try {
-                android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+                DisplayMetrics dm = getResources().getDisplayMetrics();
                 int maxX = Math.max(0, (dm != null ? dm.widthPixels : 1080) - (hudRootView.getWidth() > 0 ? hudRootView.getWidth() : 120));
                 int maxY = Math.max(0, (dm != null ? dm.heightPixels : 2400) - (hudRootView.getHeight() > 0 ? hudRootView.getHeight() : 60));
                 if (params.x > maxX) params.x = maxX;

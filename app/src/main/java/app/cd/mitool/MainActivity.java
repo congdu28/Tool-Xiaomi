@@ -1206,6 +1206,132 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
+        // --- HUD Customization Controls (Scale, Opacity, Metrics) ---
+        TextView tvScaleVal = view.findViewById(R.id.bs_tv_hud_scale_val);
+        SeekBar sbScale = view.findViewById(R.id.bs_sb_hud_scale);
+        MaterialButton btnScaleSmall = view.findViewById(R.id.bs_btn_scale_small);
+        MaterialButton btnScaleStandard = view.findViewById(R.id.bs_btn_scale_standard);
+        MaterialButton btnScaleLarge = view.findViewById(R.id.bs_btn_scale_large);
+
+        TextView tvOpacityVal = view.findViewById(R.id.bs_tv_hud_opacity_val);
+        SeekBar sbOpacity = view.findViewById(R.id.bs_sb_hud_opacity);
+
+        MaterialSwitch swHudFps = view.findViewById(R.id.bs_switch_hud_fps);
+        MaterialSwitch swHudTemp = view.findViewById(R.id.bs_switch_hud_temp);
+        MaterialSwitch swHudCpu = view.findViewById(R.id.bs_switch_hud_cpu);
+        MaterialSwitch swHudRam = view.findViewById(R.id.bs_switch_hud_ram);
+        MaterialSwitch swHudPower = view.findViewById(R.id.bs_switch_hud_power);
+
+        // 1. Scale
+        int currentScale = prefs.getGameHudScale();
+        if (tvScaleVal != null) {
+            tvScaleVal.setText(currentScale + "%" + (currentScale == 100 ? " (Chuẩn)" : ""));
+        }
+        if (sbScale != null) {
+            sbScale.setProgress(Math.max(0, Math.min(70, currentScale - 70)));
+            sbScale.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    int scale = 70 + progress;
+                    if (tvScaleVal != null) {
+                        tvScaleVal.setText(scale + "%" + (scale == 100 ? " (Chuẩn)" : ""));
+                    }
+                    if (fromUser) {
+                        prefs.setGameHudScale(scale);
+                        reloadGameHudSettings();
+                    }
+                }
+                @Override public void onStartTrackingTouch(SeekBar seekBar) {}
+                @Override public void onStopTrackingTouch(SeekBar seekBar) {}
+            });
+        }
+
+        if (btnScaleSmall != null) {
+            btnScaleSmall.setOnClickListener(v -> {
+                prefs.setGameHudScale(80);
+                if (sbScale != null) sbScale.setProgress(10);
+                if (tvScaleVal != null) tvScaleVal.setText("80% (Nhỏ)");
+                reloadGameHudSettings();
+            });
+        }
+        if (btnScaleStandard != null) {
+            btnScaleStandard.setOnClickListener(v -> {
+                prefs.setGameHudScale(100);
+                if (sbScale != null) sbScale.setProgress(30);
+                if (tvScaleVal != null) tvScaleVal.setText("100% (Chuẩn)");
+                reloadGameHudSettings();
+            });
+        }
+        if (btnScaleLarge != null) {
+            btnScaleLarge.setOnClickListener(v -> {
+                prefs.setGameHudScale(120);
+                if (sbScale != null) sbScale.setProgress(50);
+                if (tvScaleVal != null) tvScaleVal.setText("120% (Lớn)");
+                reloadGameHudSettings();
+            });
+        }
+
+        // 2. Opacity
+        int currentOpacity = prefs.getGameHudOpacity();
+        if (tvOpacityVal != null) {
+            tvOpacityVal.setText(currentOpacity + "%");
+        }
+        if (sbOpacity != null) {
+            sbOpacity.setProgress(Math.max(0, Math.min(70, currentOpacity - 30)));
+            sbOpacity.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    int op = 30 + progress;
+                    if (tvOpacityVal != null) {
+                        tvOpacityVal.setText(op + "%");
+                    }
+                    if (fromUser) {
+                        prefs.setGameHudOpacity(op);
+                        reloadGameHudSettings();
+                    }
+                }
+                @Override public void onStartTrackingTouch(SeekBar seekBar) {}
+                @Override public void onStopTrackingTouch(SeekBar seekBar) {}
+            });
+        }
+
+        // 3. Metrics toggles
+        if (swHudFps != null) {
+            swHudFps.setChecked(prefs.isGameHudShowFps());
+            swHudFps.setOnCheckedChangeListener((btn, isChecked) -> {
+                prefs.setGameHudShowFps(isChecked);
+                reloadGameHudSettings();
+            });
+        }
+        if (swHudTemp != null) {
+            swHudTemp.setChecked(prefs.isGameHudShowTemp());
+            swHudTemp.setOnCheckedChangeListener((btn, isChecked) -> {
+                prefs.setGameHudShowTemp(isChecked);
+                reloadGameHudSettings();
+            });
+        }
+        if (swHudCpu != null) {
+            swHudCpu.setChecked(prefs.isGameHudShowCpu());
+            swHudCpu.setOnCheckedChangeListener((btn, isChecked) -> {
+                prefs.setGameHudShowCpu(isChecked);
+                reloadGameHudSettings();
+            });
+        }
+        if (swHudRam != null) {
+            swHudRam.setChecked(prefs.isGameHudShowRam());
+            swHudRam.setOnCheckedChangeListener((btn, isChecked) -> {
+                prefs.setGameHudShowRam(isChecked);
+                reloadGameHudSettings();
+            });
+        }
+        if (swHudPower != null) {
+            swHudPower.setChecked(prefs.isGameHudShowPower());
+            swHudPower.setOnCheckedChangeListener((btn, isChecked) -> {
+                prefs.setGameHudShowPower(isChecked);
+                reloadGameHudSettings();
+            });
+        }
+
         // Custom Game Library controls
         MaterialButton btnAddGame = view.findViewById(R.id.bs_btn_add_custom_game);
         LinearLayout layoutGameList = view.findViewById(R.id.bs_layout_game_list);
@@ -3704,6 +3830,17 @@ public class MainActivity extends AppCompatActivity {
             intent.setAction(FloatingGameHudService.ACTION_STOP);
             startService(intent);
         } catch (Throwable ignored) {
+        }
+    }
+
+    private void reloadGameHudSettings() {
+        if (prefs != null && prefs.isGameHudEnabled()) {
+            try {
+                Intent intent = new Intent(this, FloatingGameHudService.class);
+                intent.setAction(FloatingGameHudService.ACTION_RELOAD_SETTINGS);
+                startService(intent);
+            } catch (Throwable ignored) {
+            }
         }
     }
 

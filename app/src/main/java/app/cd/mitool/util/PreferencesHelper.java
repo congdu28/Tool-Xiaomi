@@ -542,6 +542,70 @@ public class PreferencesHelper {
         prefs.edit().putInt(KEY_GAME_HUD_Y, y).apply();
     }
 
+    public static final String KEY_GAME_HUD_SCALE = "game_hud_scale";
+    public static final String KEY_GAME_HUD_OPACITY = "game_hud_opacity";
+    public static final String KEY_GAME_HUD_SHOW_FPS = "game_hud_show_fps";
+    public static final String KEY_GAME_HUD_SHOW_TEMP = "game_hud_show_temp";
+    public static final String KEY_GAME_HUD_SHOW_CPU = "game_hud_show_cpu";
+    public static final String KEY_GAME_HUD_SHOW_RAM = "game_hud_show_ram";
+    public static final String KEY_GAME_HUD_SHOW_POWER = "game_hud_show_power";
+
+    public int getGameHudScale() {
+        return prefs.getInt(KEY_GAME_HUD_SCALE, 100);
+    }
+
+    public void setGameHudScale(int scale) {
+        prefs.edit().putInt(KEY_GAME_HUD_SCALE, scale).apply();
+    }
+
+    public int getGameHudOpacity() {
+        return prefs.getInt(KEY_GAME_HUD_OPACITY, 90);
+    }
+
+    public void setGameHudOpacity(int opacity) {
+        prefs.edit().putInt(KEY_GAME_HUD_OPACITY, opacity).apply();
+    }
+
+    public boolean isGameHudShowFps() {
+        return prefs.getBoolean(KEY_GAME_HUD_SHOW_FPS, true);
+    }
+
+    public void setGameHudShowFps(boolean show) {
+        prefs.edit().putBoolean(KEY_GAME_HUD_SHOW_FPS, show).apply();
+    }
+
+    public boolean isGameHudShowTemp() {
+        return prefs.getBoolean(KEY_GAME_HUD_SHOW_TEMP, true);
+    }
+
+    public void setGameHudShowTemp(boolean show) {
+        prefs.edit().putBoolean(KEY_GAME_HUD_SHOW_TEMP, show).apply();
+    }
+
+    public boolean isGameHudShowCpu() {
+        return prefs.getBoolean(KEY_GAME_HUD_SHOW_CPU, true);
+    }
+
+    public void setGameHudShowCpu(boolean show) {
+        prefs.edit().putBoolean(KEY_GAME_HUD_SHOW_CPU, show).apply();
+    }
+
+    public boolean isGameHudShowRam() {
+        return prefs.getBoolean(KEY_GAME_HUD_SHOW_RAM, true);
+    }
+
+    public void setGameHudShowRam(boolean show) {
+        prefs.edit().putBoolean(KEY_GAME_HUD_SHOW_RAM, show).apply();
+    }
+
+    public boolean isGameHudShowPower() {
+        return prefs.getBoolean(KEY_GAME_HUD_SHOW_POWER, true);
+    }
+
+    public void setGameHudShowPower(boolean show) {
+        prefs.edit().putBoolean(KEY_GAME_HUD_SHOW_POWER, show).apply();
+    }
+
     // Notification Fixer state
     public static final String KEY_NOTIF_FIX_LAST_APPLIED = "notif_fix_last_applied";
 
