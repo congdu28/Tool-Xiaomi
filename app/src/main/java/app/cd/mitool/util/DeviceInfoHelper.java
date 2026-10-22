@@ -245,7 +245,7 @@ public class DeviceInfoHelper {
         if (Build.SUPPORTED_ABIS != null && Build.SUPPORTED_ABIS.length > 0) {
             String abi = Build.SUPPORTED_ABIS[0];
             if ("arm64-v8a".equalsIgnoreCase(abi)) {
-                return "arm64-v8a (ARMv8 / ARMv9 64-bit)";
+                return "arm64-v8a (64-bit)";
             }
             return abi + " (64-bit)";
         }

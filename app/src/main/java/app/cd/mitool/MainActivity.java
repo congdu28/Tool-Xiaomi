@@ -626,14 +626,14 @@ public class MainActivity extends AppCompatActivity {
 
             // RAM & Storage
             DeviceInfoHelper.MemoryStats ram = DeviceInfoHelper.getRamStats(this);
-            tvSpecRamText.setText(String.format(Locale.getDefault(), "%.1f GB / %.1f GB (Trống %.1f GB - %d%%)", ram.usedGb, ram.totalGb, ram.freeGb, ram.percentUsed));
+            tvSpecRamText.setText(String.format(Locale.getDefault(), "%.1f GB / %.1f GB (Còn trống %.1f GB • %d%%)", ram.usedGb, ram.totalGb, ram.freeGb, ram.percentUsed));
             pbSpecRam.setProgress(ram.percentUsed);
 
             // ZRAM (Swap / Extension)
             DeviceInfoHelper.ZramStats zram = DeviceInfoHelper.getZramStats();
             if (tvSpecZramText != null && pbSpecZram != null) {
                 if (zram.isEnabled && zram.totalGb > 0) {
-                    tvSpecZramText.setText(String.format(Locale.getDefault(), "%.1f GB / %.1f GB (Dùng %d%%)", zram.usedGb, zram.totalGb, zram.percentUsed));
+                    tvSpecZramText.setText(String.format(Locale.getDefault(), "%.1f GB / %.1f GB (Đã dùng %d%%)", zram.usedGb, zram.totalGb, zram.percentUsed));
                     pbSpecZram.setProgress(zram.percentUsed);
                 } else {
                     tvSpecZramText.setText("Chưa kích hoạt Mở rộng RAM");
@@ -656,7 +656,7 @@ public class MainActivity extends AppCompatActivity {
             tvSpecBatteryPercent.setText(bInfo.level + "% (" + (bInfo.isCharging ? bInfo.plugTypeName : "Đang dùng pin") + ")");
 
             if (tvSpecBatteryCapacity != null) {
-                tvSpecBatteryCapacity.setText(String.format(Locale.getDefault(), "%d mAh / %d mAh (%d%%)", bCap.designMah, bCap.actualMah, Math.round(bCap.healthPercent)));
+                tvSpecBatteryCapacity.setText(String.format(Locale.getDefault(), "%d / %d mAh (%d%%)", bCap.designMah, bCap.actualMah, Math.round(bCap.healthPercent)));
             }
 
             if (tvSpecBatteryCycles != null) {
@@ -2384,15 +2384,19 @@ public class MainActivity extends AppCompatActivity {
                     : (plugType == BatteryManager.BATTERY_PLUGGED_USB) ? "Cổng USB"
                     : (plugType == BatteryManager.BATTERY_PLUGGED_WIRELESS) ? "Sạc không dây"
                     : "Đang sạc";
-            tvBatteryStatus.setText(R.string.battery_status_charging);
-            tvBatteryStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
+            if (tvBatteryStatus != null) {
+                tvBatteryStatus.setText(R.string.battery_status_charging);
+                tvBatteryStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
+            }
             tvBatteryPlugType.setText("Nguồn: " + plugStr);
 
             String eta = BatteryHelper.getEstimatedChargeTime(this);
             tvChargeEta.setText(eta != null ? eta : "Đang ước tính...");
         } else {
-            tvBatteryStatus.setText(R.string.battery_status_discharging);
-            tvBatteryStatus.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
+            if (tvBatteryStatus != null) {
+                tvBatteryStatus.setText(R.string.battery_status_discharging);
+                tvBatteryStatus.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
+            }
             tvBatteryPlugType.setText("Nguồn: Pin thiết bị");
             tvChargeEta.setText("Chưa cắm sạc");
         }

@@ -499,7 +499,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:paddingEnd="12dp"
-                                    android:text="Độ phân giải chuẩn:"
+                                    android:text="Độ phân giải:"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                                 <TextView
@@ -525,7 +525,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:paddingEnd="12dp"
-                                    android:text="Tần số quét màn hình:"
+                                    android:text="Tần số quét:"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                                 <TextView
@@ -631,29 +631,24 @@
                                 android:orientation="vertical"
                                 android:padding="10dp">
 
-                                <LinearLayout
-                                    android:layout_width="match_parent"
+                                <TextView
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:gravity="center_vertical"
-                                    android:orientation="horizontal">
-                                    <TextView
-                                        android:layout_width="0dp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_weight="1"
-                                        android:text="⚡ RAM Vật Lý"
-                                        android:textColor="@color/text_primary"
-                                        android:textSize="12sp"
-                                        android:textStyle="bold" />
-                                    <TextView
-                                        android:id="@+id/tv_spec_ram_text"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:fontFamily="monospace"
-                                        android:text="6.2 GB / 12.0 GB (52%)"
-                                        android:textColor="@color/neon_green"
-                                        android:textSize="12sp"
-                                        android:textStyle="bold" />
-                                </LinearLayout>
+                                    android:text="⚡ RAM Vật Lý"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tv_spec_ram_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:fontFamily="monospace"
+                                    android:text="6.2 GB / 12.0 GB (52%)"
+                                    android:textColor="@color/neon_green"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
 
                                 <ProgressBar
                                     android:id="@+id/pb_spec_ram"
@@ -675,29 +670,24 @@
                                 android:orientation="vertical"
                                 android:padding="10dp">
 
-                                <LinearLayout
-                                    android:layout_width="match_parent"
+                                <TextView
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:gravity="center_vertical"
-                                    android:orientation="horizontal">
-                                    <TextView
-                                        android:layout_width="0dp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_weight="1"
-                                        android:text="🚀 Mở Rộng RAM HyperOS (ZRAM)"
-                                        android:textColor="@color/text_primary"
-                                        android:textSize="12sp"
-                                        android:textStyle="bold" />
-                                    <TextView
-                                        android:id="@+id/tv_spec_zram_text"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:fontFamily="monospace"
-                                        android:text="1.8 GB / 6.0 GB (30%)"
-                                        android:textColor="@color/neon_yellow"
-                                        android:textSize="12sp"
-                                        android:textStyle="bold" />
-                                </LinearLayout>
+                                    android:text="🚀 Mở Rộng RAM HyperOS (ZRAM)"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tv_spec_zram_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:fontFamily="monospace"
+                                    android:text="1.8 GB / 6.0 GB (30%)"
+                                    android:textColor="@color/neon_yellow"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
 
                                 <ProgressBar
                                     android:id="@+id/pb_spec_zram"
@@ -719,29 +709,24 @@
                                 android:orientation="vertical"
                                 android:padding="10dp">
 
-                                <LinearLayout
-                                    android:layout_width="match_parent"
+                                <TextView
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:gravity="center_vertical"
-                                    android:orientation="horizontal">
-                                    <TextView
-                                        android:layout_width="0dp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_weight="1"
-                                        android:text="📁 Bộ Nhớ Trong (ROM)"
-                                        android:textColor="@color/text_primary"
-                                        android:textSize="12sp"
-                                        android:textStyle="bold" />
-                                    <TextView
-                                        android:id="@+id/tv_spec_storage_text"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:fontFamily="monospace"
-                                        android:text="87.6 GB / 475.4 GB"
-                                        android:textColor="@color/neon_cyan"
-                                        android:textSize="12sp"
-                                        android:textStyle="bold" />
-                                </LinearLayout>
+                                    android:text="📁 Bộ Nhớ Trong (ROM)"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tv_spec_storage_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:fontFamily="monospace"
+                                    android:text="87.6 GB / 475.4 GB"
+                                    android:textColor="@color/neon_cyan"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
 
                                 <TextView
                                     android:id="@+id/tv_spec_storage_sub"
@@ -832,7 +817,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:paddingEnd="12dp"
-                                    android:text="Dung lượng pin (Chuẩn / Thực):"
+                                    android:text="Dung lượng (Chuẩn / Thực):"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                                 <TextView
@@ -859,7 +844,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:paddingEnd="12dp"
-                                    android:text="Chu kỳ sạc (Cycles):"
+                                    android:text="Chu kỳ sạc:"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                                 <TextView
@@ -1764,13 +1749,13 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:background="@drawable/bg_badge_rounded"
-                                    android:paddingStart="8dp"
-                                    android:paddingTop="3dp"
-                                    android:paddingEnd="8dp"
-                                    android:paddingBottom="3dp"
+                                    android:paddingStart="10dp"
+                                    android:paddingTop="4dp"
+                                    android:paddingEnd="10dp"
+                                    android:paddingBottom="4dp"
                                     android:text="🔋 DÙNG PIN"
                                     android:textColor="@color/text_secondary"
-                                    android:textSize="10sp"
+                                    android:textSize="11sp"
                                     android:textStyle="bold" />
                             </LinearLayout>
 
@@ -1778,7 +1763,8 @@
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_marginBottom="4dp"
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
 
@@ -1789,13 +1775,14 @@
                                     android:fontFamily="sans-serif-black"
                                     android:text="--%"
                                     android:textColor="@color/neon_green"
-                                    android:textSize="40sp" />
+                                    android:textSize="42sp" />
 
                                 <LinearLayout
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginStart="14dp"
+                                    android:layout_marginStart="16dp"
                                     android:layout_weight="1"
+                                    android:gravity="center_vertical"
                                     android:orientation="vertical">
 
                                     <TextView
@@ -1803,28 +1790,18 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:fontFamily="sans-serif-black"
-                                        android:text="0.0 W (0 mA)"
+                                        android:text="0.0 W"
                                         android:textColor="@color/neon_cyan"
-                                        android:textSize="18sp" />
-
-                                    <TextView
-                                        android:id="@+id/tv_battery_status"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginTop="2dp"
-                                        android:text="@string/battery_status_discharging"
-                                        android:textColor="@color/text_primary"
-                                        android:textSize="13sp"
-                                        android:textStyle="bold" />
+                                        android:textSize="22sp" />
 
                                     <TextView
                                         android:id="@+id/tv_battery_plug_type"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_marginTop="2dp"
+                                        android:layout_marginTop="3dp"
                                         android:text="Nguồn: Pin thiết bị"
                                         android:textColor="@color/text_secondary"
-                                        android:textSize="11sp" />
+                                        android:textSize="12sp" />
                                 </LinearLayout>
                             </LinearLayout>
 
