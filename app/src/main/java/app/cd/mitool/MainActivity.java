@@ -41,6 +41,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
@@ -155,6 +156,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvBatteryPower;
     private TextView tvBatteryTemp;
     private TextView tvBatteryVoltage;
+    private TextView tvBatteryDesignCapacity;
+    private TextView tvBatteryActualCapacity;
     private TextView tvBatteryCycleCount;
     private MaterialButton btnOpenBatterySecretInfo;
 
@@ -191,6 +194,10 @@ public class MainActivity extends AppCompatActivity {
     private int currentDrainFilter = BatteryUsageHelper.FILTER_SINCE_UNPLUG;
 
     // Tab 4: Settings Views
+    private TextView tvThemeCurrentBadge;
+    private MaterialButton btnThemeSystem;
+    private MaterialButton btnThemeLight;
+    private MaterialButton btnThemeDark;
     private TextView tvSettingsCurrentVersion;
     private MaterialButton btnCheckUpdateNow;
     private View btnPermAutostart;
@@ -253,10 +260,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        prefs = new PreferencesHelper(this);
+        applyAppTheme(prefs.getAppThemeMode());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        prefs = new PreferencesHelper(this);
 
         // Cancel old legacy notification IDs from previous versions
         NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -388,6 +395,8 @@ public class MainActivity extends AppCompatActivity {
         tvBatteryPower = findViewById(R.id.tv_battery_power);
         tvBatteryTemp = findViewById(R.id.tv_battery_temp);
         tvBatteryVoltage = findViewById(R.id.tv_battery_voltage);
+        tvBatteryDesignCapacity = findViewById(R.id.tv_battery_design_capacity);
+        tvBatteryActualCapacity = findViewById(R.id.tv_battery_actual_capacity);
         tvBatteryCycleCount = findViewById(R.id.tv_battery_cycle_count);
         btnOpenBatterySecretInfo = findViewById(R.id.btn_open_battery_secret_info);
 
@@ -423,6 +432,10 @@ public class MainActivity extends AppCompatActivity {
         tvDrainAppsSubtitle = findViewById(R.id.tv_drain_apps_subtitle);
 
         // Settings Views
+        tvThemeCurrentBadge = findViewById(R.id.tv_theme_current_badge);
+        btnThemeSystem = findViewById(R.id.btn_theme_system);
+        btnThemeLight = findViewById(R.id.btn_theme_light);
+        btnThemeDark = findViewById(R.id.btn_theme_dark);
         tvSettingsCurrentVersion = findViewById(R.id.tv_settings_current_version);
         btnCheckUpdateNow = findViewById(R.id.btn_check_update_now);
         btnPermAutostart = findViewById(R.id.btn_perm_autostart);
@@ -2210,10 +2223,18 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        // Battery Capacity & Health Specs
+        BatteryHelper.BatteryCapacityData capData = BatteryHelper.getBatteryCapacityData(this);
+        if (tvBatteryDesignCapacity != null) {
+            tvBatteryDesignCapacity.setText(capData.designMah + " mAh");
+        }
+        if (tvBatteryActualCapacity != null) {
+            tvBatteryActualCapacity.setText(String.format(Locale.getDefault(), "~%d mAh (%d%%)",
+                    capData.actualMah, Math.round(capData.healthPercent)));
+        }
         if (tvBatteryCycleCount != null) {
-            int cycle = BatteryHelper.getBatteryCycleCount();
-            if (cycle > 0) {
-                tvBatteryCycleCount.setText(cycle + " chu kỳ");
+            if (capData.cycleCount > 0) {
+                tvBatteryCycleCount.setText(capData.cycleCount + " chu kỳ");
             } else {
                 tvBatteryCycleCount.setText("Xem tại CIT");
             }
@@ -2301,6 +2322,8 @@ public class MainActivity extends AppCompatActivity {
     // =========================================================================
 
     private void setupSettingsControls() {
+        setupThemeSelection();
+
         if (btnCheckUpdateNow != null) {
             btnCheckUpdateNow.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -2327,6 +2350,83 @@ public class MainActivity extends AppCompatActivity {
                     XiaomiHelper.openBatterySaverSettings(MainActivity.this);
                 }
             });
+        }
+    }
+
+    private void setupThemeSelection() {
+        updateThemeButtonsHighlight(prefs.getAppThemeMode());
+
+        if (btnThemeSystem != null) {
+            btnThemeSystem.setOnClickListener(v -> selectTheme(PreferencesHelper.THEME_MODE_SYSTEM));
+        }
+        if (btnThemeLight != null) {
+            btnThemeLight.setOnClickListener(v -> selectTheme(PreferencesHelper.THEME_MODE_LIGHT));
+        }
+        if (btnThemeDark != null) {
+            btnThemeDark.setOnClickListener(v -> selectTheme(PreferencesHelper.THEME_MODE_DARK));
+        }
+    }
+
+    private void selectTheme(int mode) {
+        prefs.setAppThemeMode(mode);
+        updateThemeButtonsHighlight(mode);
+        applyAppTheme(mode);
+    }
+
+    private void updateThemeButtonsHighlight(int mode) {
+        int activeBg = ContextCompat.getColor(this, R.color.mi_orange);
+        int inactiveBg = ContextCompat.getColor(this, R.color.card_highlight);
+        int activeText = ContextCompat.getColor(this, R.color.white);
+        int inactiveText = ContextCompat.getColor(this, R.color.text_secondary);
+
+        if (btnThemeSystem != null) {
+            boolean isSel = mode == PreferencesHelper.THEME_MODE_SYSTEM;
+            btnThemeSystem.setBackgroundTintList(ColorStateList.valueOf(isSel ? activeBg : inactiveBg));
+            btnThemeSystem.setTextColor(isSel ? activeText : inactiveText);
+        }
+        if (btnThemeLight != null) {
+            boolean isSel = mode == PreferencesHelper.THEME_MODE_LIGHT;
+            btnThemeLight.setBackgroundTintList(ColorStateList.valueOf(isSel ? activeBg : inactiveBg));
+            btnThemeLight.setTextColor(isSel ? activeText : inactiveText);
+        }
+        if (btnThemeDark != null) {
+            boolean isSel = mode == PreferencesHelper.THEME_MODE_DARK;
+            btnThemeDark.setBackgroundTintList(ColorStateList.valueOf(isSel ? activeBg : inactiveBg));
+            btnThemeDark.setTextColor(isSel ? activeText : inactiveText);
+        }
+
+        if (tvThemeCurrentBadge != null) {
+            switch (mode) {
+                case PreferencesHelper.THEME_MODE_LIGHT:
+                    tvThemeCurrentBadge.setText("Sáng");
+                    break;
+                case PreferencesHelper.THEME_MODE_DARK:
+                    tvThemeCurrentBadge.setText("Tối");
+                    break;
+                case PreferencesHelper.THEME_MODE_SYSTEM:
+                default:
+                    tvThemeCurrentBadge.setText("Hệ thống");
+                    break;
+            }
+        }
+    }
+
+    private void applyAppTheme(int themeMode) {
+        int nightMode;
+        switch (themeMode) {
+            case PreferencesHelper.THEME_MODE_LIGHT:
+                nightMode = AppCompatDelegate.MODE_NIGHT_NO;
+                break;
+            case PreferencesHelper.THEME_MODE_DARK:
+                nightMode = AppCompatDelegate.MODE_NIGHT_YES;
+                break;
+            case PreferencesHelper.THEME_MODE_SYSTEM:
+            default:
+                nightMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+                break;
+        }
+        if (AppCompatDelegate.getDefaultNightMode() != nightMode) {
+            AppCompatDelegate.setDefaultNightMode(nightMode);
         }
     }
 

@@ -340,15 +340,150 @@ public class BatteryHelper {
         return getBatteryInfo(context).currentMa;
     }
 
+    public static class BatteryCapacityData {
+        public int designMah;
+        public int actualMah;
+        public int currentMah;
+        public float healthPercent;
+        public String healthDescription;
+        public int cycleCount;
+    }
+
+    public static int getBatteryDesignCapacity(Context context) {
+        if (context != null) {
+            try {
+                Class<?> powerProfileClass = Class.forName("com.android.internal.os.PowerProfile");
+                java.lang.reflect.Constructor<?> constructor = powerProfileClass.getConstructor(Context.class);
+                Object powerProfileInstance = constructor.newInstance(context);
+                java.lang.reflect.Method getBatteryCapacity = powerProfileClass.getMethod("getBatteryCapacity");
+                double cap = (double) getBatteryCapacity.invoke(powerProfileInstance);
+                if (cap > 500 && cap < 30000) {
+                    return (int) Math.round(cap);
+                }
+            } catch (Throwable ignored) {
+            }
+        }
+
+        String[] designPaths = {
+                "/sys/class/power_supply/battery/charge_full_design",
+                "/sys/class/power_supply/bms/charge_full_design"
+        };
+        for (String path : designPaths) {
+            long val = readSysfsLong(path);
+            if (val > 0) {
+                if (val > 50000) val /= 1000;
+                if (val >= 500 && val <= 30000) return (int) val;
+            }
+        }
+
+        return 5000;
+    }
+
+    public static BatteryCapacityData getBatteryCapacityData(Context context) {
+        BatteryCapacityData data = new BatteryCapacityData();
+        data.designMah = getBatteryDesignCapacity(context);
+        data.cycleCount = getBatteryCycleCount();
+
+        // 1. Sysfs charge_full
+        String[] fullPaths = {
+                "/sys/class/power_supply/battery/charge_full",
+                "/sys/class/power_supply/bms/charge_full",
+                "/sys/class/power_supply/battery/charge_counter_ext"
+        };
+        long actualVal = -1;
+        for (String path : fullPaths) {
+            long val = readSysfsLong(path);
+            if (val > 0) {
+                if (val > 50000) val /= 1000;
+                if (val >= 500 && val <= 30000) {
+                    actualVal = val;
+                    break;
+                }
+            }
+        }
+
+        // 2. BatteryManager CHARGE_COUNTER
+        int level = (context != null) ? getBatteryPercentage(context) : 50;
+        if (actualVal <= 0 && context != null && level > 5) {
+            try {
+                BatteryManager bm = (BatteryManager) context.getSystemService(Context.BATTERY_SERVICE);
+                if (bm != null) {
+                    int counter = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER);
+                    if (counter > 0) {
+                        int cMah = counter > 50000 ? counter / 1000 : counter;
+                        if (cMah > 50) {
+                            actualVal = Math.round((cMah / (float) level) * 100);
+                        }
+                    }
+                }
+            } catch (Throwable ignored) {
+            }
+        }
+
+        // 3. Sysfs State Of Health (SOH)
+        long soh = readSysfsLong("/sys/class/power_supply/battery/soh");
+        if (soh <= 0) soh = readSysfsLong("/sys/class/power_supply/bms/soh");
+
+        if (soh > 0 && soh <= 100) {
+            data.healthPercent = (float) soh;
+            if (actualVal <= 0) {
+                actualVal = Math.round(data.designMah * (data.healthPercent / 100.0f));
+            }
+        } else if (actualVal > 0) {
+            data.healthPercent = Math.min(100.0f, (actualVal / (float) data.designMah) * 100.0f);
+        } else {
+            if (data.cycleCount > 0) {
+                float estLoss = (data.cycleCount / 100.0f) * 2.2f;
+                data.healthPercent = Math.max(70.0f, Math.min(100.0f, 100.0f - estLoss));
+                actualVal = Math.round(data.designMah * (data.healthPercent / 100.0f));
+            } else {
+                data.healthPercent = 96.0f;
+                actualVal = Math.round(data.designMah * 0.96f);
+            }
+        }
+
+        data.actualMah = (int) actualVal;
+        data.currentMah = Math.round(data.actualMah * (level / 100.0f));
+
+        if (data.healthPercent >= 90) {
+            data.healthDescription = "Tuyệt vời (" + Math.round(data.healthPercent) + "%)";
+        } else if (data.healthPercent >= 80) {
+            data.healthDescription = "Tốt (" + Math.round(data.healthPercent) + "%)";
+        } else {
+            data.healthDescription = "Đã chai (" + Math.round(data.healthPercent) + "%)";
+        }
+
+        return data;
+    }
+
     public static int getBatteryCycleCount() {
+        String[] cyclePaths = {
+                "/sys/class/power_supply/battery/cycle_count",
+                "/sys/class/power_supply/bms/battery_cycle",
+                "/sys/class/power_supply/bms/cycle_count",
+                "/sys/class/power_supply/battery/battery_cycle",
+                "/sys/class/power_supply/battery/device/cycle_count",
+                "/sys/class/power_supply/maxfg/cycle_count",
+                "/sys/class/power_supply/battery/count"
+        };
+        for (String path : cyclePaths) {
+            long val = readSysfsLong(path);
+            if (val >= 0 && val < 50000) {
+                return (int) val;
+            }
+        }
+        return -1;
+    }
+
+    private static long readSysfsLong(String path) {
         try {
-            java.io.File file = new java.io.File("/sys/class/power_supply/battery/cycle_count");
+            java.io.File file = new java.io.File(path);
             if (file.exists() && file.canRead()) {
                 java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(file));
                 String line = br.readLine();
                 br.close();
                 if (line != null && !line.trim().isEmpty()) {
-                    return Integer.parseInt(line.trim());
+                    return Long.parseLong(line.trim());
                 }
             }
         } catch (Throwable ignored) {

@@ -396,4 +396,18 @@ public class PreferencesHelper {
     public void setCustomString(String key, String value) {
         prefs.edit().putString(key, value).apply();
     }
+
+    // App Theme Configuration (0: System default, 1: Light, 2: Dark)
+    public static final String KEY_APP_THEME_MODE = "app_theme_mode";
+    public static final int THEME_MODE_SYSTEM = 0;
+    public static final int THEME_MODE_LIGHT = 1;
+    public static final int THEME_MODE_DARK = 2;
+
+    public int getAppThemeMode() {
+        return prefs.getInt(KEY_APP_THEME_MODE, THEME_MODE_SYSTEM);
+    }
+
+    public void setAppThemeMode(int mode) {
+        prefs.edit().putInt(KEY_APP_THEME_MODE, mode).apply();
+    }
 }

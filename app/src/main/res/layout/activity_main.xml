@@ -1685,33 +1685,109 @@
                                     android:textStyle="bold" />
                             </LinearLayout>
 
-                            <!-- Cycle Count Row -->
+                            <!-- Battery Capacity & Health Specs -->
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
+                                android:layout_marginTop="10dp"
+                                android:background="@drawable/bg_card_rounded"
+                                android:orientation="vertical"
+                                android:padding="12dp">
 
                                 <TextView
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Chu kỳ sạc:"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="12sp" />
-
-                                <TextView
-                                    android:id="@+id/tv_battery_cycle_count"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:fontFamily="monospace"
-                                    android:maxLines="1"
-                                    android:ellipsize="end"
-                                    android:text="Đang kiểm tra..."
-                                    android:textColor="@color/neon_cyan"
+                                    android:text="🔋 Dung Lượng &amp; Chu Kỳ Sạc"
+                                    android:textColor="@color/mi_orange"
                                     android:textSize="12sp"
                                     android:textStyle="bold" />
+
+                                <!-- Row 1: Design Capacity -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Dung lượng pin định mức:"
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="12sp" />
+
+                                    <TextView
+                                        android:id="@+id/tv_battery_design_capacity"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="monospace"
+                                        android:maxLines="1"
+                                        android:ellipsize="end"
+                                        android:text="-- mAh"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="12sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <!-- Row 2: Actual / Estimated Capacity -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="5dp"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Dung lượng pin thực tế:"
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="12sp" />
+
+                                    <TextView
+                                        android:id="@+id/tv_battery_actual_capacity"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="monospace"
+                                        android:maxLines="1"
+                                        android:ellipsize="end"
+                                        android:text="-- mAh"
+                                        android:textColor="@color/neon_green"
+                                        android:textSize="12sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <!-- Row 3: Cycle Count -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="5dp"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Chu kỳ sạc (Số lần sạc):"
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="12sp" />
+
+                                    <TextView
+                                        android:id="@+id/tv_battery_cycle_count"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="monospace"
+                                        android:maxLines="1"
+                                        android:ellipsize="end"
+                                        android:text="Đang kiểm tra..."
+                                        android:textColor="@color/neon_cyan"
+                                        android:textSize="12sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
                             </LinearLayout>
 
                             <View
@@ -2346,6 +2422,120 @@
                             android:textSize="16sp"
                             android:textStyle="bold" />
                     </LinearLayout>
+
+                    <!-- Theme Selection Card -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        app:cardBackgroundColor="@color/card_dark"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="14dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="🎨 Giao Diện &amp; Chủ Đề"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tv_theme_current_badge"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/bg_floating_capsule"
+                                    android:paddingStart="8dp"
+                                    android:paddingTop="3dp"
+                                    android:paddingEnd="8dp"
+                                    android:paddingBottom="3dp"
+                                    android:text="Hệ thống"
+                                    android:textColor="@color/neon_cyan"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="Tùy chọn tông màu sáng, tối hoặc tự động đồng bộ theo chế độ của hệ thống Xiaomi HyperOS."
+                                android:textColor="@color/text_secondary"
+                                android:textSize="11sp" />
+
+                            <!-- 3 Theme Options Button Row -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:orientation="horizontal">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_theme_system"
+                                    android:layout_width="0dp"
+                                    android:layout_height="38dp"
+                                    android:layout_marginEnd="3dp"
+                                    android:layout_weight="1"
+                                    android:backgroundTint="@color/mi_orange"
+                                    android:insetTop="0dp"
+                                    android:insetBottom="0dp"
+                                    android:minHeight="0dp"
+                                    android:minWidth="0dp"
+                                    android:text="🌓 Hệ thống"
+                                    android:textColor="@color/white"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold"
+                                    app:cornerRadius="8dp" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_theme_light"
+                                    android:layout_width="0dp"
+                                    android:layout_height="38dp"
+                                    android:layout_marginStart="3dp"
+                                    android:layout_marginEnd="3dp"
+                                    android:layout_weight="1"
+                                    android:backgroundTint="@color/card_highlight"
+                                    android:insetTop="0dp"
+                                    android:insetBottom="0dp"
+                                    android:minHeight="0dp"
+                                    android:minWidth="0dp"
+                                    android:text="☀️ Sáng"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="11sp"
+                                    app:cornerRadius="8dp" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_theme_dark"
+                                    android:layout_width="0dp"
+                                    android:layout_height="38dp"
+                                    android:layout_marginStart="3dp"
+                                    android:layout_weight="1"
+                                    android:backgroundTint="@color/card_highlight"
+                                    android:insetTop="0dp"
+                                    android:insetBottom="0dp"
+                                    android:minHeight="0dp"
+                                    android:minWidth="0dp"
+                                    android:text="🌙 Tối"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="11sp"
+                                    app:cornerRadius="8dp" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
 
                     <!-- Shizuku Card -->
                     <androidx.cardview.widget.CardView
