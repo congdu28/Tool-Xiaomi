@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/hud_root_container"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -21,7 +20,7 @@
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:src="@drawable/ic_gamepad"
-            app:tint="@color/neon_green" />
+            android:tint="@color/neon_green" />
 
         <TextView
             android:id="@+id/tv_hud_compact_fps"
@@ -53,13 +52,13 @@
 
         <ImageView
             android:id="@+id/btn_hud_close_compact"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:layout_marginStart="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="2dp"
             android:contentDescription="Close HUD"
             android:src="@drawable/ic_close"
-            app:tint="@color/text_muted" />
+            android:tint="@color/text_muted" />
     </LinearLayout>
 
     <!-- 2. EXPANDED DASHBOARD MODE -->
@@ -81,7 +80,7 @@
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:src="@drawable/ic_gamepad"
-                app:tint="@color/neon_green" />
+                android:tint="@color/neon_green" />
 
             <TextView
                 android:layout_width="0dp"
@@ -105,12 +104,12 @@
 
             <ImageView
                 android:id="@+id/btn_hud_close_exp"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:padding="2dp"
                 android:contentDescription="Close HUD"
                 android:src="@drawable/ic_close"
-                app:tint="@color/text_muted" />
+                android:tint="@color/text_muted" />
         </LinearLayout>
 
         <!-- Divider line -->

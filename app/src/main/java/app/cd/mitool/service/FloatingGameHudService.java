@@ -10,6 +10,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ServiceInfo;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.hardware.display.DisplayManager;
@@ -20,6 +21,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.provider.Settings;
 import android.view.Choreographer;
+import android.view.ContextThemeWrapper;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -30,6 +32,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -112,7 +115,7 @@ public class FloatingGameHudService extends Service {
                 if (hwFps > 0) {
                     currentFps = hwFps;
                 } else {
-                    currentFps = (int) Math.round((frameCount * 1000.0) / diff);
+                    currentFps = (int) Math.round((frameCount * 1000.0) / Math.max(1, diff));
                     if (currentFps > maxDisplayHz + 5) currentFps = maxDisplayHz;
                 }
                 frameCount = 0;
@@ -120,14 +123,14 @@ public class FloatingGameHudService extends Service {
                 updateFpsViews();
             }
             if (isScreenOn) {
-                Choreographer.getInstance().postFrameCallback(this);
+                try {
+                    Choreographer.getInstance().postFrameCallback(this);
+                } catch (Throwable ignored) {
+                }
             }
         }
     };
 
-    /**
-     * Read actual panel / GPU rendering FPS from hardware sysfs nodes available on Xiaomi/MIUI.
-     */
     private int readHardwareFps() {
         for (String path : HARDWARE_FPS_SYSFS) {
             try {
@@ -161,7 +164,7 @@ public class FloatingGameHudService extends Service {
         return -1;
     }
 
-    private final BroadcastReceiver screenAndBatteryReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver screenReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent == null || intent.getAction() == null) return;
@@ -169,7 +172,10 @@ public class FloatingGameHudService extends Service {
 
             if (Intent.ACTION_SCREEN_OFF.equals(action)) {
                 isScreenOn = false;
-                Choreographer.getInstance().removeFrameCallback(frameCallback);
+                try {
+                    Choreographer.getInstance().removeFrameCallback(frameCallback);
+                } catch (Throwable ignored) {
+                }
                 if (metricsRunnable != null) {
                     metricsHandler.removeCallbacks(metricsRunnable);
                 }
@@ -177,25 +183,12 @@ public class FloatingGameHudService extends Service {
                 isScreenOn = true;
                 lastFpsSampleTime = System.currentTimeMillis();
                 frameCount = 0;
-                Choreographer.getInstance().postFrameCallback(frameCallback);
+                try {
+                    Choreographer.getInstance().postFrameCallback(frameCallback);
+                } catch (Throwable ignored) {
+                }
                 if (metricsRunnable != null) {
                     metricsHandler.post(metricsRunnable);
-                }
-            } else if (Intent.ACTION_BATTERY_CHANGED.equals(action)) {
-                int tempRaw = intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, 0);
-                currentTemp = tempRaw > 0 ? (tempRaw / 10.0f) : 36.0f;
-
-                int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-                isCharging = (status == BatteryManager.BATTERY_STATUS_CHARGING ||
-                              status == BatteryManager.BATTERY_STATUS_FULL);
-
-                int voltageMv = intent.getIntExtra(BatteryManager.EXTRA_VOLTAGE, 4000);
-                long currentUa = 0;
-                if (batteryManager != null) {
-                    currentUa = Math.abs(batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW));
-                }
-                if (currentUa > 0 && voltageMv > 0) {
-                    currentPowerW = (voltageMv / 1000.0f) * (currentUa / 1000000.0f);
                 }
             }
         }
@@ -208,12 +201,15 @@ public class FloatingGameHudService extends Service {
         activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         batteryManager = (BatteryManager) getSystemService(Context.BATTERY_SERVICE);
 
-        // Detect screen refresh rate
+        // Detect screen refresh rate safely via DisplayManager
         try {
-            WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-            if (wm != null && wm.getDefaultDisplay() != null) {
-                maxDisplayHz = Math.round(wm.getDefaultDisplay().getRefreshRate());
-                if (maxDisplayHz < 60) maxDisplayHz = 60;
+            DisplayManager dm = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
+            if (dm != null) {
+                Display d = dm.getDisplay(Display.DEFAULT_DISPLAY);
+                if (d != null) {
+                    maxDisplayHz = Math.round(d.getRefreshRate());
+                    if (maxDisplayHz < 60) maxDisplayHz = 60;
+                }
             }
         } catch (Throwable ignored) {
             maxDisplayHz = 120;
@@ -223,7 +219,7 @@ public class FloatingGameHudService extends Service {
 
         if (Settings.canDrawOverlays(this)) {
             initHudView();
-            registerReceivers();
+            registerScreenStateReceiver();
             startMetricPolling();
         } else {
             stopSelf();
@@ -231,110 +227,125 @@ public class FloatingGameHudService extends Service {
     }
 
     private void startForegroundNotification() {
-        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && nm != null) {
-            NotificationChannel chan = new NotificationChannel(
-                    CHANNEL_ID,
-                    "Game HUD FPS & Hiệu Năng",
-                    NotificationManager.IMPORTANCE_LOW
+        try {
+            NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && nm != null) {
+                NotificationChannel chan = new NotificationChannel(
+                        CHANNEL_ID,
+                        "Game HUD FPS & Hiệu Năng",
+                        NotificationManager.IMPORTANCE_LOW
+                );
+                chan.setShowBadge(false);
+                nm.createNotificationChannel(chan);
+            }
+
+            Intent openAppIntent = new Intent(this, MainActivity.class);
+            openAppIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            PendingIntent piOpen = PendingIntent.getActivity(
+                    this, 5005, openAppIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_IMMUTABLE : 0)
             );
-            chan.setShowBadge(false);
-            nm.createNotificationChannel(chan);
-        }
 
-        Intent openAppIntent = new Intent(this, MainActivity.class);
-        openAppIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent piOpen = PendingIntent.getActivity(
-                this, 5005, openAppIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_IMMUTABLE : 0)
-        );
+            Intent stopIntent = new Intent(this, FloatingGameHudService.class);
+            stopIntent.setAction(ACTION_STOP);
+            PendingIntent piStop = PendingIntent.getService(
+                    this, 5006, stopIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_IMMUTABLE : 0)
+            );
 
-        Intent stopIntent = new Intent(this, FloatingGameHudService.class);
-        stopIntent.setAction(ACTION_STOP);
-        PendingIntent piStop = PendingIntent.getService(
-                this, 5006, stopIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_IMMUTABLE : 0)
-        );
+            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.ic_gamepad)
+                    .setContentTitle("🎮 Game HUD FPS Đang Chạy")
+                    .setContentText("Theo dõi FPS thời gian thực & Hiệu năng hệ thống")
+                    .setContentIntent(piOpen)
+                    .addAction(R.drawable.ic_close, "Tắt HUD", piStop)
+                    .setOngoing(true)
+                    .setPriority(NotificationCompat.PRIORITY_LOW)
+                    .build();
 
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_gamepad)
-                .setContentTitle("🎮 Game HUD FPS Đang Chạy")
-                .setContentText("Theo dõi FPS thời gian thực & Hiệu năng hệ thống")
-                .setContentIntent(piOpen)
-                .addAction(R.drawable.ic_close, "Tắt HUD", piStop)
-                .setOngoing(true)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .build();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            startForeground(NOTIFICATION_ID, notification, android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            startForeground(NOTIFICATION_ID, notification, 0);
-        } else {
-            startForeground(NOTIFICATION_ID, notification);
+            if (Build.VERSION.SDK_INT >= 34) {
+                try {
+                    startForeground(NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE);
+                } catch (Throwable t) {
+                    startForeground(NOTIFICATION_ID, notification);
+                }
+            } else {
+                startForeground(NOTIFICATION_ID, notification);
+            }
+        } catch (Throwable t) {
+            try {
+                Notification fallbackNotif = new NotificationCompat.Builder(this, CHANNEL_ID)
+                        .setSmallIcon(R.drawable.ic_gamepad)
+                        .setContentTitle("🎮 Game HUD FPS")
+                        .setContentText("Đang chạy")
+                        .build();
+                startForeground(NOTIFICATION_ID, fallbackNotif);
+            } catch (Throwable ignored) {
+            }
         }
     }
 
     private void initHudView() {
-        windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-        LayoutInflater inflater = LayoutInflater.from(this);
-        hudRootView = inflater.inflate(R.layout.layout_floating_game_hud, null);
-
-        layoutCompact = hudRootView.findViewById(R.id.layout_hud_compact);
-        layoutExpanded = hudRootView.findViewById(R.id.layout_hud_expanded);
-
-        tvCompactFps = hudRootView.findViewById(R.id.tv_hud_compact_fps);
-        tvCompactTemp = hudRootView.findViewById(R.id.tv_hud_compact_temp);
-        btnCloseCompact = hudRootView.findViewById(R.id.btn_hud_close_compact);
-
-        tvExpFps = hudRootView.findViewById(R.id.tv_hud_exp_fps);
-        tvExpCpu = hudRootView.findViewById(R.id.tv_hud_exp_cpu);
-        tvExpRam = hudRootView.findViewById(R.id.tv_hud_exp_ram);
-        tvExpTemp = hudRootView.findViewById(R.id.tv_hud_exp_temp);
-        tvExpPower = hudRootView.findViewById(R.id.tv_hud_exp_power);
-        btnCloseExp = hudRootView.findViewById(R.id.btn_hud_close_exp);
-
-        isExpanded = prefs.isGameHudExpanded();
-        updateDisplayMode();
-
-        int layoutType = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                ? WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-                : WindowManager.LayoutParams.TYPE_PHONE;
-
-        params = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                layoutType,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS |
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN |
-                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
-                PixelFormat.TRANSLUCENT
-        );
-
-        params.gravity = Gravity.TOP | Gravity.START;
-        int savedX = prefs.getGameHudX();
-        int savedY = prefs.getGameHudY();
-
-        android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
-        int screenWidth = dm.widthPixels;
-        int screenHeight = dm.heightPixels;
-
-        int initX = (savedX != -1) ? savedX : 60;
-        int initY = (savedY != -1) ? savedY : 200;
-        params.x = Math.max(0, Math.min(initX, screenWidth - 100));
-        params.y = Math.max(0, Math.min(initY, screenHeight - 80));
-
-        setupTouchListener();
-
-        View.OnClickListener closeListener = v -> stopSelf();
-        if (btnCloseCompact != null) btnCloseCompact.setOnClickListener(closeListener);
-        if (btnCloseExp != null) btnCloseExp.setOnClickListener(closeListener);
-
         try {
+            windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+            ContextThemeWrapper themeWrapper = new ContextThemeWrapper(this, R.style.Theme_ToolXiaomi);
+            LayoutInflater inflater = LayoutInflater.from(themeWrapper);
+            hudRootView = inflater.inflate(R.layout.layout_floating_game_hud, null);
+
+            layoutCompact = hudRootView.findViewById(R.id.layout_hud_compact);
+            layoutExpanded = hudRootView.findViewById(R.id.layout_hud_expanded);
+
+            tvCompactFps = hudRootView.findViewById(R.id.tv_hud_compact_fps);
+            tvCompactTemp = hudRootView.findViewById(R.id.tv_hud_compact_temp);
+            btnCloseCompact = hudRootView.findViewById(R.id.btn_hud_close_compact);
+
+            tvExpFps = hudRootView.findViewById(R.id.tv_hud_exp_fps);
+            tvExpCpu = hudRootView.findViewById(R.id.tv_hud_exp_cpu);
+            tvExpRam = hudRootView.findViewById(R.id.tv_hud_exp_ram);
+            tvExpTemp = hudRootView.findViewById(R.id.tv_hud_exp_temp);
+            tvExpPower = hudRootView.findViewById(R.id.tv_hud_exp_power);
+            btnCloseExp = hudRootView.findViewById(R.id.btn_hud_close_exp);
+
+            isExpanded = prefs.isGameHudExpanded();
+            updateDisplayMode();
+
+            int layoutType = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                    ? WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+                    : WindowManager.LayoutParams.TYPE_PHONE;
+
+            params = new WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    layoutType,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS |
+                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                    PixelFormat.TRANSLUCENT
+            );
+
+            params.gravity = Gravity.TOP | Gravity.START;
+            int savedX = prefs.getGameHudX();
+            int savedY = prefs.getGameHudY();
+
+            android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+            int screenWidth = dm != null ? dm.widthPixels : 1080;
+            int screenHeight = dm != null ? dm.heightPixels : 2400;
+
+            int initX = (savedX != -1) ? savedX : 60;
+            int initY = (savedY != -1) ? savedY : 200;
+            params.x = Math.max(0, Math.min(initX, screenWidth - 100));
+            params.y = Math.max(0, Math.min(initY, screenHeight - 80));
+
+            setupTouchListener();
+
+            View.OnClickListener closeListener = v -> stopSelf();
+            if (btnCloseCompact != null) btnCloseCompact.setOnClickListener(closeListener);
+            if (btnCloseExp != null) btnCloseExp.setOnClickListener(closeListener);
+
             windowManager.addView(hudRootView, params);
             prefs.setGameHudEnabled(true);
         } catch (Throwable t) {
+            hudRootView = null;
             stopSelf();
         }
     }
@@ -347,6 +358,7 @@ public class FloatingGameHudService extends Service {
     }
 
     private void setupTouchListener() {
+        if (hudRootView == null) return;
         hudRootView.setOnTouchListener(new View.OnTouchListener() {
             private int initialX, initialY;
             private float initialTouchX, initialTouchY;
@@ -369,22 +381,26 @@ public class FloatingGameHudService extends Service {
 
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        initialX = params.x;
-                        initialY = params.y;
+                        initialX = (params != null) ? params.x : 0;
+                        initialY = (params != null) ? params.y : 0;
                         initialTouchX = event.getRawX();
                         initialTouchY = event.getRawY();
                         downTime = System.currentTimeMillis();
                         return true;
 
                     case MotionEvent.ACTION_MOVE:
-                        params.x = initialX + (int) (event.getRawX() - initialTouchX);
-                        params.y = initialY + (int) (event.getRawY() - initialTouchY);
-                        try {
-                            android.util.DisplayMetrics dmCurrent = getResources().getDisplayMetrics();
-                            params.x = Math.max(0, Math.min(params.x, dmCurrent.widthPixels - 40));
-                            params.y = Math.max(0, Math.min(params.y, dmCurrent.heightPixels - 40));
-                            windowManager.updateViewLayout(hudRootView, params);
-                        } catch (Throwable ignored) {
+                        if (params != null && windowManager != null && hudRootView != null) {
+                            params.x = initialX + (int) (event.getRawX() - initialTouchX);
+                            params.y = initialY + (int) (event.getRawY() - initialTouchY);
+                            try {
+                                android.util.DisplayMetrics dmCurrent = getResources().getDisplayMetrics();
+                                if (dmCurrent != null) {
+                                    params.x = Math.max(0, Math.min(params.x, dmCurrent.widthPixels - 40));
+                                    params.y = Math.max(0, Math.min(params.y, dmCurrent.heightPixels - 40));
+                                }
+                                windowManager.updateViewLayout(hudRootView, params);
+                            } catch (Throwable ignored) {
+                            }
                         }
                         return true;
 
@@ -398,11 +414,13 @@ public class FloatingGameHudService extends Service {
                             isExpanded = !isExpanded;
                             prefs.setGameHudExpanded(isExpanded);
                             updateDisplayMode();
-                            try {
-                                windowManager.updateViewLayout(hudRootView, params);
-                            } catch (Throwable ignored) {
+                            if (windowManager != null && hudRootView != null && params != null) {
+                                try {
+                                    windowManager.updateViewLayout(hudRootView, params);
+                                } catch (Throwable ignored) {
+                                }
                             }
-                        } else {
+                        } else if (params != null) {
                             // Drag ended -> Save new position
                             prefs.setGameHudX(params.x);
                             prefs.setGameHudY(params.y);
@@ -414,18 +432,17 @@ public class FloatingGameHudService extends Service {
         });
     }
 
-    private void registerReceivers() {
+    private void registerScreenStateReceiver() {
         try {
             IntentFilter filter = new IntentFilter();
             filter.addAction(Intent.ACTION_SCREEN_ON);
             filter.addAction(Intent.ACTION_SCREEN_OFF);
-            filter.addAction(Intent.ACTION_BATTERY_CHANGED);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                androidx.core.content.ContextCompat.registerReceiver(
-                        this, screenAndBatteryReceiver, filter, androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
+                ContextCompat.registerReceiver(
+                        this, screenReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED
                 );
             } else {
-                registerReceiver(screenAndBatteryReceiver, filter);
+                registerReceiver(screenReceiver, filter);
             }
         } catch (Throwable ignored) {
         }
@@ -434,7 +451,10 @@ public class FloatingGameHudService extends Service {
     private void startMetricPolling() {
         lastFpsSampleTime = System.currentTimeMillis();
         frameCount = 0;
-        Choreographer.getInstance().postFrameCallback(frameCallback);
+        try {
+            Choreographer.getInstance().postFrameCallback(frameCallback);
+        } catch (Throwable ignored) {
+        }
 
         metricsRunnable = new Runnable() {
             @Override
@@ -446,12 +466,37 @@ public class FloatingGameHudService extends Service {
                         updateFpsViews();
                     }
                     measureCpuUsage();
+                    measureBatteryMetrics();
                     updateMetricsViews();
                 }
                 metricsHandler.postDelayed(this, 1000);
             }
         };
         metricsHandler.post(metricsRunnable);
+    }
+
+    private void measureBatteryMetrics() {
+        try {
+            Intent bIntent = registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+            if (bIntent != null) {
+                int tempRaw = bIntent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, 0);
+                currentTemp = tempRaw > 0 ? (tempRaw / 10.0f) : 36.0f;
+
+                int status = bIntent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+                isCharging = (status == BatteryManager.BATTERY_STATUS_CHARGING ||
+                              status == BatteryManager.BATTERY_STATUS_FULL);
+
+                int voltageMv = bIntent.getIntExtra(BatteryManager.EXTRA_VOLTAGE, 4000);
+                long currentUa = 0;
+                if (batteryManager != null) {
+                    currentUa = Math.abs(batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW));
+                }
+                if (currentUa > 0 && voltageMv > 0) {
+                    currentPowerW = (voltageMv / 1000.0f) * (currentUa / 1000000.0f);
+                }
+            }
+        } catch (Throwable ignored) {
+        }
     }
 
     private void measureCpuUsage() {
@@ -561,11 +606,11 @@ public class FloatingGameHudService extends Service {
 
         if (hudRootView == null && Settings.canDrawOverlays(this)) {
             initHudView();
-            registerReceivers();
+            registerScreenStateReceiver();
             startMetricPolling();
         }
 
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @Override
@@ -574,8 +619,8 @@ public class FloatingGameHudService extends Service {
         if (windowManager != null && hudRootView != null && params != null) {
             try {
                 android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
-                int maxX = Math.max(0, dm.widthPixels - (hudRootView.getWidth() > 0 ? hudRootView.getWidth() : 120));
-                int maxY = Math.max(0, dm.heightPixels - (hudRootView.getHeight() > 0 ? hudRootView.getHeight() : 60));
+                int maxX = Math.max(0, (dm != null ? dm.widthPixels : 1080) - (hudRootView.getWidth() > 0 ? hudRootView.getWidth() : 120));
+                int maxY = Math.max(0, (dm != null ? dm.heightPixels : 2400) - (hudRootView.getHeight() > 0 ? hudRootView.getHeight() : 60));
                 if (params.x > maxX) params.x = maxX;
                 if (params.y > maxY) params.y = maxY;
                 windowManager.updateViewLayout(hudRootView, params);
@@ -588,13 +633,20 @@ public class FloatingGameHudService extends Service {
     public void onDestroy() {
         super.onDestroy();
         try {
-            unregisterReceiver(screenAndBatteryReceiver);
+            unregisterReceiver(screenReceiver);
         } catch (Throwable ignored) {
         }
 
-        Choreographer.getInstance().removeFrameCallback(frameCallback);
+        try {
+            Choreographer.getInstance().removeFrameCallback(frameCallback);
+        } catch (Throwable ignored) {
+        }
+
         if (metricsHandler != null && metricsRunnable != null) {
-            metricsHandler.removeCallbacks(metricsRunnable);
+            try {
+                metricsHandler.removeCallbacks(metricsRunnable);
+            } catch (Throwable ignored) {
+            }
         }
 
         if (windowManager != null && hudRootView != null) {

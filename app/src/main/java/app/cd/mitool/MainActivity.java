@@ -1290,33 +1290,40 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void ensureGameHudPermissionAndStart(Runnable onReady) {
-        if (ShizukuHelper.hasShizukuPermission()) {
-            ShizukuHelper.grantOverlayPermission(this, null);
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+        try {
             if (ShizukuHelper.hasShizukuPermission()) {
-                ShizukuHelper.grantOverlayPermission(this, new ShizukuHelper.CommandCallback() {
-                    @Override
-                    public void onComplete(boolean success, String message) {
-                        prefs.setGameHudEnabled(true);
-                        startFloatingGameHudService();
-                        if (onReady != null) onReady.run();
-                    }
-                });
+                ShizukuHelper.grantOverlayPermission(this, null);
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+                if (ShizukuHelper.hasShizukuPermission()) {
+                    ShizukuHelper.grantOverlayPermission(this, new ShizukuHelper.CommandCallback() {
+                        @Override
+                        public void onComplete(boolean success, String message) {
+                            try {
+                                prefs.setGameHudEnabled(true);
+                                startFloatingGameHudService();
+                                if (onReady != null) onReady.run();
+                            } catch (Throwable ignored) {
+                            }
+                        }
+                    });
+                    return;
+                }
+
+                Intent overlayIntent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                startActivity(overlayIntent);
+                Toast.makeText(this, "Vui lòng cấp quyền Hiển thị trên ứng dụng khác để mở HUD nổi", Toast.LENGTH_LONG).show();
                 return;
             }
 
-            Intent overlayIntent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getPackageName()));
-            startActivity(overlayIntent);
-            Toast.makeText(this, "Vui lòng cấp quyền Hiển thị trên ứng dụng khác để mở HUD nổi", Toast.LENGTH_LONG).show();
-            return;
+            prefs.setGameHudEnabled(true);
+            startFloatingGameHudService();
+            if (onReady != null) onReady.run();
+        } catch (Throwable t) {
+            Toast.makeText(this, "Lỗi mở HUD: " + t.getMessage(), Toast.LENGTH_SHORT).show();
         }
-
-        prefs.setGameHudEnabled(true);
-        startFloatingGameHudService();
-        if (onReady != null) onReady.run();
     }
 
     private void showAddGameAppPickerDialog(Runnable onGameAdded) {
@@ -3683,18 +3690,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startFloatingGameHudService() {
-        Intent intent = new Intent(this, FloatingGameHudService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent);
-        } else {
-            startService(intent);
+        try {
+            Intent intent = new Intent(this, FloatingGameHudService.class);
+            ContextCompat.startForegroundService(this, intent);
+        } catch (Throwable t) {
+            Toast.makeText(this, "Không thể khởi động Game HUD: " + t.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
     private void stopFloatingGameHudService() {
-        Intent intent = new Intent(this, FloatingGameHudService.class);
-        intent.setAction(FloatingGameHudService.ACTION_STOP);
-        startService(intent);
+        try {
+            Intent intent = new Intent(this, FloatingGameHudService.class);
+            intent.setAction(FloatingGameHudService.ACTION_STOP);
+            startService(intent);
+        } catch (Throwable ignored) {
+        }
     }
 
     private void requestNotificationPermissionIfNeeded() {
