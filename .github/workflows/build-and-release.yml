@@ -43,7 +43,7 @@ jobs:
             TAG="${{ github.ref_name }}"
           else
             VER=$(grep "versionName" app/build.gradle | head -n 1 | awk -F"'" '{print $2}')
-            TAG="v${VER:-1.0.47}"
+            TAG="v${VER:-1.0.48}"
           fi
           echo "TAG_NAME=${TAG}" >> $GITHUB_ENV
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
@@ -98,17 +98,15 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             Bản cập nhật ${{ env.TAG_NAME }}:
-            - 🔔 **Thông Báo Bản Cập Nhật Mới Qua System Notification**:
-              1. Tự động bắn thông báo hệ thống (Notification Drawer) khi phát hiện phiên bản mới từ GitHub Releases.
-              2. Kèm bản xem trước nội dung cập nhật (Changelog) dạng BigTextStyle đẹp mắt.
-              3. Chạm vào thông báo sẽ mở ngay hộp thoại cập nhật tải APK trực tiếp 1 chạm tiện lợi.
-              4. Cơ chế kiểm tra định kỳ ngầm thông minh khi cắm sạc hoặc khởi động lại thiết bị (tần suất tối thiểu 6 giờ/lần), hoàn toàn không chạy ngầm gây hao pin hay nóng máy.
-            - 🛡️ **Bộ Công Cụ Fix Trễ Thông Báo & FCM / GMS Cho ROM Nội Địa (HyperOS / MIUI)**:
-              1. Mở khóa kết nối Google Play Services FCM Socket (mtalk.google.com) tương tự ROM Quốc Tế mà không cần khóa đa nhiệm (Lock recent apps).
-              2. Khắc phục trễ OTT các App Ngân Hàng Việt Nam (Vietcombank, Techcombank, MB, BIDV, VPBank, Cake...) & Gmail.
-              3. Phím tắt kiểm tra FCM Diagnostics (*#*#426#*#*).
-            - 🎮 **Mini Game HUD Nổi (FPS & Giám Sát Hiệu Năng Thời Gian Thực)**:
-              1. Hiển thị FPS thực tế (Choreographer VSYNC), CPU, RAM, Nhiệt độ pin (°C) và Công suất xả (Watt).
-              2. Quick Settings Tile bật/tắt nhanh chóng.
-            - 🚀 Xuất xưởng Release APK tối ưu hóa hiệu năng và độ ổn định.
+            - ✨ **Tối Ưu & Tái Cấu Trúc Toàn Diện Giao Diện Khắc Phục Thông Báo**:
+              1. 🎨 Khắc phục triệt để lỗi huy hiệu (badge) bị ép co dọc chữ; chuyển sang huy hiệu bo góc bán trong suốt hiện đại đặt trên dòng riêng biệt.
+              2. 🔘 Thay thế CheckBox thô bằng MaterialCheckBox thanh lịch, hỗ trợ chạm vào toàn bộ hàng thẻ để chọn/bỏ chọn cực kỳ mượt mà.
+              3. 🛡️ Sửa lỗi icon Shizuku hiển thị mâu thuẫn giữa trạng thái đã cấp quyền (xanh) và chưa cấp quyền (cam), bổ sung nút cấp quyền trực tiếp ngay trên thẻ.
+              4. 📊 Bổ sung bộ đếm thời gian thực: hiển thị rõ số lượng ứng dụng đã chọn (ví dụ: Đã chọn 8/12).
+              5. ⚡ Cập nhật trạng thái trực tiếp ngay trên giao diện sau khi tối ưu hóa 1-chạm mà không đóng hộp thoại đột ngột.
+            - 🔋 **Tối Ưu Hóa Logic Hoạt Động & Chống Hao Pin Thông Minh**:
+              1. Phân loại thông minh: Mặc định chọn các ứng dụng quan trọng (Google GMS, GSF, Gmail, Toàn bộ App Ngân hàng Việt Nam, Zalo, Messenger, Telegram...).
+              2. Bỏ chọn mặc định đối với các ứng dụng mua sắm & mạng xã hội video (Shopee, Lazada, TikTok...) để ngăn chặn việc chạy ngầm không cần thiết gây tốn pin.
+              3. Làm rõ cơ chế FCM Push Hub: Người dùng KHÔNG CẦN khóa đa nhiệm (Lock Recents), giải phóng RAM và tiết kiệm pin tối đa.
+            - 🚀 Xuất xưởng Release APK v1.0.48 tối ưu hóa cao nhất.
           files: output-apks/*.apk

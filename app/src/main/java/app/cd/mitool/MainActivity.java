@@ -56,6 +56,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.navigation.NavigationBarView;
@@ -1911,34 +1912,87 @@ public class MainActivity extends AppCompatActivity {
         bs.setContentView(view);
         configureBottomSheet(bs);
 
+        ImageView ivShizukuIcon = view.findViewById(R.id.bs_iv_notif_shizuku_icon);
         TextView tvShizukuStatus = view.findViewById(R.id.bs_tv_notif_shizuku_status);
+        TextView tvShizukuDesc = view.findViewById(R.id.bs_tv_notif_shizuku_desc);
+        MaterialButton btnGrantShizuku = view.findViewById(R.id.bs_btn_grant_shizuku);
         MaterialButton btnBatchFix = view.findViewById(R.id.bs_btn_batch_fix);
         MaterialButton btnOpenAutostart = view.findViewById(R.id.bs_btn_open_autostart);
         MaterialButton btnOpenPowerKeeper = view.findViewById(R.id.bs_btn_open_powerkeeper);
         MaterialButton btnOpenFcmDiag = view.findViewById(R.id.bs_btn_open_fcm_diag);
+        TextView tvSelectedCount = view.findViewById(R.id.bs_tv_notif_selected_count);
         TextView tvSelectAll = view.findViewById(R.id.bs_tv_select_all);
         LinearLayout layoutApps = view.findViewById(R.id.bs_layout_notif_apps);
         TextView tvEmpty = view.findViewById(R.id.bs_tv_notif_empty);
 
         boolean hasShizuku = ShizukuHelper.hasShizukuPermission();
         if (hasShizuku) {
-            tvShizukuStatus.setText("⚡ Shizuku: Đã cấp quyền (Tự động 1-chạm cực nhanh)");
-            tvShizukuStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
+            if (ivShizukuIcon != null) {
+                ivShizukuIcon.setImageResource(R.drawable.ic_shield_check);
+                ivShizukuIcon.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.neon_green)));
+            }
+            if (tvShizukuStatus != null) {
+                tvShizukuStatus.setText("⚡ Shizuku: Đã cấp quyền (Tự động 1-chạm)");
+                tvShizukuStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
+            }
+            if (tvShizukuDesc != null) {
+                tvShizukuDesc.setText("Đã sẵn sàng mở khóa FCM Push Hub (GMS) và tự động cấu hình ứng dụng.");
+            }
+            if (btnGrantShizuku != null) {
+                btnGrantShizuku.setVisibility(View.GONE);
+            }
+            if (btnBatchFix != null) {
+                btnBatchFix.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.neon_green)));
+                btnBatchFix.setTextColor(0xFF0D1117);
+            }
         } else {
-            tvShizukuStatus.setText("⚠️ Shizuku: Chưa cấp quyền (Bạn có thể mở thủ công cài đặt MIUI)");
-            tvShizukuStatus.setTextColor(ContextCompat.getColor(this, R.color.mi_orange));
+            if (ivShizukuIcon != null) {
+                ivShizukuIcon.setImageResource(R.drawable.ic_shield_alert);
+                ivShizukuIcon.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.mi_orange)));
+            }
+            if (tvShizukuStatus != null) {
+                tvShizukuStatus.setText("⚠️ Shizuku: Chưa cấp quyền");
+                tvShizukuStatus.setTextColor(ContextCompat.getColor(this, R.color.mi_orange));
+            }
+            if (tvShizukuDesc != null) {
+                tvShizukuDesc.setText("Cấp quyền Shizuku để tối ưu 1-chạm hoặc dùng các phím tắt hệ thống bên dưới.");
+            }
+            if (btnGrantShizuku != null) {
+                btnGrantShizuku.setVisibility(View.VISIBLE);
+                btnGrantShizuku.setOnClickListener(v -> ShizukuHelper.requestShizukuPermission(MainActivity.this));
+            }
+            if (btnBatchFix != null) {
+                btnBatchFix.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.card_highlight)));
+                btnBatchFix.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
+            }
         }
 
         List<NotificationFixHelper.TargetApp> apps = NotificationFixHelper.getInstalledTargetApps(this);
+
+        Runnable updateSelectedCounter = () -> {
+            int selected = 0;
+            for (NotificationFixHelper.TargetApp a : apps) {
+                if (a.isSelected) selected++;
+            }
+            if (tvSelectedCount != null) {
+                tvSelectedCount.setText("(Đã chọn " + selected + "/" + apps.size() + ")");
+            }
+            if (tvSelectAll != null) {
+                tvSelectAll.setText(selected == apps.size() ? "Bỏ chọn tất cả" : "Chọn tất cả");
+            }
+        };
+
         if (apps.isEmpty()) {
             if (tvEmpty != null) tvEmpty.setVisibility(View.VISIBLE);
+            if (tvSelectedCount != null) tvSelectedCount.setText("(0 ứng dụng)");
         } else {
             if (tvEmpty != null) tvEmpty.setVisibility(View.GONE);
             LayoutInflater inflater = LayoutInflater.from(this);
 
             for (NotificationFixHelper.TargetApp app : apps) {
                 View itemView = inflater.inflate(R.layout.item_notif_app, layoutApps, false);
-                CheckBox cb = itemView.findViewById(R.id.cb_app_select);
+                itemView.setTag(app);
+                MaterialCheckBox cb = itemView.findViewById(R.id.cb_app_select);
                 ImageView ivIcon = itemView.findViewById(R.id.iv_app_icon);
                 TextView tvName = itemView.findViewById(R.id.tv_app_name);
                 TextView tvBadge = itemView.findViewById(R.id.tv_app_status_badge);
@@ -1949,16 +2003,27 @@ public class MainActivity extends AppCompatActivity {
                 tvName.setText(app.label != null ? app.label : app.defaultName);
                 tvCategory.setText(app.category + " • " + app.packageName);
 
-                if (app.isOptimized) {
-                    tvBadge.setText("✓ Không giới hạn");
-                    tvBadge.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
-                } else {
-                    tvBadge.setText("⚠️ Chưa tối ưu");
-                    tvBadge.setTextColor(ContextCompat.getColor(this, R.color.mi_orange));
-                }
+                Runnable updateAppBadge = () -> {
+                    if (app.isOptimized) {
+                        tvBadge.setText("✓ Không giới hạn pin");
+                        tvBadge.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_green));
+                        tvBadge.setBackgroundResource(R.drawable.bg_badge_green);
+                    } else {
+                        tvBadge.setText("⚠️ Chưa tối ưu pin");
+                        tvBadge.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.mi_orange));
+                        tvBadge.setBackgroundResource(R.drawable.bg_badge_orange);
+                    }
+                };
+                updateAppBadge.run();
 
                 cb.setChecked(app.isSelected);
-                cb.setOnCheckedChangeListener((b, isChecked) -> app.isSelected = isChecked);
+                cb.setOnCheckedChangeListener((b, isChecked) -> {
+                    app.isSelected = isChecked;
+                    updateSelectedCounter.run();
+                });
+
+                // Tap anywhere on card to toggle selection
+                itemView.setOnClickListener(v -> cb.setChecked(!cb.isChecked()));
 
                 btnAction.setOnClickListener(v -> {
                     String[] options = hasShizuku
@@ -1981,10 +2046,7 @@ public class MainActivity extends AppCompatActivity {
                                     NotificationFixHelper.fixSingleApp(MainActivity.this, app.packageName, (success, msg) -> {
                                         Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
                                         app.isOptimized = NotificationFixHelper.isIgnoringBatteryOptimizations(MainActivity.this, app.packageName);
-                                        if (app.isOptimized) {
-                                            tvBadge.setText("✓ Không giới hạn");
-                                            tvBadge.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_green));
-                                        }
+                                        updateAppBadge.run();
                                         updateToolsCardSummaries();
                                     });
                                 } else {
@@ -2004,17 +2066,24 @@ public class MainActivity extends AppCompatActivity {
 
                 layoutApps.addView(itemView);
             }
+
+            updateSelectedCounter.run();
         }
 
-        final boolean[] allSelected = {true};
         if (tvSelectAll != null) {
             tvSelectAll.setOnClickListener(v -> {
-                allSelected[0] = !allSelected[0];
-                tvSelectAll.setText(allSelected[0] ? "Bỏ chọn tất cả" : "Chọn tất cả");
+                boolean anyUnchecked = false;
+                for (NotificationFixHelper.TargetApp a : apps) {
+                    if (!a.isSelected) {
+                        anyUnchecked = true;
+                        break;
+                    }
+                }
+                boolean targetState = anyUnchecked;
                 for (int i = 0; i < layoutApps.getChildCount(); i++) {
                     View child = layoutApps.getChildAt(i);
-                    CheckBox cb = child.findViewById(R.id.cb_app_select);
-                    if (cb != null) cb.setChecked(allSelected[0]);
+                    MaterialCheckBox cb = child.findViewById(R.id.cb_app_select);
+                    if (cb != null) cb.setChecked(targetState);
                 }
             });
         }
@@ -2059,8 +2128,29 @@ public class MainActivity extends AppCompatActivity {
                     btnBatchFix.setEnabled(true);
                     btnBatchFix.setText("⚡ 1-CHẠM FIX TẤT CẢ ỨNG DỤNG ĐÃ CHỌN");
                     Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+
+                    // Refresh all item badges on the screen in-place
+                    for (int i = 0; i < layoutApps.getChildCount(); i++) {
+                        View item = layoutApps.getChildAt(i);
+                        NotificationFixHelper.TargetApp target = (NotificationFixHelper.TargetApp) item.getTag();
+                        if (target != null) {
+                            target.isOptimized = NotificationFixHelper.isIgnoringBatteryOptimizations(MainActivity.this, target.packageName);
+                            TextView badge = item.findViewById(R.id.tv_app_status_badge);
+                            if (badge != null) {
+                                if (target.isOptimized) {
+                                    badge.setText("✓ Không giới hạn pin");
+                                    badge.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_green));
+                                    badge.setBackgroundResource(R.drawable.bg_badge_green);
+                                } else {
+                                    badge.setText("⚠️ Chưa tối ưu pin");
+                                    badge.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.mi_orange));
+                                    badge.setBackgroundResource(R.drawable.bg_badge_orange);
+                                }
+                            }
+                        }
+                    }
+
                     updateToolsCardSummaries();
-                    bs.dismiss();
                 }
             });
         });

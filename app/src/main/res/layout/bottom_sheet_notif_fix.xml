@@ -21,6 +21,7 @@
             android:layout_marginBottom="16dp"
             android:background="@drawable/bg_drag_handle" />
 
+        <!-- Title & Subtitle -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -33,58 +34,104 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Ngăn chặn HyperOS &amp; MIUI tự ý đóng băng (kill) ứng dụng nhắn tin, gỡ bỏ giới hạn pin và kích hoạt tự khởi chạy."
+            android:lineSpacingExtra="2dp"
+            android:text="Mở khóa kết nối Google FCM &amp; Tự khởi chạy cho ROM nội địa HyperOS/MIUI. Nhận thông báo tức thì mà không cần khóa đa nhiệm, tiết kiệm pin."
             android:textColor="@color/text_secondary"
             android:textSize="12sp" />
 
         <!-- Shizuku Mode Status Banner -->
         <LinearLayout
+            android:id="@+id/bs_layout_shizuku_banner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
             android:background="@drawable/bg_card_rounded"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:padding="12dp">
 
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@drawable/ic_shield_check"
-                app:tint="@color/neon_green" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/bs_iv_notif_shizuku_icon"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_shield_check"
+                    app:tint="@color/neon_green" />
+
+                <TextView
+                    android:id="@+id/bs_tv_notif_shizuku_status"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:text="Trạng thái Shizuku: Đang kiểm tra..."
+                    android:textColor="@color/text_primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/bs_btn_grant_shizuku"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="6dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:text="Cấp quyền"
+                    android:textColor="@color/mi_orange"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/bs_tv_notif_shizuku_status"
-                android:layout_width="0dp"
+                android:id="@+id/bs_tv_notif_shizuku_desc"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_weight="1"
-                android:text="Trạng thái Shizuku: Đang kiểm tra..."
-                android:textColor="@color/text_primary"
-                android:textSize="12sp" />
+                android:layout_marginTop="4dp"
+                android:text="Tối ưu tự động toàn bộ ứng dụng chỉ bằng 1 chạm thông qua Shizuku."
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp" />
         </LinearLayout>
 
         <!-- Main 1-Tap Batch Fix Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/bs_btn_batch_fix"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_marginTop="12dp"
-            android:minHeight="46dp"
             android:backgroundTint="@color/neon_green"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:insetLeft="0dp"
             android:insetRight="0dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
             android:text="⚡ 1-CHẠM FIX TẤT CẢ ỨNG DỤNG ĐÃ CHỌN"
             android:textColor="#0D1117"
             android:textSize="13sp"
             android:textStyle="bold"
             app:cornerRadius="10dp" />
 
-        <!-- System Settings Shortcuts -->
+        <!-- MIUI System Tools Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="🛠️ Công Cụ Cài Đặt Hệ Thống MIUI / Google"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <!-- System Settings Shortcuts: 2-column + full-width -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -104,8 +151,8 @@
                 android:insetBottom="0dp"
                 android:insetLeft="0dp"
                 android:insetRight="0dp"
-                android:paddingLeft="4dp"
-                android:paddingRight="4dp"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:text="🚀 Tự khởi chạy MIUI"
@@ -126,8 +173,8 @@
                 android:insetBottom="0dp"
                 android:insetLeft="0dp"
                 android:insetRight="0dp"
-                android:paddingLeft="4dp"
-                android:paddingRight="4dp"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:text="🔋 Tiết kiệm pin MIUI"
@@ -151,10 +198,10 @@
             android:paddingRight="8dp"
             android:text="🔍 Kiểm Tra Kết Nối FCM Google (*#*#426#*#*)"
             android:textColor="@color/neon_cyan"
-            android:textSize="12sp"
+            android:textSize="11sp"
             app:cornerRadius="8dp" />
 
-        <!-- Apps Section Title -->
+        <!-- Apps Section Toolbar -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -164,13 +211,22 @@
             android:orientation="horizontal">
 
             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📱 Ứng dụng đã cài đặt"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/bs_tv_notif_selected_count"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
                 android:layout_weight="1"
-                android:text="📱 Ứng dụng đã cài đặt trên máy"
-                android:textColor="@color/text_secondary"
-                android:textSize="13sp"
-                android:textStyle="bold" />
+                android:text="(Đã chọn: 0/0)"
+                android:textColor="@color/text_muted"
+                android:textSize="11sp" />
 
             <TextView
                 android:id="@+id/bs_tv_select_all"
@@ -179,7 +235,7 @@
                 android:background="?attr/selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
-                android:padding="4dp"
+                android:padding="6dp"
                 android:text="Chọn tất cả"
                 android:textColor="@color/neon_cyan"
                 android:textSize="12sp"
@@ -197,15 +253,15 @@
             android:id="@+id/bs_tv_notif_empty"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
             android:gravity="center"
-            android:text="Không tìm thấy ứng dụng nhắn tin nào trong danh mục hỗ trợ."
+            android:text="Không tìm thấy ứng dụng nhắn tin hay ngân hàng nào trong danh mục hỗ trợ."
             android:textColor="@color/text_muted"
             android:textSize="12sp"
             android:visibility="gone" />
 
-        <!-- Pro Tip Card -->
+        <!-- Pro Tip & Explanation Card -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -214,27 +270,20 @@
             android:orientation="vertical"
             android:padding="14dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="💡 Bí Quyết Giữ Kết Nối 100% Trên Xiaomi"
-                    android:textColor="@color/mi_orange"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                android:text="💡 Cơ Chế Hoạt Động &amp; Bảo Vệ Pin"
+                android:textColor="@color/mi_orange"
+                android:textSize="13sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:lineSpacingExtra="3dp"
-                android:text="1. Tối ưu Dịch vụ Google Play (GMS) trong danh sách trên để giữ kết nối FCM liên tục cho Gmail &amp; App Ngân hàng.\n2. Mở màn hình Đa nhiệm (Recent Apps) -> Nhấn giữ ứng dụng và chọn biểu tượng Ổ khóa 🔒 để chống bị dọn RAM.\n3. Vào Thông tin ứng dụng -> Thông báo -> Bật 'Thông báo nổi' và 'Màn hình khóa' để chuông và banner luôn hiển thị."
+                android:text="1. Không cần khóa đa nhiệm: Sau khi cấp quyền Autostart và mở khóa FCM Push Hub (GMS), bạn có thể xóa sạch đa nhiệm. Thiết bị không cần duy trì ứng dụng trên RAM liên tục, giúp tiết kiệm pin tối đa.\n2. App Ngân hàng &amp; Gmail: Nhận biến động số dư OTT tức thời nhờ kết nối socket mtalk.google.com luôn thông suốt.\n3. Bật Thông báo nổi: Vào Thông tin ứng dụng -> Thông báo -> Bật 'Thông báo nổi' và 'Màn hình khóa' để tin nhắn bật sáng màn hình."
                 android:textColor="@color/text_secondary"
                 android:textSize="12sp" />
         </LinearLayout>

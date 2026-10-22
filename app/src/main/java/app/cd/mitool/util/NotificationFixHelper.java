@@ -38,9 +38,14 @@ public class NotificationFixHelper {
         public boolean isSelected = true;
 
         public TargetApp(String packageName, String defaultName, String category) {
+            this(packageName, defaultName, category, true);
+        }
+
+        public TargetApp(String packageName, String defaultName, String category, boolean defaultSelected) {
             this.packageName = packageName;
             this.defaultName = defaultName;
             this.category = category;
+            this.isSelected = defaultSelected;
         }
     }
 
@@ -49,45 +54,45 @@ public class NotificationFixHelper {
 
     public static final List<TargetApp> TARGET_TEMPLATES = Arrays.asList(
             // Dịch vụ cốt lõi Google (Cực kỳ quan trọng cho Gmail & Push FCM)
-            new TargetApp("com.google.android.gms", "Dịch Vụ Google Play (GMS)", "Cốt lõi Push & Tài khoản"),
-            new TargetApp("com.google.android.gsf", "Khung Dịch Vụ Google (GSF)", "Hạ tầng Google"),
-            new TargetApp("com.google.android.gm", "Gmail", "Thư điện tử Google"),
+            new TargetApp("com.google.android.gms", "Dịch Vụ Google Play (GMS)", "Cốt lõi Push & Tài khoản", true),
+            new TargetApp("com.google.android.gsf", "Khung Dịch Vụ Google (GSF)", "Hạ tầng Google", true),
+            new TargetApp("com.google.android.gm", "Gmail", "Thư điện tử Google", true),
 
             // Ứng dụng Nhắn tin & Công việc
-            new TargetApp("com.zing.zalo", "Zalo", "Nhắn tin & Gọi"),
-            new TargetApp("com.facebook.orca", "Messenger", "Facebook Chat"),
-            new TargetApp("com.facebook.mlite", "Messenger Lite", "Facebook Chat"),
-            new TargetApp("org.telegram.messenger", "Telegram", "Nhắn tin"),
-            new TargetApp("org.telegram.plus", "Telegram Plus", "Nhắn tin"),
-            new TargetApp("com.whatsapp", "WhatsApp", "Nhắn tin quốc tế"),
-            new TargetApp("com.whatsapp.w4b", "WhatsApp Business", "Kinh doanh"),
-            new TargetApp("com.microsoft.office.outlook", "Microsoft Outlook", "Email & Lịch"),
-            new TargetApp("com.microsoft.teams", "Microsoft Teams", "Công việc"),
-            new TargetApp("com.viber.voip", "Viber", "Nhắn tin"),
-            new TargetApp("com.skype.raider", "Skype", "Công việc"),
-            new TargetApp("com.discord", "Discord", "Cộng đồng & Chat"),
-            new TargetApp("jp.naver.line.android", "LINE", "Nhắn tin"),
+            new TargetApp("com.zing.zalo", "Zalo", "Nhắn tin & Gọi", true),
+            new TargetApp("com.facebook.orca", "Messenger", "Facebook Chat", true),
+            new TargetApp("com.facebook.mlite", "Messenger Lite", "Facebook Chat", true),
+            new TargetApp("org.telegram.messenger", "Telegram", "Nhắn tin", true),
+            new TargetApp("org.telegram.plus", "Telegram Plus", "Nhắn tin", true),
+            new TargetApp("com.whatsapp", "WhatsApp", "Nhắn tin quốc tế", true),
+            new TargetApp("com.whatsapp.w4b", "WhatsApp Business", "Kinh doanh", true),
+            new TargetApp("com.microsoft.office.outlook", "Microsoft Outlook", "Email & Lịch", true),
+            new TargetApp("com.microsoft.teams", "Microsoft Teams", "Công việc", true),
+            new TargetApp("com.viber.voip", "Viber", "Nhắn tin", true),
+            new TargetApp("com.skype.raider", "Skype", "Công việc", true),
+            new TargetApp("com.discord", "Discord", "Cộng đồng & Chat", true),
+            new TargetApp("jp.naver.line.android", "LINE", "Nhắn tin", true),
 
             // Ngân hàng & Biến động số dư OTT (Chống trễ tiền về)
-            new TargetApp("com.VCB", "Vietcombank Digibank", "Ngân hàng"),
-            new TargetApp("vn.com.techcombank.bb.app", "Techcombank Mobile", "Ngân hàng"),
-            new TargetApp("com.mbmobile", "MB Bank", "Ngân hàng"),
-            new TargetApp("com.vnpay.vpbankonline", "VPBank NEO", "Ngân hàng"),
-            new TargetApp("com.vietinbank.ipay", "VietinBank iPay", "Ngân hàng"),
-            new TargetApp("com.vnpay.bidv", "BIDV SmartBanking", "Ngân hàng"),
-            new TargetApp("com.tpb.mb.gprsandroid", "TPBank Mobile", "Ngân hàng"),
-            new TargetApp("mobile.acb.com.vn", "ACB ONE", "Ngân hàng"),
-            new TargetApp("xyz.be.cake", "Cake by VPBank", "Ngân hàng số"),
-            new TargetApp("com.mservice.momopay", "Ví MoMo", "Ví điện tử"),
-            new TargetApp("vn.com.vng.zalopay", "ZaloPay", "Ví điện tử"),
+            new TargetApp("com.VCB", "Vietcombank Digibank", "Ngân hàng", true),
+            new TargetApp("vn.com.techcombank.bb.app", "Techcombank Mobile", "Ngân hàng", true),
+            new TargetApp("com.mbmobile", "MB Bank", "Ngân hàng", true),
+            new TargetApp("com.vnpay.vpbankonline", "VPBank NEO", "Ngân hàng", true),
+            new TargetApp("com.vietinbank.ipay", "VietinBank iPay", "Ngân hàng", true),
+            new TargetApp("com.vnpay.bidv", "BIDV SmartBanking", "Ngân hàng", true),
+            new TargetApp("com.tpb.mb.gprsandroid", "TPBank Mobile", "Ngân hàng", true),
+            new TargetApp("mobile.acb.com.vn", "ACB ONE", "Ngân hàng", true),
+            new TargetApp("xyz.be.cake", "Cake by VPBank", "Ngân hàng số", true),
+            new TargetApp("com.mservice.momopay", "Ví MoMo", "Ví điện tử", true),
+            new TargetApp("vn.com.vng.zalopay", "ZaloPay", "Ví điện tử", true),
 
-            // Mạng xã hội & Mua sắm
-            new TargetApp("com.instagram.android", "Instagram", "Mạng xã hội"),
-            new TargetApp("com.zhiliaoapp.musically", "TikTok", "Mạng xã hội"),
-            new TargetApp("com.ss.android.ugc.trill", "TikTok (Quốc tế)", "Mạng xã hội"),
-            new TargetApp("com.shopee.vn", "Shopee", "Đơn hàng & Mua sắm"),
-            new TargetApp("com.lazada.android", "Lazada", "Đơn hàng & Mua sắm"),
-            new TargetApp("com.grabtaxi.passenger", "Grab", "Đặt xe & Đồ ăn")
+            // Mạng xã hội & Mua sắm (Không tự chọn để tránh chạy ngầm hao pin)
+            new TargetApp("com.instagram.android", "Instagram", "Mạng xã hội", false),
+            new TargetApp("com.zhiliaoapp.musically", "TikTok", "Mạng xã hội", false),
+            new TargetApp("com.ss.android.ugc.trill", "TikTok (Quốc tế)", "Mạng xã hội", false),
+            new TargetApp("com.shopee.vn", "Shopee", "Đơn hàng & Mua sắm", false),
+            new TargetApp("com.lazada.android", "Lazada", "Đơn hàng & Mua sắm", false),
+            new TargetApp("com.grabtaxi.passenger", "Grab", "Đặt xe & Đồ ăn", false)
     );
 
     /**
@@ -100,7 +105,7 @@ public class NotificationFixHelper {
         for (TargetApp tmpl : TARGET_TEMPLATES) {
             try {
                 ApplicationInfo ai = pm.getApplicationInfo(tmpl.packageName, 0);
-                TargetApp app = new TargetApp(tmpl.packageName, tmpl.defaultName, tmpl.category);
+                TargetApp app = new TargetApp(tmpl.packageName, tmpl.defaultName, tmpl.category, tmpl.isSelected);
                 app.isInstalled = true;
                 app.label = pm.getApplicationLabel(ai).toString();
                 app.icon = pm.getApplicationIcon(ai);

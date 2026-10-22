@@ -25,6 +25,14 @@
     <color name="neon_cyan">#00E5FF</color>
     <color name="neon_red">#FF5252</color>
 
+    <!-- Status Badge Colors -->
+    <color name="badge_green_bg">#2000E676</color>
+    <color name="badge_green_stroke">#4D00E676</color>
+    <color name="badge_orange_bg">#20FF6900</color>
+    <color name="badge_orange_stroke">#4DFF6900</color>
+    <color name="badge_cyan_bg">#2000E5FF</color>
+    <color name="badge_cyan_stroke">#4D00E5FF</color>
+
     <!-- Translucent Overlay Colors -->
     <color name="overlay_black_50">#80000000</color>
     <color name="overlay_black_80">#CC000000</color>
