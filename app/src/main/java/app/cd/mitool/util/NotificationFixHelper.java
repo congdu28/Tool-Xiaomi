@@ -36,16 +36,22 @@ public class NotificationFixHelper {
         public boolean isInstalled;
         public boolean isOptimized; // true if ignoring battery optimizations
         public boolean isSelected = true;
+        public boolean isRecommended = false;
 
         public TargetApp(String packageName, String defaultName, String category) {
-            this(packageName, defaultName, category, true);
+            this(packageName, defaultName, category, true, false);
         }
 
         public TargetApp(String packageName, String defaultName, String category, boolean defaultSelected) {
+            this(packageName, defaultName, category, defaultSelected, false);
+        }
+
+        public TargetApp(String packageName, String defaultName, String category, boolean defaultSelected, boolean isRecommended) {
             this.packageName = packageName;
             this.defaultName = defaultName;
             this.category = category;
             this.isSelected = defaultSelected;
+            this.isRecommended = isRecommended;
         }
     }
 
@@ -54,70 +60,126 @@ public class NotificationFixHelper {
 
     public static final List<TargetApp> TARGET_TEMPLATES = Arrays.asList(
             // Dịch vụ cốt lõi Google (Cực kỳ quan trọng cho Gmail & Push FCM)
-            new TargetApp("com.google.android.gms", "Dịch Vụ Google Play (GMS)", "Cốt lõi Push & Tài khoản", true),
-            new TargetApp("com.google.android.gsf", "Khung Dịch Vụ Google (GSF)", "Hạ tầng Google", true),
-            new TargetApp("com.google.android.gm", "Gmail", "Thư điện tử Google", true),
+            new TargetApp("com.google.android.gms", "Dịch Vụ Google Play (GMS)", "Cốt lõi Push & Tài khoản", true, true),
+            new TargetApp("com.google.android.gsf", "Khung Dịch Vụ Google (GSF)", "Hạ tầng Google", true, true),
+            new TargetApp("com.google.android.gm", "Gmail", "Thư điện tử Google", true, true),
 
             // Ứng dụng Nhắn tin & Công việc
-            new TargetApp("com.zing.zalo", "Zalo", "Nhắn tin & Gọi", true),
-            new TargetApp("com.facebook.orca", "Messenger", "Facebook Chat", true),
-            new TargetApp("com.facebook.mlite", "Messenger Lite", "Facebook Chat", true),
-            new TargetApp("org.telegram.messenger", "Telegram", "Nhắn tin", true),
-            new TargetApp("org.telegram.plus", "Telegram Plus", "Nhắn tin", true),
-            new TargetApp("com.whatsapp", "WhatsApp", "Nhắn tin quốc tế", true),
-            new TargetApp("com.whatsapp.w4b", "WhatsApp Business", "Kinh doanh", true),
-            new TargetApp("com.microsoft.office.outlook", "Microsoft Outlook", "Email & Lịch", true),
-            new TargetApp("com.microsoft.teams", "Microsoft Teams", "Công việc", true),
-            new TargetApp("com.viber.voip", "Viber", "Nhắn tin", true),
-            new TargetApp("com.skype.raider", "Skype", "Công việc", true),
-            new TargetApp("com.discord", "Discord", "Cộng đồng & Chat", true),
-            new TargetApp("jp.naver.line.android", "LINE", "Nhắn tin", true),
+            new TargetApp("com.zing.zalo", "Zalo", "Nhắn tin & Gọi", true, true),
+            new TargetApp("com.facebook.orca", "Messenger", "Facebook Chat", true, true),
+            new TargetApp("com.facebook.mlite", "Messenger Lite", "Facebook Chat", true, true),
+            new TargetApp("org.telegram.messenger", "Telegram", "Nhắn tin", true, true),
+            new TargetApp("org.telegram.plus", "Telegram Plus", "Nhắn tin", true, true),
+            new TargetApp("com.whatsapp", "WhatsApp", "Nhắn tin quốc tế", true, true),
+            new TargetApp("com.whatsapp.w4b", "WhatsApp Business", "Kinh doanh", true, true),
+            new TargetApp("com.microsoft.office.outlook", "Microsoft Outlook", "Email & Lịch", true, true),
+            new TargetApp("com.microsoft.teams", "Microsoft Teams", "Công việc", true, true),
+            new TargetApp("com.viber.voip", "Viber", "Nhắn tin", true, true),
+            new TargetApp("com.skype.raider", "Skype", "Công việc", true, true),
+            new TargetApp("com.discord", "Discord", "Cộng đồng & Chat", true, true),
+            new TargetApp("jp.naver.line.android", "LINE", "Nhắn tin", true, true),
 
             // Ngân hàng & Biến động số dư OTT (Chống trễ tiền về)
-            new TargetApp("com.VCB", "Vietcombank Digibank", "Ngân hàng", true),
-            new TargetApp("vn.com.techcombank.bb.app", "Techcombank Mobile", "Ngân hàng", true),
-            new TargetApp("com.mbmobile", "MB Bank", "Ngân hàng", true),
-            new TargetApp("com.vnpay.vpbankonline", "VPBank NEO", "Ngân hàng", true),
-            new TargetApp("com.vietinbank.ipay", "VietinBank iPay", "Ngân hàng", true),
-            new TargetApp("com.vnpay.bidv", "BIDV SmartBanking", "Ngân hàng", true),
-            new TargetApp("com.tpb.mb.gprsandroid", "TPBank Mobile", "Ngân hàng", true),
-            new TargetApp("mobile.acb.com.vn", "ACB ONE", "Ngân hàng", true),
-            new TargetApp("xyz.be.cake", "Cake by VPBank", "Ngân hàng số", true),
-            new TargetApp("com.mservice.momopay", "Ví MoMo", "Ví điện tử", true),
-            new TargetApp("vn.com.vng.zalopay", "ZaloPay", "Ví điện tử", true),
+            new TargetApp("com.VCB", "Vietcombank Digibank", "Ngân hàng", true, true),
+            new TargetApp("vn.com.techcombank.bb.app", "Techcombank Mobile", "Ngân hàng", true, true),
+            new TargetApp("com.mbmobile", "MB Bank", "Ngân hàng", true, true),
+            new TargetApp("com.vnpay.vpbankonline", "VPBank NEO", "Ngân hàng", true, true),
+            new TargetApp("com.vietinbank.ipay", "VietinBank iPay", "Ngân hàng", true, true),
+            new TargetApp("com.vnpay.bidv", "BIDV SmartBanking", "Ngân hàng", true, true),
+            new TargetApp("com.tpb.mb.gprsandroid", "TPBank Mobile", "Ngân hàng", true, true),
+            new TargetApp("mobile.acb.com.vn", "ACB ONE", "Ngân hàng", true, true),
+            new TargetApp("xyz.be.cake", "Cake by VPBank", "Ngân hàng số", true, true),
+            new TargetApp("com.mservice.momopay", "Ví MoMo", "Ví điện tử", true, true),
+            new TargetApp("vn.com.vng.zalopay", "ZaloPay", "Ví điện tử", true, true),
 
             // Mạng xã hội & Mua sắm (Không tự chọn để tránh chạy ngầm hao pin)
-            new TargetApp("com.instagram.android", "Instagram", "Mạng xã hội", false),
-            new TargetApp("com.zhiliaoapp.musically", "TikTok", "Mạng xã hội", false),
-            new TargetApp("com.ss.android.ugc.trill", "TikTok (Quốc tế)", "Mạng xã hội", false),
-            new TargetApp("com.shopee.vn", "Shopee", "Đơn hàng & Mua sắm", false),
-            new TargetApp("com.lazada.android", "Lazada", "Đơn hàng & Mua sắm", false),
-            new TargetApp("com.grabtaxi.passenger", "Grab", "Đặt xe & Đồ ăn", false)
+            new TargetApp("com.instagram.android", "Instagram", "Mạng xã hội", false, false),
+            new TargetApp("com.zhiliaoapp.musically", "TikTok", "Mạng xã hội", false, false),
+            new TargetApp("com.ss.android.ugc.trill", "TikTok (Quốc tế)", "Mạng xã hội", false, false),
+            new TargetApp("com.shopee.vn", "Shopee", "Đơn hàng & Mua sắm", false, false),
+            new TargetApp("com.lazada.android", "Lazada", "Đơn hàng & Mua sắm", false, false),
+            new TargetApp("com.grabtaxi.passenger", "Grab", "Đặt xe & Đồ ăn", false, false)
     );
 
     /**
-     * Get list of target apps currently installed on this device.
+     * Get ALL installed applications on this device (Recommended GMS/Banks/Chat first, then all user apps).
+     * Eliminates the limitation of only showing template apps.
      */
-    public static List<TargetApp> getInstalledTargetApps(Context context) {
+    public static List<TargetApp> getAllInstalledApps(Context context) {
+        if (context == null) return new ArrayList<>();
         PackageManager pm = context.getPackageManager();
-        List<TargetApp> installedList = new ArrayList<>();
+        List<TargetApp> resultList = new ArrayList<>();
+        java.util.Set<String> processedPackages = new java.util.HashSet<>();
+        String myPkg = context.getPackageName();
 
+        // 1. Process recommended template apps first
         for (TargetApp tmpl : TARGET_TEMPLATES) {
             try {
                 ApplicationInfo ai = pm.getApplicationInfo(tmpl.packageName, 0);
-                TargetApp app = new TargetApp(tmpl.packageName, tmpl.defaultName, tmpl.category, tmpl.isSelected);
+                TargetApp app = new TargetApp(tmpl.packageName, tmpl.defaultName, tmpl.category, tmpl.isSelected, tmpl.isRecommended);
                 app.isInstalled = true;
                 app.label = pm.getApplicationLabel(ai).toString();
                 app.icon = pm.getApplicationIcon(ai);
                 app.isOptimized = isIgnoringBatteryOptimizations(context, tmpl.packageName);
-                installedList.add(app);
+                resultList.add(app);
+                processedPackages.add(tmpl.packageName);
             } catch (PackageManager.NameNotFoundException ignored) {
                 // Not installed
             } catch (Throwable ignored) {
             }
         }
 
-        return installedList;
+        // 2. Query ALL other installed user-facing apps on this device
+        try {
+            List<ApplicationInfo> allInstalled = pm.getInstalledApplications(0);
+            List<TargetApp> otherApps = new ArrayList<>();
+
+            for (ApplicationInfo ai : allInstalled) {
+                String pkg = ai.packageName;
+                if (pkg == null || pkg.equals(myPkg) || processedPackages.contains(pkg)) {
+                    continue;
+                }
+
+                boolean isUserApp = (ai.flags & ApplicationInfo.FLAG_SYSTEM) == 0
+                        || (ai.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0;
+                Intent launchIntent = pm.getLaunchIntentForPackage(pkg);
+
+                // Include all user-installed apps or any app with a launcher activity
+                if (isUserApp || launchIntent != null) {
+                    try {
+                        String label = pm.getApplicationLabel(ai).toString();
+                        Drawable icon = pm.getApplicationIcon(ai);
+                        TargetApp app = new TargetApp(pkg, label, isUserApp ? "Ứng dụng cài đặt" : "Hệ thống / Mặc định", false, false);
+                        app.isInstalled = true;
+                        app.label = label;
+                        app.icon = icon;
+                        app.isOptimized = isIgnoringBatteryOptimizations(context, pkg);
+                        otherApps.add(app);
+                        processedPackages.add(pkg);
+                    } catch (Throwable ignored) {
+                    }
+                }
+            }
+
+            // Sort other apps alphabetically by label
+            java.util.Collections.sort(otherApps, (a, b) -> {
+                String nameA = (a.label != null) ? a.label : a.packageName;
+                String nameB = (b.label != null) ? b.label : b.packageName;
+                return nameA.compareToIgnoreCase(nameB);
+            });
+
+            resultList.addAll(otherApps);
+        } catch (Throwable ignored) {
+        }
+
+        return resultList;
+    }
+
+    /**
+     * Backward-compatible method forwarding to getAllInstalledApps.
+     */
+    public static List<TargetApp> getInstalledTargetApps(Context context) {
+        return getAllInstalledApps(context);
     }
 
     /**

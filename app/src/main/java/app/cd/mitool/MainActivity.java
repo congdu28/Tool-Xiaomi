@@ -22,6 +22,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -29,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -1922,6 +1925,13 @@ public class MainActivity extends AppCompatActivity {
         MaterialButton btnOpenFcmDiag = view.findViewById(R.id.bs_btn_open_fcm_diag);
         TextView tvSelectedCount = view.findViewById(R.id.bs_tv_notif_selected_count);
         TextView tvSelectAll = view.findViewById(R.id.bs_tv_select_all);
+        EditText etSearch = view.findViewById(R.id.bs_et_search_apps);
+        ImageView ivClearSearch = view.findViewById(R.id.bs_iv_clear_search);
+        TextView chipFilterAll = view.findViewById(R.id.bs_chip_filter_all);
+        TextView chipFilterRecommended = view.findViewById(R.id.bs_chip_filter_recommended);
+        TextView chipFilterSelected = view.findViewById(R.id.bs_chip_filter_selected);
+        TextView chipFilterUnoptimized = view.findViewById(R.id.bs_chip_filter_unoptimized);
+        ProgressBar pbLoading = view.findViewById(R.id.bs_pb_loading_apps);
         LinearLayout layoutApps = view.findViewById(R.id.bs_layout_notif_apps);
         TextView tvEmpty = view.findViewById(R.id.bs_tv_notif_empty);
 
@@ -1967,7 +1977,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        List<NotificationFixHelper.TargetApp> apps = NotificationFixHelper.getInstalledTargetApps(this);
+        final List<NotificationFixHelper.TargetApp> apps = new ArrayList<>();
+        final int[] activeFilter = {0}; // 0: all, 1: recommended, 2: selected, 3: unoptimized
+        final String[] currentQuery = {""};
 
         Runnable updateSelectedCounter = () -> {
             int selected = 0;
@@ -1978,112 +1990,212 @@ public class MainActivity extends AppCompatActivity {
                 tvSelectedCount.setText("(Đã chọn " + selected + "/" + apps.size() + ")");
             }
             if (tvSelectAll != null) {
-                tvSelectAll.setText(selected == apps.size() ? "Bỏ chọn tất cả" : "Chọn tất cả");
+                tvSelectAll.setText(selected == apps.size() && !apps.isEmpty() ? "Bỏ chọn tất cả" : "Chọn tất cả");
             }
         };
 
-        if (apps.isEmpty()) {
-            if (tvEmpty != null) tvEmpty.setVisibility(View.VISIBLE);
-            if (tvSelectedCount != null) tvSelectedCount.setText("(0 ứng dụng)");
-        } else {
-            if (tvEmpty != null) tvEmpty.setVisibility(View.GONE);
-            LayoutInflater inflater = LayoutInflater.from(this);
+        Runnable applyFilter = () -> {
+            String q = currentQuery[0].trim().toLowerCase();
+            int visibleCount = 0;
+            int mode = activeFilter[0];
 
-            for (NotificationFixHelper.TargetApp app : apps) {
-                View itemView = inflater.inflate(R.layout.item_notif_app, layoutApps, false);
-                itemView.setTag(app);
-                MaterialCheckBox cb = itemView.findViewById(R.id.cb_app_select);
-                ImageView ivIcon = itemView.findViewById(R.id.iv_app_icon);
-                TextView tvName = itemView.findViewById(R.id.tv_app_name);
-                TextView tvBadge = itemView.findViewById(R.id.tv_app_status_badge);
-                TextView tvCategory = itemView.findViewById(R.id.tv_app_category);
-                MaterialButton btnAction = itemView.findViewById(R.id.btn_app_action);
+            for (int i = 0; i < layoutApps.getChildCount(); i++) {
+                View itemView = layoutApps.getChildAt(i);
+                NotificationFixHelper.TargetApp app = (NotificationFixHelper.TargetApp) itemView.getTag();
+                if (app == null) continue;
 
-                if (app.icon != null) ivIcon.setImageDrawable(app.icon);
-                tvName.setText(app.label != null ? app.label : app.defaultName);
-                tvCategory.setText(app.category + " • " + app.packageName);
+                boolean matchMode = true;
+                if (mode == 1) {
+                    matchMode = app.isRecommended;
+                } else if (mode == 2) {
+                    matchMode = app.isSelected;
+                } else if (mode == 3) {
+                    matchMode = !app.isOptimized;
+                }
 
-                Runnable updateAppBadge = () -> {
-                    if (app.isOptimized) {
-                        tvBadge.setText("✓ Không giới hạn pin");
-                        tvBadge.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_green));
-                        tvBadge.setBackgroundResource(R.drawable.bg_badge_green);
-                    } else {
-                        tvBadge.setText("⚠️ Chưa tối ưu pin");
-                        tvBadge.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.mi_orange));
-                        tvBadge.setBackgroundResource(R.drawable.bg_badge_orange);
-                    }
-                };
-                updateAppBadge.run();
+                boolean matchQuery = true;
+                if (!q.isEmpty()) {
+                    String name = (app.label != null) ? app.label.toLowerCase() : "";
+                    String pkg = (app.packageName != null) ? app.packageName.toLowerCase() : "";
+                    matchQuery = name.contains(q) || pkg.contains(q);
+                }
 
-                cb.setChecked(app.isSelected);
-                cb.setOnCheckedChangeListener((b, isChecked) -> {
-                    app.isSelected = isChecked;
-                    updateSelectedCounter.run();
-                });
-
-                // Tap anywhere on card to toggle selection
-                itemView.setOnClickListener(v -> cb.setChecked(!cb.isChecked()));
-
-                btnAction.setOnClickListener(v -> {
-                    String[] options = hasShizuku
-                            ? new String[]{
-                                    "⚡ Tối ưu ngay bằng Shizuku (1-Chạm)",
-                                    "🔋 Tiết kiệm pin MIUI (Không giới hạn)",
-                                    "🚀 Tự khởi chạy MIUI (Autostart)",
-                                    "⚙️ Thông tin ứng dụng"
-                            }
-                            : new String[]{
-                                    "🔋 Tiết kiệm pin MIUI (Không giới hạn)",
-                                    "🚀 Tự khởi chạy MIUI (Autostart)",
-                                    "⚙️ Thông tin ứng dụng"
-                            };
-
-                    new MaterialAlertDialogBuilder(MainActivity.this)
-                            .setTitle(app.label != null ? app.label : app.defaultName)
-                            .setItems(options, (dialog, which) -> {
-                                if (hasShizuku && which == 0) {
-                                    NotificationFixHelper.fixSingleApp(MainActivity.this, app.packageName, (success, msg) -> {
-                                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
-                                        app.isOptimized = NotificationFixHelper.isIgnoringBatteryOptimizations(MainActivity.this, app.packageName);
-                                        updateAppBadge.run();
-                                        updateToolsCardSummaries();
-                                    });
-                                } else {
-                                    int actionIndex = hasShizuku ? which - 1 : which;
-                                    if (actionIndex == 0) {
-                                        NotificationFixHelper.openAppBatterySaver(MainActivity.this, app.packageName);
-                                    } else if (actionIndex == 1) {
-                                        NotificationFixHelper.openMiuiAutostart(MainActivity.this);
-                                    } else {
-                                        NotificationFixHelper.openAppDetails(MainActivity.this, app.packageName);
-                                    }
-                                }
-                            })
-                            .setNegativeButton("Đóng", null)
-                            .show();
-                });
-
-                layoutApps.addView(itemView);
+                boolean visible = matchMode && matchQuery;
+                itemView.setVisibility(visible ? View.VISIBLE : View.GONE);
+                if (visible) visibleCount++;
             }
 
-            updateSelectedCounter.run();
+            if (tvEmpty != null) {
+                tvEmpty.setVisibility(visibleCount == 0 ? View.VISIBLE : View.GONE);
+            }
+        };
+
+        Runnable updateChipStyles = () -> {
+            TextView[] chips = {chipFilterAll, chipFilterRecommended, chipFilterSelected, chipFilterUnoptimized};
+            for (int i = 0; i < chips.length; i++) {
+                if (chips[i] == null) continue;
+                if (i == activeFilter[0]) {
+                    chips[i].setBackgroundResource(R.drawable.bg_badge_cyan);
+                    chips[i].setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_cyan));
+                } else {
+                    chips[i].setBackgroundResource(R.drawable.bg_card_rounded);
+                    chips[i].setTextColor(ContextCompat.getColor(MainActivity.this, R.color.text_secondary));
+                }
+            }
+        };
+
+        if (chipFilterAll != null) chipFilterAll.setOnClickListener(v -> { activeFilter[0] = 0; updateChipStyles.run(); applyFilter.run(); });
+        if (chipFilterRecommended != null) chipFilterRecommended.setOnClickListener(v -> { activeFilter[0] = 1; updateChipStyles.run(); applyFilter.run(); });
+        if (chipFilterSelected != null) chipFilterSelected.setOnClickListener(v -> { activeFilter[0] = 2; updateChipStyles.run(); applyFilter.run(); });
+        if (chipFilterUnoptimized != null) chipFilterUnoptimized.setOnClickListener(v -> { activeFilter[0] = 3; updateChipStyles.run(); applyFilter.run(); });
+
+        if (etSearch != null) {
+            etSearch.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    currentQuery[0] = (s != null) ? s.toString() : "";
+                    if (ivClearSearch != null) {
+                        ivClearSearch.setVisibility(currentQuery[0].isEmpty() ? View.GONE : View.VISIBLE);
+                    }
+                    applyFilter.run();
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {}
+            });
         }
+
+        if (ivClearSearch != null) {
+            ivClearSearch.setOnClickListener(v -> {
+                if (etSearch != null) etSearch.setText("");
+            });
+        }
+
+        // Async load all installed applications to eliminate the 12-app limitation and prevent any UI freeze
+        if (pbLoading != null) pbLoading.setVisibility(View.VISIBLE);
+        if (tvEmpty != null) tvEmpty.setVisibility(View.GONE);
+
+        new Thread(() -> {
+            final List<NotificationFixHelper.TargetApp> loaded = NotificationFixHelper.getAllInstalledApps(MainActivity.this);
+            runOnUiThread(() -> {
+                if (pbLoading != null) pbLoading.setVisibility(View.GONE);
+                apps.clear();
+                apps.addAll(loaded);
+
+                if (apps.isEmpty()) {
+                    if (tvEmpty != null) tvEmpty.setVisibility(View.VISIBLE);
+                    if (tvSelectedCount != null) tvSelectedCount.setText("(0 ứng dụng)");
+                    return;
+                }
+
+                LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
+                for (NotificationFixHelper.TargetApp app : apps) {
+                    View itemView = inflater.inflate(R.layout.item_notif_app, layoutApps, false);
+                    itemView.setTag(app);
+                    MaterialCheckBox cb = itemView.findViewById(R.id.cb_app_select);
+                    ImageView ivIcon = itemView.findViewById(R.id.iv_app_icon);
+                    TextView tvName = itemView.findViewById(R.id.tv_app_name);
+                    TextView tvBadge = itemView.findViewById(R.id.tv_app_status_badge);
+                    TextView tvCategory = itemView.findViewById(R.id.tv_app_category);
+                    MaterialButton btnAction = itemView.findViewById(R.id.btn_app_action);
+
+                    if (app.icon != null) ivIcon.setImageDrawable(app.icon);
+                    tvName.setText(app.label != null ? app.label : app.defaultName);
+                    tvCategory.setText(app.category + " • " + app.packageName);
+
+                    Runnable updateAppBadge = () -> {
+                        if (app.isOptimized) {
+                            tvBadge.setText("✓ Không giới hạn pin");
+                            tvBadge.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_green));
+                            tvBadge.setBackgroundResource(R.drawable.bg_badge_green);
+                        } else {
+                            tvBadge.setText("⚠️ Chưa tối ưu pin");
+                            tvBadge.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.mi_orange));
+                            tvBadge.setBackgroundResource(R.drawable.bg_badge_orange);
+                        }
+                    };
+                    updateAppBadge.run();
+
+                    cb.setChecked(app.isSelected);
+                    cb.setOnCheckedChangeListener((b, isChecked) -> {
+                        app.isSelected = isChecked;
+                        updateSelectedCounter.run();
+                        if (activeFilter[0] == 2) applyFilter.run();
+                    });
+
+                    // Tap anywhere on card to toggle selection
+                    itemView.setOnClickListener(v -> cb.setChecked(!cb.isChecked()));
+
+                    btnAction.setOnClickListener(v -> {
+                        String[] options = hasShizuku
+                                ? new String[]{
+                                        "⚡ Tối ưu ngay bằng Shizuku (1-Chạm)",
+                                        "🔋 Tiết kiệm pin MIUI (Không giới hạn)",
+                                        "🚀 Tự khởi chạy MIUI (Autostart)",
+                                        "⚙️ Thông tin ứng dụng"
+                                }
+                                : new String[]{
+                                        "🔋 Tiết kiệm pin MIUI (Không giới hạn)",
+                                        "🚀 Tự khởi chạy MIUI (Autostart)",
+                                        "⚙️ Thông tin ứng dụng"
+                                };
+
+                        new MaterialAlertDialogBuilder(MainActivity.this)
+                                .setTitle(app.label != null ? app.label : app.defaultName)
+                                .setItems(options, (dialog, which) -> {
+                                    if (hasShizuku && which == 0) {
+                                        NotificationFixHelper.fixSingleApp(MainActivity.this, app.packageName, (success, msg) -> {
+                                            Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+                                            app.isOptimized = NotificationFixHelper.isIgnoringBatteryOptimizations(MainActivity.this, app.packageName);
+                                            updateAppBadge.run();
+                                            updateToolsCardSummaries();
+                                        });
+                                    } else {
+                                        int actionIndex = hasShizuku ? which - 1 : which;
+                                        if (actionIndex == 0) {
+                                            NotificationFixHelper.openAppBatterySaver(MainActivity.this, app.packageName);
+                                        } else if (actionIndex == 1) {
+                                            NotificationFixHelper.openMiuiAutostart(MainActivity.this);
+                                        } else {
+                                            NotificationFixHelper.openAppDetails(MainActivity.this, app.packageName);
+                                        }
+                                    }
+                                })
+                                .setNegativeButton("Đóng", null)
+                                .show();
+                    });
+
+                    layoutApps.addView(itemView);
+                }
+
+                updateSelectedCounter.run();
+                applyFilter.run();
+            });
+        }).start();
 
         if (tvSelectAll != null) {
             tvSelectAll.setOnClickListener(v -> {
-                boolean anyUnchecked = false;
-                for (NotificationFixHelper.TargetApp a : apps) {
-                    if (!a.isSelected) {
-                        anyUnchecked = true;
-                        break;
-                    }
-                }
-                boolean targetState = anyUnchecked;
+                boolean anyVisibleUnchecked = false;
                 for (int i = 0; i < layoutApps.getChildCount(); i++) {
                     View child = layoutApps.getChildAt(i);
-                    MaterialCheckBox cb = child.findViewById(R.id.cb_app_select);
-                    if (cb != null) cb.setChecked(targetState);
+                    if (child.getVisibility() == View.VISIBLE) {
+                        NotificationFixHelper.TargetApp a = (NotificationFixHelper.TargetApp) child.getTag();
+                        if (a != null && !a.isSelected) {
+                            anyVisibleUnchecked = true;
+                            break;
+                        }
+                    }
+                }
+                boolean targetState = anyVisibleUnchecked;
+                for (int i = 0; i < layoutApps.getChildCount(); i++) {
+                    View child = layoutApps.getChildAt(i);
+                    if (child.getVisibility() == View.VISIBLE) {
+                        MaterialCheckBox cb = child.findViewById(R.id.cb_app_select);
+                        if (cb != null) cb.setChecked(targetState);
+                    }
                 }
             });
         }

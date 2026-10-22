@@ -43,7 +43,7 @@ jobs:
             TAG="${{ github.ref_name }}"
           else
             VER=$(grep "versionName" app/build.gradle | head -n 1 | awk -F"'" '{print $2}')
-            TAG="v${VER:-1.0.48}"
+            TAG="v${VER:-1.0.49}"
           fi
           echo "TAG_NAME=${TAG}" >> $GITHUB_ENV
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
@@ -98,15 +98,13 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             Bản cập nhật ${{ env.TAG_NAME }}:
-            - ✨ **Tối Ưu & Tái Cấu Trúc Toàn Diện Giao Diện Khắc Phục Thông Báo**:
-              1. 🎨 Khắc phục triệt để lỗi huy hiệu (badge) bị ép co dọc chữ; chuyển sang huy hiệu bo góc bán trong suốt hiện đại đặt trên dòng riêng biệt.
-              2. 🔘 Thay thế CheckBox thô bằng MaterialCheckBox thanh lịch, hỗ trợ chạm vào toàn bộ hàng thẻ để chọn/bỏ chọn cực kỳ mượt mà.
-              3. 🛡️ Sửa lỗi icon Shizuku hiển thị mâu thuẫn giữa trạng thái đã cấp quyền (xanh) và chưa cấp quyền (cam), bổ sung nút cấp quyền trực tiếp ngay trên thẻ.
-              4. 📊 Bổ sung bộ đếm thời gian thực: hiển thị rõ số lượng ứng dụng đã chọn (ví dụ: Đã chọn 8/12).
-              5. ⚡ Cập nhật trạng thái trực tiếp ngay trên giao diện sau khi tối ưu hóa 1-chạm mà không đóng hộp thoại đột ngột.
-            - 🔋 **Tối Ưu Hóa Logic Hoạt Động & Chống Hao Pin Thông Minh**:
-              1. Phân loại thông minh: Mặc định chọn các ứng dụng quan trọng (Google GMS, GSF, Gmail, Toàn bộ App Ngân hàng Việt Nam, Zalo, Messenger, Telegram...).
-              2. Bỏ chọn mặc định đối với các ứng dụng mua sắm & mạng xã hội video (Shopee, Lazada, TikTok...) để ngăn chặn việc chạy ngầm không cần thiết gây tốn pin.
-              3. Làm rõ cơ chế FCM Push Hub: Người dùng KHÔNG CẦN khóa đa nhiệm (Lock Recents), giải phóng RAM và tiết kiệm pin tối đa.
-            - 🚀 Xuất xưởng Release APK v1.0.48 tối ưu hóa cao nhất.
+            - 🔝 **Tối Ưu Vị Trí Tab Tính Năng & Cài Đặt**:
+              1. Đưa thẻ "Khắc phục trễ thông báo" lên vị trí **ĐẦU TIÊN** trong Tab Tính Năng (Tools) để người dùng truy cập ngay lập tức.
+              2. Đưa thẻ "Cập nhật ứng dụng" lên vị trí **ĐẦU TIÊN** trong Tab Cài Đặt (Settings), hỗ trợ kiểm tra và xem trạng thái cập nhật nhanh chóng.
+            - 📱 **Mở Rộng Không Giới Hạn: Chọn Bất Cứ Ứng Dụng Nào Trên Máy**:
+              1. Loại bỏ giới hạn danh sách 12 app: Hệ thống tự động quét và nạp **toàn bộ 100% ứng dụng** đã cài đặt trên máy người dùng.
+              2. 🔍 Tích hợp **Thanh tìm kiếm thời gian thực** (Real-time Search) tìm nhanh theo tên app hoặc tên gói (package).
+              3. 🏷️ Bộ lọc thông minh 4 chế độ: `Tất cả`, `⭐ Khuyên dùng`, `Đã chọn`, `⚠️ Chưa tối ưu`.
+              4. ⚡ Cơ chế tải danh sách bất đồng bộ ngầm siêu tốc, chuyển động 120Hz mượt mà tuyệt đối không bị đơ lag.
+            - 🚀 Xuất xưởng Release APK v1.0.49 tối ưu hóa hoàn hảo.
           files: output-apks/*.apk

@@ -1126,7 +1126,73 @@
                         android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
 
-                    <!-- Feature Card 1: Refresh Rate (Hz) -->
+                    <!-- Feature Card 1: Notification Fixer -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/card_tool_notif_fix"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        app:cardBackgroundColor="@color/card_dark"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:padding="14dp">
+
+                            <FrameLayout
+                                android:layout_width="44dp"
+                                android:layout_height="44dp"
+                                android:background="@drawable/bg_circle_icon"
+                                android:backgroundTint="#26FF3D00">
+                                <ImageView
+                                    android:layout_width="22dp"
+                                    android:layout_height="22dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_tile_notification"
+                                    app:tint="#FF5722" />
+                            </FrameLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="14dp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Khắc phục trễ thông báo"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="15sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tv_tool_notif_fix_sub"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="3dp"
+                                    android:text="Chống kill app Zalo, Messenger, Telegram..."
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_arrow_right"
+                                app:tint="@color/text_muted" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Feature Card 2: Refresh Rate (Hz) -->
                     <androidx.cardview.widget.CardView
                         android:id="@+id/card_tool_hz"
                         android:layout_width="match_parent"
@@ -1708,72 +1774,6 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="3dp"
                                     android:text="Dọn dẹp sâu, Menu CIT ẩn *#*#6484#*#*, Tắt MSA"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="12sp" />
-                            </LinearLayout>
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@drawable/ic_arrow_right"
-                                app:tint="@color/text_muted" />
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-
-                    <!-- Feature Card 10: Notification Fixer -->
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/card_tool_notif_fix"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        app:cardBackgroundColor="@color/card_dark"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:padding="14dp">
-
-                            <FrameLayout
-                                android:layout_width="44dp"
-                                android:layout_height="44dp"
-                                android:background="@drawable/bg_circle_icon"
-                                android:backgroundTint="#26FF3D00">
-                                <ImageView
-                                    android:layout_width="22dp"
-                                    android:layout_height="22dp"
-                                    android:layout_gravity="center"
-                                    android:src="@drawable/ic_tile_notification"
-                                    app:tint="#FF5722" />
-                            </FrameLayout>
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="14dp"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Khắc phục trễ thông báo"
-                                    android:textColor="@color/text_primary"
-                                    android:textSize="15sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:id="@+id/tv_tool_notif_fix_sub"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="3dp"
-                                    android:text="Chống kill app Zalo, Messenger, Telegram..."
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                             </LinearLayout>
@@ -2840,6 +2840,190 @@
                             android:textStyle="bold" />
                     </LinearLayout>
 
+                    <!-- Update Card -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        app:cardBackgroundColor="@color/card_dark"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <!-- Header -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <FrameLayout
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:background="@drawable/bg_circle_icon"
+                                    android:backgroundTint="#26FF6700">
+
+                                    <ImageView
+                                        android:layout_width="20dp"
+                                        android:layout_height="20dp"
+                                        android:layout_gravity="center"
+                                        android:src="@drawable/ic_speed"
+                                        app:tint="@color/mi_orange" />
+                                </FrameLayout>
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="12dp"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Cập Nhật Ứng Dụng"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="Đồng bộ GitHub Releases"
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="11sp" />
+                                </LinearLayout>
+
+                                <TextView
+                                    android:id="@+id/tv_settings_update_badge"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/bg_badge_rounded"
+                                    android:paddingStart="8dp"
+                                    android:paddingTop="3dp"
+                                    android:paddingEnd="8dp"
+                                    android:paddingBottom="3dp"
+                                    android:text="CHÍNH THỨC"
+                                    android:textColor="@color/neon_green"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <!-- Version & Status Info Box -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:background="@color/card_highlight"
+                                android:orientation="vertical"
+                                android:padding="12dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Phiên bản đang cài:"
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="12sp" />
+
+                                    <TextView
+                                        android:id="@+id/tv_settings_current_version"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="monospace"
+                                        android:text="v1.0.36"
+                                        android:textColor="@color/neon_cyan"
+                                        android:textSize="12sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="6dp"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Kênh phát hành:"
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="12sp" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="GitHub Releases (Official)"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="11sp" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="6dp"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Kiểm tra gần nhất:"
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="12sp" />
+
+                                    <TextView
+                                        android:id="@+id/tv_settings_last_check"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Vừa xong"
+                                        android:textColor="@color/text_muted"
+                                        android:textSize="11sp" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <!-- Check Update Action Button -->
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_check_update_now"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:minHeight="44dp"
+                                android:backgroundTint="@color/card_highlight"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:insetLeft="0dp"
+                                android:insetRight="0dp"
+                                android:paddingLeft="8dp"
+                                android:paddingRight="8dp"
+                                android:maxLines="1"
+                                android:ellipsize="end"
+                                android:text="⚡ Kiểm tra bản cập nhật mới ngay"
+                                android:textColor="@color/mi_orange"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                app:cornerRadius="8dp"
+                                app:strokeColor="@color/mi_orange"
+                                app:strokeWidth="1dp" />
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
                     <!-- Theme Selection Card -->
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
@@ -3161,190 +3345,6 @@
                                 android:textColor="@color/text_primary"
                                 android:textSize="11sp"
                                 app:cornerRadius="8dp" />
-
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-
-                    <!-- Update Card -->
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        app:cardBackgroundColor="@color/card_dark"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="16dp">
-
-                            <!-- Header -->
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
-
-                                <FrameLayout
-                                    android:layout_width="40dp"
-                                    android:layout_height="40dp"
-                                    android:background="@drawable/bg_circle_icon"
-                                    android:backgroundTint="#26FF6700">
-
-                                    <ImageView
-                                        android:layout_width="20dp"
-                                        android:layout_height="20dp"
-                                        android:layout_gravity="center"
-                                        android:src="@drawable/ic_speed"
-                                        app:tint="@color/mi_orange" />
-                                </FrameLayout>
-
-                                <LinearLayout
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="12dp"
-                                    android:layout_weight="1"
-                                    android:orientation="vertical">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Cập Nhật Ứng Dụng"
-                                        android:textColor="@color/text_primary"
-                                        android:textSize="14sp"
-                                        android:textStyle="bold" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginTop="2dp"
-                                        android:text="Đồng bộ GitHub Releases"
-                                        android:textColor="@color/text_secondary"
-                                        android:textSize="11sp" />
-                                </LinearLayout>
-
-                                <TextView
-                                    android:id="@+id/tv_settings_update_badge"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:background="@drawable/bg_badge_rounded"
-                                    android:paddingStart="8dp"
-                                    android:paddingTop="3dp"
-                                    android:paddingEnd="8dp"
-                                    android:paddingBottom="3dp"
-                                    android:text="CHÍNH THỨC"
-                                    android:textColor="@color/neon_green"
-                                    android:textSize="10sp"
-                                    android:textStyle="bold" />
-                            </LinearLayout>
-
-                            <!-- Version & Status Info Box -->
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="12dp"
-                                android:background="@color/card_highlight"
-                                android:orientation="vertical"
-                                android:padding="12dp">
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:gravity="center_vertical"
-                                    android:orientation="horizontal">
-
-                                    <TextView
-                                        android:layout_width="0dp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_weight="1"
-                                        android:text="Phiên bản đang cài:"
-                                        android:textColor="@color/text_secondary"
-                                        android:textSize="12sp" />
-
-                                    <TextView
-                                        android:id="@+id/tv_settings_current_version"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:fontFamily="monospace"
-                                        android:text="v1.0.36"
-                                        android:textColor="@color/neon_cyan"
-                                        android:textSize="12sp"
-                                        android:textStyle="bold" />
-                                </LinearLayout>
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="6dp"
-                                    android:gravity="center_vertical"
-                                    android:orientation="horizontal">
-
-                                    <TextView
-                                        android:layout_width="0dp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_weight="1"
-                                        android:text="Kênh phát hành:"
-                                        android:textColor="@color/text_secondary"
-                                        android:textSize="12sp" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="GitHub Releases (Official)"
-                                        android:textColor="@color/text_primary"
-                                        android:textSize="11sp" />
-                                </LinearLayout>
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="6dp"
-                                    android:gravity="center_vertical"
-                                    android:orientation="horizontal">
-
-                                    <TextView
-                                        android:layout_width="0dp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_weight="1"
-                                        android:text="Kiểm tra gần nhất:"
-                                        android:textColor="@color/text_secondary"
-                                        android:textSize="12sp" />
-
-                                    <TextView
-                                        android:id="@+id/tv_settings_last_check"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Vừa xong"
-                                        android:textColor="@color/text_muted"
-                                        android:textSize="11sp" />
-                                </LinearLayout>
-                            </LinearLayout>
-
-                            <!-- Check Update Action Button -->
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_check_update_now"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="12dp"
-                                android:minHeight="44dp"
-                                android:backgroundTint="@color/card_highlight"
-                                android:insetTop="0dp"
-                                android:insetBottom="0dp"
-                                android:insetLeft="0dp"
-                                android:insetRight="0dp"
-                                android:paddingLeft="8dp"
-                                android:paddingRight="8dp"
-                                android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="⚡ Kiểm tra bản cập nhật mới ngay"
-                                android:textColor="@color/mi_orange"
-                                android:textSize="12sp"
-                                android:textStyle="bold"
-                                app:cornerRadius="8dp"
-                                app:strokeColor="@color/mi_orange"
-                                app:strokeWidth="1dp" />
 
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
