@@ -160,7 +160,6 @@ public class MainActivity extends AppCompatActivity {
 
     // Tab 3: Battery Monitoring Views
     private TextView tvBatteryPercent;
-    private TextView tvBatteryStatus;
     private TextView tvBatteryPlugType;
     private TextView tvChargeEta;
     private TextView tvBatteryPower;
@@ -413,7 +412,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Battery Views
         tvBatteryPercent = findViewById(R.id.tv_battery_percent);
-        tvBatteryStatus = findViewById(R.id.tv_battery_status);
         tvBatteryPlugType = findViewById(R.id.tv_battery_plug_type);
         tvChargeEta = findViewById(R.id.tv_charge_eta);
         tvBatteryPower = findViewById(R.id.tv_battery_power);
@@ -2384,19 +2382,11 @@ public class MainActivity extends AppCompatActivity {
                     : (plugType == BatteryManager.BATTERY_PLUGGED_USB) ? "Cổng USB"
                     : (plugType == BatteryManager.BATTERY_PLUGGED_WIRELESS) ? "Sạc không dây"
                     : "Đang sạc";
-            if (tvBatteryStatus != null) {
-                tvBatteryStatus.setText(R.string.battery_status_charging);
-                tvBatteryStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
-            }
             tvBatteryPlugType.setText("Nguồn: " + plugStr);
 
             String eta = BatteryHelper.getEstimatedChargeTime(this);
             tvChargeEta.setText(eta != null ? eta : "Đang ước tính...");
         } else {
-            if (tvBatteryStatus != null) {
-                tvBatteryStatus.setText(R.string.battery_status_discharging);
-                tvBatteryStatus.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
-            }
             tvBatteryPlugType.setText("Nguồn: Pin thiết bị");
             tvChargeEta.setText("Chưa cắm sạc");
         }
