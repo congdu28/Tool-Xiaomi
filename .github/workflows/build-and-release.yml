@@ -43,7 +43,7 @@ jobs:
             TAG="${{ github.ref_name }}"
           else
             VER=$(grep "versionName" app/build.gradle | head -n 1 | awk -F"'" '{print $2}')
-            TAG="v${VER:-1.0.41}"
+            TAG="v${VER:-1.0.42}"
           fi
           echo "TAG_NAME=${TAG}" >> $GITHUB_ENV
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
@@ -68,15 +68,6 @@ jobs:
         with:
           name: gradle-build-log
           path: gradle-build.log
-
-      - name: Report Failure to Release
-        if: failure() && (startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main')
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ env.TAG_NAME }}
-          name: Build Failed - Log
-          body_path: gradle-build.log
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Prepare APK Files with Version
         run: |
@@ -107,18 +98,13 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             Bản cập nhật ${{ env.TAG_NAME }}:
-            - 📱 Nâng Cấp Toàn Diện Trang Chính (Home Specs & Header):
-              1. Căn chỉnh ô tên máy và huy hiệu Shizuku gọn gàng, thanh thoát, không còn bị ngắt dòng hay xô lệch chữ.
-              2. Bổ sung thông tin Vi xử lý (CPU/SoC) chi tiết: Tên thương mại chip (Snapdragon/Dimensity), số nhân, xung nhịp tối đa (GHz) và kiến trúc 64-bit.
-              3. Thông số Màn hình toàn diện: Kích thước (inch), độ phân giải chuẩn (FHD+/1.5K/2K), tần số quét (Hz), mật độ điểm ảnh (DPI), công nghệ tấm nền (AMOLED/HDR10+/Dolby Vision).
-              4. Giám sát Bộ nhớ chuyên sâu: RAM vật lý, RAM mở rộng ảo / ZRAM (Swap HyperOS) và Bộ nhớ trong ROM kèm thanh tiến trình trực quan.
-              5. Tình trạng Pin chi tiết: Hiển thị đầy đủ % pin, dung lượng định mức, dung lượng thực tế, chu kỳ sạc, nhiệt độ, điện áp và sức khỏe.
-            - 🛡️ Thiết Kế Lại Tính Năng Gỡ Ứng Dụng Rác (Safe Debloater):
-              1. Chuyển sang giao diện BottomSheet chuẩn phong cách HyperOS sang trọng, bo góc mềm mại, hiển thị rõ ràng từng ứng dụng.
-              2. Sửa triệt để lỗi không nhận diện ứng dụng rác trên Android 11+ (bổ sung QUERY_ALL_PACKAGES).
-              3. Thao tác đóng băng / khôi phục tức thì từng ứng dụng hoặc hàng loạt bằng 1 chạm qua Shizuku/Root.
-            - 🌐 Tối Ưu Chuẩn Xác Tính Năng Private DNS:
-              1. Sửa lỗi logic cấu hình DNS: Tự động (opportunistic), Tắt (off), AdGuard DNS, Cloudflare 1.1.1.1, Cloudflare Family và Google DNS.
-              2. Bổ sung nút chuyển đổi tức thì và đồng bộ trạng thái thực tế.
+            - ⚡ Tối Ưu Bố Cục Cảm Biến & Công Suất Sạc (Tab Pin & Sạc):
+              1. Loại bỏ text trùng lặp "Đang dùng pin", giữ lại badge nhận diện chuẩn giao thức sạc phong cách HyperOS.
+              2. Sắp xếp đối xứng cân đối: % pin lớn bên trái, công suất thời gian thực (W) và nguồn cấp bên phải.
+            - 💾 Tối Ưu Hiển Thị RAM, ZRAM & ROM (Tab Thiết Bị):
+              1. Chia bố cục làm 2 dòng riêng biệt: Dòng trên là tiêu đề, dòng dưới là dung lượng chi tiết.
+              2. Chống triệt để tình trạng nhảy dòng hay co cụm chữ trên màn hình nhỏ.
+            - 📱 Tinh Chỉnh Responsive Toàn Trang:
+              1. Rút gọn nhãn thông số màn hình, kiến trúc CPU và dung lượng pin giúp các hàng hiển thị ngay ngắn, thẳng hàng.
             - 🚀 Xuất xưởng duy nhất 1 bản Release APK chuẩn tối ưu.
           files: output-apks/*.apk
