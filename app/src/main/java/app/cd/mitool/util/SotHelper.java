@@ -169,6 +169,28 @@ public class SotHelper {
     }
 
     /**
+     * Returns formatted total device usage duration since last unplug or reset.
+     * E.g. "3 giờ 41 phút", "45 phút", "Vừa mới rút".
+     */
+    public static String getTotalUsageDuration(Context context) {
+        if (context == null) return "Vừa mới rút";
+        PreferencesHelper prefs = new PreferencesHelper(context);
+        long lastUnplug = prefs.getSotLastUnplugTime();
+        long now = System.currentTimeMillis();
+        if (lastUnplug <= 0 || lastUnplug > now) {
+            return "Vừa mới rút";
+        }
+        long diff = now - lastUnplug;
+        if (diff < 60000L) {
+            return "Vừa mới rút";
+        } else if (diff > 7 * 86400000L) {
+            return "> 7 ngày";
+        } else {
+            return formatDuration(diff);
+        }
+    }
+
+    /**
      * Ensure SOT preferences have a valid baseline timestamp when app is first installed/opened.
      */
     public static void ensureInitialized(Context context) {

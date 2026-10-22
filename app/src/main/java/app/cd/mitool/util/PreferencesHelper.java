@@ -427,7 +427,7 @@ public class PreferencesHelper {
     public static final String KEY_WIDGET_SHOW_ESTIMATE = "widget_sot_show_estimate";
 
     public int getWidgetStyle() {
-        return prefs.getInt(KEY_WIDGET_STYLE, WIDGET_STYLE_HYPEROS);
+        return prefs.getInt(KEY_WIDGET_STYLE, WIDGET_STYLE_DASHBOARD);
     }
 
     public void setWidgetStyle(int style) {

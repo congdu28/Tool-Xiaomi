@@ -105,6 +105,7 @@ public class SotAppWidgetProvider extends AppWidgetProvider {
         String sotTimeStr = SotHelper.formatDuration(sotMillis);
         int batteryPct = BatteryHelper.getBatteryPercentage(context);
         float temp = BatteryHelper.getBatteryTemperature(context);
+        String totalUsageStr = SotHelper.getTotalUsageDuration(context);
         String summary = SotHelper.getUnplugSummary(context, batteryPct);
         SotHelper.BatteryEstimate estimate = SotHelper.getBatteryEstimate(context);
 
@@ -113,6 +114,8 @@ public class SotAppWidgetProvider extends AppWidgetProvider {
         if (style == PreferencesHelper.WIDGET_STYLE_DASHBOARD) {
             views.setTextViewText(R.id.widget_tv_sot_battery, batteryPct + "%");
             views.setTextViewText(R.id.widget_tv_sot_temp, String.format(java.util.Locale.getDefault(), "%.1f°C", temp));
+            views.setTextViewText(R.id.widget_tv_sot_total_bar, "🕒 Tổng dùng máy: " + totalUsageStr);
+            views.setTextViewText(R.id.widget_tv_sot_total, "Tổng dùng: " + totalUsageStr);
         } else {
             views.setTextViewText(R.id.widget_tv_sot_battery, "🔋 " + batteryPct + "%");
             views.setTextViewText(R.id.widget_tv_sot_temp, String.format(java.util.Locale.getDefault(), "🌡️ %.1f°C", temp));
@@ -124,10 +127,14 @@ public class SotAppWidgetProvider extends AppWidgetProvider {
             if (style == PreferencesHelper.WIDGET_STYLE_DASHBOARD) {
                 subText = "~" + estimate.formattedSot;
             } else {
-                subText = "⚡ Còn ~" + estimate.formattedSot + " • " + summary;
+                subText = "⚡ Còn ~" + estimate.formattedSot + " • Tổng: " + totalUsageStr;
             }
         } else {
-            subText = summary;
+            if (style == PreferencesHelper.WIDGET_STYLE_DASHBOARD) {
+                subText = "Tổng: " + totalUsageStr;
+            } else {
+                subText = "Tổng dùng: " + totalUsageStr;
+            }
         }
         views.setTextViewText(R.id.widget_tv_sot_sub, subText);
 
@@ -169,6 +176,10 @@ public class SotAppWidgetProvider extends AppWidgetProvider {
             views.setTextColor(R.id.widget_tv_label_battery, labelColor);
             views.setTextColor(R.id.widget_tv_label_temp, labelColor);
             views.setTextColor(R.id.widget_tv_label_sub, labelColor);
+
+            int subTextColor = isNight ? 0xFFA0A5B5 : 0xFF666677;
+            views.setTextColor(R.id.widget_tv_sot_total_bar, subTextColor);
+            views.setTextColor(R.id.widget_tv_sot_total, subTextColor);
 
             views.setTextColor(R.id.widget_tv_sot_title, 0xFFFF6700);
             views.setTextColor(R.id.widget_tv_sot_time, isNight ? 0xFF00E5FF : 0xFF007E8A);

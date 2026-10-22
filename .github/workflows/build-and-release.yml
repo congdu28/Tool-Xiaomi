@@ -43,7 +43,7 @@ jobs:
             TAG="${{ github.ref_name }}"
           else
             VER=$(grep "versionName" app/build.gradle | head -n 1 | awk -F"'" '{print $2}')
-            TAG="v${VER:-1.0.43}"
+            TAG="v${VER:-1.0.44}"
           fi
           echo "TAG_NAME=${TAG}" >> $GITHUB_ENV
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
@@ -98,17 +98,13 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             Bản cập nhật ${{ env.TAG_NAME }}:
-            - ⚡ Nhận Diện Chuẩn Xác Vi Xử Lý (CPU / SoC) & Nhà Cung Cấp:
-              1. Hiển thị rõ ràng Nhà cung cấp (Qualcomm Technologies, MediaTek...), Vi xử lý chính thức (Snapdragon 8 Elite Gen 5, Snapdragon 8 Elite, Snapdragon 8 Gen 2/3...) và Mã chip/Platform (SM8850, SM8750, SM8550 kalama...).
-              2. Khắc phục triệt để hiển thị nhập nhằng "(gen4/5)" trước đây.
-            - 🔋 Chuẩn Hóa Dung Lượng Pin Thực Tế & Chu Kỳ Sạc:
-              1. Bổ sung đọc trực tiếp từ HyperOS Battery Service (`dumpsys battery` ASOC & cycle count) qua Shizuku.
-              2. Tích hợp sâu các node CIT/BMS sysfs của Xiaomi và tối ưu hóa bộ nhớ đệm (Cache) chống gián đoạn.
-            - ⏱️ Nâng Cấp Toàn Diện Widget SOT & Tùy Biến:
-              1. 3 phong cách widget mới: Chuẩn HyperOS Kính mờ, Tối giản (Minimalist), Bảng điều khiển (Full Dashboard).
-              2. Nhận diện thích ứng tự động theo Theme hệ thống (Sáng/Tối) hoặc tùy chỉnh cố định.
-              3. Bổ sung nút bấm nhỏ cập nhật thông số tức thì có phản hồi rung nhẹ (Haptic).
-              4. Tự động cập nhật định kỳ (15p, 30p, 60p hoặc theo sự kiện màn hình/sạc).
-              5. Tích hợp BottomSheet tùy biến widget trực tiếp ngay trong tab Pin & Sạc.
+            - 📱 Đưa Cài Đặt Widget Vào Tab Cài Đặt:
+              1. Bổ sung mục "📱 Widget Màn Hình Chính" trực tiếp trong Tab Cài Đặt & Giấy Phép giúp dễ dàng điều chỉnh cấu hình widget mọi lúc.
+              2. Đồng thời vẫn duy trì nút lối tắt tiện lợi tại thẻ SOT trong Tab Pin & Sạc.
+            - 📊 Mặc Định Phong Cách Bảng Điều Khiển (Dashboard Widget):
+              1. Thiết lập giao diện Bảng điều khiển 4 ô chỉ số chi tiết làm phong cách mặc định khi thêm widget ra màn hình chính.
+            - 🕒 Bổ Sung "Tổng Thời Gian Dùng Máy":
+              1. Hiển thị song song cả On-screen (SOT) và Tổng thời gian dùng máy (Total Uptime since unplug) kể từ lần rút sạc gần nhất.
+              2. Hiển thị tinh tế trên thanh tiêu đề widget và chi tiết trong ô SOT.
             - 🚀 Xuất xưởng duy nhất 1 bản Release APK chuẩn tối ưu.
           files: output-apks/*.apk

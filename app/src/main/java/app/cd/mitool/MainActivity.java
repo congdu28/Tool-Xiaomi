@@ -1670,10 +1670,10 @@ public class MainActivity extends AppCompatActivity {
         int currentStyle = prefs.getWidgetStyle();
         if (currentStyle == PreferencesHelper.WIDGET_STYLE_MINIMAL) {
             rbStyleMinimal.setChecked(true);
-        } else if (currentStyle == PreferencesHelper.WIDGET_STYLE_DASHBOARD) {
-            rbStyleDashboard.setChecked(true);
-        } else {
+        } else if (currentStyle == PreferencesHelper.WIDGET_STYLE_HYPEROS) {
             rbStyleHyperos.setChecked(true);
+        } else {
+            rbStyleDashboard.setChecked(true);
         }
 
         RadioButton rbThemeSystem = view.findViewById(R.id.rb_theme_system);
@@ -2711,6 +2711,11 @@ public class MainActivity extends AppCompatActivity {
         }
         if (btnThemeDark != null) {
             btnThemeDark.setOnClickListener(v -> selectTheme(PreferencesHelper.THEME_MODE_DARK));
+        }
+
+        MaterialButton btnSettingsCustomizeWidget = findViewById(R.id.btn_settings_customize_widget);
+        if (btnSettingsCustomizeWidget != null) {
+            btnSettingsCustomizeWidget.setOnClickListener(v -> showWidgetCustomizeDialog());
         }
     }
 

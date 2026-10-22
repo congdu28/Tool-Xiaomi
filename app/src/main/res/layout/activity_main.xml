@@ -2920,6 +2920,76 @@
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
+                    <!-- Widget Customization Card in Settings -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        app:cardBackgroundColor="@color/card_dark"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="14dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="📱 Widget Màn Hình Chính"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/bg_badge_rounded"
+                                    android:paddingStart="8dp"
+                                    android:paddingTop="3dp"
+                                    android:paddingEnd="8dp"
+                                    android:paddingBottom="3dp"
+                                    android:text="SOT &amp; Pin"
+                                    android:textColor="@color/neon_green"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="Tùy biến phong cách widget Bảng điều khiển / Kính mờ / Tối giản, hiển thị SOT, mức pin, tổng thời gian dùng máy và chu kỳ làm mới."
+                                android:textColor="@color/text_secondary"
+                                android:textSize="11sp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_settings_customize_widget"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:minHeight="40dp"
+                                android:backgroundTint="@color/card_highlight"
+                                app:strokeColor="@color/card_dark_stroke"
+                                app:strokeWidth="1dp"
+                                android:text="⚙️ Tùy Biến Giao Diện Widget"
+                                android:textColor="@color/neon_cyan"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                app:cornerRadius="10dp" />
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
                     <!-- Shizuku Card -->
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"

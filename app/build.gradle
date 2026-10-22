@@ -10,8 +10,8 @@ android {
         applicationId 'app.cd.mitool'
         minSdk 24
         targetSdk 35
-        versionCode 43
-        versionName '1.0.43'
+        versionCode 44
+        versionName '1.0.44'
         resConfigs "vi", "en"
     }
 

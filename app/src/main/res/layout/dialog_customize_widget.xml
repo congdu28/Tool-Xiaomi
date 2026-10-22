@@ -61,10 +61,19 @@
             android:layout_marginTop="6dp">
 
             <RadioButton
+                android:id="@+id/rb_style_dashboard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="📊 Bảng Điều Khiển Đầy Đủ (4 Ô Chỉ Số) (Mặc định)"
+                android:textColor="@color/text_primary"
+                android:textSize="12sp" />
+
+            <RadioButton
                 android:id="@+id/rb_style_hyperos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="🌟 Chuẩn HyperOS Kính Mờ (Mặc định)"
+                android:text="🌟 Chuẩn HyperOS Kính Mờ"
                 android:textColor="@color/text_primary"
                 android:textSize="12sp" />
 
@@ -73,14 +82,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="⚡ Tối Giản Nhỏ Gọn (Minimalist)"
-                android:textColor="@color/text_primary"
-                android:textSize="12sp" />
-
-            <RadioButton
-                android:id="@+id/rb_style_dashboard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="📊 Bảng Điều Khiển Đầy Đủ (4 Ô Chỉ Số)"
                 android:textColor="@color/text_primary"
                 android:textSize="12sp" />
         </RadioGroup>
