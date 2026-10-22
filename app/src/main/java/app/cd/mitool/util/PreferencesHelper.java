@@ -410,4 +410,15 @@ public class PreferencesHelper {
     public void setAppThemeMode(int mode) {
         prefs.edit().putInt(KEY_APP_THEME_MODE, mode).apply();
     }
+
+    // App Updater state
+    public static final String KEY_LAST_UPDATE_CHECK_TIME = "last_update_check_time";
+
+    public long getLastUpdateCheckTime() {
+        return prefs.getLong(KEY_LAST_UPDATE_CHECK_TIME, 0);
+    }
+
+    public void setLastUpdateCheckTime(long time) {
+        prefs.edit().putLong(KEY_LAST_UPDATE_CHECK_TIME, time).apply();
+    }
 }

@@ -131,7 +131,7 @@
     <string name="shizuku_status_granted">🟢 Shizuku đang chạy &amp; Đã cấp quyền cho Mi Tool</string>
     <string name="shizuku_status_running_no_perm">🟡 Shizuku đang chạy (Chưa cấp quyền cho Mi Tool)</string>
     <string name="shizuku_status_not_running">🔴 Shizuku chưa chạy hoặc chưa cài đặt</string>
-    <string name="btn_shizuku_grant_auto">⚡ 1-Chạm Cấp Quyền WRITE_SECURE_SETTINGS</string>
+    <string name="btn_shizuku_grant_auto">⚡ Cấp Quyền Shizuku Tự Động</string>
     <string name="btn_shizuku_open">🚀 Mở ứng dụng Shizuku</string>
 
     <!-- Custom Battery Alerts -->

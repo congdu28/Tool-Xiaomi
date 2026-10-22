@@ -36,6 +36,7 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,6 +51,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -199,6 +201,8 @@ public class MainActivity extends AppCompatActivity {
     private MaterialButton btnThemeLight;
     private MaterialButton btnThemeDark;
     private TextView tvSettingsCurrentVersion;
+    private TextView tvSettingsUpdateBadge;
+    private TextView tvSettingsLastCheck;
     private MaterialButton btnCheckUpdateNow;
     private View btnPermAutostart;
     private View btnPermBatterySaver;
@@ -441,6 +445,8 @@ public class MainActivity extends AppCompatActivity {
         btnThemeLight = findViewById(R.id.btn_theme_light);
         btnThemeDark = findViewById(R.id.btn_theme_dark);
         tvSettingsCurrentVersion = findViewById(R.id.tv_settings_current_version);
+        tvSettingsUpdateBadge = findViewById(R.id.tv_settings_update_badge);
+        tvSettingsLastCheck = findViewById(R.id.tv_settings_last_check);
         btnCheckUpdateNow = findViewById(R.id.btn_check_update_now);
         btnPermAutostart = findViewById(R.id.btn_perm_autostart);
         btnPermBatterySaver = findViewById(R.id.btn_perm_battery_saver);
@@ -451,9 +457,7 @@ public class MainActivity extends AppCompatActivity {
         btnShizukuGrantAuto = findViewById(R.id.btn_shizuku_grant_auto);
         btnShizukuOpen = findViewById(R.id.btn_shizuku_open);
 
-        if (tvSettingsCurrentVersion != null) {
-            tvSettingsCurrentVersion.setText("Phiên bản đang cài: v" + UpdateHelper.getCurrentVersion(this));
-        }
+        updateSettingsVersionDisplay();
     }
 
     private void setupNavigation() {
@@ -748,11 +752,29 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void configureBottomSheet(BottomSheetDialog bs) {
+        if (bs == null) return;
+        bs.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                BottomSheetDialog d = (BottomSheetDialog) dialog;
+                FrameLayout bottomSheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+                if (bottomSheet != null) {
+                    bottomSheet.setBackgroundResource(android.R.color.transparent);
+                    BottomSheetBehavior<FrameLayout> behavior = BottomSheetBehavior.from(bottomSheet);
+                    behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    behavior.setSkipCollapsed(true);
+                }
+            }
+        });
+    }
+
     // --- BottomSheet 1: Refresh Rate ---
     private void showHzBottomSheet() {
         BottomSheetDialog bs = new BottomSheetDialog(this);
         View view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_hz, null);
         bs.setContentView(view);
+        configureBottomSheet(bs);
 
         TextView tvHz = view.findViewById(R.id.bs_tv_current_hz);
         MaterialButton btnAuto = view.findViewById(R.id.bs_btn_hz_auto);
@@ -950,6 +972,7 @@ public class MainActivity extends AppCompatActivity {
         BottomSheetDialog bs = new BottomSheetDialog(this);
         View view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_game_fps, null);
         bs.setContentView(view);
+        configureBottomSheet(bs);
 
         TextView tvStatus = view.findViewById(R.id.bs_tv_joyose_status);
         MaterialButton btnGame120 = view.findViewById(R.id.bs_btn_game_120_mode);
@@ -1014,6 +1037,7 @@ public class MainActivity extends AppCompatActivity {
         BottomSheetDialog bs = new BottomSheetDialog(this);
         View view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_private_dns, null);
         bs.setContentView(view);
+        configureBottomSheet(bs);
 
         TextView tvStatus = view.findViewById(R.id.bs_tv_private_dns_status);
         MaterialButton btnAdguard = view.findViewById(R.id.bs_btn_dns_adguard);
@@ -1068,6 +1092,7 @@ public class MainActivity extends AppCompatActivity {
         BottomSheetDialog bs = new BottomSheetDialog(this);
         View view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_volte, null);
         bs.setContentView(view);
+        configureBottomSheet(bs);
 
         MaterialButton btnVolte = view.findViewById(R.id.bs_btn_unlock_volte);
         MaterialButton btnVowifi = view.findViewById(R.id.bs_btn_unlock_vowifi);
@@ -1102,6 +1127,7 @@ public class MainActivity extends AppCompatActivity {
         BottomSheetDialog bs = new BottomSheetDialog(this);
         View view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_ram, null);
         bs.setContentView(view);
+        configureBottomSheet(bs);
 
         TextView tvShizukuStatus = view.findViewById(R.id.bs_tv_shizuku_status);
         TextView tvLevelDesc = view.findViewById(R.id.bs_tv_ram_level_desc);
@@ -1221,6 +1247,7 @@ public class MainActivity extends AppCompatActivity {
         BottomSheetDialog bs = new BottomSheetDialog(this);
         View view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_clock, null);
         bs.setContentView(view);
+        configureBottomSheet(bs);
 
         MaterialSwitch swNotif = view.findViewById(R.id.bs_switch_notif_clock);
         MaterialSwitch swFloat = view.findViewById(R.id.bs_switch_floating_clock);
@@ -1315,6 +1342,7 @@ public class MainActivity extends AppCompatActivity {
         BottomSheetDialog bs = new BottomSheetDialog(this);
         View view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_battery_alert, null);
         bs.setContentView(view);
+        configureBottomSheet(bs);
 
         // Voice Alert Views
         MaterialSwitch swVoiceMaster = view.findViewById(R.id.bs_switch_voice_master);
@@ -1491,6 +1519,7 @@ public class MainActivity extends AppCompatActivity {
         BottomSheetDialog bs = new BottomSheetDialog(this);
         View view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_miui_utils, null);
         bs.setContentView(view);
+        configureBottomSheet(bs);
 
         MaterialButton btnDeepClean = view.findViewById(R.id.bs_btn_open_deep_clean);
         MaterialButton btnCit = view.findViewById(R.id.bs_btn_open_cit_test);
@@ -2349,13 +2378,34 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupSettingsControls() {
         setupThemeSelection();
+        updateSettingsVersionDisplay();
 
         if (btnCheckUpdateNow != null) {
             btnCheckUpdateNow.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(MainActivity.this, "Đang kiểm tra bản cập nhật mới từ GitHub...", Toast.LENGTH_SHORT).show();
-                    UpdateHelper.checkForUpdate(MainActivity.this, true);
+                    btnCheckUpdateNow.setEnabled(false);
+                    btnCheckUpdateNow.setText("⏳ Đang kết nối GitHub...");
+                    UpdateHelper.checkForUpdate(MainActivity.this, true, new UpdateHelper.UpdateCheckListener() {
+                        @Override
+                        public void onStart() {
+                        }
+
+                        @Override
+                        public void onFinished(final boolean hasUpdate, final boolean success) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    btnCheckUpdateNow.setEnabled(true);
+                                    btnCheckUpdateNow.setText("⚡ Kiểm tra bản cập nhật mới ngay");
+                                    if (success) {
+                                        prefs.setLastUpdateCheckTime(System.currentTimeMillis());
+                                        updateSettingsVersionDisplay();
+                                    }
+                                }
+                            });
+                        }
+                    });
                 }
             });
         }
@@ -2461,6 +2511,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void updateSettingsVersionDisplay() {
+        if (tvSettingsCurrentVersion != null) {
+            tvSettingsCurrentVersion.setText("v" + UpdateHelper.getCurrentVersion(this));
+        }
+        if (tvSettingsUpdateBadge != null) {
+            tvSettingsUpdateBadge.setText("CHÍNH THỨC");
+            tvSettingsUpdateBadge.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
+        }
+        if (tvSettingsLastCheck != null) {
+            long last = prefs.getLastUpdateCheckTime();
+            if (last > 0) {
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm - dd/MM", java.util.Locale.getDefault());
+                tvSettingsLastCheck.setText(sdf.format(new java.util.Date(last)));
+            } else {
+                tvSettingsLastCheck.setText("Vừa xong");
+            }
+        }
+    }
+
     private void applyAppTheme(int themeMode) {
         int nightMode;
         switch (themeMode) {
@@ -2552,7 +2621,7 @@ public class MainActivity extends AppCompatActivity {
                 tvShizukuBadge.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
             }
             if (btnShizukuGrantAuto != null) {
-                btnShizukuGrantAuto.setText("🟢 Đã Cấp Quyền WRITE_SECURE_SETTINGS");
+                btnShizukuGrantAuto.setText("🟢 Đã Cấp Quyền Secure Settings");
                 btnShizukuGrantAuto.setEnabled(false);
                 btnShizukuGrantAuto.setAlpha(0.6f);
             }
@@ -2564,7 +2633,7 @@ public class MainActivity extends AppCompatActivity {
                 tvShizukuBadge.setTextColor(ContextCompat.getColor(this, R.color.neon_yellow));
             }
             if (btnShizukuGrantAuto != null) {
-                btnShizukuGrantAuto.setText("⚡ Bấm Cấp Quyền Shizuku Cho Mi Tool");
+                btnShizukuGrantAuto.setText("⚡ Cấp Quyền Shizuku Cho Mi Tool");
                 btnShizukuGrantAuto.setEnabled(true);
                 btnShizukuGrantAuto.setAlpha(1.0f);
             }
