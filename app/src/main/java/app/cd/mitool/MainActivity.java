@@ -1214,9 +1214,6 @@ public class MainActivity extends AppCompatActivity {
         MaterialButton btnScaleStandard = view.findViewById(R.id.bs_btn_scale_standard);
         MaterialButton btnScaleLarge = view.findViewById(R.id.bs_btn_scale_large);
 
-        TextView tvOpacityVal = view.findViewById(R.id.bs_tv_hud_opacity_val);
-        SeekBar sbOpacity = view.findViewById(R.id.bs_sb_hud_opacity);
-
         MaterialSwitch swHudFps = view.findViewById(R.id.bs_switch_hud_fps);
         MaterialSwitch swHudTemp = view.findViewById(R.id.bs_switch_hud_temp);
         MaterialSwitch swHudCpu = view.findViewById(R.id.bs_switch_hud_cpu);

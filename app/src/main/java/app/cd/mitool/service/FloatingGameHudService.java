@@ -456,8 +456,6 @@ public class FloatingGameHudService extends Service {
             // 3. Scaling / Size (Scale text sizes, paddings, and widths proportionally)
             int scalePercent = prefs.getGameHudScale();
             float factor = Math.max(0.65f, Math.min(1.6f, scalePercent / 100.0f));
-            DisplayMetrics dm = getResources().getDisplayMetrics();
-            float density = (dm != null) ? dm.density : 2.5f;
 
             // Scale text sizes
             if (tvCompactFps != null) tvCompactFps.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f * factor);
