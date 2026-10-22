@@ -401,12 +401,34 @@ public class FloatingGameHudService extends Service {
     public void applyHudCustomizations() {
         if (hudRootView == null || prefs == null) return;
         try {
-            // 1. Opacity / Transparency
-            int opacityPercent = prefs.getGameHudOpacity();
-            float alpha = Math.max(0.2f, Math.min(1.0f, opacityPercent / 100.0f));
-            hudRootView.setAlpha(alpha);
+            // 1. Background Opacity (Nền HUD độc lập)
+            int bgOpacity = prefs.getGameHudBgOpacity(); // 0 to 100
+            int bgAlpha = Math.max(0, Math.min(255, Math.round(bgOpacity * 2.55f)));
+            int strokeAlpha = Math.max(0, Math.min(255, Math.round(bgOpacity * 1.5f)));
+
+            DisplayMetrics dm = getResources().getDisplayMetrics();
+            float density = (dm != null) ? dm.density : 2.5f;
+
+            android.graphics.drawable.GradientDrawable gd = new android.graphics.drawable.GradientDrawable();
+            gd.setShape(android.graphics.drawable.GradientDrawable.RECTANGLE);
+            gd.setCornerRadius(28 * density);
+            gd.setColor(Color.argb(bgAlpha, 0x1E, 0x1E, 0x26));
+            if (bgOpacity > 5) {
+                gd.setStroke(Math.round(1.5f * density), Color.argb(strokeAlpha, 0x00, 0xE6, 0x76));
+            } else {
+                gd.setStroke(0, Color.TRANSPARENT);
+            }
+            hudRootView.setBackground(gd);
+
+            // 2. Text & Icon Opacity (Chữ và Biểu tượng HUD độc lập)
+            int textOpacity = prefs.getGameHudTextOpacity(); // 30 to 100
+            float textAlpha = Math.max(0.3f, Math.min(1.0f, textOpacity / 100.0f));
+            if (layoutCompact != null) layoutCompact.setAlpha(textAlpha);
+            if (layoutExpanded != null) layoutExpanded.setAlpha(textAlpha);
+
+            hudRootView.setAlpha(1.0f);
             if (params != null) {
-                params.alpha = alpha;
+                params.alpha = 1.0f;
             }
 
             // 2. Metrics visibility

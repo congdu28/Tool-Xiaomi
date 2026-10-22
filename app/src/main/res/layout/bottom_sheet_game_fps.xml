@@ -399,7 +399,7 @@
                         app:cornerRadius="6dp" />
                 </LinearLayout>
 
-                <!-- 2. Độ mờ (Opacity) -->
+                <!-- 2. Độ trong suốt NỀN HUD -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -411,29 +411,154 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Độ đậm / Mờ (Trong suốt):"
+                        android:text="Độ mờ Nền HUD (Capsule):"
                         android:textColor="@color/text_primary"
                         android:textSize="12sp" />
 
                     <TextView
-                        android:id="@+id/bs_tv_hud_opacity_val"
+                        android:id="@+id/bs_tv_hud_bg_opacity_val"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="90%"
+                        android:text="85% (Kính mờ)"
                         android:textColor="@color/neon_cyan"
                         android:textSize="12sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
                 <SeekBar
-                    android:id="@+id/bs_sb_hud_opacity"
+                    android:id="@+id/bs_sb_hud_bg_opacity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:max="100"
+                    android:progress="85"
+                    android:progressTint="@color/neon_cyan"
+                    android:thumbTint="@color/neon_cyan" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/bs_btn_bg_transparent"
+                        android:layout_width="0dp"
+                        android:layout_height="32dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/card_highlight"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:padding="0dp"
+                        android:text="Không nền (0%)"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="10sp"
+                        app:cornerRadius="6dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/bs_btn_bg_glass"
+                        android:layout_width="0dp"
+                        android:layout_height="32dp"
+                        android:layout_marginHorizontal="2dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/card_highlight"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:padding="0dp"
+                        android:text="Kính mờ (50%)"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="10sp"
+                        app:cornerRadius="6dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/bs_btn_bg_dark"
+                        android:layout_width="0dp"
+                        android:layout_height="32dp"
+                        android:layout_marginStart="3dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/card_highlight"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:padding="0dp"
+                        android:text="Đậm (85%)"
+                        android:textColor="@color/neon_cyan"
+                        android:textSize="10sp"
+                        app:cornerRadius="6dp" />
+                </LinearLayout>
+
+                <!-- 3. Độ rõ / mờ CHỮ HUD -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Độ rõ Chữ &amp; Biểu tượng:"
+                        android:textColor="@color/text_primary"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/bs_tv_hud_text_opacity_val"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="100% (Sắc nét)"
+                        android:textColor="@color/mi_orange"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <SeekBar
+                    android:id="@+id/bs_sb_hud_text_opacity"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:max="70"
-                    android:progress="60"
-                    android:progressTint="@color/neon_cyan"
-                    android:thumbTint="@color/neon_cyan" />
+                    android:progress="70"
+                    android:progressTint="@color/mi_orange"
+                    android:thumbTint="@color/mi_orange" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/bs_btn_text_dim"
+                        android:layout_width="0dp"
+                        android:layout_height="32dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/card_highlight"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:padding="0dp"
+                        android:text="Mờ nhẹ (65%)"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="10sp"
+                        app:cornerRadius="6dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/bs_btn_text_bright"
+                        android:layout_width="0dp"
+                        android:layout_height="32dp"
+                        android:layout_marginStart="4dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/card_highlight"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:padding="0dp"
+                        android:text="Rõ nét (100%)"
+                        android:textColor="@color/mi_orange"
+                        android:textSize="10sp"
+                        app:cornerRadius="6dp" />
+                </LinearLayout>
 
                 <!-- 3. Các thông số hiển thị -->
                 <TextView

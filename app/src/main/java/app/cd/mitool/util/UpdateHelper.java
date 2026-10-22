@@ -2,6 +2,7 @@ package app.cd.mitool.util;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,6 +16,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,11 +69,11 @@ public class UpdateHelper {
             }
         } catch (Throwable ignored) {
         }
-        return "1.0.53";
+        return "1.0.54";
     }
 
     public static String getCurrentVersion() {
-        return "1.0.53";
+        return "1.0.54";
     }
 
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -144,7 +146,11 @@ public class UpdateHelper {
                             }
                         }
 
-                        final String finalApkUrl = apkUrl;
+                        String fallbackUrl = apkUrl;
+                        if (fallbackUrl == null || fallbackUrl.isEmpty()) {
+                            fallbackUrl = json.optString("html_url", "https://github.com/congdu28/Tool-Xiaomi/releases/latest");
+                        }
+                        final String finalApkUrl = fallbackUrl;
                         final String currentVersion = getCurrentVersion(context);
                         final boolean isNewer = isVersionNewer(tagName, currentVersion);
 
@@ -162,12 +168,28 @@ public class UpdateHelper {
                                 if (listener != null) {
                                     listener.onFinished(isNewer, true);
                                 }
-                                if (isNewer && finalApkUrl != null) {
+                                if (isNewer) {
                                     // Post System Notification in Android Notification Drawer
-                                    postUpdateAvailableNotification(context, tagName, body, finalApkUrl);
+                                    PreferencesHelper prefs = context != null ? new PreferencesHelper(context) : null;
+                                    long now = System.currentTimeMillis();
+                                    boolean shouldNotify = isManualCheck;
+                                    if (prefs != null) {
+                                        boolean isDifferentVer = !tagName.equals(prefs.getLastNotifiedUpdateVersion());
+                                        boolean isTimeElapsed = (now - prefs.getLastNotifiedUpdateTime() > 12 * 3600 * 1000L);
+                                        if (isDifferentVer || isTimeElapsed) {
+                                            shouldNotify = true;
+                                            prefs.setLastNotifiedUpdateVersion(tagName);
+                                            prefs.setLastNotifiedUpdateTime(now);
+                                        }
+                                    }
+                                    if (shouldNotify) {
+                                        postUpdateAvailableNotification(context, tagName, body, finalApkUrl);
+                                    }
 
                                     // If user is currently looking at the app activity, also show bottom sheet
-                                    showUpdateBottomSheet(context, tagName, body, finalApkUrl);
+                                    if (context instanceof Activity && !((Activity) context).isFinishing()) {
+                                        showUpdateBottomSheet(context, tagName, body, finalApkUrl);
+                                    }
                                 } else if (isManualCheck) {
                                     showUpToDateBottomSheet(context, currentVersion);
                                 }
@@ -605,6 +627,26 @@ public class UpdateHelper {
             context.startActivity(install);
         } catch (Exception e) {
             Toast.makeText(context, "Không thể mở trình cài đặt: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public static void schedulePeriodicCheck(Context context) {
+        if (context == null) return;
+        try {
+            AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            if (am == null) return;
+
+            Intent intent = new Intent(context, app.cd.mitool.receiver.UpdateCheckReceiver.class);
+            int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                flags |= PendingIntent.FLAG_IMMUTABLE;
+            }
+            PendingIntent pi = PendingIntent.getBroadcast(context, 8888, intent, flags);
+
+            long interval = 2 * 60 * 60 * 1000L; // Check every 2 hours
+            long triggerAt = SystemClock.elapsedRealtime() + 15 * 60 * 1000L;
+            am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, triggerAt, interval, pi);
+        } catch (Throwable ignored) {
         }
     }
 }

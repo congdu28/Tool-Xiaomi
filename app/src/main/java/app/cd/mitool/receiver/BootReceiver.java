@@ -54,12 +54,10 @@ public class BootReceiver extends BroadcastReceiver {
             } catch (Exception ignored) {
             }
 
-            // Periodic background check for app update (every 6h)
+            // Periodic background check for app update (every 2h via AlarmManager)
             try {
-                long lastCheck = prefs.getLastUpdateCheckTime();
-                if (System.currentTimeMillis() - lastCheck > 6 * 3600 * 1000L) {
-                    app.cd.mitool.util.UpdateHelper.checkForUpdate(context.getApplicationContext(), false);
-                }
+                app.cd.mitool.util.UpdateHelper.schedulePeriodicCheck(context);
+                app.cd.mitool.util.UpdateHelper.checkForUpdate(context.getApplicationContext(), false);
             } catch (Exception ignored) {
             }
         }

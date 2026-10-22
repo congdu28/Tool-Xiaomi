@@ -327,7 +327,8 @@ public class MainActivity extends AppCompatActivity {
             startNotificationClockService();
         }
 
-        // Auto check for updates from GitHub in background
+        // Auto check for updates from GitHub in background & schedule periodic alarm
+        UpdateHelper.schedulePeriodicCheck(this);
         UpdateHelper.checkForUpdate(this, false);
 
         handleIncomingIntent(getIntent());
@@ -1271,27 +1272,105 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        // 2. Opacity
-        int currentOpacity = prefs.getGameHudOpacity();
-        if (tvOpacityVal != null) {
-            tvOpacityVal.setText(currentOpacity + "%");
+        // 2. Background Opacity (Nền HUD độc lập)
+        TextView tvBgOpacityVal = view.findViewById(R.id.bs_tv_hud_bg_opacity_val);
+        SeekBar sbBgOpacity = view.findViewById(R.id.bs_sb_hud_bg_opacity);
+        MaterialButton btnBgTransparent = view.findViewById(R.id.bs_btn_bg_transparent);
+        MaterialButton btnBgGlass = view.findViewById(R.id.bs_btn_bg_glass);
+        MaterialButton btnBgDark = view.findViewById(R.id.bs_btn_bg_dark);
+
+        int currentBgOpacity = prefs.getGameHudBgOpacity();
+        if (tvBgOpacityVal != null) {
+            String label = currentBgOpacity == 0 ? " (Không nền)" : (currentBgOpacity <= 50 ? " (Kính mờ)" : " (Đậm)");
+            tvBgOpacityVal.setText(currentBgOpacity + "%" + label);
         }
-        if (sbOpacity != null) {
-            sbOpacity.setProgress(Math.max(0, Math.min(70, currentOpacity - 30)));
-            sbOpacity.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        if (sbBgOpacity != null) {
+            sbBgOpacity.setProgress(Math.max(0, Math.min(100, currentBgOpacity)));
+            sbBgOpacity.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    int op = 30 + progress;
-                    if (tvOpacityVal != null) {
-                        tvOpacityVal.setText(op + "%");
+                    if (tvBgOpacityVal != null) {
+                        String label = progress == 0 ? " (Không nền)" : (progress <= 50 ? " (Kính mờ)" : " (Đậm)");
+                        tvBgOpacityVal.setText(progress + "%" + label);
                     }
                     if (fromUser) {
-                        prefs.setGameHudOpacity(op);
+                        prefs.setGameHudBgOpacity(progress);
                         reloadGameHudSettings();
                     }
                 }
                 @Override public void onStartTrackingTouch(SeekBar seekBar) {}
                 @Override public void onStopTrackingTouch(SeekBar seekBar) {}
+            });
+        }
+
+        if (btnBgTransparent != null) {
+            btnBgTransparent.setOnClickListener(v -> {
+                prefs.setGameHudBgOpacity(0);
+                if (sbBgOpacity != null) sbBgOpacity.setProgress(0);
+                if (tvBgOpacityVal != null) tvBgOpacityVal.setText("0% (Không nền)");
+                reloadGameHudSettings();
+            });
+        }
+        if (btnBgGlass != null) {
+            btnBgGlass.setOnClickListener(v -> {
+                prefs.setGameHudBgOpacity(50);
+                if (sbBgOpacity != null) sbBgOpacity.setProgress(50);
+                if (tvBgOpacityVal != null) tvBgOpacityVal.setText("50% (Kính mờ)");
+                reloadGameHudSettings();
+            });
+        }
+        if (btnBgDark != null) {
+            btnBgDark.setOnClickListener(v -> {
+                prefs.setGameHudBgOpacity(85);
+                if (sbBgOpacity != null) sbBgOpacity.setProgress(85);
+                if (tvBgOpacityVal != null) tvBgOpacityVal.setText("85% (Đậm)");
+                reloadGameHudSettings();
+            });
+        }
+
+        // 3. Text / Content Opacity (Chữ & Biểu tượng HUD độc lập)
+        TextView tvTextOpacityVal = view.findViewById(R.id.bs_tv_hud_text_opacity_val);
+        SeekBar sbTextOpacity = view.findViewById(R.id.bs_sb_hud_text_opacity);
+        MaterialButton btnTextDim = view.findViewById(R.id.bs_btn_text_dim);
+        MaterialButton btnTextBright = view.findViewById(R.id.bs_btn_text_bright);
+
+        int currentTextOpacity = prefs.getGameHudTextOpacity();
+        if (tvTextOpacityVal != null) {
+            tvTextOpacityVal.setText(currentTextOpacity + "%" + (currentTextOpacity == 100 ? " (Sắc nét)" : ""));
+        }
+        if (sbTextOpacity != null) {
+            sbTextOpacity.setProgress(Math.max(0, Math.min(70, currentTextOpacity - 30)));
+            sbTextOpacity.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    int op = 30 + progress;
+                    if (tvTextOpacityVal != null) {
+                        tvTextOpacityVal.setText(op + "%" + (op == 100 ? " (Sắc nét)" : ""));
+                    }
+                    if (fromUser) {
+                        prefs.setGameHudTextOpacity(op);
+                        reloadGameHudSettings();
+                    }
+                }
+                @Override public void onStartTrackingTouch(SeekBar seekBar) {}
+                @Override public void onStopTrackingTouch(SeekBar seekBar) {}
+            });
+        }
+
+        if (btnTextDim != null) {
+            btnTextDim.setOnClickListener(v -> {
+                prefs.setGameHudTextOpacity(65);
+                if (sbTextOpacity != null) sbTextOpacity.setProgress(35);
+                if (tvTextOpacityVal != null) tvTextOpacityVal.setText("65% (Mờ nhẹ)");
+                reloadGameHudSettings();
+            });
+        }
+        if (btnTextBright != null) {
+            btnTextBright.setOnClickListener(v -> {
+                prefs.setGameHudTextOpacity(100);
+                if (sbTextOpacity != null) sbTextOpacity.setProgress(70);
+                if (tvTextOpacityVal != null) tvTextOpacityVal.setText("100% (Sắc nét)");
+                reloadGameHudSettings();
             });
         }
 
@@ -3881,6 +3960,10 @@ public class MainActivity extends AppCompatActivity {
         updateShizukuDisplay();
         registerBatteryMonitorReceiver();
         startBatteryRealtimeTicker();
+
+        if (prefs != null && System.currentTimeMillis() - prefs.getLastUpdateCheckTime() > 30 * 60 * 1000L) {
+            UpdateHelper.checkForUpdate(this, false);
+        }
     }
 
     @Override

@@ -544,6 +544,8 @@ public class PreferencesHelper {
 
     public static final String KEY_GAME_HUD_SCALE = "game_hud_scale";
     public static final String KEY_GAME_HUD_OPACITY = "game_hud_opacity";
+    public static final String KEY_GAME_HUD_BG_OPACITY = "game_hud_bg_opacity";
+    public static final String KEY_GAME_HUD_TEXT_OPACITY = "game_hud_text_opacity";
     public static final String KEY_GAME_HUD_SHOW_FPS = "game_hud_show_fps";
     public static final String KEY_GAME_HUD_SHOW_TEMP = "game_hud_show_temp";
     public static final String KEY_GAME_HUD_SHOW_CPU = "game_hud_show_cpu";
@@ -564,6 +566,41 @@ public class PreferencesHelper {
 
     public void setGameHudOpacity(int opacity) {
         prefs.edit().putInt(KEY_GAME_HUD_OPACITY, opacity).apply();
+    }
+
+    public int getGameHudBgOpacity() {
+        return prefs.getInt(KEY_GAME_HUD_BG_OPACITY, 85);
+    }
+
+    public void setGameHudBgOpacity(int opacity) {
+        prefs.edit().putInt(KEY_GAME_HUD_BG_OPACITY, opacity).apply();
+    }
+
+    public int getGameHudTextOpacity() {
+        return prefs.getInt(KEY_GAME_HUD_TEXT_OPACITY, 100);
+    }
+
+    public void setGameHudTextOpacity(int opacity) {
+        prefs.edit().putInt(KEY_GAME_HUD_TEXT_OPACITY, opacity).apply();
+    }
+
+    public static final String KEY_LAST_NOTIFIED_UPDATE_VERSION = "last_notified_update_version";
+    public static final String KEY_LAST_NOTIFIED_UPDATE_TIME = "last_notified_update_time";
+
+    public String getLastNotifiedUpdateVersion() {
+        return prefs.getString(KEY_LAST_NOTIFIED_UPDATE_VERSION, "");
+    }
+
+    public void setLastNotifiedUpdateVersion(String ver) {
+        prefs.edit().putString(KEY_LAST_NOTIFIED_UPDATE_VERSION, ver).apply();
+    }
+
+    public long getLastNotifiedUpdateTime() {
+        return prefs.getLong(KEY_LAST_NOTIFIED_UPDATE_TIME, 0);
+    }
+
+    public void setLastNotifiedUpdateTime(long time) {
+        prefs.edit().putLong(KEY_LAST_NOTIFIED_UPDATE_TIME, time).apply();
     }
 
     public boolean isGameHudShowFps() {

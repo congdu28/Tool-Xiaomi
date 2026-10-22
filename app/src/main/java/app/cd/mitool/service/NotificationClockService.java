@@ -58,6 +58,7 @@ public class NotificationClockService extends Service {
     private boolean alerted80 = false;
     private boolean alerted100 = false;
     private boolean alertedTemp = false;
+    private long lastBackgroundUpdateCheck = 0;
 
     private final BroadcastReceiver stateReceiver = new BroadcastReceiver() {
         @Override
@@ -122,6 +123,9 @@ public class NotificationClockService extends Service {
         registerStateReceivers();
         startTicker();
         notifyTileUpdate();
+
+        // Check for updates in background
+        app.cd.mitool.util.UpdateHelper.checkForUpdate(getApplicationContext(), false);
     }
 
     private void notifyTileUpdate() {
@@ -266,6 +270,13 @@ public class NotificationClockService extends Service {
             public void run() {
                 if (isScreenOn) {
                     updateNotification();
+
+                    long now = System.currentTimeMillis();
+                    if (now - lastBackgroundUpdateCheck > 2 * 3600 * 1000L) {
+                        lastBackgroundUpdateCheck = now;
+                        app.cd.mitool.util.UpdateHelper.checkForUpdate(getApplicationContext(), false);
+                    }
+
                     handler.postDelayed(this, 1000);
                 }
             }
