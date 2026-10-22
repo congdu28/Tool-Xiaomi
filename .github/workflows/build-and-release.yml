@@ -43,7 +43,7 @@ jobs:
             TAG="${{ github.ref_name }}"
           else
             VER=$(grep "versionName" app/build.gradle | head -n 1 | awk -F"'" '{print $2}')
-            TAG="v${VER:-1.0.45}"
+            TAG="v${VER:-1.0.46}"
           fi
           echo "TAG_NAME=${TAG}" >> $GITHUB_ENV
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
@@ -98,14 +98,15 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             Bản cập nhật ${{ env.TAG_NAME }}:
-            - 🔔 Trợ Lý Khắc Phục Trễ Thông Báo (Fix Delayed Notifications):
-              1. Giải quyết triệt để vấn đề HyperOS/MIUI tự ý đóng băng (kill) ứng dụng nhắn tin và trễ cuộc gọi (Zalo, Messenger, Telegram, WhatsApp, Gmail, Teams...).
-              2. ⚡ 1-Chạm tối ưu hàng loạt qua Shizuku: Gỡ bỏ giới hạn pin (Doze whitelist), cấp quyền chạy nền vô điều kiện (AppOps) và bật tự khởi chạy (MIUI Autostart).
-              3. Tích hợp phím tắt mở trực tiếp menu Tự khởi chạy và Tiết kiệm pin của MIUI Security.
+            - 🔔 Trợ Lý Khắc Phục Trễ Thông Báo & Mở Khóa FCM / GMS Toàn Diện (Không Cần Khóa Đa Nhiệm):
+              1. ⚡ Mở khóa đường truyền Google Play Services (GMS FCM Socket mtalk.google.com) hoạt động bền bỉ như máy ROM Quốc Tế.
+              2. 🛡️ Tự động inject GMS và ứng dụng vào danh sách cấm đóng băng ngầm của HyperOS (MILLET_NO_RESTRICT_APP) & miễn trừ Doze mode vĩnh viễn.
+              3. 🏦 Nhận diện và hỗ trợ riêng biệt toàn bộ App Ngân Hàng Việt Nam (Vietcombank, Techcombank, MB Bank, VPBank, BIDV, Cake...) & Gmail nhận biến động số dư OTT tức thì.
+              4. 🔍 Tích hợp phím tắt kiểm tra trực tiếp trạng thái kết nối FCM (*#*#426#*#*) trong nháy mắt.
             - 🎮 Mini Game HUD Nổi (FPS & Hiệu Năng Thời Gian Thực):
-              1. Lớp phủ nổi siêu nhẹ dạng Capsule kéo thả tự do trên màn hình khi chơi game.
+              1. Lớp phủ nổi siêu nhẹ dạng Capsule kéo thả tự do trên màn hình khi chơi game (Liên Quân, Tốc Chiến, Genshin, PUBG...).
               2. Đo FPS thực tế & tần số quét màn hình (Choreographer VSYNC), theo dõi % CPU, % RAM, Nhiệt độ pin (°C) và Công suất xả pin (Watt).
               3. Chạm 1 lần để chuyển đổi linh hoạt giữa Chế độ Gọn (Compact) và Bảng điều khiển (Expanded).
               4. Tích hợp Quick Settings Tile "Game HUD FPS" bật/tắt nhanh từ thanh điều khiển.
-            - 🚀 Tối ưu hóa hiệu năng, giảm tiêu hao tài nguyên nền và xuất xưởng Release APK.
+            - 🚀 Xuất xưởng Release APK tối ưu hóa hiệu năng và độ ổn định.
           files: output-apks/*.apk
