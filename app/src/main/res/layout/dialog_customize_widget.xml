@@ -18,7 +18,7 @@
             android:layout_height="4dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="14dp"
-            android:background="@drawable/bg_slider_thumb" />
+            android:background="@drawable/bg_drag_handle" />
 
         <!-- Header -->
         <TextView
