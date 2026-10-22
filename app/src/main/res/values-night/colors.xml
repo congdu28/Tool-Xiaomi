@@ -5,6 +5,7 @@
     <color name="mi_orange_dark">#E55D00</color>
     <color name="mi_orange_light">#FFF0E6</color>
 
+    <!-- Dark Theme Backgrounds & Surfaces (HyperOS Dark) -->
     <color name="bg_dark">#121214</color>
     <color name="card_dark">#1E1E24</color>
     <color name="card_dark_stroke">#2D2D38</color>

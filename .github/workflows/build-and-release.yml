@@ -45,7 +45,7 @@ jobs:
             TAG="${{ github.ref_name }}"
           else
             VER=$(grep "versionName" app/build.gradle | head -n 1 | awk -F"'" '{print $2}')
-            TAG="v${VER:-1.0.34}"
+            TAG="v${VER:-1.0.35}"
           fi
           echo "TAG_NAME=${TAG}" >> $GITHUB_ENV
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
@@ -109,14 +109,15 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             Bản cập nhật ${{ env.TAG_NAME }}:
-            - ⏱️ Tối Ưu Giám Sát Pin & SOT Màn Hình:
-              1. 💡 Dự đoán thời lượng pin còn lại (Battery Estimator): Tính toán thông minh thời gian On-screen lướt web và thời gian dùng hỗn hợp còn lại dựa trên tốc độ tiêu thụ thực tế (%/giờ).
-              2. 📈 Biểu đồ sụt pin trực quan 24 giờ (Battery Drain History): Đồ thị đường cong Bezier mượt mà, trực quan theo từng mốc giờ, tự động phát hiện và cảnh báo khung giờ tụt pin ngầm (Wakelock).
-              3. 🎨 Widget SOT chuẩn phong cách HyperOS Blur: Giao diện Glassmorphism trong suốt hiện đại, hiển thị đồng thời SOT + % Pin + Nhiệt độ hiện tại + Ước tính thời lượng còn lại.
-            - ⚡ Đo Công Suất Sạc & Kiểm Tra Củ Cáp (Charging Tester):
-              1. Đo công suất sạc thời gian thực (Watt = V x A) cập nhật mỗi giây.
-              2. Tự động nhận diện chuẩn sạc: Mi Turbo Charge (33W - 120W+), Sạc nhanh QC/PD (18W - 27W), Sạc tiêu chuẩn (10W), Sạc chậm.
-              3. Bài kiểm tra chất lượng củ cáp 10 giây: Đánh giá độ ổn định dòng điện, đo dòng nạp cực đại, xếp hạng sao (1 - 5⭐) và đưa ra chẩn đoán cáp chập chờn / suy hao / tiếp xúc kém.
+            - ☀️ Tối Ưu Toàn Diện Giao Diện Sáng & Chuyển Đổi Theme (Light/Dark Mode):
+              1. Khắc phục triệt để lỗi hiển thị khi chuyển sang giao diện sáng: Chữ sắc nét, độ tương phản cao, thẻ bài trắng tinh tế trên nền mát mẻ không bị lóa hay chìm màu.
+              2. Các nút bấm và badge (chip nhãn): Tối ưu viền mảnh HyperOS, text đậm rõ ràng, loại bỏ toàn bộ các nền đen/xám tối bị lẫn màu trong theme sáng.
+              3. Đổi theme mượt mà tức thì: Tự động lưu và giữ nguyên tab hiện tại khi chuyển đổi giữa Sáng / Tối / Hệ thống, không còn bị văng về tab đầu.
+              4. Biểu đồ sụt pin (Battery Drain Chart) tự động nhận diện chế độ Sáng / Tối: Đường lưới và chữ trục thời gian hiển thị sắc nét trên cả hai giao diện.
+            - 🔋 Tinh Chỉnh Bố Cục Pin & Sạc Gọn Gàng, Tinh Tế:
+              1. Sắp xếp lại khối Cảm biến & Công suất sạc theo phong cách HyperOS hiện đại: Bỏ các khoảng cách thừa và đường kẻ divider dày, giúp giao diện gọn gàng, vừa vặn màn hình.
+              2. Bố trí liền mạch: Dung lượng pin định mức, Dung lượng pin thực tế và Chu kỳ sạc được gom thành cụm thông số rõ ràng.
+              3. Hàng nút đôi cân xứng: Tích hợp nút "🔌 Đo củ cáp (10s)" và "ℹ️ Thông tin bí mật CIT" nằm ngang cân đối, mở nhanh Menu CIT phần cứng và Thông tin pin ẩn.
             - 🚀 Xuất xưởng duy nhất 1 bản Release APK chuẩn tối ưu.
           files: |
             output-apks/Mi-Tool-*-Release.apk

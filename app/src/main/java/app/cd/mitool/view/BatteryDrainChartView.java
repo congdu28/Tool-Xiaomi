@@ -1,6 +1,7 @@
 package app.cd.mitool.view;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
@@ -38,6 +39,10 @@ public class BatteryDrainChartView extends View {
     private final Paint tooltipBgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint tooltipTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
+    private int primaryLineColor;
+    private int fillStartColor;
+    private int chargingDotColor;
+
     private final Path curvePath = new Path();
     private final Path fillPath = new Path();
 
@@ -62,37 +67,53 @@ public class BatteryDrainChartView extends View {
         init();
     }
 
+    private void applyThemeColors() {
+        boolean isNight = (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
+        if (isNight) {
+            gridPaint.setColor(Color.parseColor("#22FFFFFF"));
+            textPaint.setColor(Color.parseColor("#9E9EA7"));
+            primaryLineColor = Color.parseColor("#00E5FF");
+            fillStartColor = Color.parseColor("#3800E5FF");
+            chargingDotColor = Color.parseColor("#FFD600");
+            warnPaint.setColor(Color.parseColor("#FF5252"));
+            tooltipBgPaint.setColor(Color.parseColor("#E61E212D"));
+        } else {
+            gridPaint.setColor(Color.parseColor("#E2E8F0"));
+            textPaint.setColor(Color.parseColor("#64748B"));
+            primaryLineColor = Color.parseColor("#0284C7");
+            fillStartColor = Color.parseColor("#260284C7");
+            chargingDotColor = Color.parseColor("#B45309");
+            warnPaint.setColor(Color.parseColor("#DC2626"));
+            tooltipBgPaint.setColor(Color.parseColor("#F00F172A"));
+        }
+        linePaint.setColor(primaryLineColor);
+        dotPaint.setColor(primaryLineColor);
+        tooltipTextPaint.setColor(Color.WHITE);
+    }
+
     private void init() {
         float density = getResources().getDisplayMetrics().density;
 
-        gridPaint.setColor(Color.parseColor("#1FFFFFFF"));
         gridPaint.setStyle(Paint.Style.STROKE);
         gridPaint.setStrokeWidth(density * 1f);
         gridPaint.setPathEffect(new DashPathEffect(new float[]{density * 4f, density * 4f}, 0));
 
-        textPaint.setColor(Color.parseColor("#80FFFFFF"));
         textPaint.setTextSize(density * 9f);
 
-        linePaint.setColor(Color.parseColor("#00E5FF")); // Neon Cyan
         linePaint.setStyle(Paint.Style.STROKE);
         linePaint.setStrokeWidth(density * 2.5f);
         linePaint.setStrokeCap(Paint.Cap.ROUND);
         linePaint.setStrokeJoin(Paint.Join.ROUND);
 
         fillPaint.setStyle(Paint.Style.FILL);
-
         dotPaint.setStyle(Paint.Style.FILL);
-        dotPaint.setColor(Color.parseColor("#00E5FF"));
-
         warnPaint.setStyle(Paint.Style.FILL);
-        warnPaint.setColor(Color.parseColor("#FF5252")); // Neon Red for rapid drain
-
-        tooltipBgPaint.setColor(Color.parseColor("#E61E212D"));
         tooltipBgPaint.setStyle(Paint.Style.FILL);
 
-        tooltipTextPaint.setColor(Color.WHITE);
         tooltipTextPaint.setTextSize(density * 10f);
         tooltipTextPaint.setTextAlign(Paint.Align.CENTER);
+
+        applyThemeColors();
     }
 
     public void setData(List<BatteryHistoryHelper.BatteryPoint> newPoints) {
@@ -107,6 +128,8 @@ public class BatteryDrainChartView extends View {
         int w = getWidth();
         int h = getHeight();
         if (w <= 0 || h <= 0) return;
+
+        applyThemeColors();
 
         float density = getResources().getDisplayMetrics().density;
         float padLeft = density * 34f;
@@ -197,7 +220,7 @@ public class BatteryDrainChartView extends View {
         fillPaint.setShader(new LinearGradient(
                 0, padTop,
                 0, padTop + chartH,
-                Color.parseColor("#4000E5FF"),
+                fillStartColor,
                 Color.TRANSPARENT,
                 Shader.TileMode.CLAMP
         ));
@@ -227,9 +250,9 @@ public class BatteryDrainChartView extends View {
                 canvas.drawCircle(x, y, density * 5f, warnPaint);
                 canvas.drawCircle(x, y, density * 2.5f, dotPaint);
             } else if (p.isCharging) {
-                dotPaint.setColor(Color.parseColor("#FFD600")); // Yellow for charging
+                dotPaint.setColor(chargingDotColor);
                 canvas.drawCircle(x, y, density * 3f, dotPaint);
-                dotPaint.setColor(Color.parseColor("#00E5FF"));
+                dotPaint.setColor(primaryLineColor);
             } else if (i == visiblePoints.size() - 1) {
                 // Latest current point
                 canvas.drawCircle(x, y, density * 4f, dotPaint);

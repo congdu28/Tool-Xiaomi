@@ -275,6 +275,10 @@ public class MainActivity extends AppCompatActivity {
         setupWindowInsets();
         initViews();
         setupNavigation();
+        int activeTabId = savedInstanceState != null ? savedInstanceState.getInt("active_tab_id", R.id.nav_home) : R.id.nav_home;
+        if (bottomNav != null) {
+            bottomNav.setSelectedItemId(activeTabId);
+        }
         setupDeviceSpecs();
         setupToolsCards();
         SotHelper.ensureInitialized(this);
@@ -1834,11 +1838,22 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupBatteryControls() {
         if (btnOpenBatterySecretInfo != null) {
-            btnOpenBatterySecretInfo.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    XiaomiHelper.openHiddenBatteryInfo(MainActivity.this);
-                }
+            btnOpenBatterySecretInfo.setOnClickListener(v -> {
+                String[] options = {
+                    "🛠️ Menu CIT Phần Cứng (*#*#6484#*#*)",
+                    "🔋 Thông Tin Kiểm Tra Pin (*#*#4636#*#*)"
+                };
+                new MaterialAlertDialogBuilder(MainActivity.this)
+                    .setTitle("Thông Tin Bí Mật Pin & CIT")
+                    .setItems(options, (dialog, which) -> {
+                        if (which == 0) {
+                            XiaomiHelper.openCITHardwareTest(MainActivity.this);
+                        } else {
+                            XiaomiHelper.openHiddenBatteryInfo(MainActivity.this);
+                        }
+                    })
+                    .setNegativeButton("Đóng", null)
+                    .show();
             });
         }
 
@@ -1862,12 +1877,20 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (btnDrainFilterUnplug != null && btnDrainFilterToday != null) {
+            btnDrainFilterUnplug.setStrokeWidth(0);
+            btnDrainFilterToday.setStrokeColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.card_dark_stroke)));
+            btnDrainFilterToday.setStrokeWidth(2);
+            btnDrainFilterToday.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
+
             btnDrainFilterUnplug.setOnClickListener(v -> {
                 currentDrainFilter = BatteryUsageHelper.FILTER_SINCE_UNPLUG;
                 btnDrainFilterUnplug.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.mi_orange)));
                 btnDrainFilterUnplug.setTextColor(ContextCompat.getColor(this, R.color.white));
+                btnDrainFilterUnplug.setStrokeWidth(0);
                 btnDrainFilterToday.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.card_highlight)));
-                btnDrainFilterToday.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
+                btnDrainFilterToday.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
+                btnDrainFilterToday.setStrokeColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.card_dark_stroke)));
+                btnDrainFilterToday.setStrokeWidth(2);
                 loadBatteryDrainApps();
             });
 
@@ -1875,8 +1898,11 @@ public class MainActivity extends AppCompatActivity {
                 currentDrainFilter = BatteryUsageHelper.FILTER_TODAY;
                 btnDrainFilterToday.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.mi_orange)));
                 btnDrainFilterToday.setTextColor(ContextCompat.getColor(this, R.color.white));
+                btnDrainFilterToday.setStrokeWidth(0);
                 btnDrainFilterUnplug.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.card_highlight)));
-                btnDrainFilterUnplug.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
+                btnDrainFilterUnplug.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
+                btnDrainFilterUnplug.setStrokeColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.card_dark_stroke)));
+                btnDrainFilterUnplug.setStrokeWidth(2);
                 loadBatteryDrainApps();
             });
         }
@@ -2370,29 +2396,53 @@ public class MainActivity extends AppCompatActivity {
     private void selectTheme(int mode) {
         prefs.setAppThemeMode(mode);
         updateThemeButtonsHighlight(mode);
-        applyAppTheme(mode);
+        int nightMode;
+        switch (mode) {
+            case PreferencesHelper.THEME_MODE_LIGHT:
+                nightMode = AppCompatDelegate.MODE_NIGHT_NO;
+                break;
+            case PreferencesHelper.THEME_MODE_DARK:
+                nightMode = AppCompatDelegate.MODE_NIGHT_YES;
+                break;
+            case PreferencesHelper.THEME_MODE_SYSTEM:
+            default:
+                nightMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+                break;
+        }
+        if (AppCompatDelegate.getDefaultNightMode() != nightMode) {
+            AppCompatDelegate.setDefaultNightMode(nightMode);
+        } else {
+            recreate();
+        }
     }
 
     private void updateThemeButtonsHighlight(int mode) {
         int activeBg = ContextCompat.getColor(this, R.color.mi_orange);
         int inactiveBg = ContextCompat.getColor(this, R.color.card_highlight);
         int activeText = ContextCompat.getColor(this, R.color.white);
-        int inactiveText = ContextCompat.getColor(this, R.color.text_secondary);
+        int inactiveText = ContextCompat.getColor(this, R.color.text_primary);
+        int strokeColor = ContextCompat.getColor(this, R.color.card_dark_stroke);
 
         if (btnThemeSystem != null) {
             boolean isSel = mode == PreferencesHelper.THEME_MODE_SYSTEM;
             btnThemeSystem.setBackgroundTintList(ColorStateList.valueOf(isSel ? activeBg : inactiveBg));
             btnThemeSystem.setTextColor(isSel ? activeText : inactiveText);
+            btnThemeSystem.setStrokeColor(ColorStateList.valueOf(strokeColor));
+            btnThemeSystem.setStrokeWidth(isSel ? 0 : 2);
         }
         if (btnThemeLight != null) {
             boolean isSel = mode == PreferencesHelper.THEME_MODE_LIGHT;
             btnThemeLight.setBackgroundTintList(ColorStateList.valueOf(isSel ? activeBg : inactiveBg));
             btnThemeLight.setTextColor(isSel ? activeText : inactiveText);
+            btnThemeLight.setStrokeColor(ColorStateList.valueOf(strokeColor));
+            btnThemeLight.setStrokeWidth(isSel ? 0 : 2);
         }
         if (btnThemeDark != null) {
             boolean isSel = mode == PreferencesHelper.THEME_MODE_DARK;
             btnThemeDark.setBackgroundTintList(ColorStateList.valueOf(isSel ? activeBg : inactiveBg));
             btnThemeDark.setTextColor(isSel ? activeText : inactiveText);
+            btnThemeDark.setStrokeColor(ColorStateList.valueOf(strokeColor));
+            btnThemeDark.setStrokeWidth(isSel ? 0 : 2);
         }
 
         if (tvThemeCurrentBadge != null) {
@@ -2619,6 +2669,14 @@ public class MainActivity extends AppCompatActivity {
             Shizuku.removeBinderReceivedListener(shizukuBinderReceivedListener);
             Shizuku.removeBinderDeadListener(shizukuBinderDeadListener);
         } catch (Throwable ignored) {
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (bottomNav != null) {
+            outState.putInt("active_tab_id", bottomNav.getSelectedItemId());
         }
     }
 }

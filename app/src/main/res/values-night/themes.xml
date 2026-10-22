@@ -4,8 +4,10 @@
         <item name="colorPrimary">@color/mi_orange</item>
         <item name="colorPrimaryVariant">@color/mi_orange_dark</item>
         <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondaryContainer">@color/card_highlight</item>
+        <item name="colorOnSecondaryContainer">@color/mi_orange</item>
         <item name="android:statusBarColor">@color/bg_dark</item>
-        <item name="android:navigationBarColor">@color/bg_dark</item>
+        <item name="android:navigationBarColor">@color/card_dark</item>
         <item name="android:windowBackground">@color/bg_dark</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
