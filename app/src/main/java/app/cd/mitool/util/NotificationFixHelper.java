@@ -48,6 +48,12 @@ public class NotificationFixHelper {
     private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
 
     public static final List<TargetApp> TARGET_TEMPLATES = Arrays.asList(
+            // Dịch vụ cốt lõi Google (Cực kỳ quan trọng cho Gmail & Push FCM)
+            new TargetApp("com.google.android.gms", "Dịch Vụ Google Play (GMS)", "Cốt lõi Push & Tài khoản"),
+            new TargetApp("com.google.android.gsf", "Khung Dịch Vụ Google (GSF)", "Hạ tầng Google"),
+            new TargetApp("com.google.android.gm", "Gmail", "Thư điện tử Google"),
+
+            // Ứng dụng Nhắn tin & Công việc
             new TargetApp("com.zing.zalo", "Zalo", "Nhắn tin & Gọi"),
             new TargetApp("com.facebook.orca", "Messenger", "Facebook Chat"),
             new TargetApp("com.facebook.mlite", "Messenger Lite", "Facebook Chat"),
@@ -55,13 +61,27 @@ public class NotificationFixHelper {
             new TargetApp("org.telegram.plus", "Telegram Plus", "Nhắn tin"),
             new TargetApp("com.whatsapp", "WhatsApp", "Nhắn tin quốc tế"),
             new TargetApp("com.whatsapp.w4b", "WhatsApp Business", "Kinh doanh"),
-            new TargetApp("com.google.android.gm", "Gmail", "Thư điện tử"),
             new TargetApp("com.microsoft.office.outlook", "Microsoft Outlook", "Email & Lịch"),
             new TargetApp("com.microsoft.teams", "Microsoft Teams", "Công việc"),
             new TargetApp("com.viber.voip", "Viber", "Nhắn tin"),
             new TargetApp("com.skype.raider", "Skype", "Công việc"),
             new TargetApp("com.discord", "Discord", "Cộng đồng & Chat"),
             new TargetApp("jp.naver.line.android", "LINE", "Nhắn tin"),
+
+            // Ngân hàng & Biến động số dư OTT (Chống trễ tiền về)
+            new TargetApp("com.VCB", "Vietcombank Digibank", "Ngân hàng"),
+            new TargetApp("vn.com.techcombank.bb.app", "Techcombank Mobile", "Ngân hàng"),
+            new TargetApp("com.mbmobile", "MB Bank", "Ngân hàng"),
+            new TargetApp("com.vnpay.vpbankonline", "VPBank NEO", "Ngân hàng"),
+            new TargetApp("com.vietinbank.ipay", "VietinBank iPay", "Ngân hàng"),
+            new TargetApp("com.vnpay.bidv", "BIDV SmartBanking", "Ngân hàng"),
+            new TargetApp("com.tpb.mb.gprsandroid", "TPBank Mobile", "Ngân hàng"),
+            new TargetApp("mobile.acb.com.vn", "ACB ONE", "Ngân hàng"),
+            new TargetApp("xyz.be.cake", "Cake by VPBank", "Ngân hàng số"),
+            new TargetApp("com.mservice.momopay", "Ví MoMo", "Ví điện tử"),
+            new TargetApp("vn.com.vng.zalopay", "ZaloPay", "Ví điện tử"),
+
+            // Mạng xã hội & Mua sắm
             new TargetApp("com.instagram.android", "Instagram", "Mạng xã hội"),
             new TargetApp("com.zhiliaoapp.musically", "TikTok", "Mạng xã hội"),
             new TargetApp("com.ss.android.ugc.trill", "TikTok (Quốc tế)", "Mạng xã hội"),
@@ -141,6 +161,8 @@ public class NotificationFixHelper {
                 cmd.append("cmd appops set ").append(pkg).append(" AUTO_START allow ; ");
                 cmd.append("cmd appops set ").append(pkg).append(" BOOT_COMPLETED allow ; ");
                 cmd.append("cmd appops set ").append(pkg).append(" START_FOREGROUND allow ; ");
+                cmd.append("cmd appops set ").append(pkg).append(" POST_NOTIFICATION allow ; ");
+                cmd.append("cmd appops set ").append(pkg).append(" WAKE_LOCK allow ; ");
                 // 4. Force Active Standby Bucket
                 cmd.append("am set-standby-bucket ").append(pkg).append(" active");
 
@@ -179,6 +201,8 @@ public class NotificationFixHelper {
             cmd.append("cmd appops set ").append(packageName).append(" AUTO_START allow ; ");
             cmd.append("cmd appops set ").append(packageName).append(" BOOT_COMPLETED allow ; ");
             cmd.append("cmd appops set ").append(packageName).append(" START_FOREGROUND allow ; ");
+            cmd.append("cmd appops set ").append(packageName).append(" POST_NOTIFICATION allow ; ");
+            cmd.append("cmd appops set ").append(packageName).append(" WAKE_LOCK allow ; ");
             cmd.append("am set-standby-bucket ").append(packageName).append(" active");
 
             ShizukuHelper.ShellResult result = ShizukuHelper.executeCommand(cmd.toString());

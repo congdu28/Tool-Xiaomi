@@ -216,7 +216,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:lineSpacingExtra="3dp"
-                android:text="1. Mở màn hình Đa nhiệm (Recent Apps).\n2. Nhấn giữ hoặc vuốt ứng dụng (Zalo, Messenger...).\n3. Bấm vào biểu tượng Ổ khóa 🔒 để cố định ứng dụng.\nSau bước này, HyperOS sẽ không bao giờ tắt ứng dụng khi bấm nút dọn RAM!"
+                android:text="1. Tối ưu Dịch vụ Google Play (GMS) trong danh sách trên để giữ kết nối FCM liên tục cho Gmail &amp; App Ngân hàng.\n2. Mở màn hình Đa nhiệm (Recent Apps) -> Nhấn giữ ứng dụng và chọn biểu tượng Ổ khóa 🔒 để chống bị dọn RAM.\n3. Vào Thông tin ứng dụng -> Thông báo -> Bật 'Thông báo nổi' và 'Màn hình khóa' để chuông và banner luôn hiển thị."
                 android:textColor="@color/text_secondary"
                 android:textSize="12sp" />
         </LinearLayout>
