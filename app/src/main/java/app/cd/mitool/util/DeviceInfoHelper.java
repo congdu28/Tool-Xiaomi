@@ -28,7 +28,10 @@ public class DeviceInfoHelper {
 
     static {
         // Qualcomm Snapdragon flagship & premium
-        SOC_MAP.put("SM8750", "Snapdragon 8 Elite");
+        SOC_MAP.put("SM8850", "Snapdragon 8 Elite (Gen 4/5)");
+        SOC_MAP.put("SM8850-AB", "Snapdragon 8 Elite");
+        SOC_MAP.put("SM8750", "Snapdragon 8 Elite (Gen 4)");
+        SOC_MAP.put("SM8750-AB", "Snapdragon 8 Elite");
         SOC_MAP.put("SM8650", "Snapdragon 8 Gen 3");
         SOC_MAP.put("SM8550", "Snapdragon 8 Gen 2");
         SOC_MAP.put("SM8475", "Snapdragon 8+ Gen 1");

@@ -175,16 +175,18 @@
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
                                 <TextView
-                                    android:layout_width="0dp"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
+                                    android:paddingEnd="12dp"
                                     android:text="Tên máy (Model):"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                                 <TextView
                                     android:id="@+id/tv_spec_model"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="end"
                                     android:text="Xiaomi 13 Pro"
                                     android:textColor="@color/text_primary"
                                     android:textSize="12sp"
@@ -199,16 +201,18 @@
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
                                 <TextView
-                                    android:layout_width="0dp"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
+                                    android:paddingEnd="12dp"
                                     android:text="Tên mã (Codename):"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                                 <TextView
                                     android:id="@+id/tv_spec_codename"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="end"
                                     android:fontFamily="monospace"
                                     android:text="nuwa"
                                     android:textColor="@color/neon_yellow"
@@ -223,16 +227,18 @@
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
                                 <TextView
-                                    android:layout_width="0dp"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
+                                    android:paddingEnd="12dp"
                                     android:text="Nhà sản xuất:"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                                 <TextView
                                     android:id="@+id/tv_spec_brand"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="end"
                                     android:text="Xiaomi Communications"
                                     android:textColor="@color/text_primary"
                                     android:textSize="12sp" />
@@ -246,16 +252,18 @@
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
                                 <TextView
-                                    android:layout_width="0dp"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
+                                    android:paddingEnd="12dp"
                                     android:text="Hệ điều hành:"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                                 <TextView
                                     android:id="@+id/tv_spec_os"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="end"
                                     android:text="Xiaomi HyperOS 1.0"
                                     android:textColor="@color/text_primary"
                                     android:textSize="12sp"
@@ -270,16 +278,18 @@
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
                                 <TextView
-                                    android:layout_width="0dp"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
+                                    android:paddingEnd="12dp"
                                     android:text="Phiên bản Android:"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                                 <TextView
                                     android:id="@+id/tv_spec_android"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="end"
                                     android:text="Android 14 (API 34)"
                                     android:textColor="@color/neon_green"
                                     android:textSize="12sp" />
@@ -293,16 +303,18 @@
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
                                 <TextView
-                                    android:layout_width="0dp"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
+                                    android:paddingEnd="12dp"
                                     android:text="Bản vá bảo mật:"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                                 <TextView
                                     android:id="@+id/tv_spec_security"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="end"
                                     android:text="2024-05-01"
                                     android:textColor="@color/text_primary"
                                     android:textSize="12sp" />
@@ -348,16 +360,18 @@
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
                                 <TextView
-                                    android:layout_width="0dp"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
+                                    android:paddingEnd="12dp"
                                     android:text="Vi xử lý (SoC):"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                                 <TextView
                                     android:id="@+id/tv_spec_cpu_model"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="end"
                                     android:text="Snapdragon 8 Gen 2"
                                     android:textColor="@color/text_primary"
                                     android:textSize="12sp"
@@ -372,16 +386,18 @@
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
                                 <TextView
-                                    android:layout_width="0dp"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
+                                    android:paddingEnd="12dp"
                                     android:text="Số nhân &amp; Xung nhịp:"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                                 <TextView
                                     android:id="@+id/tv_spec_cpu_cores"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="end"
                                     android:text="8 Nhân • Tối đa 3.20 GHz"
                                     android:textColor="@color/neon_green"
                                     android:textSize="12sp"
@@ -396,16 +412,18 @@
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
                                 <TextView
-                                    android:layout_width="0dp"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
+                                    android:paddingEnd="12dp"
                                     android:text="Kiến trúc tập lệnh:"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                                 <TextView
                                     android:id="@+id/tv_spec_cpu_arch"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="end"
                                     android:fontFamily="monospace"
                                     android:text="arm64-v8a (64-bit)"
                                     android:textColor="@color/neon_cyan"
@@ -452,16 +470,18 @@
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
                                 <TextView
-                                    android:layout_width="0dp"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
+                                    android:paddingEnd="12dp"
                                     android:text="Kích thước &amp; Tỉ lệ:"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                                 <TextView
                                     android:id="@+id/tv_spec_display_size"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="end"
                                     android:text="6.67 inch • Tỉ lệ 20:9"
                                     android:textColor="@color/text_primary"
                                     android:textSize="12sp"
@@ -476,16 +496,18 @@
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
                                 <TextView
-                                    android:layout_width="0dp"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
+                                    android:paddingEnd="12dp"
                                     android:text="Độ phân giải chuẩn:"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                                 <TextView
                                     android:id="@+id/tv_spec_display_res"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="end"
                                     android:fontFamily="monospace"
                                     android:text="1440 x 3200 (WQHD+)"
                                     android:textColor="@color/text_primary"
@@ -500,16 +522,18 @@
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
                                 <TextView
-                                    android:layout_width="0dp"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
+                                    android:paddingEnd="12dp"
                                     android:text="Tần số quét màn hình:"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                                 <TextView
                                     android:id="@+id/tv_spec_display_hz"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="end"
                                     android:text="120 Hz"
                                     android:textColor="@color/neon_cyan"
                                     android:textSize="13sp"
@@ -524,42 +548,46 @@
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
                                 <TextView
-                                    android:layout_width="0dp"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
+                                    android:paddingEnd="12dp"
                                     android:text="Mật độ điểm ảnh:"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                                 <TextView
                                     android:id="@+id/tv_spec_display_dpi"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="end"
                                     android:text="526 DPI (Siêu nét)"
                                     android:textColor="@color/text_primary"
                                     android:textSize="12sp" />
                             </LinearLayout>
 
-                            <!-- Row: Technology -->
+                            <!-- Row: Technology (Dedicated Card Box) -->
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
+                                android:layout_marginTop="8dp"
+                                android:background="@drawable/bg_card_rounded"
+                                android:orientation="vertical"
+                                android:padding="10dp">
                                 <TextView
-                                    android:layout_width="0dp"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Công nghệ hiển thị:"
+                                    android:text="🎨 Công nghệ tấm nền &amp; Chuẩn màu:"
                                     android:textColor="@color/text_secondary"
-                                    android:textSize="12sp" />
+                                    android:textSize="11sp" />
                                 <TextView
                                     android:id="@+id/tv_spec_display_tech"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="AMOLED (HDR10+ / Dolby Vision)"
+                                    android:layout_marginTop="4dp"
+                                    android:text="AMOLED / OLED (Hỗ trợ HDR10+, Dolby Vision)"
                                     android:textColor="@color/neon_yellow"
-                                    android:textSize="12sp" />
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
                             </LinearLayout>
 
                         </LinearLayout>
@@ -595,109 +623,145 @@
                                 android:layout_marginBottom="10dp"
                                 android:background="@color/card_dark_stroke" />
 
-                            <!-- Physical RAM -->
+                            <!-- Block 1: Physical RAM -->
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
-                                <TextView
-                                    android:layout_width="0dp"
+                                android:background="@drawable/bg_card_rounded"
+                                android:orientation="vertical"
+                                android:padding="10dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="RAM vật lý:"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="12sp" />
-                                <TextView
-                                    android:id="@+id/tv_spec_ram_text"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="monospace"
-                                    android:text="6.2 GB / 12.0 GB (52%)"
-                                    android:textColor="@color/neon_green"
-                                    android:textSize="12sp"
-                                    android:textStyle="bold" />
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="⚡ RAM Vật Lý"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="12sp"
+                                        android:textStyle="bold" />
+                                    <TextView
+                                        android:id="@+id/tv_spec_ram_text"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="monospace"
+                                        android:text="6.2 GB / 12.0 GB (52%)"
+                                        android:textColor="@color/neon_green"
+                                        android:textSize="12sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <ProgressBar
+                                    android:id="@+id/pb_spec_ram"
+                                    style="?android:attr/progressBarStyleHorizontal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="6dp"
+                                    android:layout_marginTop="6dp"
+                                    android:max="100"
+                                    android:progress="52"
+                                    android:progressTint="@color/neon_green" />
                             </LinearLayout>
 
-                            <ProgressBar
-                                android:id="@+id/pb_spec_ram"
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:layout_width="match_parent"
-                                android:layout_height="6dp"
-                                android:layout_marginTop="6dp"
-                                android:max="100"
-                                android:progress="52"
-                                android:progressTint="@color/neon_green" />
-
-                            <!-- ZRAM / Memory Extension -->
+                            <!-- Block 2: ZRAM / Memory Extension -->
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="10dp"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
-                                <TextView
-                                    android:layout_width="0dp"
+                                android:layout_marginTop="8dp"
+                                android:background="@drawable/bg_card_rounded"
+                                android:orientation="vertical"
+                                android:padding="10dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="ZRAM (Mở rộng RAM HyperOS):"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="12sp" />
-                                <TextView
-                                    android:id="@+id/tv_spec_zram_text"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="monospace"
-                                    android:text="1.8 GB / 6.0 GB (30%)"
-                                    android:textColor="@color/neon_yellow"
-                                    android:textSize="12sp"
-                                    android:textStyle="bold" />
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="🚀 Mở Rộng RAM HyperOS (ZRAM)"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="12sp"
+                                        android:textStyle="bold" />
+                                    <TextView
+                                        android:id="@+id/tv_spec_zram_text"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="monospace"
+                                        android:text="1.8 GB / 6.0 GB (30%)"
+                                        android:textColor="@color/neon_yellow"
+                                        android:textSize="12sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <ProgressBar
+                                    android:id="@+id/pb_spec_zram"
+                                    style="?android:attr/progressBarStyleHorizontal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="6dp"
+                                    android:layout_marginTop="6dp"
+                                    android:max="100"
+                                    android:progress="30"
+                                    android:progressTint="@color/neon_yellow" />
                             </LinearLayout>
 
-                            <ProgressBar
-                                android:id="@+id/pb_spec_zram"
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:layout_width="match_parent"
-                                android:layout_height="6dp"
-                                android:layout_marginTop="6dp"
-                                android:max="100"
-                                android:progress="30"
-                                android:progressTint="@color/neon_yellow" />
-
-                            <!-- Storage -->
+                            <!-- Block 3: Internal Storage (ROM) -->
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="10dp"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
-                                <TextView
-                                    android:layout_width="0dp"
+                                android:layout_marginTop="8dp"
+                                android:background="@drawable/bg_card_rounded"
+                                android:orientation="vertical"
+                                android:padding="10dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Bộ nhớ trong (ROM):"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="12sp" />
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="📁 Bộ Nhớ Trong (ROM)"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="12sp"
+                                        android:textStyle="bold" />
+                                    <TextView
+                                        android:id="@+id/tv_spec_storage_text"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="monospace"
+                                        android:text="87.6 GB / 475.4 GB"
+                                        android:textColor="@color/neon_cyan"
+                                        android:textSize="12sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
                                 <TextView
-                                    android:id="@+id/tv_spec_storage_text"
+                                    android:id="@+id/tv_spec_storage_sub"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:fontFamily="monospace"
-                                    android:text="112 GB / 256 GB (44%)"
-                                    android:textColor="@color/neon_cyan"
-                                    android:textSize="12sp"
-                                    android:textStyle="bold" />
-                            </LinearLayout>
+                                    android:layout_marginTop="2dp"
+                                    android:text="Còn trống: 387.8 GB • Đã dùng 18%"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="11sp" />
 
-                            <ProgressBar
-                                android:id="@+id/pb_spec_storage"
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:layout_width="match_parent"
-                                android:layout_height="6dp"
-                                android:layout_marginTop="6dp"
-                                android:max="100"
-                                android:progress="44"
-                                android:progressTint="@color/neon_cyan" />
+                                <ProgressBar
+                                    android:id="@+id/pb_spec_storage"
+                                    style="?android:attr/progressBarStyleHorizontal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="6dp"
+                                    android:layout_marginTop="6dp"
+                                    android:max="100"
+                                    android:progress="18"
+                                    android:progressTint="@color/neon_cyan" />
+                            </LinearLayout>
 
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
@@ -739,16 +803,18 @@
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
                                 <TextView
-                                    android:layout_width="0dp"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
+                                    android:paddingEnd="12dp"
                                     android:text="Mức pin hiện tại:"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                                 <TextView
                                     android:id="@+id/tv_spec_battery_percent"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="end"
                                     android:text="82% (Đang dùng pin)"
                                     android:textColor="@color/neon_green"
                                     android:textSize="13sp"
@@ -763,18 +829,20 @@
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
                                 <TextView
-                                    android:layout_width="0dp"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Dung lượng pin (Định mức / Thực tế):"
+                                    android:paddingEnd="12dp"
+                                    android:text="Dung lượng pin (Chuẩn / Thực):"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                                 <TextView
                                     android:id="@+id/tv_spec_battery_capacity"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="end"
                                     android:fontFamily="monospace"
-                                    android:text="5000 mAh / 4850 mAh"
+                                    android:text="6800 mAh / 6603 mAh"
                                     android:textColor="@color/text_primary"
                                     android:textSize="12sp"
                                     android:textStyle="bold" />
@@ -788,16 +856,18 @@
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
                                 <TextView
-                                    android:layout_width="0dp"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Chu kỳ sạc (Charge Cycles):"
+                                    android:paddingEnd="12dp"
+                                    android:text="Chu kỳ sạc (Cycles):"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                                 <TextView
                                     android:id="@+id/tv_spec_battery_cycles"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="end"
                                     android:text="158 Chu kỳ"
                                     android:textColor="@color/neon_yellow"
                                     android:textSize="12sp"
@@ -812,18 +882,21 @@
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
                                 <TextView
-                                    android:layout_width="0dp"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
+                                    android:paddingEnd="12dp"
                                     android:text="Nhiệt độ &amp; Điện áp:"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                                 <TextView
                                     android:id="@+id/tv_spec_battery_temp_voltage"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="end"
+                                    android:fontFamily="monospace"
                                     android:text="32.0 °C • 4.15 V"
-                                    android:textColor="@color/text_primary"
+                                    android:textColor="@color/neon_cyan"
                                     android:textSize="12sp" />
                             </LinearLayout>
 
@@ -835,18 +908,20 @@
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
                                 <TextView
-                                    android:layout_width="0dp"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
+                                    android:paddingEnd="12dp"
                                     android:text="Tình trạng sức khỏe:"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp" />
                                 <TextView
                                     android:id="@+id/tv_spec_battery_health"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="end"
                                     android:text="Tuyệt vời (97%)"
-                                    android:textColor="@color/neon_cyan"
+                                    android:textColor="@color/neon_green"
                                     android:textSize="12sp" />
                             </LinearLayout>
 
@@ -945,7 +1020,7 @@
                             android:paddingRight="2dp"
                             android:maxLines="1"
                             android:ellipsize="end"
-                            android:text="🛡️ AdGuard DNS"
+                            android:text="🛡️ Private DNS"
                             android:textColor="@color/neon_cyan"
                             android:textSize="12sp"
                             app:cornerRadius="8dp" />
@@ -1765,6 +1840,8 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
+                                    android:minHeight="54dp"
+                                    android:gravity="center"
                                     android:background="@drawable/bg_card_rounded"
                                     android:orientation="vertical"
                                     android:padding="8dp">
@@ -1772,7 +1849,10 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="Điện áp"
+                                        android:singleLine="true"
+                                        android:ellipsize="end"
+                                        android:gravity="center"
+                                        android:text="⚡ Điện áp"
                                         android:textColor="@color/text_secondary"
                                         android:textSize="11sp" />
 
@@ -1782,6 +1862,8 @@
                                         android:layout_height="wrap_content"
                                         android:layout_marginTop="2dp"
                                         android:fontFamily="monospace"
+                                        android:singleLine="true"
+                                        android:gravity="center"
                                         android:text="-- V"
                                         android:textColor="@color/neon_cyan"
                                         android:textSize="13sp"
@@ -1797,6 +1879,8 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
+                                    android:minHeight="54dp"
+                                    android:gravity="center"
                                     android:background="@drawable/bg_card_rounded"
                                     android:orientation="vertical"
                                     android:padding="8dp">
@@ -1805,7 +1889,10 @@
                                         android:id="@+id/tv_charging_current_label"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="Dòng nạp"
+                                        android:singleLine="true"
+                                        android:ellipsize="end"
+                                        android:gravity="center"
+                                        android:text="🔌 Dòng sạc"
                                         android:textColor="@color/text_secondary"
                                         android:textSize="11sp" />
 
@@ -1815,6 +1902,8 @@
                                         android:layout_height="wrap_content"
                                         android:layout_marginTop="2dp"
                                         android:fontFamily="monospace"
+                                        android:singleLine="true"
+                                        android:gravity="center"
                                         android:text="-- mA"
                                         android:textColor="@color/neon_green"
                                         android:textSize="13sp"
@@ -1830,6 +1919,8 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
+                                    android:minHeight="54dp"
+                                    android:gravity="center"
                                     android:background="@drawable/bg_card_rounded"
                                     android:orientation="vertical"
                                     android:padding="8dp">
@@ -1837,7 +1928,10 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="Nhiệt độ"
+                                        android:singleLine="true"
+                                        android:ellipsize="end"
+                                        android:gravity="center"
+                                        android:text="🌡️ Nhiệt độ"
                                         android:textColor="@color/text_secondary"
                                         android:textSize="11sp" />
 
@@ -1847,6 +1941,8 @@
                                         android:layout_height="wrap_content"
                                         android:layout_marginTop="2dp"
                                         android:fontFamily="monospace"
+                                        android:singleLine="true"
+                                        android:gravity="center"
                                         android:text="-- °C"
                                         android:textColor="@color/neon_yellow"
                                         android:textSize="13sp"

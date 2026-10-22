@@ -125,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvSpecZramText;
     private ProgressBar pbSpecZram;
     private TextView tvSpecStorageText;
+    private TextView tvSpecStorageSub;
     private ProgressBar pbSpecStorage;
     private TextView tvSpecBatteryPercent;
     private TextView tvSpecBatteryCapacity;
@@ -376,6 +377,7 @@ public class MainActivity extends AppCompatActivity {
         tvSpecZramText = findViewById(R.id.tv_spec_zram_text);
         pbSpecZram = findViewById(R.id.pb_spec_zram);
         tvSpecStorageText = findViewById(R.id.tv_spec_storage_text);
+        tvSpecStorageSub = findViewById(R.id.tv_spec_storage_sub);
         pbSpecStorage = findViewById(R.id.pb_spec_storage);
         tvSpecBatteryPercent = findViewById(R.id.tv_spec_battery_percent);
         tvSpecBatteryCapacity = findViewById(R.id.tv_spec_battery_capacity);
@@ -555,13 +557,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (btnQuickDns != null) {
-            btnQuickDns.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    applyPrivateDns(PrivateDnsHelper.MODE_HOSTNAME, PrivateDnsHelper.DNS_ADGUARD, "AdGuard DNS");
-                    updateToolsCardSummaries();
-                }
-            });
+            btnQuickDns.setOnClickListener(v -> showPrivateDnsBottomSheet());
         }
 
         if (btnQuickDebloat != null) {
@@ -647,7 +643,10 @@ public class MainActivity extends AppCompatActivity {
 
         // ROM Storage
         DeviceInfoHelper.MemoryStats rom = DeviceInfoHelper.getInternalStorageStats();
-        tvSpecStorageText.setText(String.format(Locale.getDefault(), "%.1f GB / %.1f GB (Trống %.1f GB - %d%%)", rom.usedGb, rom.totalGb, rom.freeGb, rom.percentUsed));
+        tvSpecStorageText.setText(String.format(Locale.getDefault(), "%.1f GB / %.1f GB", rom.usedGb, rom.totalGb));
+        if (tvSpecStorageSub != null) {
+            tvSpecStorageSub.setText(String.format(Locale.getDefault(), "Còn trống: %.1f GB • Đã dùng %d%%", rom.freeGb, rom.percentUsed));
+        }
         pbSpecStorage.setProgress(rom.percentUsed);
 
         // Battery Overview
@@ -657,7 +656,7 @@ public class MainActivity extends AppCompatActivity {
         tvSpecBatteryPercent.setText(bInfo.level + "% (" + (bInfo.isCharging ? bInfo.plugTypeName : "Đang dùng pin") + ")");
 
         if (tvSpecBatteryCapacity != null) {
-            tvSpecBatteryCapacity.setText(String.format(Locale.getDefault(), "%d mAh / %d mAh", bCap.designMah, bCap.actualMah));
+            tvSpecBatteryCapacity.setText(String.format(Locale.getDefault(), "%d mAh / %d mAh (%d%%)", bCap.designMah, bCap.actualMah, bCap.healthPercent));
         }
 
         if (tvSpecBatteryCycles != null) {
@@ -744,9 +743,19 @@ public class MainActivity extends AppCompatActivity {
             String spec = PrivateDnsHelper.getCurrentDnsSpecifier(this);
             if (PrivateDnsHelper.MODE_HOSTNAME.equalsIgnoreCase(mode) && !spec.isEmpty()) {
                 String label = spec;
-                if (PrivateDnsHelper.DNS_ADGUARD.equalsIgnoreCase(spec)) label = "AdGuard DNS (Chặn QC)";
-                else if (PrivateDnsHelper.DNS_CLOUDFLARE_FAMILY.equalsIgnoreCase(spec)) label = "Cloudflare Family";
-                else if (PrivateDnsHelper.DNS_CLOUDFLARE.equalsIgnoreCase(spec)) label = "Cloudflare 1.1.1.1";
+                if (PrivateDnsHelper.DNS_ADGUARD.equalsIgnoreCase(spec) || PrivateDnsHelper.DNS_ADGUARD_ALT.equalsIgnoreCase(spec)) {
+                    label = "AdGuard DNS (Chặn QC)";
+                } else if (PrivateDnsHelper.DNS_CLOUDFLARE_FAMILY.equalsIgnoreCase(spec)) {
+                    label = "Cloudflare Family (Chặn 18+)";
+                } else if (PrivateDnsHelper.DNS_CLOUDFLARE.equalsIgnoreCase(spec) || PrivateDnsHelper.DNS_CLOUDFLARE_ALT.equalsIgnoreCase(spec)) {
+                    label = "Cloudflare 1.1.1.1 (Tăng tốc)";
+                } else if (PrivateDnsHelper.DNS_CLOUDFLARE_SECURITY.equalsIgnoreCase(spec)) {
+                    label = "Cloudflare Security (Chặn độc)";
+                } else if (PrivateDnsHelper.DNS_GOOGLE.equalsIgnoreCase(spec)) {
+                    label = "Google DNS (Ổn định)";
+                } else if (PrivateDnsHelper.DNS_QUAD9.equalsIgnoreCase(spec)) {
+                    label = "Quad9 DNS (Bảo mật)";
+                }
                 tvToolPrivateDnsSub.setText("Đang bật: " + label);
                 tvToolPrivateDnsSub.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
             } else if (PrivateDnsHelper.MODE_OFF.equalsIgnoreCase(mode)) {
@@ -1092,6 +1101,8 @@ public class MainActivity extends AppCompatActivity {
         MaterialButton btnFamily = view.findViewById(R.id.bs_btn_dns_cloudflare_family);
         MaterialButton btnCf = view.findViewById(R.id.bs_btn_dns_cloudflare);
         MaterialButton btnGoogle = view.findViewById(R.id.bs_btn_dns_google);
+        MaterialButton btnQuad9 = view.findViewById(R.id.bs_btn_dns_quad9);
+        MaterialButton btnCustom = view.findViewById(R.id.bs_btn_dns_custom);
         MaterialButton btnAuto = view.findViewById(R.id.bs_btn_dns_auto);
         MaterialButton btnOff = view.findViewById(R.id.bs_btn_dns_off);
         MaterialButton btnOpenSettings = view.findViewById(R.id.bs_btn_open_dns_settings);
@@ -1128,6 +1139,17 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
+        if (btnQuad9 != null) {
+            btnQuad9.setOnClickListener(v -> {
+                applyPrivateDns(PrivateDnsHelper.MODE_HOSTNAME, PrivateDnsHelper.DNS_QUAD9, "Quad9 DNS (Bảo mật)");
+                bs.dismiss();
+            });
+        }
+
+        if (btnCustom != null) {
+            btnCustom.setOnClickListener(v -> showCustomDnsInputDialog(bs));
+        }
+
         if (btnAuto != null) {
             btnAuto.setOnClickListener(v -> {
                 applyPrivateDns(PrivateDnsHelper.MODE_AUTO, "", "DNS Tự Động (Nhà mạng)");
@@ -1146,6 +1168,50 @@ public class MainActivity extends AppCompatActivity {
         });
 
         bs.show();
+    }
+
+    private void showCustomDnsInputDialog(BottomSheetDialog parentBs) {
+        final android.widget.EditText input = new android.widget.EditText(this);
+        input.setHint("Ví dụ: xxxxxx.dns.nextdns.io");
+        input.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
+        input.setHintTextColor(ContextCompat.getColor(this, R.color.text_muted));
+        input.setSingleLine(true);
+        String current = PrivateDnsHelper.getCurrentDnsSpecifier(this);
+        if (!current.isEmpty()) {
+            input.setText(current);
+            input.setSelection(current.length());
+        }
+
+        android.widget.FrameLayout container = new android.widget.FrameLayout(this);
+        android.widget.FrameLayout.LayoutParams params = new android.widget.FrameLayout.LayoutParams(
+                android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        int margin = (int) (20 * getResources().getDisplayMetrics().density);
+        params.leftMargin = margin;
+        params.rightMargin = margin;
+        params.topMargin = (int) (8 * getResources().getDisplayMetrics().density);
+        input.setLayoutParams(params);
+        container.addView(input);
+
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle("Nhập DNS DoT Tùy Chọn")
+                .setMessage("Nhập tên miền máy chủ DNS riêng tư hỗ trợ DoT (DNS-over-TLS). Tự động loại bỏ https:// hoặc cổng thừa.")
+                .setView(container)
+                .setPositiveButton("Áp dụng", (dialog, which) -> {
+                    String host = input.getText() != null ? input.getText().toString().trim() : "";
+                    String cleaned = PrivateDnsHelper.cleanHostname(host);
+                    if (cleaned.isEmpty()) {
+                        Toast.makeText(MainActivity.this, "Vui lòng nhập tên máy chủ DNS hợp lệ!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    applyPrivateDns(PrivateDnsHelper.MODE_HOSTNAME, cleaned, "Tùy chọn: " + cleaned);
+                    if (parentBs != null && parentBs.isShowing()) {
+                        parentBs.dismiss();
+                    }
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
     }
 
     // --- BottomSheet 4: VoLTE & VoWiFi ---
@@ -2349,7 +2415,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (tvChargingCurrentLabel != null) {
-            tvChargingCurrentLabel.setText(isCharging ? "Dòng nạp" : "Dòng tiêu thụ");
+            tvChargingCurrentLabel.setText(isCharging ? "🔌 Dòng sạc" : "🔋 Dòng xả");
         }
 
         if (tvChargingCurrentVal != null) {
@@ -2392,7 +2458,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (tvChargingCurrentLabel != null) {
-            tvChargingCurrentLabel.setText(state.isCharging ? "Dòng nạp" : "Dòng tiêu thụ");
+            tvChargingCurrentLabel.setText(state.isCharging ? "🔌 Dòng sạc" : "🔋 Dòng xả");
         }
 
         if (tvChargingCurrentVal != null && state.currentMa > 0) {
