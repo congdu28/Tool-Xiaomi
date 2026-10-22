@@ -185,4 +185,22 @@
     <string name="tile_clock_label">Đồng hồ giây</string>
     <string name="tile_clock_desc">Bật hoặc tắt nhanh đồng hồ giây nổi trên màn hình</string>
     <string name="btn_add_clock_tile">🎛️ Thêm phím Đồng hồ vào Trung tâm điều khiển</string>
+
+    <!-- Notification Fixer -->
+    <string name="notif_fix_title">Khắc Phục Trễ Thông Báo</string>
+    <string name="notif_fix_desc">Ngăn chặn HyperOS/MIUI kill app nhắn tin, bật tự khởi chạy và loại bỏ giới hạn pin cho Zalo, Messenger, Telegram...</string>
+    <string name="notif_fix_btn_batch">⚡ 1-Chạm Khắc Phục Toàn Bộ</string>
+    <string name="notif_fix_btn_autostart">🚀 Quản lý Tự khởi chạy MIUI</string>
+    <string name="notif_fix_btn_powerkeeper">🔋 Quản lý Tiết kiệm pin MIUI</string>
+    <string name="notif_fix_lock_guide">Mẹo: Mở Đa nhiệm -> Khóa 🔒 ứng dụng để chống bị dọn RAM</string>
+    <string name="tile_notif_fix_label">Fix Thông Báo</string>
+
+    <!-- Mini Game HUD (Floating FPS) -->
+    <string name="game_hud_title">Mini Game HUD Nổi (FPS &amp; Hiệu Năng)</string>
+    <string name="game_hud_desc">Lớp phủ nổi siêu nhẹ đo FPS thời gian thực, % CPU, % RAM, Nhiệt độ và Công suất xả pin khi chơi game.</string>
+    <string name="game_hud_enable">Bật Game HUD nổi trên màn hình</string>
+    <string name="game_hud_mode_compact">Chế độ Gọn (FPS + Nhiệt độ)</string>
+    <string name="game_hud_mode_full">Chế độ Bảng điều khiển (Đầy đủ CPU, RAM, Watt)</string>
+    <string name="tile_game_hud_label">Game HUD FPS</string>
+    <string name="tile_game_hud_desc">Bật hoặc tắt nhanh HUD nổi đo FPS trong game</string>
 </resources>

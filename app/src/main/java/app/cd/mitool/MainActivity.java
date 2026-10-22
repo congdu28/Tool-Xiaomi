@@ -66,6 +66,8 @@ import java.util.Locale;
 
 import app.cd.mitool.service.FloatingClockService;
 import app.cd.mitool.service.FloatingClockTileService;
+import app.cd.mitool.service.FloatingGameHudService;
+import app.cd.mitool.service.GameHudTileService;
 import app.cd.mitool.service.NotificationClockService;
 import app.cd.mitool.service.RefreshRateTileService;
 import app.cd.mitool.util.BatteryHelper;
@@ -73,7 +75,9 @@ import app.cd.mitool.util.BatteryUsageHelper;
 import app.cd.mitool.util.DebloatHelper;
 import app.cd.mitool.util.DeviceInfoHelper;
 import app.cd.mitool.util.GamingFpsHelper;
+import app.cd.mitool.util.NotificationFixHelper;
 import app.cd.mitool.util.PreferencesHelper;
+import android.widget.CheckBox;
 import app.cd.mitool.util.PrivateDnsHelper;
 import app.cd.mitool.util.RamBoosterHelper;
 import app.cd.mitool.util.RefreshRateHelper;
@@ -151,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
     private View cardToolClock;
     private View cardToolBatteryAlert;
     private View cardToolMiuiUtils;
+    private View cardToolNotifFix;
 
     private TextView tvToolHzSub;
     private TextView tvToolGameFpsSub;
@@ -161,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvToolClockSub;
     private TextView tvToolBatteryAlertSub;
     private TextView tvToolMiuiUtilsSub;
+    private TextView tvToolNotifFixSub;
 
     // Tab 3: Battery Monitoring Views
     private TextView tvBatteryPercent;
@@ -405,6 +411,7 @@ public class MainActivity extends AppCompatActivity {
         cardToolClock = findViewById(R.id.card_tool_clock);
         cardToolBatteryAlert = findViewById(R.id.card_tool_battery_alert);
         cardToolMiuiUtils = findViewById(R.id.card_tool_miui_utils);
+        cardToolNotifFix = findViewById(R.id.card_tool_notif_fix);
 
         tvToolHzSub = findViewById(R.id.tv_tool_hz_sub);
         tvToolGameFpsSub = findViewById(R.id.tv_tool_game_fps_sub);
@@ -415,6 +422,7 @@ public class MainActivity extends AppCompatActivity {
         tvToolClockSub = findViewById(R.id.tv_tool_clock_sub);
         tvToolBatteryAlertSub = findViewById(R.id.tv_tool_battery_alert_sub);
         tvToolMiuiUtilsSub = findViewById(R.id.tv_tool_miui_utils_sub);
+        tvToolNotifFixSub = findViewById(R.id.tv_tool_notif_fix_sub);
 
         // Battery Views
         tvBatteryPercent = findViewById(R.id.tv_battery_percent);
@@ -698,6 +706,7 @@ public class MainActivity extends AppCompatActivity {
         if (cardToolClock != null) cardToolClock.setOnClickListener(v -> showClockBottomSheet());
         if (cardToolBatteryAlert != null) cardToolBatteryAlert.setOnClickListener(v -> showBatteryAlertBottomSheet());
         if (cardToolMiuiUtils != null) cardToolMiuiUtils.setOnClickListener(v -> showMiuiUtilsBottomSheet());
+        if (cardToolNotifFix != null) cardToolNotifFix.setOnClickListener(v -> showNotificationFixBottomSheet());
 
         updateToolsCardSummaries();
     }
@@ -818,6 +827,18 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 tvToolBatteryAlertSub.setText("Giọng nói sạc, chuông báo & HUD Ambient");
                 tvToolBatteryAlertSub.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
+            }
+        }
+
+        // Notification Fixer Card
+        if (tvToolNotifFixSub != null) {
+            long lastFix = prefs.getNotifFixLastApplied();
+            if (lastFix > 0) {
+                tvToolNotifFixSub.setText("Đã tối ưu chạy nền • Chống trễ tin nhắn Zalo, Messenger");
+                tvToolNotifFixSub.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
+            } else {
+                tvToolNotifFixSub.setText("Chống kill app Zalo, Messenger, Telegram... Chạm để tối ưu");
+                tvToolNotifFixSub.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
             }
         }
     }
@@ -1098,6 +1119,79 @@ public class MainActivity extends AppCompatActivity {
             GamingFpsHelper.launchLienQuanMobile(MainActivity.this);
             bs.dismiss();
         });
+
+        // Mini Game HUD controls
+        MaterialSwitch switchGameHud = view.findViewById(R.id.bs_switch_game_hud);
+        MaterialButton btnToggleGameHud = view.findViewById(R.id.bs_btn_toggle_game_hud);
+        MaterialButton btnAddHudTile = view.findViewById(R.id.bs_btn_add_hud_qs_tile);
+
+        if (switchGameHud != null) {
+            switchGameHud.setChecked(prefs.isGameHudEnabled());
+            switchGameHud.setOnCheckedChangeListener((btn, isChecked) -> {
+                if (isChecked) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(MainActivity.this)) {
+                        switchGameHud.setChecked(false);
+                        Intent overlayIntent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                Uri.parse("package:" + getPackageName()));
+                        startActivity(overlayIntent);
+                        Toast.makeText(MainActivity.this, "Vui lòng cấp quyền Hiển thị trên ứng dụng khác để mở HUD nổi", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    prefs.setGameHudEnabled(true);
+                    startFloatingGameHudService();
+                    Toast.makeText(MainActivity.this, "🎮 Đã bật Mini Game HUD", Toast.LENGTH_SHORT).show();
+                } else {
+                    prefs.setGameHudEnabled(false);
+                    stopFloatingGameHudService();
+                    Toast.makeText(MainActivity.this, "🎮 Đã tắt Mini Game HUD", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        if (btnToggleGameHud != null) {
+            btnToggleGameHud.setOnClickListener(v -> {
+                boolean cur = prefs.isGameHudEnabled();
+                if (!cur) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(MainActivity.this)) {
+                        Intent overlayIntent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                Uri.parse("package:" + getPackageName()));
+                        startActivity(overlayIntent);
+                        Toast.makeText(MainActivity.this, "Vui lòng cấp quyền Hiển thị trên ứng dụng khác để mở HUD nổi", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    prefs.setGameHudEnabled(true);
+                    startFloatingGameHudService();
+                    if (switchGameHud != null) switchGameHud.setChecked(true);
+                    Toast.makeText(MainActivity.this, "🎮 Đã bật Mini Game HUD", Toast.LENGTH_SHORT).show();
+                } else {
+                    prefs.setGameHudEnabled(false);
+                    stopFloatingGameHudService();
+                    if (switchGameHud != null) switchGameHud.setChecked(false);
+                    Toast.makeText(MainActivity.this, "🎮 Đã tắt Mini Game HUD", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        if (btnAddHudTile != null) {
+            btnAddHudTile.setOnClickListener(v -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    StatusBarManager sbm = (StatusBarManager) getSystemService(Context.STATUS_BAR_SERVICE);
+                    if (sbm != null) {
+                        sbm.requestAddTileService(
+                                new ComponentName(MainActivity.this, GameHudTileService.class),
+                                getString(R.string.tile_game_hud_label),
+                                Icon.createWithResource(MainActivity.this, R.drawable.ic_gamepad),
+                                getMainExecutor(),
+                                result -> Toast.makeText(MainActivity.this,
+                                        result == StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ADDED ? "Đã thêm phím Game HUD thành công!" : "Đã hủy hoặc phím đã có sẵn",
+                                        Toast.LENGTH_SHORT).show()
+                        );
+                        return;
+                    }
+                }
+                Toast.makeText(MainActivity.this, "Bạn hãy vuốt thanh điều khiển xuống, chọn biểu tượng Cây bút / Chỉnh sửa rồi kéo phím 'Game HUD FPS' vào bảng điều khiển!", Toast.LENGTH_LONG).show();
+            });
+        }
 
         bs.show();
     }
@@ -1797,6 +1891,172 @@ public class MainActivity extends AppCompatActivity {
             XiaomiHelper.openAdServicesSettings(MainActivity.this);
             bs.dismiss();
         });
+
+        bs.show();
+    }
+
+    // --- BottomSheet 9: Notification Fixer ---
+    private void showNotificationFixBottomSheet() {
+        BottomSheetDialog bs = new BottomSheetDialog(this);
+        View view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_notif_fix, null);
+        bs.setContentView(view);
+        configureBottomSheet(bs);
+
+        TextView tvShizukuStatus = view.findViewById(R.id.bs_tv_notif_shizuku_status);
+        MaterialButton btnBatchFix = view.findViewById(R.id.bs_btn_batch_fix);
+        MaterialButton btnOpenAutostart = view.findViewById(R.id.bs_btn_open_autostart);
+        MaterialButton btnOpenPowerKeeper = view.findViewById(R.id.bs_btn_open_powerkeeper);
+        TextView tvSelectAll = view.findViewById(R.id.bs_tv_select_all);
+        LinearLayout layoutApps = view.findViewById(R.id.bs_layout_notif_apps);
+        TextView tvEmpty = view.findViewById(R.id.bs_tv_notif_empty);
+
+        boolean hasShizuku = ShizukuHelper.hasShizukuPermission();
+        if (hasShizuku) {
+            tvShizukuStatus.setText("⚡ Shizuku: Đã cấp quyền (Tự động 1-chạm cực nhanh)");
+            tvShizukuStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
+        } else {
+            tvShizukuStatus.setText("⚠️ Shizuku: Chưa cấp quyền (Bạn có thể mở thủ công cài đặt MIUI)");
+            tvShizukuStatus.setTextColor(ContextCompat.getColor(this, R.color.mi_orange));
+        }
+
+        List<NotificationFixHelper.TargetApp> apps = NotificationFixHelper.getInstalledTargetApps(this);
+        if (apps.isEmpty()) {
+            if (tvEmpty != null) tvEmpty.setVisibility(View.VISIBLE);
+        } else {
+            if (tvEmpty != null) tvEmpty.setVisibility(View.GONE);
+            LayoutInflater inflater = LayoutInflater.from(this);
+
+            for (NotificationFixHelper.TargetApp app : apps) {
+                View itemView = inflater.inflate(R.layout.item_notif_app, layoutApps, false);
+                CheckBox cb = itemView.findViewById(R.id.cb_app_select);
+                ImageView ivIcon = itemView.findViewById(R.id.iv_app_icon);
+                TextView tvName = itemView.findViewById(R.id.tv_app_name);
+                TextView tvBadge = itemView.findViewById(R.id.tv_app_status_badge);
+                TextView tvCategory = itemView.findViewById(R.id.tv_app_category);
+                MaterialButton btnAction = itemView.findViewById(R.id.btn_app_action);
+
+                if (app.icon != null) ivIcon.setImageDrawable(app.icon);
+                tvName.setText(app.label != null ? app.label : app.defaultName);
+                tvCategory.setText(app.category + " • " + app.packageName);
+
+                if (app.isOptimized) {
+                    tvBadge.setText("✓ Không giới hạn");
+                    tvBadge.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
+                } else {
+                    tvBadge.setText("⚠️ Chưa tối ưu");
+                    tvBadge.setTextColor(ContextCompat.getColor(this, R.color.mi_orange));
+                }
+
+                cb.setChecked(app.isSelected);
+                cb.setOnCheckedChangeListener((b, isChecked) -> app.isSelected = isChecked);
+
+                btnAction.setOnClickListener(v -> {
+                    String[] options = hasShizuku
+                            ? new String[]{
+                                    "⚡ Tối ưu ngay bằng Shizuku (1-Chạm)",
+                                    "🔋 Tiết kiệm pin MIUI (Không giới hạn)",
+                                    "🚀 Tự khởi chạy MIUI (Autostart)",
+                                    "⚙️ Thông tin ứng dụng"
+                            }
+                            : new String[]{
+                                    "🔋 Tiết kiệm pin MIUI (Không giới hạn)",
+                                    "🚀 Tự khởi chạy MIUI (Autostart)",
+                                    "⚙️ Thông tin ứng dụng"
+                            };
+
+                    new MaterialAlertDialogBuilder(MainActivity.this)
+                            .setTitle(app.label != null ? app.label : app.defaultName)
+                            .setItems(options, (dialog, which) -> {
+                                if (hasShizuku && which == 0) {
+                                    NotificationFixHelper.fixSingleApp(MainActivity.this, app.packageName, (success, msg) -> {
+                                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+                                        app.isOptimized = NotificationFixHelper.isIgnoringBatteryOptimizations(MainActivity.this, app.packageName);
+                                        if (app.isOptimized) {
+                                            tvBadge.setText("✓ Không giới hạn");
+                                            tvBadge.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_green));
+                                        }
+                                        updateToolsCardSummaries();
+                                    });
+                                } else {
+                                    int actionIndex = hasShizuku ? which - 1 : which;
+                                    if (actionIndex == 0) {
+                                        NotificationFixHelper.openAppBatterySaver(MainActivity.this, app.packageName);
+                                    } else if (actionIndex == 1) {
+                                        NotificationFixHelper.openMiuiAutostart(MainActivity.this);
+                                    } else {
+                                        NotificationFixHelper.openAppDetails(MainActivity.this, app.packageName);
+                                    }
+                                }
+                            })
+                            .setNegativeButton("Đóng", null)
+                            .show();
+                });
+
+                layoutApps.addView(itemView);
+            }
+        }
+
+        final boolean[] allSelected = {true};
+        if (tvSelectAll != null) {
+            tvSelectAll.setOnClickListener(v -> {
+                allSelected[0] = !allSelected[0];
+                tvSelectAll.setText(allSelected[0] ? "Bỏ chọn tất cả" : "Chọn tất cả");
+                for (int i = 0; i < layoutApps.getChildCount(); i++) {
+                    View child = layoutApps.getChildAt(i);
+                    CheckBox cb = child.findViewById(R.id.cb_app_select);
+                    if (cb != null) cb.setChecked(allSelected[0]);
+                }
+            });
+        }
+
+        btnBatchFix.setOnClickListener(v -> {
+            List<String> selectedPkgs = new ArrayList<>();
+            for (NotificationFixHelper.TargetApp app : apps) {
+                if (app.isSelected) selectedPkgs.add(app.packageName);
+            }
+
+            if (selectedPkgs.isEmpty()) {
+                Toast.makeText(MainActivity.this, "Vui lòng chọn ít nhất 1 ứng dụng!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (!ShizukuHelper.hasShizukuPermission()) {
+                new MaterialAlertDialogBuilder(MainActivity.this)
+                        .setTitle("Cần Quyền Shizuku Để Tự Động Hóa")
+                        .setMessage("Để tự động cấp quyền Tự khởi chạy và Gỡ bỏ giới hạn pin cho hàng loạt ứng dụng trong 1 click, bạn cần cấp quyền Shizuku cho Mi Tool.\n\nNếu chưa có Shizuku, bạn có thể bấm nút 'Tự khởi chạy MIUI' hoặc 'Tiết kiệm pin MIUI' để cấu hình thủ công.")
+                        .setPositiveButton("Cấp quyền Shizuku", (dialog, which) -> {
+                            ShizukuHelper.requestShizukuPermission(MainActivity.this);
+                        })
+                        .setNeutralButton("Mở Tự khởi chạy", (dialog, which) -> {
+                            NotificationFixHelper.openMiuiAutostart(MainActivity.this);
+                        })
+                        .setNegativeButton("Đóng", null)
+                        .show();
+                return;
+            }
+
+            btnBatchFix.setEnabled(false);
+            btnBatchFix.setText("⏳ Đang tối ưu hóa...");
+
+            NotificationFixHelper.applyBatchFix(MainActivity.this, selectedPkgs, new NotificationFixHelper.FixCallback() {
+                @Override
+                public void onProgress(int current, int total, String appName) {
+                    btnBatchFix.setText("⏳ Đang xử lý (" + current + "/" + total + ")...");
+                }
+
+                @Override
+                public void onComplete(boolean success, int count, String message) {
+                    btnBatchFix.setEnabled(true);
+                    btnBatchFix.setText("⚡ 1-CHẠM FIX TẤT CẢ ỨNG DỤNG ĐÃ CHỌN");
+                    Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+                    updateToolsCardSummaries();
+                    bs.dismiss();
+                }
+            });
+        });
+
+        btnOpenAutostart.setOnClickListener(v -> NotificationFixHelper.openMiuiAutostart(MainActivity.this));
+        btnOpenPowerKeeper.setOnClickListener(v -> NotificationFixHelper.openMiuiBatterySaverList(MainActivity.this));
 
         bs.show();
     }
@@ -2955,6 +3215,21 @@ public class MainActivity extends AppCompatActivity {
     private void stopFloatingClockService() {
         Intent intent = new Intent(this, FloatingClockService.class);
         intent.setAction(FloatingClockService.ACTION_STOP);
+        startService(intent);
+    }
+
+    private void startFloatingGameHudService() {
+        Intent intent = new Intent(this, FloatingGameHudService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent);
+        } else {
+            startService(intent);
+        }
+    }
+
+    private void stopFloatingGameHudService() {
+        Intent intent = new Intent(this, FloatingGameHudService.class);
+        intent.setAction(FloatingGameHudService.ACTION_STOP);
         startService(intent);
     }
 

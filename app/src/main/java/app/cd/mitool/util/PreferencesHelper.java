@@ -476,4 +476,53 @@ public class PreferencesHelper {
     public void setLastUpdateCheckTime(long time) {
         prefs.edit().putLong(KEY_LAST_UPDATE_CHECK_TIME, time).apply();
     }
+
+    // Mini Game HUD (Floating FPS & Performance Monitor)
+    public static final String KEY_GAME_HUD_ENABLED = "game_hud_enabled";
+    public static final String KEY_GAME_HUD_EXPANDED = "game_hud_expanded";
+    public static final String KEY_GAME_HUD_X = "game_hud_pos_x";
+    public static final String KEY_GAME_HUD_Y = "game_hud_pos_y";
+
+    public boolean isGameHudEnabled() {
+        return prefs.getBoolean(KEY_GAME_HUD_ENABLED, false);
+    }
+
+    public void setGameHudEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_GAME_HUD_ENABLED, enabled).apply();
+    }
+
+    public boolean isGameHudExpanded() {
+        return prefs.getBoolean(KEY_GAME_HUD_EXPANDED, false);
+    }
+
+    public void setGameHudExpanded(boolean expanded) {
+        prefs.edit().putBoolean(KEY_GAME_HUD_EXPANDED, expanded).apply();
+    }
+
+    public int getGameHudX() {
+        return prefs.getInt(KEY_GAME_HUD_X, -1);
+    }
+
+    public void setGameHudX(int x) {
+        prefs.edit().putInt(KEY_GAME_HUD_X, x).apply();
+    }
+
+    public int getGameHudY() {
+        return prefs.getInt(KEY_GAME_HUD_Y, -1);
+    }
+
+    public void setGameHudY(int y) {
+        prefs.edit().putInt(KEY_GAME_HUD_Y, y).apply();
+    }
+
+    // Notification Fixer state
+    public static final String KEY_NOTIF_FIX_LAST_APPLIED = "notif_fix_last_applied";
+
+    public long getNotifFixLastApplied() {
+        return prefs.getLong(KEY_NOTIF_FIX_LAST_APPLIED, 0);
+    }
+
+    public void setNotifFixLastApplied(long time) {
+        prefs.edit().putLong(KEY_NOTIF_FIX_LAST_APPLIED, time).apply();
+    }
 }

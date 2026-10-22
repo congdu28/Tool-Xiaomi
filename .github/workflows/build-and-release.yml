@@ -43,7 +43,7 @@ jobs:
             TAG="${{ github.ref_name }}"
           else
             VER=$(grep "versionName" app/build.gradle | head -n 1 | awk -F"'" '{print $2}')
-            TAG="v${VER:-1.0.44}"
+            TAG="v${VER:-1.0.45}"
           fi
           echo "TAG_NAME=${TAG}" >> $GITHUB_ENV
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
@@ -98,13 +98,14 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             Bản cập nhật ${{ env.TAG_NAME }}:
-            - 📱 Đưa Cài Đặt Widget Vào Tab Cài Đặt:
-              1. Bổ sung mục "📱 Widget Màn Hình Chính" trực tiếp trong Tab Cài Đặt & Giấy Phép giúp dễ dàng điều chỉnh cấu hình widget mọi lúc.
-              2. Đồng thời vẫn duy trì nút lối tắt tiện lợi tại thẻ SOT trong Tab Pin & Sạc.
-            - 📊 Mặc Định Phong Cách Bảng Điều Khiển (Dashboard Widget):
-              1. Thiết lập giao diện Bảng điều khiển 4 ô chỉ số chi tiết làm phong cách mặc định khi thêm widget ra màn hình chính.
-            - 🕒 Bổ Sung "Tổng Thời Gian Dùng Máy":
-              1. Hiển thị song song cả On-screen (SOT) và Tổng thời gian dùng máy (Total Uptime since unplug) kể từ lần rút sạc gần nhất.
-              2. Hiển thị tinh tế trên thanh tiêu đề widget và chi tiết trong ô SOT.
-            - 🚀 Xuất xưởng duy nhất 1 bản Release APK chuẩn tối ưu.
+            - 🔔 Trợ Lý Khắc Phục Trễ Thông Báo (Fix Delayed Notifications):
+              1. Giải quyết triệt để vấn đề HyperOS/MIUI tự ý đóng băng (kill) ứng dụng nhắn tin và trễ cuộc gọi (Zalo, Messenger, Telegram, WhatsApp, Gmail, Teams...).
+              2. ⚡ 1-Chạm tối ưu hàng loạt qua Shizuku: Gỡ bỏ giới hạn pin (Doze whitelist), cấp quyền chạy nền vô điều kiện (AppOps) và bật tự khởi chạy (MIUI Autostart).
+              3. Tích hợp phím tắt mở trực tiếp menu Tự khởi chạy và Tiết kiệm pin của MIUI Security.
+            - 🎮 Mini Game HUD Nổi (FPS & Hiệu Năng Thời Gian Thực):
+              1. Lớp phủ nổi siêu nhẹ dạng Capsule kéo thả tự do trên màn hình khi chơi game.
+              2. Đo FPS thực tế & tần số quét màn hình (Choreographer VSYNC), theo dõi % CPU, % RAM, Nhiệt độ pin (°C) và Công suất xả pin (Watt).
+              3. Chạm 1 lần để chuyển đổi linh hoạt giữa Chế độ Gọn (Compact) và Bảng điều khiển (Expanded).
+              4. Tích hợp Quick Settings Tile "Game HUD FPS" bật/tắt nhanh từ thanh điều khiển.
+            - 🚀 Tối ưu hóa hiệu năng, giảm tiêu hao tài nguyên nền và xuất xưởng Release APK.
           files: output-apks/*.apk

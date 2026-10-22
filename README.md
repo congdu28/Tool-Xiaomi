@@ -43,6 +43,16 @@ Bộ tiện ích mở rộng tối ưu chuyên biệt cho điện thoại **Xiao
 - Nút kiểm tra thủ công trong tab **Cài đặt**.
 - Khi có bản mới, ứng dụng tự động hiển thị danh sách thay đổi và nút **"Tải & Cài đặt ngay"** để cập nhật trực tiếp trên máy mà không cần mở trình duyệt web.
 
+### 7. 🔔 Khắc Phục Trễ Thông Báo (Fix Delayed Notifications)
+- **Chống kill app nhắn tin**: Giải quyết triệt để lỗi chậm thông báo và lỡ cuộc gọi trên HyperOS/MIUI cho Zalo, Messenger, Telegram, WhatsApp, Gmail, Teams...
+- **1-Chạm tối ưu hàng loạt**: Bỏ qua tối ưu hóa pin (Doze whitelist), cho phép chạy nền và bật tự khởi chạy (MIUI Autostart) qua Shizuku.
+- **Lối tắt bảo vệ**: Hướng dẫn khóa ứng dụng trong đa nhiệm (Recent Apps) để bảo vệ 100% không bị dọn RAM.
+
+### 8. 🎮 Mini Game HUD Nổi (FPS & Hiệu Năng Thời Gian Thực)
+- **Lớp phủ nổi siêu nhẹ**: Đo FPS thực tế, tần số quét màn hình, % CPU, % RAM, Nhiệt độ và Công suất xả ($W$) khi chơi game.
+- **Chạm chuyển chế độ**: Dễ dàng đổi giữa chế độ Gọn (Compact) và Bảng điều khiển (Expanded).
+- **Quick Settings Tile**: Bật/tắt HUD nổi ngay từ bảng điều khiển kéo xuống của Xiaomi mà không cần thoát game.
+
 ---
 
 ## 🔑 Hướng Dẫn Cấp Quyền Shizuku / ADB (Chỉ làm 1 lần)
