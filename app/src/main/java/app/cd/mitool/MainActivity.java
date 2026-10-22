@@ -108,20 +108,27 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvDeviceShizukuBadge;
     private TextView tvSpecModel;
     private TextView tvSpecCodename;
+    private TextView tvSpecBrand;
     private TextView tvSpecOs;
     private TextView tvSpecAndroid;
     private TextView tvSpecSecurity;
     private TextView tvSpecCpuModel;
     private TextView tvSpecCpuCores;
     private TextView tvSpecCpuArch;
+    private TextView tvSpecDisplaySize;
     private TextView tvSpecDisplayRes;
     private TextView tvSpecDisplayHz;
     private TextView tvSpecDisplayDpi;
+    private TextView tvSpecDisplayTech;
     private TextView tvSpecRamText;
     private ProgressBar pbSpecRam;
+    private TextView tvSpecZramText;
+    private ProgressBar pbSpecZram;
     private TextView tvSpecStorageText;
     private ProgressBar pbSpecStorage;
     private TextView tvSpecBatteryPercent;
+    private TextView tvSpecBatteryCapacity;
+    private TextView tvSpecBatteryCycles;
     private TextView tvSpecBatteryTempVoltage;
     private TextView tvSpecBatteryHealth;
     private MaterialButton btnQuickGameMode;
@@ -352,20 +359,27 @@ public class MainActivity extends AppCompatActivity {
         tvDeviceShizukuBadge = findViewById(R.id.tv_device_shizuku_badge);
         tvSpecModel = findViewById(R.id.tv_spec_model);
         tvSpecCodename = findViewById(R.id.tv_spec_codename);
+        tvSpecBrand = findViewById(R.id.tv_spec_brand);
         tvSpecOs = findViewById(R.id.tv_spec_os);
         tvSpecAndroid = findViewById(R.id.tv_spec_android);
         tvSpecSecurity = findViewById(R.id.tv_spec_security);
         tvSpecCpuModel = findViewById(R.id.tv_spec_cpu_model);
         tvSpecCpuCores = findViewById(R.id.tv_spec_cpu_cores);
         tvSpecCpuArch = findViewById(R.id.tv_spec_cpu_arch);
+        tvSpecDisplaySize = findViewById(R.id.tv_spec_display_size);
         tvSpecDisplayRes = findViewById(R.id.tv_spec_display_res);
         tvSpecDisplayHz = findViewById(R.id.tv_spec_display_hz);
         tvSpecDisplayDpi = findViewById(R.id.tv_spec_display_dpi);
+        tvSpecDisplayTech = findViewById(R.id.tv_spec_display_tech);
         tvSpecRamText = findViewById(R.id.tv_spec_ram_text);
         pbSpecRam = findViewById(R.id.pb_spec_ram);
+        tvSpecZramText = findViewById(R.id.tv_spec_zram_text);
+        pbSpecZram = findViewById(R.id.pb_spec_zram);
         tvSpecStorageText = findViewById(R.id.tv_spec_storage_text);
         pbSpecStorage = findViewById(R.id.pb_spec_storage);
         tvSpecBatteryPercent = findViewById(R.id.tv_spec_battery_percent);
+        tvSpecBatteryCapacity = findViewById(R.id.tv_spec_battery_capacity);
+        tvSpecBatteryCycles = findViewById(R.id.tv_spec_battery_cycles);
         tvSpecBatteryTempVoltage = findViewById(R.id.tv_spec_battery_temp_voltage);
         tvSpecBatteryHealth = findViewById(R.id.tv_spec_battery_health);
 
@@ -577,51 +591,85 @@ public class MainActivity extends AppCompatActivity {
 
         tvSpecModel.setText(model);
         tvSpecCodename.setText(codename);
+        if (tvSpecBrand != null) {
+            String brand = Build.MANUFACTURER;
+            tvSpecBrand.setText(brand != null ? brand.toUpperCase(Locale.getDefault()) : "Xiaomi");
+        }
         tvSpecOs.setText(os);
         tvSpecAndroid.setText(androidVer);
         tvSpecSecurity.setText(security);
 
         // Shizuku badge
         if (ShizukuHelper.hasShizukuPermission()) {
-            tvDeviceShizukuBadge.setText("🟢 Shizuku đã cấp");
+            tvDeviceShizukuBadge.setText("🟢 Shizuku: Đã cấp");
             tvDeviceShizukuBadge.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
         } else if (ShizukuHelper.isShizukuRunning()) {
-            tvDeviceShizukuBadge.setText("🟡 Shizuku chờ cấp");
+            tvDeviceShizukuBadge.setText("🟡 Shizuku: Chờ cấp");
             tvDeviceShizukuBadge.setTextColor(ContextCompat.getColor(this, R.color.neon_yellow));
         } else {
-            tvDeviceShizukuBadge.setText("🔴 Shizuku chưa chạy");
+            tvDeviceShizukuBadge.setText("🔴 Shizuku: Chưa chạy");
             tvDeviceShizukuBadge.setTextColor(ContextCompat.getColor(this, R.color.text_muted));
         }
 
         // CPU / SoC
         tvSpecCpuModel.setText(DeviceInfoHelper.getCpuModel());
-        tvSpecCpuCores.setText(DeviceInfoHelper.getCpuCoreCount() + " Nhân (Octa-core)");
+        tvSpecCpuCores.setText(DeviceInfoHelper.getCpuFrequencySummary());
         tvSpecCpuArch.setText(DeviceInfoHelper.getCpuArchitecture());
 
         // Display
         DeviceInfoHelper.DisplayStats ds = DeviceInfoHelper.getDisplayStats(this);
-        tvSpecDisplayRes.setText(ds.width + " x " + ds.height + " px");
+        if (tvSpecDisplaySize != null) {
+            tvSpecDisplaySize.setText(String.format(Locale.getDefault(), "%.2f inch • Tỉ lệ %s", ds.screenInches, ds.aspectRatio));
+        }
+        tvSpecDisplayRes.setText(ds.resolutionStandard);
         tvSpecDisplayHz.setText(ds.refreshRate + " Hz (" + (ds.refreshRate > 60 ? "Mượt mà" : "Tiết kiệm pin") + ")");
-        tvSpecDisplayDpi.setText(ds.dpi + " DPI");
+        tvSpecDisplayDpi.setText(ds.dpi + " DPI (Mật độ cao)");
+        if (tvSpecDisplayTech != null) {
+            tvSpecDisplayTech.setText(ds.displayTechnology);
+        }
 
         // RAM & Storage
         DeviceInfoHelper.MemoryStats ram = DeviceInfoHelper.getRamStats(this);
-        tvSpecRamText.setText(String.format(Locale.getDefault(), "%.1f GB / %.1f GB (%d%%)", ram.usedGb, ram.totalGb, ram.percentUsed));
+        tvSpecRamText.setText(String.format(Locale.getDefault(), "%.1f GB / %.1f GB (Trống %.1f GB - %d%%)", ram.usedGb, ram.totalGb, ram.freeGb, ram.percentUsed));
         pbSpecRam.setProgress(ram.percentUsed);
 
+        // ZRAM (Swap / Extension)
+        DeviceInfoHelper.ZramStats zram = DeviceInfoHelper.getZramStats();
+        if (tvSpecZramText != null && pbSpecZram != null) {
+            if (zram.isEnabled && zram.totalGb > 0) {
+                tvSpecZramText.setText(String.format(Locale.getDefault(), "%.1f GB / %.1f GB (Dùng %d%%)", zram.usedGb, zram.totalGb, zram.percentUsed));
+                pbSpecZram.setProgress(zram.percentUsed);
+            } else {
+                tvSpecZramText.setText("Chưa kích hoạt Mở rộng RAM");
+                pbSpecZram.setProgress(0);
+            }
+        }
+
+        // ROM Storage
         DeviceInfoHelper.MemoryStats rom = DeviceInfoHelper.getInternalStorageStats();
-        tvSpecStorageText.setText(String.format(Locale.getDefault(), "%.1f GB / %.1f GB (%d%%)", rom.usedGb, rom.totalGb, rom.percentUsed));
+        tvSpecStorageText.setText(String.format(Locale.getDefault(), "%.1f GB / %.1f GB (Trống %.1f GB - %d%%)", rom.usedGb, rom.totalGb, rom.freeGb, rom.percentUsed));
         pbSpecStorage.setProgress(rom.percentUsed);
 
         // Battery Overview
-        int level = BatteryHelper.getBatteryPercentage(this);
-        boolean isCharging = BatteryHelper.isCharging(this);
-        float temp = BatteryHelper.getBatteryTemperature(this);
-        float volt = BatteryHelper.getBatteryVoltage(this);
+        BatteryHelper.BatteryInfo bInfo = BatteryHelper.getBatteryInfo(this);
+        BatteryHelper.BatteryCapacityData bCap = BatteryHelper.getBatteryCapacityData(this);
 
-        tvSpecBatteryPercent.setText(level + "% (" + (isCharging ? "Đang sạc" : "Đang dùng pin") + ")");
-        tvSpecBatteryTempVoltage.setText(String.format(Locale.getDefault(), "%.1f °C • %.2f V", temp, volt));
-        tvSpecBatteryHealth.setText(temp > 40.0f ? "Khá nóng" : "Tốt (Bình thường)");
+        tvSpecBatteryPercent.setText(bInfo.level + "% (" + (bInfo.isCharging ? bInfo.plugTypeName : "Đang dùng pin") + ")");
+
+        if (tvSpecBatteryCapacity != null) {
+            tvSpecBatteryCapacity.setText(String.format(Locale.getDefault(), "%d mAh / %d mAh", bCap.designMah, bCap.actualMah));
+        }
+
+        if (tvSpecBatteryCycles != null) {
+            if (bCap.cycleCount > 0) {
+                tvSpecBatteryCycles.setText(bCap.cycleCount + " Chu kỳ sạc");
+            } else {
+                tvSpecBatteryCycles.setText("Tự động phân tích hệ thống");
+            }
+        }
+
+        tvSpecBatteryTempVoltage.setText(String.format(Locale.getDefault(), "%.1f °C • %.2f V", bInfo.temperature, bInfo.voltageMv / 1000.0f));
+        tvSpecBatteryHealth.setText(bCap.healthDescription);
     }
 
     // =========================================================================
@@ -1043,29 +1091,28 @@ public class MainActivity extends AppCompatActivity {
         MaterialButton btnAdguard = view.findViewById(R.id.bs_btn_dns_adguard);
         MaterialButton btnFamily = view.findViewById(R.id.bs_btn_dns_cloudflare_family);
         MaterialButton btnCf = view.findViewById(R.id.bs_btn_dns_cloudflare);
+        MaterialButton btnGoogle = view.findViewById(R.id.bs_btn_dns_google);
+        MaterialButton btnAuto = view.findViewById(R.id.bs_btn_dns_auto);
         MaterialButton btnOff = view.findViewById(R.id.bs_btn_dns_off);
         MaterialButton btnOpenSettings = view.findViewById(R.id.bs_btn_open_dns_settings);
 
-        String mode = PrivateDnsHelper.getCurrentDnsMode(this);
-        String spec = PrivateDnsHelper.getCurrentDnsSpecifier(this);
-        if (PrivateDnsHelper.MODE_HOSTNAME.equalsIgnoreCase(mode) && !spec.isEmpty()) {
-            tvStatus.setText("🛡️ Đang bật: " + spec);
+        tvStatus.setText(PrivateDnsHelper.getDnsDescription(this));
+        String currentMode = PrivateDnsHelper.getCurrentDnsMode(this);
+        if (PrivateDnsHelper.MODE_HOSTNAME.equalsIgnoreCase(currentMode)) {
             tvStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
-        } else if (PrivateDnsHelper.MODE_OFF.equalsIgnoreCase(mode)) {
-            tvStatus.setText("⭕ Đang tắt DNS riêng tư");
+        } else if (PrivateDnsHelper.MODE_OFF.equalsIgnoreCase(currentMode)) {
             tvStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_red));
         } else {
-            tvStatus.setText("⚡ Chế độ Tự động (Mặc định nhà mạng)");
             tvStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_cyan));
         }
 
         btnAdguard.setOnClickListener(v -> {
-            applyPrivateDns(PrivateDnsHelper.MODE_HOSTNAME, PrivateDnsHelper.DNS_ADGUARD, "AdGuard DNS");
+            applyPrivateDns(PrivateDnsHelper.MODE_HOSTNAME, PrivateDnsHelper.DNS_ADGUARD, "AdGuard DNS (Chặn QC)");
             bs.dismiss();
         });
 
         btnFamily.setOnClickListener(v -> {
-            applyPrivateDns(PrivateDnsHelper.MODE_HOSTNAME, PrivateDnsHelper.DNS_CLOUDFLARE_FAMILY, "Cloudflare Family");
+            applyPrivateDns(PrivateDnsHelper.MODE_HOSTNAME, PrivateDnsHelper.DNS_CLOUDFLARE_FAMILY, "Cloudflare Family (Chặn Web Độc)");
             bs.dismiss();
         });
 
@@ -1074,8 +1121,22 @@ public class MainActivity extends AppCompatActivity {
             bs.dismiss();
         });
 
+        if (btnGoogle != null) {
+            btnGoogle.setOnClickListener(v -> {
+                applyPrivateDns(PrivateDnsHelper.MODE_HOSTNAME, PrivateDnsHelper.DNS_GOOGLE, "Google DNS");
+                bs.dismiss();
+            });
+        }
+
+        if (btnAuto != null) {
+            btnAuto.setOnClickListener(v -> {
+                applyPrivateDns(PrivateDnsHelper.MODE_AUTO, "", "DNS Tự Động (Nhà mạng)");
+                bs.dismiss();
+            });
+        }
+
         btnOff.setOnClickListener(v -> {
-            applyPrivateDns(PrivateDnsHelper.MODE_AUTO, "", "DNS Tự động");
+            applyPrivateDns(PrivateDnsHelper.MODE_OFF, "", "Tắt DNS Riêng Tư");
             bs.dismiss();
         });
 
@@ -1696,34 +1757,54 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showDebloaterDialog() {
-        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_debloater_list, null);
-        final LinearLayout itemsContainer = dialogView.findViewById(R.id.layout_debloat_items);
-        View scroll = dialogView.findViewById(R.id.scroll_debloat);
-        if (scroll != null) {
-            int maxH = (int) (getResources().getDisplayMetrics().heightPixels * 0.55f);
-            scroll.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, maxH));
-        }
+        BottomSheetDialog bs = new BottomSheetDialog(this);
+        View view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_debloater, null);
+        bs.setContentView(view);
+        configureBottomSheet(bs);
 
-        final AlertDialog dialog = new MaterialAlertDialogBuilder(this)
-                .setView(dialogView)
-                .setPositiveButton("Đóng", null)
-                .setNeutralButton("Khôi phục toàn bộ", (d, which) -> handleDebloatRestoreAll())
-                .setNegativeButton("Đóng băng khuyên dùng", (d, which) -> handleDebloatFreezeRecommended())
-                .create();
+        final LinearLayout itemsContainer = view.findViewById(R.id.bs_layout_debloat_items);
+        final TextView tvSummary = view.findViewById(R.id.bs_tv_debloat_summary);
+        MaterialButton btnFreezeRec = view.findViewById(R.id.bs_btn_debloat_freeze_rec);
+        MaterialButton btnRestoreAll = view.findViewById(R.id.bs_btn_debloat_restore_all);
+        MaterialButton btnClose = view.findViewById(R.id.bs_btn_debloat_close);
 
-        populateDebloatList(itemsContainer, dialog);
-        dialog.show();
+        btnFreezeRec.setOnClickListener(v -> {
+            handleDebloatFreezeRecommended();
+            new Handler(Looper.getMainLooper()).postDelayed(() -> populateDebloatList(itemsContainer, tvSummary), 600);
+        });
+
+        btnRestoreAll.setOnClickListener(v -> {
+            handleDebloatRestoreAll();
+            new Handler(Looper.getMainLooper()).postDelayed(() -> populateDebloatList(itemsContainer, tvSummary), 600);
+        });
+
+        btnClose.setOnClickListener(v -> bs.dismiss());
+
+        populateDebloatList(itemsContainer, tvSummary);
+        bs.show();
     }
 
-    private void populateDebloatList(final LinearLayout itemsContainer, final AlertDialog dialog) {
+    private void populateDebloatList(final LinearLayout itemsContainer, final TextView tvSummary) {
+        if (itemsContainer == null) return;
         itemsContainer.removeAllViews();
         LayoutInflater inflater = LayoutInflater.from(this);
+
+        int totalFound = 0;
+        int activeCount = 0;
+        int frozenCount = 0;
 
         for (final DebloatHelper.BloatwareApp app : DebloatHelper.SAFE_BLOATWARE_LIST) {
             boolean installed = DebloatHelper.isInstalled(this, app.pkg);
             if (!installed) continue;
 
+            totalFound++;
             final boolean frozen = DebloatHelper.isFrozen(this, app.pkg);
+            if (frozen) {
+                frozenCount++;
+            } else {
+                activeCount++;
+            }
+
             View itemView = inflater.inflate(R.layout.dialog_debloater_item, itemsContainer, false);
 
             TextView tvName = itemView.findViewById(R.id.tv_debloat_app_name);
@@ -1732,18 +1813,18 @@ public class MainActivity extends AppCompatActivity {
             TextView tvDesc = itemView.findViewById(R.id.tv_debloat_desc);
             final MaterialButton btnToggle = itemView.findViewById(R.id.btn_toggle_freeze);
 
-            tvName.setText(app.name + (app.recommended ? " (Khuyên tắt)" : ""));
+            tvName.setText(app.name + (app.recommended ? " • Khuyên tắt" : " • Tùy chọn"));
             tvPkg.setText(app.pkg);
             tvDesc.setText(app.desc);
 
             if (frozen) {
-                tvBadge.setText("ĐÃ ĐÓNG BĂNG");
+                tvBadge.setText("❄️ ĐÃ ĐÓNG BĂNG");
                 tvBadge.setTextColor(ContextCompat.getColor(this, R.color.neon_cyan));
-                btnToggle.setText("🔄 Khôi phục ứng dụng");
+                btnToggle.setText("🔄 Kích hoạt lại ứng dụng");
                 btnToggle.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
                 btnToggle.setStrokeColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.neon_green)));
             } else {
-                tvBadge.setText("ĐANG HOẠT ĐỘNG");
+                tvBadge.setText("🟢 ĐANG CHẠY");
                 tvBadge.setTextColor(ContextCompat.getColor(this, R.color.mi_orange));
                 btnToggle.setText("❄️ Đóng băng ứng dụng");
                 btnToggle.setTextColor(ContextCompat.getColor(this, R.color.neon_cyan));
@@ -1763,7 +1844,7 @@ public class MainActivity extends AppCompatActivity {
                                 public void run() {
                                     Toast.makeText(MainActivity.this, output, Toast.LENGTH_SHORT).show();
                                     updateToolsCardSummaries();
-                                    populateDebloatList(itemsContainer, dialog);
+                                    populateDebloatList(itemsContainer, tvSummary);
                                 }
                             });
                         }
@@ -1772,6 +1853,10 @@ public class MainActivity extends AppCompatActivity {
             });
 
             itemsContainer.addView(itemView);
+        }
+
+        if (tvSummary != null) {
+            tvSummary.setText(String.format(Locale.getDefault(), "Phát hiện: %d ứng dụng • Đang chạy: %d • Đã đóng băng: %d", totalFound, activeCount, frozenCount));
         }
 
         if (itemsContainer.getChildCount() == 0) {

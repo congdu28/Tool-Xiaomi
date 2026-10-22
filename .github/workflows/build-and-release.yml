@@ -45,7 +45,7 @@ jobs:
             TAG="${{ github.ref_name }}"
           else
             VER=$(grep "versionName" app/build.gradle | head -n 1 | awk -F"'" '{print $2}')
-            TAG="v${VER:-1.0.36}"
+            TAG="v${VER:-1.0.37}"
           fi
           echo "TAG_NAME=${TAG}" >> $GITHUB_ENV
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
@@ -109,15 +109,19 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             Bản cập nhật ${{ env.TAG_NAME }}:
-            - ☀️ Tối Ưu Toàn Diện Giao Diện Sáng & Chuyển Đổi Theme (Light/Dark Mode):
-              1. Khắc phục triệt để lỗi hiển thị khi chuyển sang giao diện sáng: Chữ sắc nét, độ tương phản cao, thẻ bài trắng tinh tế trên nền mát mẻ không bị lóa hay chìm màu.
-              2. Các nút bấm và badge (chip nhãn): Tối ưu viền mảnh HyperOS, text đậm rõ ràng, loại bỏ toàn bộ các nền đen/xám tối bị lẫn màu trong theme sáng.
-              3. Đổi theme mượt mà tức thì: Tự động lưu và giữ nguyên tab hiện tại khi chuyển đổi giữa Sáng / Tối / Hệ thống, không còn bị văng về tab đầu.
-              4. Biểu đồ sụt pin (Battery Drain Chart) tự động nhận diện chế độ Sáng / Tối: Đường lưới và chữ trục thời gian hiển thị sắc nét trên cả hai giao diện.
-            - 🔋 Tinh Chỉnh Bố Cục Pin & Sạc Gọn Gàng, Tinh Tế:
-              1. Sắp xếp lại khối Cảm biến & Công suất sạc theo phong cách HyperOS hiện đại: Bỏ các khoảng cách thừa và đường kẻ divider dày, giúp giao diện gọn gàng, vừa vặn màn hình.
-              2. Bố trí liền mạch: Dung lượng pin định mức, Dung lượng pin thực tế và Chu kỳ sạc được gom thành cụm thông số rõ ràng.
-              3. Hàng nút đôi cân xứng: Tích hợp nút "🔌 Đo củ cáp (10s)" và "ℹ️ Thông tin bí mật CIT" nằm ngang cân đối, mở nhanh Menu CIT phần cứng và Thông tin pin ẩn.
+            - 📱 Nâng Cấp Toàn Diện Trang Chính (Home Specs & Header):
+              1. Căn chỉnh ô tên máy và huy hiệu Shizuku gọn gàng, thanh thoát, không còn bị ngắt dòng hay xô lệch chữ.
+              2. Bổ sung thông tin Vi xử lý (CPU/SoC) chi tiết: Tên thương mại chip (Snapdragon/Dimensity), số nhân, xung nhịp tối đa (GHz) và kiến trúc 64-bit.
+              3. Thông số Màn hình toàn diện: Kích thước (inch), độ phân giải chuẩn (FHD+/1.5K/2K), tần số quét (Hz), mật độ điểm ảnh (DPI), công nghệ tấm nền (AMOLED/HDR10+/Dolby Vision).
+              4. Giám sát Bộ nhớ chuyên sâu: RAM vật lý, RAM mở rộng ảo / ZRAM (Swap HyperOS) và Bộ nhớ trong ROM kèm thanh tiến trình trực quan.
+              5. Tình trạng Pin chi tiết: Hiển thị đầy đủ % pin, dung lượng định mức, dung lượng thực tế, chu kỳ sạc, nhiệt độ, điện áp và sức khỏe.
+            - 🛡️ Thiết Kế Lại Tính Năng Gỡ Ứng Dụng Rác (Safe Debloater):
+              1. Chuyển sang giao diện BottomSheet chuẩn phong cách HyperOS sang trọng, bo góc mềm mại, hiển thị rõ ràng từng ứng dụng.
+              2. Sửa triệt để lỗi không nhận diện ứng dụng rác trên Android 11+ (bổ sung QUERY_ALL_PACKAGES).
+              3. Thao tác đóng băng / khôi phục tức thì từng ứng dụng hoặc hàng loạt bằng 1 chạm qua Shizuku/Root.
+            - 🌐 Tối Ưu Chuẩn Xác Tính Năng Private DNS:
+              1. Sửa lỗi logic cấu hình DNS: Tự động (opportunistic), Tắt (off), AdGuard DNS, Cloudflare 1.1.1.1, Cloudflare Family và Google DNS.
+              2. Bổ sung nút chuyển đổi tức thì và đồng bộ trạng thái thực tế.
             - 🚀 Xuất xưởng duy nhất 1 bản Release APK chuẩn tối ưu.
           files: |
             output-apks/Mi-Tool-*-Release.apk

@@ -33,11 +33,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Tự động chặn quảng cáo, banner, pop-up trong ứng dụng và trình duyệt bằng DNS bảo mật, không hao pin và không cần dùng VPN."
+            android:text="Tự động chặn quảng cáo, banner, pop-up trong ứng dụng và trình duyệt bằng DNS mã hóa an toàn, không hao pin và không cần dùng VPN."
             android:textColor="@color/text_secondary"
             android:textSize="12sp" />
 
-        <!-- Current DNS Status -->
+        <!-- Current DNS Status Card -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -56,6 +56,7 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
+        <!-- AdGuard DNS Button (Recommended) -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/bs_btn_dns_adguard"
             android:layout_width="match_parent"
@@ -71,13 +72,14 @@
             android:paddingRight="8dp"
             android:maxLines="1"
             android:ellipsize="end"
-            android:text="🛡️ Bật AdGuard DNS (Khuyên dùng)"
+            android:text="🛡️ Bật AdGuard DNS (Khuyên dùng Chặn QC)"
             android:textColor="@color/neon_green"
             android:textSize="13sp"
             app:cornerRadius="8dp"
             app:strokeColor="@color/neon_green"
             app:strokeWidth="1dp" />
 
+        <!-- Cloudflare Family -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/bs_btn_dns_cloudflare_family"
             android:layout_width="match_parent"
@@ -91,12 +93,14 @@
             android:insetRight="0dp"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
-            android:maxLines="2"
-            android:text="👨‍👩‍👧 Bật Cloudflare Family (Chặn web đen &amp; QC)"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="👨‍👩‍👧 Bật Cloudflare Family (Chặn Web Độc &amp; 18+)"
             android:textColor="@color/text_primary"
             android:textSize="12sp"
             app:cornerRadius="8dp" />
 
+        <!-- Row 1: Cloudflare 1.1.1.1 & Google DNS -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -126,7 +130,7 @@
                 app:cornerRadius="8dp" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/bs_btn_dns_auto"
+                android:id="@+id/bs_btn_dns_google"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
@@ -142,38 +146,71 @@
                 android:paddingRight="2dp"
                 android:maxLines="1"
                 android:ellipsize="end"
-                android:text="🔄 Tự Động (Nhà mạng)"
+                android:text="🌐 Google DNS"
                 android:textColor="@color/text_primary"
                 android:textSize="11sp"
                 app:cornerRadius="8dp" />
         </LinearLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/bs_btn_dns_off"
+        <!-- Row 2: Auto & Off -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:minHeight="44dp"
-            android:backgroundTint="@color/card_highlight"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:insetLeft="0dp"
-            android:insetRight="0dp"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:text="❌ Tắt DNS Riêng Tư"
-            android:textColor="@color/neon_red"
-            android:textSize="12sp"
-            app:cornerRadius="8dp" />
+            android:orientation="horizontal">
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/bs_btn_dns_auto"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:minHeight="42dp"
+                android:minWidth="0dp"
+                android:backgroundTint="@color/card_highlight"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:insetLeft="0dp"
+                android:insetRight="0dp"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:text="🔄 Tự Động (Nhà mạng)"
+                android:textColor="@color/neon_cyan"
+                android:textSize="11sp"
+                app:cornerRadius="8dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/bs_btn_dns_off"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_weight="1"
+                android:minHeight="42dp"
+                android:minWidth="0dp"
+                android:backgroundTint="@color/card_highlight"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:insetLeft="0dp"
+                android:insetRight="0dp"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:text="❌ Tắt DNS Riêng Tư"
+                android:textColor="@color/neon_red"
+                android:textSize="11sp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+
+        <!-- System Settings Shortcut -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/bs_btn_open_dns_settings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:minHeight="44dp"
+            android:layout_marginTop="10dp"
+            android:minHeight="42dp"
             android:backgroundTint="@color/card_highlight"
             android:insetTop="0dp"
             android:insetBottom="0dp"
@@ -183,8 +220,8 @@
             android:paddingRight="8dp"
             android:maxLines="1"
             android:ellipsize="end"
-            android:text="⚙️ Mở Cài Đặt DNS Hệ Thống"
-            android:textColor="@color/text_primary"
+            android:text="⚙️ Mở Cài Đặt DNS Mạng Hệ Thống"
+            android:textColor="@color/text_secondary"
             android:textSize="12sp"
             app:cornerRadius="8dp" />
 

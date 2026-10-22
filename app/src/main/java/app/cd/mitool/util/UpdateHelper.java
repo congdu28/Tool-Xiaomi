@@ -52,11 +52,11 @@ public class UpdateHelper {
             }
         } catch (Throwable ignored) {
         }
-        return "1.0.36";
+        return "1.0.37";
     }
 
     public static String getCurrentVersion() {
-        return "1.0.36";
+        return "1.0.37";
     }
 
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();

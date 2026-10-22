@@ -1,89 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
-    android:background="@color/card_highlight"
-    android:orientation="vertical"
-    android:padding="12dp">
+    android:layout_marginBottom="10dp"
+    app:cardBackgroundColor="@color/card_dark"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:padding="12dp">
 
+        <!-- Header: App Name & Badges -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_debloat_app_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mi Video"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_debloat_pkg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:fontFamily="monospace"
+                    android:text="com.miui.videoplayer"
+                    android:textColor="@color/text_muted"
+                    android:textSize="10sp" />
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/tv_debloat_app_name"
+                android:id="@+id/tv_debloat_status_badge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Mi Video"
-                android:textColor="@color/text_primary"
-                android:textSize="13sp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_badge_rounded"
+                android:paddingStart="8dp"
+                android:paddingTop="3dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="3dp"
+                android:singleLine="true"
+                android:text="Đang chạy"
+                android:textColor="@color/mi_orange"
+                android:textSize="10sp"
                 android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tv_debloat_pkg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="monospace"
-                android:text="com.miui.videoplayer"
-                android:textColor="@color/text_muted"
-                android:textSize="10sp" />
         </LinearLayout>
 
+        <!-- Description -->
         <TextView
-            android:id="@+id/tv_debloat_status_badge"
+            android:id="@+id/tv_debloat_desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:background="@drawable/bg_badge_rounded"
-            android:paddingStart="8dp"
-            android:paddingTop="2dp"
-            android:paddingEnd="8dp"
-            android:paddingBottom="2dp"
-            android:text="Đang chạy"
-            android:textColor="@color/neon_green"
-            android:textSize="10sp"
-            android:textStyle="bold" />
+            android:layout_marginTop="6dp"
+            android:text="Trình xem video mặc định kèm nhiều thông báo tin tức và quảng cáo"
+            android:textColor="@color/text_secondary"
+            android:textSize="11sp" />
+
+        <!-- Action Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_toggle_freeze"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:minHeight="38dp"
+            android:backgroundTint="@color/card_highlight"
+            app:strokeColor="@color/neon_cyan"
+            app:strokeWidth="1dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="❄️ Đóng băng ứng dụng"
+            android:textColor="@color/neon_cyan"
+            android:textSize="12sp"
+            app:cornerRadius="8dp" />
+
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tv_debloat_desc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="Trình xem video mặc định kèm nhiều thông báo rác"
-        android:textColor="@color/text_secondary"
-        android:textSize="11sp" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_toggle_freeze"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:minHeight="38dp"
-        android:backgroundTint="@color/card_dark"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:insetLeft="0dp"
-        android:insetRight="0dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:maxLines="1"
-        android:ellipsize="end"
-        android:text="❄️ Đóng băng ứng dụng"
-        android:textColor="@color/neon_cyan"
-        android:textSize="11sp"
-        app:cornerRadius="6dp"
-        app:strokeColor="@color/neon_cyan"
-        app:strokeWidth="1dp" />
-
-</LinearLayout>
+</androidx.cardview.widget.CardView>
