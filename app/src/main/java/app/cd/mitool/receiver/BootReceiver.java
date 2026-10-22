@@ -53,6 +53,15 @@ public class BootReceiver extends BroadcastReceiver {
                 SotAppWidgetProvider.updateAllWidgets(context);
             } catch (Exception ignored) {
             }
+
+            // Periodic background check for app update (every 6h)
+            try {
+                long lastCheck = prefs.getLastUpdateCheckTime();
+                if (System.currentTimeMillis() - lastCheck > 6 * 3600 * 1000L) {
+                    app.cd.mitool.util.UpdateHelper.checkForUpdate(context.getApplicationContext(), false);
+                }
+            } catch (Exception ignored) {
+            }
         }
     }
 }

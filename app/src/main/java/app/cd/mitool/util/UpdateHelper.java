@@ -16,10 +16,14 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
@@ -39,9 +43,17 @@ import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import app.cd.mitool.MainActivity;
 import app.cd.mitool.R;
 
 public class UpdateHelper {
+
+    public static final String CHANNEL_ID_UPDATE = "mitool_update_channel";
+    public static final int NOTIFICATION_ID_UPDATE = 8802;
+    public static final String EXTRA_OPEN_UPDATE_DIALOG = "open_update_dialog";
+    public static final String EXTRA_UPDATE_TAG = "update_tag";
+    public static final String EXTRA_UPDATE_BODY = "update_body";
+    public static final String EXTRA_UPDATE_URL = "update_url";
 
     private static final String GITHUB_RELEASE_API = "https://api.github.com/repos/congdu28/Tool-Xiaomi/releases/latest";
 
@@ -52,11 +64,11 @@ public class UpdateHelper {
             }
         } catch (Throwable ignored) {
         }
-        return "1.0.44";
+        return "1.0.47";
     }
 
     public static String getCurrentVersion() {
-        return "1.0.44";
+        return "1.0.47";
     }
 
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -133,6 +145,14 @@ public class UpdateHelper {
                         final String currentVersion = getCurrentVersion(context);
                         final boolean isNewer = isVersionNewer(tagName, currentVersion);
 
+                        // Record check timestamp
+                        try {
+                            if (context != null) {
+                                new PreferencesHelper(context).setLastUpdateCheckTime(System.currentTimeMillis());
+                            }
+                        } catch (Throwable ignored) {
+                        }
+
                         mainHandler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -140,6 +160,10 @@ public class UpdateHelper {
                                     listener.onFinished(isNewer, true);
                                 }
                                 if (isNewer && finalApkUrl != null) {
+                                    // Post System Notification in Android Notification Drawer
+                                    postUpdateAvailableNotification(context, tagName, body, finalApkUrl);
+
+                                    // If user is currently looking at the app activity, also show bottom sheet
                                     showUpdateBottomSheet(context, tagName, body, finalApkUrl);
                                 } else if (isManualCheck) {
                                     showUpToDateBottomSheet(context, currentVersion);
@@ -225,11 +249,78 @@ public class UpdateHelper {
         return cleaned;
     }
 
+    /**
+     * Post a prominent Android system notification when a new update is available.
+     */
+    public static void postUpdateAvailableNotification(Context context, String newVersion, String changelog, String downloadUrl) {
+        if (context == null) return;
+        try {
+            NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (nm == null) return;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationChannel channel = new NotificationChannel(
+                        CHANNEL_ID_UPDATE,
+                        "Cập Nhật Ứng Dụng",
+                        NotificationManager.IMPORTANCE_HIGH
+                );
+                channel.setDescription("Thông báo khi có phiên bản Mi Tool mới");
+                channel.enableLights(true);
+                channel.enableVibration(true);
+                nm.createNotificationChannel(channel);
+            }
+
+            Intent intent = new Intent(context, MainActivity.class);
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putExtra(EXTRA_OPEN_UPDATE_DIALOG, true);
+            intent.putExtra(EXTRA_UPDATE_TAG, newVersion);
+            intent.putExtra(EXTRA_UPDATE_BODY, changelog);
+            intent.putExtra(EXTRA_UPDATE_URL, downloadUrl);
+
+            int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                flags |= PendingIntent.FLAG_IMMUTABLE;
+            }
+            PendingIntent pi = PendingIntent.getActivity(context, NOTIFICATION_ID_UPDATE, intent, flags);
+
+            String formattedVer = (newVersion != null && newVersion.startsWith("v")) ? newVersion : ("v" + newVersion);
+            String title = "🎉 Có bản cập nhật mới: " + formattedVer;
+            String summaryText = formatChangelog(changelog);
+            if (summaryText.length() > 220) {
+                summaryText = summaryText.substring(0, 217) + "...";
+            }
+
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID_UPDATE)
+                    .setSmallIcon(R.drawable.ic_app_icon)
+                    .setContentTitle(title)
+                    .setContentText("Bản mới đã sẵn sàng. Chạm để xem và cài đặt ngay!")
+                    .setStyle(new NotificationCompat.BigTextStyle()
+                            .setBigContentTitle(title)
+                            .bigText(summaryText + "\n\n👉 Chạm vào đây để xem chi tiết & cập nhật."))
+                    .setContentIntent(pi)
+                    .setAutoCancel(true)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setDefaults(NotificationCompat.DEFAULT_ALL);
+
+            nm.notify(NOTIFICATION_ID_UPDATE, builder.build());
+        } catch (Throwable ignored) {
+        }
+    }
+
     public static void showUpdateBottomSheet(final Context context, final String newVersion, String changelog, final String downloadUrl) {
         if (!(context instanceof Activity) || ((Activity) context).isFinishing()) {
             return;
         }
         final Activity activity = (Activity) context;
+
+        // Dismiss the system notification since the dialog is now presented
+        try {
+            NotificationManager nm = (NotificationManager) activity.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (nm != null) nm.cancel(NOTIFICATION_ID_UPDATE);
+        } catch (Throwable ignored) {
+        }
+
         final BottomSheetDialog bs = new BottomSheetDialog(activity);
         View view = LayoutInflater.from(activity).inflate(R.layout.bottom_sheet_update, null);
         bs.setContentView(view);

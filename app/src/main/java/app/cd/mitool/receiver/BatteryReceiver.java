@@ -75,6 +75,12 @@ public class BatteryReceiver extends BroadcastReceiver {
                 }
             }
 
+            // 4. Periodic background update check when plugged in (every 6h)
+            long lastCheck = prefs.getLastUpdateCheckTime();
+            if (System.currentTimeMillis() - lastCheck > 6 * 3600 * 1000L) {
+                app.cd.mitool.util.UpdateHelper.checkForUpdate(context.getApplicationContext(), false);
+            }
+
         } else if (Intent.ACTION_POWER_DISCONNECTED.equals(action)) {
             // Read realtime battery info
             BatteryHelper.BatteryInfo info = BatteryHelper.getBatteryInfo(context);

@@ -43,7 +43,7 @@ jobs:
             TAG="${{ github.ref_name }}"
           else
             VER=$(grep "versionName" app/build.gradle | head -n 1 | awk -F"'" '{print $2}')
-            TAG="v${VER:-1.0.46}"
+            TAG="v${VER:-1.0.47}"
           fi
           echo "TAG_NAME=${TAG}" >> $GITHUB_ENV
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
@@ -98,15 +98,17 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             Bản cập nhật ${{ env.TAG_NAME }}:
-            - 🔔 Trợ Lý Khắc Phục Trễ Thông Báo & Mở Khóa FCM / GMS Toàn Diện (Không Cần Khóa Đa Nhiệm):
-              1. ⚡ Mở khóa đường truyền Google Play Services (GMS FCM Socket mtalk.google.com) hoạt động bền bỉ như máy ROM Quốc Tế.
-              2. 🛡️ Tự động inject GMS và ứng dụng vào danh sách cấm đóng băng ngầm của HyperOS (MILLET_NO_RESTRICT_APP) & miễn trừ Doze mode vĩnh viễn.
-              3. 🏦 Nhận diện và hỗ trợ riêng biệt toàn bộ App Ngân Hàng Việt Nam (Vietcombank, Techcombank, MB Bank, VPBank, BIDV, Cake...) & Gmail nhận biến động số dư OTT tức thì.
-              4. 🔍 Tích hợp phím tắt kiểm tra trực tiếp trạng thái kết nối FCM (*#*#426#*#*) trong nháy mắt.
-            - 🎮 Mini Game HUD Nổi (FPS & Hiệu Năng Thời Gian Thực):
-              1. Lớp phủ nổi siêu nhẹ dạng Capsule kéo thả tự do trên màn hình khi chơi game (Liên Quân, Tốc Chiến, Genshin, PUBG...).
-              2. Đo FPS thực tế & tần số quét màn hình (Choreographer VSYNC), theo dõi % CPU, % RAM, Nhiệt độ pin (°C) và Công suất xả pin (Watt).
-              3. Chạm 1 lần để chuyển đổi linh hoạt giữa Chế độ Gọn (Compact) và Bảng điều khiển (Expanded).
-              4. Tích hợp Quick Settings Tile "Game HUD FPS" bật/tắt nhanh từ thanh điều khiển.
+            - 🔔 **Thông Báo Bản Cập Nhật Mới Qua System Notification**:
+              1. Tự động bắn thông báo hệ thống (Notification Drawer) khi phát hiện phiên bản mới từ GitHub Releases.
+              2. Kèm bản xem trước nội dung cập nhật (Changelog) dạng BigTextStyle đẹp mắt.
+              3. Chạm vào thông báo sẽ mở ngay hộp thoại cập nhật tải APK trực tiếp 1 chạm tiện lợi.
+              4. Cơ chế kiểm tra định kỳ ngầm thông minh khi cắm sạc hoặc khởi động lại thiết bị (tần suất tối thiểu 6 giờ/lần), hoàn toàn không chạy ngầm gây hao pin hay nóng máy.
+            - 🛡️ **Bộ Công Cụ Fix Trễ Thông Báo & FCM / GMS Cho ROM Nội Địa (HyperOS / MIUI)**:
+              1. Mở khóa kết nối Google Play Services FCM Socket (mtalk.google.com) tương tự ROM Quốc Tế mà không cần khóa đa nhiệm (Lock recent apps).
+              2. Khắc phục trễ OTT các App Ngân Hàng Việt Nam (Vietcombank, Techcombank, MB, BIDV, VPBank, Cake...) & Gmail.
+              3. Phím tắt kiểm tra FCM Diagnostics (*#*#426#*#*).
+            - 🎮 **Mini Game HUD Nổi (FPS & Giám Sát Hiệu Năng Thời Gian Thực)**:
+              1. Hiển thị FPS thực tế (Choreographer VSYNC), CPU, RAM, Nhiệt độ pin (°C) và Công suất xả (Watt).
+              2. Quick Settings Tile bật/tắt nhanh chóng.
             - 🚀 Xuất xưởng Release APK tối ưu hóa hiệu năng và độ ổn định.
           files: output-apks/*.apk

@@ -334,9 +334,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void handleIncomingIntent(Intent intent) {
-        if (intent != null && intent.getIntExtra("extra_tab_index", -1) == 1) {
+        if (intent == null) return;
+        if (intent.getIntExtra("extra_tab_index", -1) == 1) {
             if (bottomNav != null) {
                 bottomNav.setSelectedItemId(R.id.nav_battery);
+            }
+        }
+        if (intent.getBooleanExtra(UpdateHelper.EXTRA_OPEN_UPDATE_DIALOG, false)) {
+            String tag = intent.getStringExtra(UpdateHelper.EXTRA_UPDATE_TAG);
+            String body = intent.getStringExtra(UpdateHelper.EXTRA_UPDATE_BODY);
+            String url = intent.getStringExtra(UpdateHelper.EXTRA_UPDATE_URL);
+            if (tag != null && url != null) {
+                UpdateHelper.showUpdateBottomSheet(this, tag, body, url);
             }
         }
     }
