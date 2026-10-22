@@ -482,6 +482,33 @@ public class PreferencesHelper {
     public static final String KEY_GAME_HUD_EXPANDED = "game_hud_expanded";
     public static final String KEY_GAME_HUD_X = "game_hud_pos_x";
     public static final String KEY_GAME_HUD_Y = "game_hud_pos_y";
+    public static final String KEY_CUSTOM_GAME_PACKAGES = "custom_game_packages";
+
+    public java.util.Set<String> getCustomGamePackages() {
+        java.util.Set<String> set = prefs.getStringSet(KEY_CUSTOM_GAME_PACKAGES, null);
+        if (set == null) {
+            return new java.util.LinkedHashSet<>();
+        }
+        return new java.util.LinkedHashSet<>(set);
+    }
+
+    public void setCustomGamePackages(java.util.Set<String> pkgs) {
+        prefs.edit().putStringSet(KEY_CUSTOM_GAME_PACKAGES, pkgs).apply();
+    }
+
+    public void addCustomGamePackage(String pkg) {
+        if (pkg == null || pkg.trim().isEmpty()) return;
+        java.util.Set<String> set = getCustomGamePackages();
+        set.add(pkg.trim());
+        setCustomGamePackages(set);
+    }
+
+    public void removeCustomGamePackage(String pkg) {
+        if (pkg == null) return;
+        java.util.Set<String> set = getCustomGamePackages();
+        set.remove(pkg.trim());
+        setCustomGamePackages(set);
+    }
 
     public boolean isGameHudEnabled() {
         return prefs.getBoolean(KEY_GAME_HUD_ENABLED, false);

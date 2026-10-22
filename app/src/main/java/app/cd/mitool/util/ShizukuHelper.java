@@ -331,4 +331,26 @@ public class ShizukuHelper {
             });
         });
     }
+
+    /**
+     * Grant overlay and MIUI popup window permissions via Shizuku shell.
+     */
+    public static void grantOverlayPermission(Context context, CommandCallback callback) {
+        EXECUTOR.execute(() -> {
+            String pkg = context.getPackageName();
+            String cmd = "appops set " + pkg + " SYSTEM_ALERT_WINDOW allow; " +
+                         "appops set " + pkg + " 10021 allow; " + // OP_BACKGROUND_START_ACTIVITY
+                         "appops set " + pkg + " 10020 allow; " + // OP_SHOW_WHEN_LOCKED
+                         "appops set " + pkg + " 24 allow";      // OP_SYSTEM_ALERT_WINDOW
+            ShellResult result = executeCommand(cmd);
+            MAIN_HANDLER.post(() -> {
+                if (result.success) {
+                    if (callback != null) callback.onComplete(true, "Đã cấp quyền hiển thị cửa sổ nổi HUD qua Shizuku!");
+                } else {
+                    String err = !result.stderr.isEmpty() ? result.stderr : result.stdout;
+                    if (callback != null) callback.onComplete(false, "Lỗi cấp quyền HUD: " + err);
+                }
+            });
+        });
+    }
 }

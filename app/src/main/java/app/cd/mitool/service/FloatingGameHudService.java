@@ -32,6 +32,7 @@ import android.widget.TextView;
 import androidx.core.app.NotificationCompat;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.Locale;
@@ -46,6 +47,15 @@ public class FloatingGameHudService extends Service {
 
     private static final String CHANNEL_ID = "mitool_game_hud_service";
     private static final int NOTIFICATION_ID = 2002;
+
+    private static final String[] HARDWARE_FPS_SYSFS = {
+            "/sys/class/drm/card0/sde-crtc-0/measured_fps",
+            "/sys/class/drm/card0-DSI-1/measured_fps",
+            "/sys/class/graphics/fb0/measured_fps",
+            "/sys/devices/platform/soc/soc:qcom,dsi-display-primary/measured_fps",
+            "/sys/devices/virtual/graphics/fb0/fps",
+            "/proc/cpufreq/cpufreq_fps"
+    };
 
     private WindowManager windowManager;
     private View hudRootView;
@@ -98,16 +108,58 @@ public class FloatingGameHudService extends Service {
             long now = System.currentTimeMillis();
             long diff = now - lastFpsSampleTime;
             if (diff >= 1000) {
-                currentFps = (int) Math.round((frameCount * 1000.0) / diff);
-                // Clamp FPS to reasonable display bounds
-                if (currentFps > maxDisplayHz + 5) currentFps = maxDisplayHz;
+                int hwFps = readHardwareFps();
+                if (hwFps > 0) {
+                    currentFps = hwFps;
+                } else {
+                    currentFps = (int) Math.round((frameCount * 1000.0) / diff);
+                    if (currentFps > maxDisplayHz + 5) currentFps = maxDisplayHz;
+                }
                 frameCount = 0;
                 lastFpsSampleTime = now;
                 updateFpsViews();
             }
-            Choreographer.getInstance().postFrameCallback(this);
+            if (isScreenOn) {
+                Choreographer.getInstance().postFrameCallback(this);
+            }
         }
     };
+
+    /**
+     * Read actual panel / GPU rendering FPS from hardware sysfs nodes available on Xiaomi/MIUI.
+     */
+    private int readHardwareFps() {
+        for (String path : HARDWARE_FPS_SYSFS) {
+            try {
+                File file = new File(path);
+                if (!file.exists() || !file.canRead()) continue;
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
+                    String line = br.readLine();
+                    if (line != null) {
+                        line = line.trim();
+                        if (line.toLowerCase(Locale.US).contains("fps")) {
+                            line = line.replaceAll("[^0-9.]", " ").trim();
+                            String[] parts = line.split("\\s+");
+                            if (parts.length > 0 && !parts[0].isEmpty()) {
+                                float val = Float.parseFloat(parts[0]);
+                                int fps = Math.round(val);
+                                if (fps >= 10 && fps <= 240) return fps;
+                            }
+                        } else if (!line.isEmpty()) {
+                            try {
+                                float val = Float.parseFloat(line);
+                                int fps = Math.round(val);
+                                if (fps >= 10 && fps <= 240) return fps;
+                            } catch (NumberFormatException ignored) {
+                            }
+                        }
+                    }
+                }
+            } catch (Throwable ignored) {
+            }
+        }
+        return -1;
+    }
 
     private final BroadcastReceiver screenAndBatteryReceiver = new BroadcastReceiver() {
         @Override
@@ -213,7 +265,13 @@ public class FloatingGameHudService extends Service {
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .build();
 
-        startForeground(NOTIFICATION_ID, notification);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            startForeground(NOTIFICATION_ID, notification, android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            startForeground(NOTIFICATION_ID, notification, 0);
+        } else {
+            startForeground(NOTIFICATION_ID, notification);
+        }
     }
 
     private void initHudView() {
@@ -248,6 +306,7 @@ public class FloatingGameHudService extends Service {
                 layoutType,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS |
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN |
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 PixelFormat.TRANSLUCENT
         );
@@ -255,8 +314,15 @@ public class FloatingGameHudService extends Service {
         params.gravity = Gravity.TOP | Gravity.START;
         int savedX = prefs.getGameHudX();
         int savedY = prefs.getGameHudY();
-        params.x = (savedX != -1) ? savedX : 60;
-        params.y = (savedY != -1) ? savedY : 200;
+
+        android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+        int screenWidth = dm.widthPixels;
+        int screenHeight = dm.heightPixels;
+
+        int initX = (savedX != -1) ? savedX : 60;
+        int initY = (savedY != -1) ? savedY : 200;
+        params.x = Math.max(0, Math.min(initX, screenWidth - 100));
+        params.y = Math.max(0, Math.min(initY, screenHeight - 80));
 
         setupTouchListener();
 
@@ -264,8 +330,12 @@ public class FloatingGameHudService extends Service {
         if (btnCloseCompact != null) btnCloseCompact.setOnClickListener(closeListener);
         if (btnCloseExp != null) btnCloseExp.setOnClickListener(closeListener);
 
-        windowManager.addView(hudRootView, params);
-        prefs.setGameHudEnabled(true);
+        try {
+            windowManager.addView(hudRootView, params);
+            prefs.setGameHudEnabled(true);
+        } catch (Throwable t) {
+            stopSelf();
+        }
     }
 
     private void updateDisplayMode() {
@@ -296,6 +366,9 @@ public class FloatingGameHudService extends Service {
                         params.x = initialX + (int) (event.getRawX() - initialTouchX);
                         params.y = initialY + (int) (event.getRawY() - initialTouchY);
                         try {
+                            android.util.DisplayMetrics dmCurrent = getResources().getDisplayMetrics();
+                            params.x = Math.max(0, Math.min(params.x, dmCurrent.widthPixels - 40));
+                            params.y = Math.max(0, Math.min(params.y, dmCurrent.heightPixels - 40));
                             windowManager.updateViewLayout(hudRootView, params);
                         } catch (Throwable ignored) {
                         }
@@ -344,6 +417,11 @@ public class FloatingGameHudService extends Service {
             @Override
             public void run() {
                 if (isScreenOn) {
+                    int hwFps = readHardwareFps();
+                    if (hwFps > 0) {
+                        currentFps = hwFps;
+                        updateFpsViews();
+                    }
                     measureCpuUsage();
                     updateMetricsViews();
                 }
@@ -458,6 +536,22 @@ public class FloatingGameHudService extends Service {
             return START_NOT_STICKY;
         }
         return START_STICKY;
+    }
+
+    @Override
+    public void onConfigurationChanged(android.content.res.Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (windowManager != null && hudRootView != null && params != null) {
+            try {
+                android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+                int maxX = Math.max(0, dm.widthPixels - (hudRootView.getWidth() > 0 ? hudRootView.getWidth() : 120));
+                int maxY = Math.max(0, dm.heightPixels - (hudRootView.getHeight() > 0 ? hudRootView.getHeight() : 60));
+                if (params.x > maxX) params.x = maxX;
+                if (params.y > maxY) params.y = maxY;
+                windowManager.updateViewLayout(hudRootView, params);
+            } catch (Throwable ignored) {
+            }
+        }
     }
 
     @Override

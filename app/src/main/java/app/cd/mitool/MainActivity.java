@@ -11,8 +11,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -65,6 +67,7 @@ import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.navigation.NavigationBarView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -1142,17 +1145,10 @@ public class MainActivity extends AppCompatActivity {
             switchGameHud.setChecked(prefs.isGameHudEnabled());
             switchGameHud.setOnCheckedChangeListener((btn, isChecked) -> {
                 if (isChecked) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(MainActivity.this)) {
-                        switchGameHud.setChecked(false);
-                        Intent overlayIntent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                Uri.parse("package:" + getPackageName()));
-                        startActivity(overlayIntent);
-                        Toast.makeText(MainActivity.this, "Vui lòng cấp quyền Hiển thị trên ứng dụng khác để mở HUD nổi", Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                    prefs.setGameHudEnabled(true);
-                    startFloatingGameHudService();
-                    Toast.makeText(MainActivity.this, "🎮 Đã bật Mini Game HUD", Toast.LENGTH_SHORT).show();
+                    ensureGameHudPermissionAndStart(() -> {
+                        switchGameHud.setChecked(true);
+                        Toast.makeText(MainActivity.this, "🎮 Đã bật Mini Game HUD", Toast.LENGTH_SHORT).show();
+                    });
                 } else {
                     prefs.setGameHudEnabled(false);
                     stopFloatingGameHudService();
@@ -1165,17 +1161,10 @@ public class MainActivity extends AppCompatActivity {
             btnToggleGameHud.setOnClickListener(v -> {
                 boolean cur = prefs.isGameHudEnabled();
                 if (!cur) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(MainActivity.this)) {
-                        Intent overlayIntent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                Uri.parse("package:" + getPackageName()));
-                        startActivity(overlayIntent);
-                        Toast.makeText(MainActivity.this, "Vui lòng cấp quyền Hiển thị trên ứng dụng khác để mở HUD nổi", Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                    prefs.setGameHudEnabled(true);
-                    startFloatingGameHudService();
-                    if (switchGameHud != null) switchGameHud.setChecked(true);
-                    Toast.makeText(MainActivity.this, "🎮 Đã bật Mini Game HUD", Toast.LENGTH_SHORT).show();
+                    ensureGameHudPermissionAndStart(() -> {
+                        if (switchGameHud != null) switchGameHud.setChecked(true);
+                        Toast.makeText(MainActivity.this, "🎮 Đã bật Mini Game HUD", Toast.LENGTH_SHORT).show();
+                    });
                 } else {
                     prefs.setGameHudEnabled(false);
                     stopFloatingGameHudService();
@@ -1206,7 +1195,251 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
+        // Custom Game Library controls
+        MaterialButton btnAddGame = view.findViewById(R.id.bs_btn_add_custom_game);
+        LinearLayout layoutGameList = view.findViewById(R.id.bs_layout_game_list);
+        TextView tvNoGames = view.findViewById(R.id.bs_tv_no_games);
+
+        Runnable refreshGameList = new Runnable() {
+            @Override
+            public void run() {
+                if (layoutGameList == null) return;
+                layoutGameList.removeAllViews();
+
+                java.util.Set<String> savedPkgs = prefs.getCustomGamePackages();
+
+                // If empty on first launch, auto-populate with detected installed games
+                if (savedPkgs.isEmpty()) {
+                    java.util.List<String> detected = GamingFpsHelper.detectInstalledGames(MainActivity.this);
+                    if (!detected.isEmpty()) {
+                        savedPkgs.addAll(detected);
+                        prefs.setCustomGamePackages(savedPkgs);
+                    }
+                }
+
+                if (savedPkgs.isEmpty()) {
+                    if (tvNoGames != null) tvNoGames.setVisibility(View.VISIBLE);
+                    return;
+                }
+
+                if (tvNoGames != null) tvNoGames.setVisibility(View.GONE);
+
+                LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
+                for (String pkg : savedPkgs) {
+                    GamingFpsHelper.GameEntry entry = GamingFpsHelper.getGameEntry(MainActivity.this, pkg);
+                    if (entry == null) continue;
+
+                    View itemView = inflater.inflate(R.layout.item_game_hud_entry, layoutGameList, false);
+                    ImageView ivIcon = itemView.findViewById(R.id.iv_game_icon);
+                    TextView tvTitle = itemView.findViewById(R.id.tv_game_title);
+                    TextView tvPkg = itemView.findViewById(R.id.tv_game_package);
+                    MaterialButton btnLaunch = itemView.findViewById(R.id.btn_launch_game_with_hud);
+                    ImageView btnDelete = itemView.findViewById(R.id.btn_delete_game);
+
+                    if (entry.icon != null) {
+                        ivIcon.setImageDrawable(entry.icon);
+                    } else {
+                        ivIcon.setImageResource(R.drawable.ic_gamepad);
+                    }
+                    tvTitle.setText(entry.title);
+                    tvPkg.setText(entry.packageName);
+
+                    // 1-Tap Launch & Open HUD
+                    btnLaunch.setOnClickListener(vLaunch -> {
+                        ensureGameHudPermissionAndStart(() -> {
+                            boolean launched = GamingFpsHelper.launchGame(MainActivity.this, entry.packageName);
+                            if (launched) {
+                                Toast.makeText(MainActivity.this, "⚔️ Đang mở " + entry.title + " với Game HUD", Toast.LENGTH_SHORT).show();
+                                bs.dismiss();
+                            } else {
+                                Toast.makeText(MainActivity.this, "Không thể mở ứng dụng " + entry.title, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    });
+
+                    // Remove Game from Library
+                    btnDelete.setOnClickListener(vDel -> {
+                        prefs.removeCustomGamePackage(entry.packageName);
+                        Toast.makeText(MainActivity.this, "Đã xóa " + entry.title + " khỏi thư viện game", Toast.LENGTH_SHORT).show();
+                        run(); // refresh list
+                    });
+
+                    layoutGameList.addView(itemView);
+                }
+            }
+        };
+
+        refreshGameList.run();
+
+        if (btnAddGame != null) {
+            btnAddGame.setOnClickListener(v -> showAddGameAppPickerDialog(refreshGameList));
+        }
+
         bs.show();
+    }
+
+    private void ensureGameHudPermissionAndStart(Runnable onReady) {
+        if (ShizukuHelper.hasShizukuPermission()) {
+            ShizukuHelper.grantOverlayPermission(this, null);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            if (ShizukuHelper.hasShizukuPermission()) {
+                ShizukuHelper.grantOverlayPermission(this, new ShizukuHelper.CommandCallback() {
+                    @Override
+                    public void onComplete(boolean success, String message) {
+                        prefs.setGameHudEnabled(true);
+                        startFloatingGameHudService();
+                        if (onReady != null) onReady.run();
+                    }
+                });
+                return;
+            }
+
+            Intent overlayIntent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + getPackageName()));
+            startActivity(overlayIntent);
+            Toast.makeText(this, "Vui lòng cấp quyền Hiển thị trên ứng dụng khác để mở HUD nổi", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        prefs.setGameHudEnabled(true);
+        startFloatingGameHudService();
+        if (onReady != null) onReady.run();
+    }
+
+    private void showAddGameAppPickerDialog(Runnable onGameAdded) {
+        BottomSheetDialog dialog = new BottomSheetDialog(this);
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_pick_game_app, null);
+        dialog.setContentView(view);
+        configureBottomSheet(dialog);
+
+        ImageView btnClose = view.findViewById(R.id.btn_game_picker_close);
+        EditText etSearch = view.findViewById(R.id.et_game_picker_search);
+        ProgressBar pbLoading = view.findViewById(R.id.pb_game_picker_loading);
+        LinearLayout layoutList = view.findViewById(R.id.layout_game_picker_list);
+        TextView tvEmpty = view.findViewById(R.id.tv_game_picker_empty);
+
+        if (btnClose != null) btnClose.setOnClickListener(v -> dialog.dismiss());
+
+        class AppPickerItem {
+            String packageName;
+            String label;
+            Drawable icon;
+            boolean isGame;
+        }
+
+        final List<AppPickerItem> allApps = new ArrayList<>();
+        final List<View> renderedViews = new ArrayList<>();
+
+        new Thread(() -> {
+            PackageManager pm = getPackageManager();
+            List<ApplicationInfo> installedApps = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+            List<AppPickerItem> temp = new ArrayList<>();
+
+            for (ApplicationInfo ai : installedApps) {
+                if ((ai.flags & ApplicationInfo.FLAG_SYSTEM) != 0 && (ai.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == 0) {
+                    continue; // Skip non-updated system apps
+                }
+                if (ai.packageName.equals(getPackageName())) continue;
+
+                AppPickerItem item = new AppPickerItem();
+                item.packageName = ai.packageName;
+                CharSequence cs = pm.getApplicationLabel(ai);
+                item.label = cs != null ? cs.toString() : ai.packageName;
+                item.icon = pm.getApplicationIcon(ai);
+
+                boolean isGame = false;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    if (ai.category == ApplicationInfo.CATEGORY_GAME) isGame = true;
+                }
+                if ((ai.flags & ApplicationInfo.FLAG_IS_GAME) != 0) isGame = true;
+                for (String popular : GamingFpsHelper.POPULAR_GAME_PACKAGES) {
+                    if (popular.equalsIgnoreCase(ai.packageName)) {
+                        isGame = true;
+                        break;
+                    }
+                }
+                item.isGame = isGame;
+                temp.add(item);
+            }
+
+            // Sort: Games first, then alphabetically by name
+            Collections.sort(temp, (a, b) -> {
+                if (a.isGame != b.isGame) {
+                    return a.isGame ? -1 : 1;
+                }
+                return a.label.compareToIgnoreCase(b.label);
+            });
+
+            runOnUiThread(() -> {
+                if (pbLoading != null) pbLoading.setVisibility(View.GONE);
+                allApps.addAll(temp);
+
+                LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
+                for (AppPickerItem app : allApps) {
+                    View itemView = inflater.inflate(R.layout.item_pick_game_entry, layoutList, false);
+                    itemView.setTag(app);
+
+                    ImageView ivIcon = itemView.findViewById(R.id.iv_pick_game_icon);
+                    TextView tvName = itemView.findViewById(R.id.tv_pick_game_name);
+                    TextView tvBadge = itemView.findViewById(R.id.tv_pick_game_badge);
+                    TextView tvPkg = itemView.findViewById(R.id.tv_pick_game_pkg);
+
+                    if (app.icon != null) ivIcon.setImageDrawable(app.icon);
+                    tvName.setText(app.label);
+                    tvPkg.setText(app.packageName);
+                    if (app.isGame) {
+                        tvBadge.setVisibility(View.VISIBLE);
+                    } else {
+                        tvBadge.setVisibility(View.GONE);
+                    }
+
+                    itemView.setOnClickListener(v -> {
+                        prefs.addCustomGamePackage(app.packageName);
+                        Toast.makeText(MainActivity.this, "Đã thêm " + app.label + " vào thư viện game!", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                        if (onGameAdded != null) onGameAdded.run();
+                    });
+
+                    layoutList.addView(itemView);
+                    renderedViews.add(itemView);
+                }
+
+                if (allApps.isEmpty() && tvEmpty != null) {
+                    tvEmpty.setVisibility(View.VISIBLE);
+                }
+            });
+        }).start();
+
+        // Search filtering
+        if (etSearch != null) {
+            etSearch.addTextChangedListener(new TextWatcher() {
+                @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+                @Override
+                public void afterTextChanged(Editable s) {
+                    String query = s != null ? s.toString().trim().toLowerCase(Locale.getDefault()) : "";
+                    int visibleCount = 0;
+                    for (View v : renderedViews) {
+                        Object tag = v.getTag();
+                        if (tag instanceof AppPickerItem) {
+                            AppPickerItem it = (AppPickerItem) tag;
+                            boolean match = query.isEmpty() ||
+                                    it.label.toLowerCase(Locale.getDefault()).contains(query) ||
+                                    it.packageName.toLowerCase(Locale.getDefault()).contains(query);
+                            v.setVisibility(match ? View.VISIBLE : View.GONE);
+                            if (match) visibleCount++;
+                        }
+                    }
+                    if (tvEmpty != null) {
+                        tvEmpty.setVisibility(visibleCount == 0 ? View.VISIBLE : View.GONE);
+                    }
+                }
+            });
+        }
+
+        dialog.show();
     }
 
     // --- BottomSheet 3: Private DNS ---

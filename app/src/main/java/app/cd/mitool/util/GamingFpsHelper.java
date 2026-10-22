@@ -12,6 +12,8 @@ import android.net.Uri;
 import android.provider.Settings;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
+
 import java.io.DataOutputStream;
 
 /**
@@ -282,5 +284,119 @@ public class GamingFpsHelper {
             }
         } catch (Exception ignored) {
         }
+    }
+
+    public static class GameEntry {
+        public String packageName;
+        public String title;
+        public android.graphics.drawable.Drawable icon;
+
+        public GameEntry(String packageName, String title, android.graphics.drawable.Drawable icon) {
+            this.packageName = packageName;
+            this.title = title;
+            this.icon = icon;
+        }
+    }
+
+    public static final String[] POPULAR_GAME_PACKAGES = {
+            "com.garena.game.kgvn",              // Liên Quân Mobile (Việt Nam)
+            "com.riotgames.league.wildriftvn",     // LMHT: Tốc Chiến (VN)
+            "com.riotgames.league.wildrift",       // Wild Rift (Global)
+            "com.vng.pubgmobile",                // PUBG Mobile VN
+            "com.tencent.ig",                    // PUBG Mobile Global
+            "com.dts.freefireth",                // Free Fire VN/SEA
+            "com.dts.freefiremax",               // Free Fire MAX
+            "com.miHoYo.GenshinImpact",          // Genshin Impact Global
+            "com.miHoYo.Yuanshen",               // Genshin Impact CN
+            "com.miHoYo.hkrpgoversea",           // Honkai: Star Rail
+            "com.HoYoverse.Nap",                 // Zenless Zone Zero
+            "com.levelinfinite.sgameGlobal",     // Honor of Kings
+            "com.tencent.tmgp.sgame",            // Vương Giả Vinh Diệu
+            "com.vng.codmvn",                    // Call of Duty Mobile VN
+            "com.activision.callofduty.shooter", // COD Mobile Global
+            "com.roblox.client",                 // Roblox
+            "com.haegin.playtogether",           // Play Together
+            "com.carxtech.sr"                    // CarX Street
+    };
+
+    /**
+     * Detect installed games on this device (popular games + apps marked as CATEGORY_GAME).
+     */
+    public static java.util.List<String> detectInstalledGames(Context context) {
+        java.util.List<String> detected = new java.util.ArrayList<>();
+        if (context == null) return detected;
+        PackageManager pm = context.getPackageManager();
+
+        // 1. Check popular game packages
+        for (String pkg : POPULAR_GAME_PACKAGES) {
+            try {
+                pm.getPackageInfo(pkg, 0);
+                if (!detected.contains(pkg)) {
+                    detected.add(pkg);
+                }
+            } catch (PackageManager.NameNotFoundException ignored) {
+            }
+        }
+
+        // 2. Scan installed applications for CATEGORY_GAME
+        try {
+            java.util.List<ApplicationInfo> installed = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+            for (ApplicationInfo ai : installed) {
+                if ((ai.flags & ApplicationInfo.FLAG_SYSTEM) != 0 && (ai.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == 0) {
+                    continue; // Skip non-updated system apps
+                }
+                boolean isGame = false;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    if (ai.category == ApplicationInfo.CATEGORY_GAME) {
+                        isGame = true;
+                    }
+                }
+                if ((ai.flags & ApplicationInfo.FLAG_IS_GAME) != 0) {
+                    isGame = true;
+                }
+                if (isGame && !detected.contains(ai.packageName)) {
+                    detected.add(ai.packageName);
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+
+        return detected;
+    }
+
+    /**
+     * Resolve GameEntry (Icon, Title) for a given package name.
+     */
+    public static GameEntry getGameEntry(Context context, String packageName) {
+        if (context == null || packageName == null) return null;
+        PackageManager pm = context.getPackageManager();
+        try {
+            ApplicationInfo ai = pm.getApplicationInfo(packageName, 0);
+            CharSequence label = pm.getApplicationLabel(ai);
+            android.graphics.drawable.Drawable icon = pm.getApplicationIcon(ai);
+            return new GameEntry(packageName, label != null ? label.toString() : packageName, icon);
+        } catch (PackageManager.NameNotFoundException e) {
+            return new GameEntry(packageName, packageName, ContextCompat.getDrawable(context, app.cd.mitool.R.drawable.ic_gamepad));
+        } catch (Throwable t) {
+            return new GameEntry(packageName, packageName, null);
+        }
+    }
+
+    /**
+     * Launch game by package name.
+     */
+    public static boolean launchGame(Context context, String packageName) {
+        if (context == null || packageName == null) return false;
+        PackageManager pm = context.getPackageManager();
+        try {
+            Intent intent = pm.getLaunchIntentForPackage(packageName);
+            if (intent != null) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+                return true;
+            }
+        } catch (Throwable ignored) {
+        }
+        return false;
     }
 }
