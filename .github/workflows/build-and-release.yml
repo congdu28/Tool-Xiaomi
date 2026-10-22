@@ -2,8 +2,6 @@ name: Build and Release APK
 
 on:
   push:
-    branches:
-      - main
     tags:
       - 'v*'
   workflow_dispatch:
@@ -45,7 +43,7 @@ jobs:
             TAG="${{ github.ref_name }}"
           else
             VER=$(grep "versionName" app/build.gradle | head -n 1 | awk -F"'" '{print $2}')
-            TAG="v${VER:-1.0.39}"
+            TAG="v${VER:-1.0.40}"
           fi
           echo "TAG_NAME=${TAG}" >> $GITHUB_ENV
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
@@ -123,5 +121,4 @@ jobs:
               1. Sửa lỗi logic cấu hình DNS: Tự động (opportunistic), Tắt (off), AdGuard DNS, Cloudflare 1.1.1.1, Cloudflare Family và Google DNS.
               2. Bổ sung nút chuyển đổi tức thì và đồng bộ trạng thái thực tế.
             - 🚀 Xuất xưởng duy nhất 1 bản Release APK chuẩn tối ưu.
-          files: |
-            output-apks/Mi-Tool-*-Release.apk
+          files: output-apks/*.apk
