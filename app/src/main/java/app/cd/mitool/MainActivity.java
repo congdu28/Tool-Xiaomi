@@ -1141,17 +1141,28 @@ public class MainActivity extends AppCompatActivity {
         MaterialButton btnToggleGameHud = view.findViewById(R.id.bs_btn_toggle_game_hud);
         MaterialButton btnAddHudTile = view.findViewById(R.id.bs_btn_add_hud_qs_tile);
 
+        final boolean[] isUpdatingHudSwitch = {false};
+
+        Runnable syncHudSwitchState = () -> {
+            isUpdatingHudSwitch[0] = true;
+            boolean enabled = prefs.isGameHudEnabled();
+            if (switchGameHud != null) switchGameHud.setChecked(enabled);
+            isUpdatingHudSwitch[0] = false;
+        };
+
         if (switchGameHud != null) {
             switchGameHud.setChecked(prefs.isGameHudEnabled());
             switchGameHud.setOnCheckedChangeListener((btn, isChecked) -> {
+                if (isUpdatingHudSwitch[0]) return;
                 if (isChecked) {
                     ensureGameHudPermissionAndStart(() -> {
-                        switchGameHud.setChecked(true);
+                        syncHudSwitchState.run();
                         Toast.makeText(MainActivity.this, "🎮 Đã bật Mini Game HUD", Toast.LENGTH_SHORT).show();
                     });
                 } else {
                     prefs.setGameHudEnabled(false);
                     stopFloatingGameHudService();
+                    syncHudSwitchState.run();
                     Toast.makeText(MainActivity.this, "🎮 Đã tắt Mini Game HUD", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -1162,13 +1173,13 @@ public class MainActivity extends AppCompatActivity {
                 boolean cur = prefs.isGameHudEnabled();
                 if (!cur) {
                     ensureGameHudPermissionAndStart(() -> {
-                        if (switchGameHud != null) switchGameHud.setChecked(true);
+                        syncHudSwitchState.run();
                         Toast.makeText(MainActivity.this, "🎮 Đã bật Mini Game HUD", Toast.LENGTH_SHORT).show();
                     });
                 } else {
                     prefs.setGameHudEnabled(false);
                     stopFloatingGameHudService();
-                    if (switchGameHud != null) switchGameHud.setChecked(false);
+                    syncHudSwitchState.run();
                     Toast.makeText(MainActivity.this, "🎮 Đã tắt Mini Game HUD", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -1364,13 +1375,18 @@ public class MainActivity extends AppCompatActivity {
                 temp.add(item);
             }
 
-            // Sort: Games first, then alphabetically by name
-            Collections.sort(temp, (a, b) -> {
-                if (a.isGame != b.isGame) {
-                    return a.isGame ? -1 : 1;
-                }
-                return a.label.compareToIgnoreCase(b.label);
-            });
+            // Sort: Games first, then safely alphabetically by name
+            try {
+                Collections.sort(temp, (a, b) -> {
+                    if (a.isGame != b.isGame) {
+                        return a.isGame ? -1 : 1;
+                    }
+                    String l1 = a.label != null ? a.label : "";
+                    String l2 = b.label != null ? b.label : "";
+                    return l1.compareToIgnoreCase(l2);
+                });
+            } catch (Throwable ignored) {
+            }
 
             runOnUiThread(() -> {
                 if (pbLoading != null) pbLoading.setVisibility(View.GONE);

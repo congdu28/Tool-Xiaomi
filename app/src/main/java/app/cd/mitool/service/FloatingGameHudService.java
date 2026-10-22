@@ -45,8 +45,8 @@ public class FloatingGameHudService extends Service {
 
     public static final String ACTION_STOP = "app.cd.mitool.STOP_GAME_HUD";
 
-    private static final String CHANNEL_ID = "mitool_game_hud_service";
-    private static final int NOTIFICATION_ID = 2002;
+    private static final String CHANNEL_ID = "mitool_game_hud_channel_v1";
+    public static final int NOTIFICATION_ID = 5005;
 
     private static final String[] HARDWARE_FPS_SYSFS = {
             "/sys/class/drm/card0/sde-crtc-0/measured_fps",
@@ -235,7 +235,7 @@ public class FloatingGameHudService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && nm != null) {
             NotificationChannel chan = new NotificationChannel(
                     CHANNEL_ID,
-                    "Mi Tool - Game HUD Service",
+                    "Game HUD FPS & Hiệu Năng",
                     NotificationManager.IMPORTANCE_LOW
             );
             chan.setShowBadge(false);
@@ -243,21 +243,22 @@ public class FloatingGameHudService extends Service {
         }
 
         Intent openAppIntent = new Intent(this, MainActivity.class);
+        openAppIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent piOpen = PendingIntent.getActivity(
-                this, 0, openAppIntent,
+                this, 5005, openAppIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_IMMUTABLE : 0)
         );
 
         Intent stopIntent = new Intent(this, FloatingGameHudService.class);
         stopIntent.setAction(ACTION_STOP);
         PendingIntent piStop = PendingIntent.getService(
-                this, 1, stopIntent,
+                this, 5006, stopIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_IMMUTABLE : 0)
         );
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_gamepad)
-                .setContentTitle("Mini Game HUD Đang Chạy")
+                .setContentTitle("🎮 Game HUD FPS Đang Chạy")
                 .setContentText("Theo dõi FPS thời gian thực & Hiệu năng hệ thống")
                 .setContentIntent(piOpen)
                 .addAction(R.drawable.ic_close, "Tắt HUD", piStop)
@@ -351,8 +352,21 @@ public class FloatingGameHudService extends Service {
             private float initialTouchX, initialTouchY;
             private long downTime = 0;
 
+            private boolean isHit(View view, float rawX, float rawY) {
+                if (view == null || view.getVisibility() != View.VISIBLE) return false;
+                int[] loc = new int[2];
+                view.getLocationOnScreen(loc);
+                return rawX >= loc[0] && rawX <= (loc[0] + view.getWidth())
+                        && rawY >= loc[1] && rawY <= (loc[1] + view.getHeight());
+            }
+
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                if (isHit(btnCloseCompact, event.getRawX(), event.getRawY())
+                        || isHit(btnCloseExp, event.getRawX(), event.getRawY())) {
+                    return false;
+                }
+
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         initialX = params.x;
@@ -401,11 +415,20 @@ public class FloatingGameHudService extends Service {
     }
 
     private void registerReceivers() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_SCREEN_ON);
-        filter.addAction(Intent.ACTION_SCREEN_OFF);
-        filter.addAction(Intent.ACTION_BATTERY_CHANGED);
-        registerReceiver(screenAndBatteryReceiver, filter);
+        try {
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(Intent.ACTION_SCREEN_ON);
+            filter.addAction(Intent.ACTION_SCREEN_OFF);
+            filter.addAction(Intent.ACTION_BATTERY_CHANGED);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                androidx.core.content.ContextCompat.registerReceiver(
+                        this, screenAndBatteryReceiver, filter, androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
+                );
+            } else {
+                registerReceiver(screenAndBatteryReceiver, filter);
+            }
+        } catch (Throwable ignored) {
+        }
     }
 
     private void startMetricPolling() {
@@ -535,6 +558,13 @@ public class FloatingGameHudService extends Service {
             stopSelf();
             return START_NOT_STICKY;
         }
+
+        if (hudRootView == null && Settings.canDrawOverlays(this)) {
+            initHudView();
+            registerReceivers();
+            startMetricPolling();
+        }
+
         return START_STICKY;
     }
 
@@ -572,6 +602,15 @@ public class FloatingGameHudService extends Service {
                 windowManager.removeView(hudRootView);
             } catch (Throwable ignored) {
             }
+            hudRootView = null;
+        }
+
+        try {
+            NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            if (nm != null) {
+                nm.cancel(NOTIFICATION_ID);
+            }
+        } catch (Throwable ignored) {
         }
 
         if (prefs != null) {

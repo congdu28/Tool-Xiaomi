@@ -1,5 +1,6 @@
 package app.cd.mitool.util;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
@@ -7,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Build;
@@ -23,6 +25,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
@@ -64,11 +67,11 @@ public class UpdateHelper {
             }
         } catch (Throwable ignored) {
         }
-        return "1.0.50";
+        return "1.0.51";
     }
 
     public static String getCurrentVersion() {
-        return "1.0.50";
+        return "1.0.51";
     }
 
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -255,6 +258,17 @@ public class UpdateHelper {
     public static void postUpdateAvailableNotification(Context context, String newVersion, String changelog, String downloadUrl) {
         if (context == null) return;
         try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    if (context instanceof Activity) {
+                        ActivityCompat.requestPermissions((Activity) context,
+                                new String[]{Manifest.permission.POST_NOTIFICATIONS}, 8802);
+                    }
+                    return;
+                }
+            }
+
             NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             if (nm == null) return;
 
@@ -267,6 +281,8 @@ public class UpdateHelper {
                 channel.setDescription("Thông báo khi có phiên bản Mi Tool mới");
                 channel.enableLights(true);
                 channel.enableVibration(true);
+                channel.setShowBadge(true);
+                channel.setLockscreenVisibility(android.app.Notification.VISIBILITY_PUBLIC);
                 nm.createNotificationChannel(channel);
             }
 
@@ -300,7 +316,9 @@ public class UpdateHelper {
                             .bigText(summaryText + "\n\n👉 Chạm vào đây để xem chi tiết & cập nhật."))
                     .setContentIntent(pi)
                     .setAutoCancel(true)
-                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setPriority(NotificationCompat.PRIORITY_MAX)
+                    .setCategory(NotificationCompat.CATEGORY_RECOMMENDATION)
+                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                     .setDefaults(NotificationCompat.DEFAULT_ALL);
 
             nm.notify(NOTIFICATION_ID_UPDATE, builder.build());
@@ -313,13 +331,6 @@ public class UpdateHelper {
             return;
         }
         final Activity activity = (Activity) context;
-
-        // Dismiss the system notification since the dialog is now presented
-        try {
-            NotificationManager nm = (NotificationManager) activity.getSystemService(Context.NOTIFICATION_SERVICE);
-            if (nm != null) nm.cancel(NOTIFICATION_ID_UPDATE);
-        } catch (Throwable ignored) {
-        }
 
         final BottomSheetDialog bs = new BottomSheetDialog(activity);
         View view = LayoutInflater.from(activity).inflate(R.layout.bottom_sheet_update, null);
@@ -423,7 +434,20 @@ public class UpdateHelper {
         }
 
         if (btnDismiss != null) {
-            btnDismiss.setVisibility(View.GONE);
+            btnDismiss.setVisibility(View.VISIBLE);
+            btnDismiss.setText("🔔 Bắn thông báo thử nghiệm");
+            btnDismiss.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    postUpdateAvailableNotification(
+                            activity,
+                            "v" + currentVersion + " (Thử Nghiệm)",
+                            "• Đã kiểm tra cơ chế bắn thông báo cập nhật thành công.\n• Khi có bản cập nhật mới trên GitHub, thông báo này sẽ tự động xuất hiện.",
+                            GITHUB_RELEASE_API
+                    );
+                    Toast.makeText(activity, "🔔 Đã bắn thông báo cập nhật lên thanh trạng thái!", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
         bs.show();

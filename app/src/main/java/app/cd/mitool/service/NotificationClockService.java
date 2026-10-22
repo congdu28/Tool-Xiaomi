@@ -105,11 +105,8 @@ public class NotificationClockService extends Service {
         timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
         dateFormat = new SimpleDateFormat("EEEE, dd/MM", new Locale("vi", "VN"));
 
-        // Clean up legacy notification channels & old notification IDs
+        // Clean up legacy notification channels
         if (notificationManager != null) {
-            notificationManager.cancel(1001);
-            notificationManager.cancel(2002);
-            notificationManager.cancel(3003);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 try {
                     notificationManager.deleteNotificationChannel("mitool_notification_clock");
@@ -330,7 +327,6 @@ public class NotificationClockService extends Service {
         }
         if (notificationManager != null) {
             notificationManager.cancel(NOTIF_ID);
-            notificationManager.cancelAll();
         }
         if (prefs != null) {
             prefs.setNotifClockEnabled(false);
