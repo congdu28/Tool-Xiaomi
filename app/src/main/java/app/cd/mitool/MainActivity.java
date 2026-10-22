@@ -574,101 +574,104 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateDeviceSpecsDisplay() {
         if (tvDeviceModelHeader == null) return;
+        try {
+            // Model & OS
+            String model = DeviceInfoHelper.getDeviceMarketName();
+            String codename = DeviceInfoHelper.getDeviceCodename();
+            String os = DeviceInfoHelper.getOsVersionDisplay();
+            String androidVer = DeviceInfoHelper.getAndroidVersionDisplay();
+            String security = DeviceInfoHelper.getSecurityPatch();
 
-        // Model & OS
-        String model = DeviceInfoHelper.getDeviceMarketName();
-        String codename = DeviceInfoHelper.getDeviceCodename();
-        String os = DeviceInfoHelper.getOsVersionDisplay();
-        String androidVer = DeviceInfoHelper.getAndroidVersionDisplay();
-        String security = DeviceInfoHelper.getSecurityPatch();
+            tvDeviceModelHeader.setText(model);
+            tvDeviceOsHeader.setText(os + " • " + androidVer);
 
-        tvDeviceModelHeader.setText(model);
-        tvDeviceOsHeader.setText(os + " • " + androidVer);
-
-        tvSpecModel.setText(model);
-        tvSpecCodename.setText(codename);
-        if (tvSpecBrand != null) {
-            String brand = Build.MANUFACTURER;
-            tvSpecBrand.setText(brand != null ? brand.toUpperCase(Locale.getDefault()) : "Xiaomi");
-        }
-        tvSpecOs.setText(os);
-        tvSpecAndroid.setText(androidVer);
-        tvSpecSecurity.setText(security);
-
-        // Shizuku badge
-        if (ShizukuHelper.hasShizukuPermission()) {
-            tvDeviceShizukuBadge.setText("🟢 Shizuku: Đã cấp");
-            tvDeviceShizukuBadge.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
-        } else if (ShizukuHelper.isShizukuRunning()) {
-            tvDeviceShizukuBadge.setText("🟡 Shizuku: Chờ cấp");
-            tvDeviceShizukuBadge.setTextColor(ContextCompat.getColor(this, R.color.neon_yellow));
-        } else {
-            tvDeviceShizukuBadge.setText("🔴 Shizuku: Chưa chạy");
-            tvDeviceShizukuBadge.setTextColor(ContextCompat.getColor(this, R.color.text_muted));
-        }
-
-        // CPU / SoC
-        tvSpecCpuModel.setText(DeviceInfoHelper.getCpuModel());
-        tvSpecCpuCores.setText(DeviceInfoHelper.getCpuFrequencySummary());
-        tvSpecCpuArch.setText(DeviceInfoHelper.getCpuArchitecture());
-
-        // Display
-        DeviceInfoHelper.DisplayStats ds = DeviceInfoHelper.getDisplayStats(this);
-        if (tvSpecDisplaySize != null) {
-            tvSpecDisplaySize.setText(String.format(Locale.getDefault(), "%.2f inch • Tỉ lệ %s", ds.screenInches, ds.aspectRatio));
-        }
-        tvSpecDisplayRes.setText(ds.resolutionStandard);
-        tvSpecDisplayHz.setText(ds.refreshRate + " Hz (" + (ds.refreshRate > 60 ? "Mượt mà" : "Tiết kiệm pin") + ")");
-        tvSpecDisplayDpi.setText(ds.dpi + " DPI (Mật độ cao)");
-        if (tvSpecDisplayTech != null) {
-            tvSpecDisplayTech.setText(ds.displayTechnology);
-        }
-
-        // RAM & Storage
-        DeviceInfoHelper.MemoryStats ram = DeviceInfoHelper.getRamStats(this);
-        tvSpecRamText.setText(String.format(Locale.getDefault(), "%.1f GB / %.1f GB (Trống %.1f GB - %d%%)", ram.usedGb, ram.totalGb, ram.freeGb, ram.percentUsed));
-        pbSpecRam.setProgress(ram.percentUsed);
-
-        // ZRAM (Swap / Extension)
-        DeviceInfoHelper.ZramStats zram = DeviceInfoHelper.getZramStats();
-        if (tvSpecZramText != null && pbSpecZram != null) {
-            if (zram.isEnabled && zram.totalGb > 0) {
-                tvSpecZramText.setText(String.format(Locale.getDefault(), "%.1f GB / %.1f GB (Dùng %d%%)", zram.usedGb, zram.totalGb, zram.percentUsed));
-                pbSpecZram.setProgress(zram.percentUsed);
-            } else {
-                tvSpecZramText.setText("Chưa kích hoạt Mở rộng RAM");
-                pbSpecZram.setProgress(0);
+            tvSpecModel.setText(model);
+            tvSpecCodename.setText(codename);
+            if (tvSpecBrand != null) {
+                String brand = Build.MANUFACTURER;
+                tvSpecBrand.setText(brand != null ? brand.toUpperCase(Locale.getDefault()) : "Xiaomi");
             }
-        }
+            tvSpecOs.setText(os);
+            tvSpecAndroid.setText(androidVer);
+            tvSpecSecurity.setText(security);
 
-        // ROM Storage
-        DeviceInfoHelper.MemoryStats rom = DeviceInfoHelper.getInternalStorageStats();
-        tvSpecStorageText.setText(String.format(Locale.getDefault(), "%.1f GB / %.1f GB", rom.usedGb, rom.totalGb));
-        if (tvSpecStorageSub != null) {
-            tvSpecStorageSub.setText(String.format(Locale.getDefault(), "Còn trống: %.1f GB • Đã dùng %d%%", rom.freeGb, rom.percentUsed));
-        }
-        pbSpecStorage.setProgress(rom.percentUsed);
-
-        // Battery Overview
-        BatteryHelper.BatteryInfo bInfo = BatteryHelper.getBatteryInfo(this);
-        BatteryHelper.BatteryCapacityData bCap = BatteryHelper.getBatteryCapacityData(this);
-
-        tvSpecBatteryPercent.setText(bInfo.level + "% (" + (bInfo.isCharging ? bInfo.plugTypeName : "Đang dùng pin") + ")");
-
-        if (tvSpecBatteryCapacity != null) {
-            tvSpecBatteryCapacity.setText(String.format(Locale.getDefault(), "%d mAh / %d mAh (%d%%)", bCap.designMah, bCap.actualMah, bCap.healthPercent));
-        }
-
-        if (tvSpecBatteryCycles != null) {
-            if (bCap.cycleCount > 0) {
-                tvSpecBatteryCycles.setText(bCap.cycleCount + " Chu kỳ sạc");
+            // Shizuku badge
+            if (ShizukuHelper.hasShizukuPermission()) {
+                tvDeviceShizukuBadge.setText("🟢 Shizuku: Đã cấp");
+                tvDeviceShizukuBadge.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
+            } else if (ShizukuHelper.isShizukuRunning()) {
+                tvDeviceShizukuBadge.setText("🟡 Shizuku: Chờ cấp");
+                tvDeviceShizukuBadge.setTextColor(ContextCompat.getColor(this, R.color.neon_yellow));
             } else {
-                tvSpecBatteryCycles.setText("Tự động phân tích hệ thống");
+                tvDeviceShizukuBadge.setText("🔴 Shizuku: Chưa chạy");
+                tvDeviceShizukuBadge.setTextColor(ContextCompat.getColor(this, R.color.text_muted));
             }
-        }
 
-        tvSpecBatteryTempVoltage.setText(String.format(Locale.getDefault(), "%.1f °C • %.2f V", bInfo.temperature, bInfo.voltageMv / 1000.0f));
-        tvSpecBatteryHealth.setText(bCap.healthDescription);
+            // CPU / SoC
+            tvSpecCpuModel.setText(DeviceInfoHelper.getCpuModel());
+            tvSpecCpuCores.setText(DeviceInfoHelper.getCpuFrequencySummary());
+            tvSpecCpuArch.setText(DeviceInfoHelper.getCpuArchitecture());
+
+            // Display
+            DeviceInfoHelper.DisplayStats ds = DeviceInfoHelper.getDisplayStats(this);
+            if (tvSpecDisplaySize != null) {
+                tvSpecDisplaySize.setText(String.format(Locale.getDefault(), "%.2f inch • Tỉ lệ %s", ds.screenInches, ds.aspectRatio));
+            }
+            tvSpecDisplayRes.setText(ds.resolutionStandard);
+            tvSpecDisplayHz.setText(ds.refreshRate + " Hz (" + (ds.refreshRate > 60 ? "Mượt mà" : "Tiết kiệm pin") + ")");
+            tvSpecDisplayDpi.setText(ds.dpi + " DPI (Mật độ cao)");
+            if (tvSpecDisplayTech != null) {
+                tvSpecDisplayTech.setText(ds.displayTechnology);
+            }
+
+            // RAM & Storage
+            DeviceInfoHelper.MemoryStats ram = DeviceInfoHelper.getRamStats(this);
+            tvSpecRamText.setText(String.format(Locale.getDefault(), "%.1f GB / %.1f GB (Trống %.1f GB - %d%%)", ram.usedGb, ram.totalGb, ram.freeGb, ram.percentUsed));
+            pbSpecRam.setProgress(ram.percentUsed);
+
+            // ZRAM (Swap / Extension)
+            DeviceInfoHelper.ZramStats zram = DeviceInfoHelper.getZramStats();
+            if (tvSpecZramText != null && pbSpecZram != null) {
+                if (zram.isEnabled && zram.totalGb > 0) {
+                    tvSpecZramText.setText(String.format(Locale.getDefault(), "%.1f GB / %.1f GB (Dùng %d%%)", zram.usedGb, zram.totalGb, zram.percentUsed));
+                    pbSpecZram.setProgress(zram.percentUsed);
+                } else {
+                    tvSpecZramText.setText("Chưa kích hoạt Mở rộng RAM");
+                    pbSpecZram.setProgress(0);
+                }
+            }
+
+            // ROM Storage
+            DeviceInfoHelper.MemoryStats rom = DeviceInfoHelper.getInternalStorageStats();
+            tvSpecStorageText.setText(String.format(Locale.getDefault(), "%.1f GB / %.1f GB", rom.usedGb, rom.totalGb));
+            if (tvSpecStorageSub != null) {
+                tvSpecStorageSub.setText(String.format(Locale.getDefault(), "Còn trống: %.1f GB • Đã dùng %d%%", rom.freeGb, rom.percentUsed));
+            }
+            pbSpecStorage.setProgress(rom.percentUsed);
+
+            // Battery Overview
+            BatteryHelper.BatteryInfo bInfo = BatteryHelper.getBatteryInfo(this);
+            BatteryHelper.BatteryCapacityData bCap = BatteryHelper.getBatteryCapacityData(this);
+
+            tvSpecBatteryPercent.setText(bInfo.level + "% (" + (bInfo.isCharging ? bInfo.plugTypeName : "Đang dùng pin") + ")");
+
+            if (tvSpecBatteryCapacity != null) {
+                tvSpecBatteryCapacity.setText(String.format(Locale.getDefault(), "%d mAh / %d mAh (%d%%)", bCap.designMah, bCap.actualMah, Math.round(bCap.healthPercent)));
+            }
+
+            if (tvSpecBatteryCycles != null) {
+                if (bCap.cycleCount > 0) {
+                    tvSpecBatteryCycles.setText(bCap.cycleCount + " Chu kỳ sạc");
+                } else {
+                    tvSpecBatteryCycles.setText("Tự động phân tích hệ thống");
+                }
+            }
+
+            tvSpecBatteryTempVoltage.setText(String.format(Locale.getDefault(), "%.1f °C • %.2f V", bInfo.temperature, bInfo.voltageMv / 1000.0f));
+            tvSpecBatteryHealth.setText(bCap.healthDescription);
+        } catch (Throwable t) {
+            android.util.Log.e("MiTool", "Error updating device specs display: " + t.getMessage(), t);
+        }
     }
 
     // =========================================================================
