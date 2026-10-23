@@ -49,7 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Tự động hóa vô hiệu hóa Joyose, xóa cache PowerKeeper và ép màn hình 120Hz để gỡ bỏ triệt để giới hạn khóa 89 FPS trong Liên Quân, Tốc Chiến, PUBG."
+            android:text="Tự động hóa vô hiệu hóa Joyose và xóa dữ liệu Pin &amp; Hiệu suất để gỡ bỏ triệt để giới hạn khóa 89 FPS trong Liên Quân, Tốc Chiến, PUBG."
             android:textColor="@color/text_secondary"
             android:textSize="12sp" />
 
@@ -75,6 +75,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:singleLine="true"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     android:text="🟢 Shizuku: Đang kiểm tra..."
                     android:textColor="@color/neon_green"
                     android:textSize="12sp"
@@ -91,8 +94,11 @@
                     android:insetRight="0dp"
                     android:minWidth="0dp"
                     android:minHeight="0dp"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:singleLine="true"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     android:text="⚡ Cấp quyền"
                     android:textColor="@color/neon_green"
                     android:textSize="11sp"
@@ -109,7 +115,7 @@
                 android:layout_marginBottom="8dp"
                 android:background="@color/card_dark_stroke" />
 
-            <!-- Joyose Status & Screen Hz Row -->
+            <!-- Joyose Status Row -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -121,6 +127,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:singleLine="true"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     android:text="Joyose: Đang kiểm tra..."
                     android:textColor="@color/neon_cyan"
                     android:textSize="12sp"
@@ -130,8 +139,10 @@
                     android:id="@+id/bs_tv_screen_hz_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Màn hình: 120 Hz"
-                    android:textColor="@color/text_secondary"
+                    android:singleLine="true"
+                    android:maxLines="1"
+                    android:text="🛡️ An Toàn 100%"
+                    android:textColor="@color/neon_green"
                     android:textSize="11sp" />
             </LinearLayout>
         </LinearLayout>
@@ -140,7 +151,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="14dp"
             android:background="@drawable/bg_card_rounded"
             android:orientation="vertical"
             android:padding="14dp">
@@ -156,8 +167,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="Chỉ cần bấm 1 nút, hệ thống tự động chạy toàn bộ quy trình: Tắt Joyose + Xóa cache PowerKeeper + Ép màn hình 120Hz."
+                android:layout_marginTop="3dp"
+                android:text="Chỉ cần 1 chạm: Tự động tắt Joyose &amp; xóa sạch dữ liệu Pin &amp; Hiệu suất (PowerKeeper)."
                 android:textColor="@color/text_secondary"
                 android:textSize="11sp" />
 
@@ -167,7 +178,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:minHeight="48dp"
+                android:minHeight="46dp"
                 android:backgroundTint="@color/mi_orange"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
@@ -175,6 +186,9 @@
                 android:insetRight="0dp"
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:ellipsize="end"
                 android:text="⚡ 1-CHẠM MỞ KHÓA TOÀN BỘ 120 FPS"
                 android:textColor="@color/white"
                 android:textSize="13sp"
@@ -195,20 +209,48 @@
                 android:insetRight="0dp"
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
-                android:text="🔄 1-Chạm Khôi Phục Joyose &amp; Mặc Định"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:text="🔄 1-Chạm Khôi Phục Joyose Mặc Định"
                 android:textColor="@color/text_primary"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 app:cornerRadius="10dp"
                 app:strokeColor="@color/card_dark_stroke"
                 app:strokeWidth="1dp" />
+
+            <!-- Safety Note -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_badge_green"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="💡 "
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Chỉ XÓA DỮ LIỆU bộ đệm và tắt Joyose tạm thời, KHÔNG gỡ cài đặt app hệ thống. Có thể khôi phục lại bất kỳ lúc nào."
+                    android:textColor="@color/neon_green"
+                    android:textSize="10.5sp" />
+            </LinearLayout>
         </LinearLayout>
 
         <!-- SECTION: STEP-BY-STEP DETAILED WORKFLOW -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="14dp"
             android:background="@drawable/bg_card_rounded"
             android:orientation="vertical"
             android:padding="14dp">
@@ -216,7 +258,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="📋 QUY TRÌNH 5 BƯỚC MỞ KHÓA 120 FPS"
+                android:text="📋 QUY TRÌNH 4 BƯỚC MỞ KHÓA 120 FPS"
                 android:textColor="@color/neon_cyan"
                 android:textSize="13sp"
                 android:textStyle="bold" />
@@ -225,7 +267,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:text="Hiểu rõ bản chất bóp FPS của Xiaomi và tùy ý thao tác từng bước độc lập:"
+                android:text="Thao tác từng bước độc lập nếu bạn muốn tùy biến thủ công:"
                 android:textColor="@color/text_secondary"
                 android:textSize="11sp" />
 
@@ -248,24 +290,33 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:text="Shizuku cung cấp quyền ADB an toàn để app tự động chạy lệnh ngầm mà không cần cắm cáp vào PC."
+                    android:text="Cung cấp môi trường ADB an toàn trên máy để tự động chạy lệnh ngầm."
                     android:textColor="@color/text_secondary"
                     android:textSize="11sp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/bs_btn_step1_shizuku"
                     android:layout_width="match_parent"
-                    android:layout_height="38dp"
+                    android:layout_height="wrap_content"
+                    android:minHeight="42dp"
                     android:layout_marginTop="6dp"
                     android:backgroundTint="@color/card_highlight"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
                     android:insetLeft="0dp"
                     android:insetRight="0dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:singleLine="true"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     android:text="⚡ Kiểm tra / Cấp quyền Shizuku"
                     android:textColor="@color/neon_green"
-                    android:textSize="11sp"
-                    app:cornerRadius="8dp" />
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="8dp"
+                    app:strokeColor="@color/neon_green"
+                    app:strokeWidth="1dp" />
             </LinearLayout>
 
             <View
@@ -293,9 +344,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:text="Joyose ngầm bóp xung GPU xuống 89 FPS khi chơi Liên Quân / PUBG. Tắt dịch vụ này sẽ mở khóa 120 FPS."
+                    android:text="Joyose ngầm bóp GPU xuống 89 FPS khi chơi Liên Quân / PUBG. Tắt dịch vụ này sẽ mở khóa 120 FPS."
                     android:textColor="@color/text_secondary"
                     android:textSize="11sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="💡 Ghi chú: Chỉ vô hiệu hóa tiến trình, KHÔNG PHẢI gỡ cài đặt."
+                    android:textColor="@color/neon_cyan"
+                    android:textSize="10.5sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -306,17 +365,24 @@
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/bs_btn_copy_disable_joyose"
                         android:layout_width="0dp"
-                        android:layout_height="38dp"
-                        android:layout_marginEnd="4dp"
+                        android:layout_height="wrap_content"
+                        android:minHeight="42dp"
+                        android:layout_marginEnd="5dp"
                         android:layout_weight="1"
                         android:backgroundTint="@color/card_highlight"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
                         android:insetLeft="0dp"
                         android:insetRight="0dp"
-                        android:text="⚡ Tắt Joyose (120 FPS)"
+                        android:paddingLeft="6dp"
+                        android:paddingRight="6dp"
+                        android:singleLine="true"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:text="⚡ Tắt Joyose"
                         android:textColor="@color/neon_green"
-                        android:textSize="11sp"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
                         app:cornerRadius="8dp"
                         app:strokeColor="@color/neon_green"
                         app:strokeWidth="1dp" />
@@ -324,18 +390,26 @@
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/bs_btn_copy_enable_joyose"
                         android:layout_width="0dp"
-                        android:layout_height="38dp"
-                        android:layout_marginStart="4dp"
+                        android:layout_height="wrap_content"
+                        android:minHeight="42dp"
+                        android:layout_marginStart="5dp"
                         android:layout_weight="1"
                         android:backgroundTint="@color/card_highlight"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
                         android:insetLeft="0dp"
                         android:insetRight="0dp"
+                        android:paddingLeft="6dp"
+                        android:paddingRight="6dp"
+                        android:singleLine="true"
+                        android:maxLines="1"
+                        android:ellipsize="end"
                         android:text="🔄 Bật lại Joyose"
                         android:textColor="@color/text_primary"
-                        android:textSize="11sp"
-                        app:cornerRadius="8dp" />
+                        android:textSize="12sp"
+                        app:cornerRadius="8dp"
+                        app:strokeColor="@color/card_dark_stroke"
+                        app:strokeWidth="1dp" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -355,7 +429,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="3️⃣ Bước 3: Dọn dẹp cache Pin &amp; Hiệu suất (PowerKeeper)"
+                    android:text="3️⃣ Bước 3: Xóa dữ liệu Pin &amp; Hiệu suất (PowerKeeper)"
                     android:textColor="@color/text_primary"
                     android:textSize="12sp"
                     android:textStyle="bold" />
@@ -364,9 +438,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:text="PowerKeeper lưu bộ đệm điều tiết nhiệt độ. Xóa cache giúp hệ thống nhận diện lại mức hiệu năng 120 FPS tối đa."
+                    android:text="Đặt lại bộ đệm điều tiết FPS cũ để hệ thống nhận diện mức hiệu năng 120 FPS tối đa."
                     android:textColor="@color/text_secondary"
                     android:textSize="11sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="💡 Ghi chú: Đây là thao tác XÓA DỮ LIỆU (Clear Data), KHÔNG PHẢI gỡ cài đặt ứng dụng."
+                    android:textColor="@color/neon_green"
+                    android:textSize="10.5sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -377,34 +459,51 @@
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/bs_btn_clear_powerkeeper"
                         android:layout_width="0dp"
-                        android:layout_height="38dp"
-                        android:layout_marginEnd="4dp"
-                        android:layout_weight="1.2"
+                        android:layout_height="wrap_content"
+                        android:minHeight="42dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_weight="1.25"
                         android:backgroundTint="@color/card_highlight"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
                         android:insetLeft="0dp"
                         android:insetRight="0dp"
-                        android:text="⚡ Xóa Cache (Shizuku)"
+                        android:paddingLeft="6dp"
+                        android:paddingRight="6dp"
+                        android:singleLine="true"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:text="⚡ Xóa Dữ Liệu (Shizuku)"
                         android:textColor="@color/neon_cyan"
-                        android:textSize="11sp"
-                        app:cornerRadius="8dp" />
+                        android:textSize="11.5sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="8dp"
+                        app:strokeColor="@color/neon_cyan"
+                        app:strokeWidth="1dp" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/bs_btn_clear_pk_manual"
                         android:layout_width="0dp"
-                        android:layout_height="38dp"
-                        android:layout_marginStart="4dp"
-                        android:layout_weight="0.8"
+                        android:layout_height="wrap_content"
+                        android:minHeight="42dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_weight="0.75"
                         android:backgroundTint="@color/card_highlight"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
                         android:insetLeft="0dp"
                         android:insetRight="0dp"
-                        android:text="⚙️ Cài đặt app"
+                        android:paddingLeft="6dp"
+                        android:paddingRight="6dp"
+                        android:singleLine="true"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:text="⚙️ Mở Cài Đặt"
                         android:textColor="@color/text_secondary"
-                        android:textSize="11sp"
-                        app:cornerRadius="8dp" />
+                        android:textSize="11.5sp"
+                        app:cornerRadius="8dp"
+                        app:strokeColor="@color/card_dark_stroke"
+                        app:strokeWidth="1dp" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -414,7 +513,7 @@
                 android:layout_marginTop="10dp"
                 android:background="@color/card_dark_stroke" />
 
-            <!-- BƯỚC 4 -->
+            <!-- BƯỚC 4 (KHỞI ĐỘNG GAME) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -424,76 +523,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="4️⃣ Bước 4: Ép Tần Số Quét 120Hz &amp; Chống Tụt Hz"
-                    android:textColor="@color/text_primary"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="Khóa màn hình ở 120Hz và tắt cơ chế thermal_limit_refresh_rate chống tụt xuống 60Hz."
-                    android:textColor="@color/text_secondary"
-                    android:textSize="11sp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/bs_btn_game_120_mode"
-                        android:layout_width="0dp"
-                        android:layout_height="38dp"
-                        android:layout_marginEnd="4dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/card_highlight"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        android:insetLeft="0dp"
-                        android:insetRight="0dp"
-                        android:text="⚡ Ép Game Mode 120Hz"
-                        android:textColor="@color/neon_green"
-                        android:textSize="11sp"
-                        app:cornerRadius="8dp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/bs_btn_open_per_app_hz"
-                        android:layout_width="0dp"
-                        android:layout_height="38dp"
-                        android:layout_marginStart="4dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/card_highlight"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        android:insetLeft="0dp"
-                        android:insetRight="0dp"
-                        android:text="🎯 Chọn app 120Hz"
-                        android:textColor="@color/text_primary"
-                        android:textSize="11sp"
-                        app:cornerRadius="8dp" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="10dp"
-                android:background="@color/card_dark_stroke" />
-
-            <!-- BƯỚC 5 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="5️⃣ Bước 5: Khởi Động Game &amp; Đo FPS Thực Tế"
+                    android:text="4️⃣ Bước 4: Khởi Động Game &amp; Đo FPS Thực Tế"
                     android:textColor="@color/text_primary"
                     android:textSize="12sp"
                     android:textStyle="bold" />
@@ -509,18 +539,26 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/bs_btn_launch_aov"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="6dp"
+                    android:layout_height="wrap_content"
+                    android:minHeight="44dp"
+                    android:layout_marginTop="8dp"
                     android:backgroundTint="@color/card_highlight"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
                     android:insetLeft="0dp"
                     android:insetRight="0dp"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp"
+                    android:singleLine="true"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     android:text="⚔️ Mở Liên Quân Mobile (AOV)"
                     android:textColor="@color/neon_cyan"
-                    android:textSize="12sp"
+                    android:textSize="13sp"
                     android:textStyle="bold"
-                    app:cornerRadius="8dp" />
+                    app:cornerRadius="8dp"
+                    app:strokeColor="@color/neon_cyan"
+                    app:strokeWidth="1dp" />
             </LinearLayout>
 
         </LinearLayout>

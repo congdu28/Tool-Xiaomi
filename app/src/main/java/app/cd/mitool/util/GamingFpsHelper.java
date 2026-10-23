@@ -131,9 +131,8 @@ public class GamingFpsHelper {
         // 1. Root method
         boolean hasRoot = runRootCommand("pm disable-user --user 0 " + JOYOSE_PKG + " && pm clear " + POWERKEEPER_PKG);
         if (hasRoot) {
-            applyGaming120Mode(activity);
             if (callback != null) {
-                callback.onComplete(true, "🔥 Đã mở khóa 120 FPS toàn diện bằng quyền Root!");
+                callback.onComplete(true, "🔥 Đã mở khóa 120 FPS bằng quyền Root! (Đã tắt Joyose & xóa dữ liệu Pin và Hiệu suất)");
             }
             return;
         }
@@ -141,9 +140,6 @@ public class GamingFpsHelper {
         // 2. Shizuku with permission
         if (ShizukuHelper.hasShizukuPermission()) {
             ShizukuHelper.autoUnlock120Fps((success, message) -> {
-                if (success) {
-                    applyGaming120Mode(activity);
-                }
                 if (callback != null) callback.onComplete(success, message);
             });
             return;

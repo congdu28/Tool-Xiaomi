@@ -1099,12 +1099,10 @@ public class MainActivity extends AppCompatActivity {
         MaterialButton btnAutoUnlock = view.findViewById(R.id.bs_btn_auto_unlock_120);
         MaterialButton btnAutoRestore = view.findViewById(R.id.bs_btn_auto_restore_joyose);
         MaterialButton btnStep1Shizuku = view.findViewById(R.id.bs_btn_step1_shizuku);
-        MaterialButton btnGame120 = view.findViewById(R.id.bs_btn_game_120_mode);
         MaterialButton btnDisableJoyose = view.findViewById(R.id.bs_btn_copy_disable_joyose);
         MaterialButton btnEnableJoyose = view.findViewById(R.id.bs_btn_copy_enable_joyose);
         MaterialButton btnClearPk = view.findViewById(R.id.bs_btn_clear_powerkeeper);
         MaterialButton btnClearPkManual = view.findViewById(R.id.bs_btn_clear_pk_manual);
-        MaterialButton btnPerAppHz = view.findViewById(R.id.bs_btn_open_per_app_hz);
         MaterialButton btnAov = view.findViewById(R.id.bs_btn_launch_aov);
 
         Runnable updateFpsSheetDisplay = () -> {
@@ -1261,20 +1259,7 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        // Step 4: Game 120Hz & Per-app Hz
-        btnGame120.setOnClickListener(v -> {
-            boolean ok = GamingFpsHelper.applyGaming120Mode(MainActivity.this);
-            Toast.makeText(MainActivity.this, ok ? "⚡ Đã kích hoạt Game Mode 120Hz!" : "Cần cấp quyền WRITE_SECURE_SETTINGS", Toast.LENGTH_SHORT).show();
-            updateFpsSheetDisplay.run();
-            updateToolsCardSummaries();
-            updateDeviceSpecsDisplay();
-        });
-
-        btnPerAppHz.setOnClickListener(v -> {
-            GamingFpsHelper.openPerAppRefreshRate(MainActivity.this);
-        });
-
-        // Step 5: Launch Game
+        // Step 4: Launch Game
         btnAov.setOnClickListener(v -> {
             boolean launched = GamingFpsHelper.launchLienQuanMobile(MainActivity.this);
             if (!launched) {
@@ -1678,9 +1663,9 @@ public class MainActivity extends AppCompatActivity {
         boolean isAovInstalled = GamingFpsHelper.isLienQuanInstalled(this);
         new AlertDialog.Builder(this)
                 .setTitle("🎉 Mở Khóa 120 FPS Thành Công!")
-                .setMessage("✓ Dịch vụ Joyose đã được vô hiệu hóa hoàn toàn\n" +
-                           "✓ Cache bóp nhiệt độ PowerKeeper đã dọn sạch\n" +
-                           "✓ Màn hình đã ép cố định 120Hz & Speed Mode\n\n" +
+                .setMessage("✓ Dịch vụ Joyose đã được vô hiệu hóa\n" +
+                           "✓ Dữ liệu Pin & Hiệu suất (PowerKeeper) đã được xóa sạch\n\n" +
+                           "💡 Lưu ý: Hệ thống chỉ XÓA DỮ LIỆU (Clear Data) bộ đệm điều tiết FPS, hoàn toàn KHÔNG gỡ cài đặt ứng dụng hệ thống.\n\n" +
                            "Bạn đã sẵn sàng tận hưởng trải nghiệm 120 FPS mượt mà không lo bị khóa 89 FPS!")
                 .setPositiveButton(isAovInstalled ? "⚔️ Mở Liên Quân Ngay" : "OK", (dialog, which) -> {
                     if (isAovInstalled) {

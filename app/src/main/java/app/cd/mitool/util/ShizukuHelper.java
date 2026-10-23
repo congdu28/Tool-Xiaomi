@@ -254,33 +254,19 @@ public class ShizukuHelper {
     /**
      * Automatically unlock 120 FPS via Shizuku in 1-tap:
      * 1. Disable Joyose (removes 89 FPS thermal throttle)
-     * 2. Clear PowerKeeper cache & data (resets dynamic throttle limits)
-     * 3. Apply 120Hz refresh rate and speed mode
+     * 2. Clear PowerKeeper data (resets dynamic throttle limits)
      */
     public static void autoUnlock120Fps(CommandCallback callback) {
         EXECUTOR.execute(() -> {
             StringBuilder sb = new StringBuilder();
             sb.append("pm disable-user --user 0 ").append(GamingFpsHelper.JOYOSE_PKG).append("; ")
-              .append("pm clear ").append(GamingFpsHelper.POWERKEEPER_PKG).append("; ")
-              .append("settings put secure min_refresh_rate 120.0; ")
-              .append("settings put secure peak_refresh_rate 120.0; ")
-              .append("settings put secure user_refresh_rate 120; ")
-              .append("settings put system user_refresh_rate 120; ")
-              .append("settings put secure miui_refresh_rate 120; ")
-              .append("settings put system miui_refresh_rate 120; ")
-              .append("settings put system min_refresh_rate 120.0; ")
-              .append("settings put system peak_refresh_rate 120.0; ")
-              .append("settings put system thermal_limit_refresh_rate 0; ")
-              .append("settings put global speed_mode 1; ")
-              .append("settings put global fps_limit 0; ")
-              .append("settings put global smart_fps 0; ")
-              .append("settings put system power_mode high");
+              .append("pm clear ").append(GamingFpsHelper.POWERKEEPER_PKG);
 
             ShellResult result = executeCommand(sb.toString());
             MAIN_HANDLER.post(() -> {
                 if (result.success) {
                     if (callback != null) {
-                        callback.onComplete(true, "⚡ Đã mở khóa 120 FPS toàn diện! (Đã tắt Joyose, xóa cache PowerKeeper và ép 120Hz)");
+                        callback.onComplete(true, "⚡ Đã mở khóa 120 FPS! (Đã tắt Joyose & xóa dữ liệu Pin và Hiệu suất)");
                     }
                 } else {
                     String err = !result.stderr.isEmpty() ? result.stderr : result.stdout;

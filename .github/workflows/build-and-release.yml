@@ -43,7 +43,7 @@ jobs:
             TAG="${{ github.ref_name }}"
           else
             VER=$(grep "versionName" app/build.gradle | head -n 1 | awk -F"'" '{print $2}')
-            TAG="v${VER:-1.0.56}"
+            TAG="v${VER:-1.0.57}"
           fi
           echo "TAG_NAME=${TAG}" >> $GITHUB_ENV
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
@@ -98,17 +98,16 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             Bản cập nhật ${{ env.TAG_NAME }}:
-            - ⚡ **1-Chạm Mở Khóa Toàn Bộ 120 FPS Game (Tự Động Hóa Qua Shizuku)**:
-              1. Tự động vô hiệu hóa dịch vụ Joyose ngầm của HyperOS/MIUI để gỡ bỏ triệt để giới hạn bóp 89 FPS trong Liên Quân Mobile, Tốc Chiến, PUBG.
-              2. Tự động dọn dẹp và xóa sạch dữ liệu & cache của Pin & Hiệu suất (PowerKeeper) trực tiếp qua Shizuku mà không cần thao tác cài đặt thủ công.
-              3. Tự động kích hoạt Speed Mode, ép màn hình cố định 120Hz và tắt cơ chế thermal_limit_refresh_rate chống tụt Hz khi nóng máy.
-              4. Cập nhật huy hiệu trạng thái Joyose và tần số quét thời gian thực (real-time badge).
-              5. Hộp thoại thông báo hoàn tất tự động hóa kèm nút mở game chiến ngay.
-            - 🔄 **1-Chạm Khôi Phục Joyose & Màn Hình Mặc Định**:
-              1. Phục hồi dịch vụ Joyose và đưa tần số quét màn hình về tự động (Auto) khi kết thúc chơi game.
-            - 📋 **Minh Bạch Quy Trình Chuẩn 5 Bước**:
-              1. Giao diện trực quan hóa từng bước độc lập: Kết nối Shizuku -> Quản lý Joyose -> Dọn dẹp PowerKeeper -> Ép 120Hz -> Khởi động Game & Mini Game HUD.
-              2. Tự động phát hiện và gọi popup cấp quyền Shizuku; cập nhật giao diện thời gian thực (live).
-            - 🎮 Tương thích hoàn hảo với Thư viện Game tùy chỉnh và Mini Game HUD nổi.
+            - 🎯 **Tối ưu & Tinh gọn Quy trình Mở khóa 120 FPS**:
+              1. Rút gọn còn 4 bước trọng tâm: Kết nối Shizuku -> Vô hiệu hóa Joyose -> Xóa dữ liệu Pin & Hiệu suất -> Khởi động Game & Mini Game HUD.
+              2. Bỏ bước ép tần số quét không cần thiết, tập trung chính xác vào 2 nhân tố cốt lõi gây khóa 89 FPS (Joyose & PowerKeeper).
+              3. Thêm ghi chú rõ ràng, nổi bật: Thao tác Pin & Hiệu suất là **XÓA DỮ LIỆU** (Clear Data), hoàn toàn **KHÔNG PHẢI gỡ cài đặt** (Uninstall) ứng dụng hệ thống.
+            - 📱 **Sửa triệt để lỗi Responsive chữ và Nút bấm (Button Layout)**:
+              1. Khắc phục tình trạng chữ bị ngắt dòng chắp vá (ví dụ `120` xuống dòng `FPS`, `Pin &` xuống dòng `Hiệu suất`).
+              2. Áp dụng `singleLine="true"`, `maxLines="1"`, `ellipsize="end"`, tinh chỉnh tỷ lệ weight và padding cho tất cả các nút hành động.
+              3. Hiển thị chuẩn nét, đồng đều trên mọi kích thước màn hình điện thoại Xiaomi/Redmi/POCO.
+            - ⚡ **Tự động hóa 1-Chạm mượt mà qua Shizuku & Root**:
+              1. 1-chạm vô hiệu hóa Joyose và xóa sạch dữ liệu Pin & Hiệu suất chỉ trong 1 giây.
+              2. 1-chạm khôi phục Joyose và hoàn nguyên cài đặt bất kỳ lúc nào.
             - 🚀 Xuất xưởng Release APK ${{ env.TAG_NAME }} mượt mà, ổn định.
           files: output-apks/*.apk
