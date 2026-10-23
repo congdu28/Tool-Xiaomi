@@ -2770,8 +2770,6 @@
                                         android:textColor="@color/text_primary"
                                         android:textSize="11sp"
                                         app:cornerRadius="6dp" />
-                                        android:textSize="11sp"
-                                        app:cornerRadius="6dp" />
                                 </LinearLayout>
                             </LinearLayout>
 

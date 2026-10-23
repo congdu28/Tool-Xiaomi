@@ -9,3 +9,6 @@
 .cxx
 *.apk
 *.aab
+
+# Android module build outputs
+app/build/

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/hud_root_container"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -16,12 +17,12 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_hud_compact_icon"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:src="@drawable/ic_gamepad"
-            android:tint="@color/neon_green" />
+            app:tint="@color/neon_green" />
 
         <TextView
             android:id="@+id/tv_hud_compact_fps"
@@ -52,7 +53,7 @@
             android:textSize="12sp"
             android:textStyle="bold" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/btn_hud_close_compact"
             android:layout_width="20dp"
             android:layout_height="20dp"
@@ -60,7 +61,7 @@
             android:padding="2dp"
             android:contentDescription="Close HUD"
             android:src="@drawable/ic_close"
-            android:tint="@color/text_muted" />
+            app:tint="@color/text_muted" />
     </LinearLayout>
 
     <!-- 2. EXPANDED DASHBOARD MODE -->
@@ -79,12 +80,12 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_hud_exp_icon"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:src="@drawable/ic_gamepad"
-                android:tint="@color/neon_green" />
+                app:tint="@color/neon_green" />
 
             <TextView
                 android:id="@+id/tv_hud_exp_title"
@@ -107,14 +108,14 @@
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/btn_hud_close_exp"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:padding="2dp"
                 android:contentDescription="Close HUD"
                 android:src="@drawable/ic_close"
-                android:tint="@color/text_muted" />
+                app:tint="@color/text_muted" />
         </LinearLayout>
 
         <!-- Divider line -->

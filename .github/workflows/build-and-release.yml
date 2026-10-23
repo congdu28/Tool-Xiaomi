@@ -43,16 +43,16 @@ jobs:
             TAG="${{ github.ref_name }}"
           else
             VER=$(grep "versionName" app/build.gradle | head -n 1 | awk -F"'" '{print $2}')
-            TAG="v${VER:-1.0.57}"
+            TAG="v${VER:-1.0.58}"
           fi
           echo "TAG_NAME=${TAG}" >> $GITHUB_ENV
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
 
-      - name: Build APK (Release Only)
+      - name: Test, Lint and Build Release APK
         run: |
           chmod +x ./gradlew
           set -o pipefail
-          ./gradlew --no-daemon --stacktrace :app:assembleRelease 2>&1 | tee gradle-build.log
+          ./gradlew --no-daemon --stacktrace :app:testDebugUnitTest :app:lintDebug :app:assembleRelease 2>&1 | tee gradle-build.log
 
       - name: Report Failure Log
         if: failure()
@@ -72,11 +72,10 @@ jobs:
       - name: Prepare APK Files with Version
         run: |
           mkdir -p output-apks
-          RELEASE_APK=$(find app/build/outputs/apk -type f -name "*release*.apk" | head -n 1)
-          if [ -n "$RELEASE_APK" ]; then
-            cp "$RELEASE_APK" "output-apks/Mi-Tool-${TAG_NAME}-Release.apk"
-            echo "Copied $RELEASE_APK to output-apks/Mi-Tool-${TAG_NAME}-Release.apk"
-          fi
+          RELEASE_APK=app/build/outputs/apk/release/app-release.apk
+          test -s "$RELEASE_APK"
+          cp "$RELEASE_APK" "output-apks/Mi-Tool-${TAG_NAME}-Release.apk"
+          echo "Prepared Mi-Tool-${TAG_NAME}-Release.apk"
           ls -la output-apks/
 
       - name: Upload APKs as Workflow Artifacts
@@ -85,6 +84,7 @@ jobs:
           name: Mi-Tool-APK
           path: output-apks/*.apk
           retention-days: 30
+          if-no-files-found: error
 
       - name: Publish GitHub Release
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
@@ -96,18 +96,6 @@ jobs:
           prerelease: false
           make_latest: "true"
           token: ${{ secrets.GITHUB_TOKEN }}
-          body: |
-            Bản cập nhật ${{ env.TAG_NAME }}:
-            - 🎯 **Tối ưu & Tinh gọn Quy trình Mở khóa 120 FPS**:
-              1. Rút gọn còn 4 bước trọng tâm: Kết nối Shizuku -> Vô hiệu hóa Joyose -> Xóa dữ liệu Pin & Hiệu suất -> Khởi động Game & Mini Game HUD.
-              2. Bỏ bước ép tần số quét không cần thiết, tập trung chính xác vào 2 nhân tố cốt lõi gây khóa 89 FPS (Joyose & PowerKeeper).
-              3. Thêm ghi chú rõ ràng, nổi bật: Thao tác Pin & Hiệu suất là **XÓA DỮ LIỆU** (Clear Data), hoàn toàn **KHÔNG PHẢI gỡ cài đặt** (Uninstall) ứng dụng hệ thống.
-            - 📱 **Sửa triệt để lỗi Responsive chữ và Nút bấm (Button Layout)**:
-              1. Khắc phục tình trạng chữ bị ngắt dòng chắp vá (ví dụ `120` xuống dòng `FPS`, `Pin &` xuống dòng `Hiệu suất`).
-              2. Áp dụng `singleLine="true"`, `maxLines="1"`, `ellipsize="end"`, tinh chỉnh tỷ lệ weight và padding cho tất cả các nút hành động.
-              3. Hiển thị chuẩn nét, đồng đều trên mọi kích thước màn hình điện thoại Xiaomi/Redmi/POCO.
-            - ⚡ **Tự động hóa 1-Chạm mượt mà qua Shizuku & Root**:
-              1. 1-chạm vô hiệu hóa Joyose và xóa sạch dữ liệu Pin & Hiệu suất chỉ trong 1 giây.
-              2. 1-chạm khôi phục Joyose và hoàn nguyên cài đặt bất kỳ lúc nào.
-            - 🚀 Xuất xưởng Release APK ${{ env.TAG_NAME }} mượt mà, ổn định.
+          body_path: RELEASE_NOTES.md
+          fail_on_unmatched_files: true
           files: output-apks/*.apk

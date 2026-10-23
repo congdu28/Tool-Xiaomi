@@ -148,105 +148,48 @@ public class DebloatHelper {
         }
     }
 
+    private static final java.util.concurrent.ExecutorService EXECUTOR = java.util.concurrent.Executors.newSingleThreadExecutor();
+    private static final android.os.Handler MAIN = new android.os.Handler(android.os.Looper.getMainLooper());
+
     public static void setPackageState(Context context, String pkg, boolean freeze, ShizukuHelper.CommandCallback callback) {
-        String primaryCmd = freeze
-                ? "pm disable-user --user 0 " + pkg
-                : "pm enable " + pkg;
-        String fallbackCmd = freeze
-                ? "pm disable " + pkg
-                : "cmd package install-existing " + pkg;
-
-        if (ShizukuHelper.hasShizukuPermission()) {
-            new Thread(() -> {
-                ShizukuHelper.ShellResult res = ShizukuHelper.executeCommand(primaryCmd);
-                if (!res.success) {
-                    res = ShizukuHelper.executeCommand(fallbackCmd);
-                }
-                boolean success = res.success || res.stdout.contains("new state") || res.stdout.contains("enabled");
-                if (callback != null) {
-                    callback.onComplete(success, success
-                            ? (freeze ? "Đã đóng băng an toàn: " + pkg : "Đã kích hoạt lại: " + pkg)
-                            : "Thất bại: " + (res.stderr.isEmpty() ? res.stdout : res.stderr));
-                }
-            }).start();
-        } else if (GamingFpsHelper.runRootCommand(primaryCmd) || GamingFpsHelper.runRootCommand(fallbackCmd)) {
-            if (callback != null) {
-                callback.onComplete(true, freeze ? "Đã đóng băng (Root): " + pkg : "Đã kích hoạt lại (Root): " + pkg);
-            }
-        } else {
-            try {
-                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                intent.setData(Uri.parse("package:" + pkg));
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
-                if (callback != null) {
-                    callback.onComplete(false, "Đang mở Thông tin ứng dụng. Hãy chọn 'Tắt' hoặc 'Gỡ cài đặt'.");
-                }
-            } catch (Throwable t) {
-                if (callback != null) {
-                    callback.onComplete(false, "Không thể mở trang cài đặt ứng dụng.");
-                }
-            }
-        }
+        Context app = context.getApplicationContext();
+        EXECUTOR.execute(() -> {
+            boolean success = changeAndVerify(app, pkg, freeze);
+            MAIN.post(() -> {
+                if (callback != null) callback.onComplete(success, success
+                        ? (freeze ? "Đã đóng băng: " : "Đã kích hoạt lại: ") + pkg
+                        : "Chưa thay đổi được " + pkg + ". Kiểm tra quyền Shizuku/Root và trạng thái ứng dụng.");
+            });
+        });
     }
 
-    public static void batchFreeze(Context context, List<String> pkgs, ShizukuHelper.CommandCallback callback) {
-        if (pkgs == null || pkgs.isEmpty()) {
-            if (callback != null) callback.onComplete(true, "Không có ứng dụng rác nào cần đóng băng.");
-            return;
-        }
-
-        StringBuilder sb = new StringBuilder();
-        for (String pkg : pkgs) {
-            sb.append("pm disable-user --user 0 ").append(pkg).append("; ");
-        }
-        String cmd = sb.toString();
-
-        if (ShizukuHelper.hasShizukuPermission()) {
-            new Thread(() -> {
-                ShizukuHelper.ShellResult res = ShizukuHelper.executeCommand(cmd);
-                if (callback != null) {
-                    callback.onComplete(true, "Đã gửi lệnh đóng băng " + pkgs.size() + " ứng dụng rác qua Shizuku!");
-                }
-            }).start();
-        } else if (GamingFpsHelper.runRootCommand(cmd)) {
-            if (callback != null) {
-                callback.onComplete(true, "Đã đóng băng " + pkgs.size() + " ứng dụng rác qua Root!");
-            }
-        } else {
-            if (callback != null) {
-                callback.onComplete(false, "Cần cấp quyền Shizuku (Tab 1) hoặc Root để đóng băng hàng loạt!");
-            }
-        }
+    private static boolean changeAndVerify(Context context, String pkg, boolean freeze) {
+        if (pkg == null || !pkg.matches("[a-zA-Z0-9_]+(?:\\.[a-zA-Z0-9_]+)+")) return false;
+        String cmd = freeze ? "pm disable-user --user 0 " + pkg : "pm enable --user 0 " + pkg;
+        boolean success = ShizukuHelper.hasShizukuPermission()
+                ? ShizukuHelper.executeCommand(cmd).success : GamingFpsHelper.runRootCommand(cmd);
+        return success && isInstalled(context, pkg) && isFrozen(context, pkg) == freeze;
     }
 
-    public static void batchRestore(Context context, List<String> pkgs, ShizukuHelper.CommandCallback callback) {
-        if (pkgs == null || pkgs.isEmpty()) {
-            if (callback != null) callback.onComplete(true, "Không có ứng dụng nào cần khôi phục.");
-            return;
-        }
-
-        StringBuilder sb = new StringBuilder();
-        for (String pkg : pkgs) {
-            sb.append("pm enable ").append(pkg).append("; cmd package install-existing ").append(pkg).append("; ");
-        }
-        String cmd = sb.toString();
-
-        if (ShizukuHelper.hasShizukuPermission()) {
-            new Thread(() -> {
-                ShizukuHelper.ShellResult res = ShizukuHelper.executeCommand(cmd);
-                if (callback != null) {
-                    callback.onComplete(true, "Đã gửi lệnh khôi phục " + pkgs.size() + " ứng dụng qua Shizuku!");
-                }
-            }).start();
-        } else if (GamingFpsHelper.runRootCommand(cmd)) {
-            if (callback != null) {
-                callback.onComplete(true, "Đã khôi phục " + pkgs.size() + " ứng dụng qua Root!");
-            }
-        } else {
-            if (callback != null) {
-                callback.onComplete(false, "Cần cấp quyền Shizuku (Tab 1) hoặc Root để khôi phục hàng loạt!");
-            }
-        }
+    public static void batchFreeze(Context context, List<String> packages, ShizukuHelper.CommandCallback callback) {
+        batchChange(context, packages, true, callback);
+    }
+    public static void batchRestore(Context context, List<String> packages, ShizukuHelper.CommandCallback callback) {
+        batchChange(context, packages, false, callback);
+    }
+    private static void batchChange(Context context, List<String> packages, boolean freeze, ShizukuHelper.CommandCallback callback) {
+        Context app = context.getApplicationContext();
+        List<String> snapshot = packages == null ? new java.util.ArrayList<>() : new java.util.ArrayList<>(new java.util.LinkedHashSet<>(packages));
+        EXECUTOR.execute(() -> {
+            int count = 0;
+            for (String pkg : snapshot) if (changeAndVerify(app, pkg, freeze)) count++;
+            final int verified = count;
+            MAIN.post(() -> {
+                if (callback != null) callback.onComplete(verified == snapshot.size(),
+                        (freeze ? "Đã đóng băng " : "Đã khôi phục ") + verified + "/" + snapshot.size()
+                        + " ứng dụng (đã kiểm tra trạng thái)."
+                        + (verified < snapshot.size() ? " Kiểm tra quyền Shizuku/Root cho các mục chưa hoàn tất." : ""));
+            });
+        });
     }
 }

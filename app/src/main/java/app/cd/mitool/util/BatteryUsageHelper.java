@@ -340,7 +340,7 @@ public class BatteryUsageHelper {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
                 if (callback != null) {
-                    callback.onComplete(true, "Đã mở Cài đặt ứng dụng. Hãy chạm 'Buộc dừng'!");
+                    callback.onComplete(false, "Đã mở Cài đặt ứng dụng. Hãy chạm 'Buộc dừng'!");
                 }
             } catch (Exception e) {
                 if (callback != null) {

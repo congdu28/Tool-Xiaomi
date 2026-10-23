@@ -590,17 +590,22 @@ public class UpdateHelper {
                                 context.unregisterReceiver(this);
                             } catch (Exception ignored) {
                             }
-                            File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName);
-                            installApk(context, file);
+                            try (android.database.Cursor cursor = dm.query(new DownloadManager.Query().setFilterById(downloadId))) {
+                                if (cursor == null || !cursor.moveToFirst()
+                                        || cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS)) != DownloadManager.STATUS_SUCCESSFUL) {
+                                    Toast.makeText(context, "Tải cập nhật thất bại. Vui lòng thử lại.", Toast.LENGTH_LONG).show();
+                                    return;
+                                }
+                                File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName);
+                                installApk(context, file);
+                            }
                         }
                     }
                 };
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    context.registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE), Context.RECEIVER_EXPORTED);
-                } else {
-                    context.registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-                }
+                androidx.core.content.ContextCompat.registerReceiver(context, onComplete,
+                        new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
+                        androidx.core.content.ContextCompat.RECEIVER_EXPORTED);
             }
         } catch (Exception e) {
             // Fallback: open browser

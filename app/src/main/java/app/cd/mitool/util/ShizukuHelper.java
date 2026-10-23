@@ -8,9 +8,6 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -169,29 +166,8 @@ public class ShizukuHelper {
                 return new ShellResult(-1, "", "Không thể khởi tạo tiến trình Shizuku");
             }
 
-            StringBuilder stdout = new StringBuilder();
-            StringBuilder stderr = new StringBuilder();
-
-            try (InputStream is = process.getInputStream();
-                 BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    stdout.append(line).append("\n");
-                }
-            } catch (Throwable ignored) {
-            }
-
-            try (InputStream es = process.getErrorStream();
-                 BufferedReader errReader = new BufferedReader(new InputStreamReader(es))) {
-                String line;
-                while ((line = errReader.readLine()) != null) {
-                    stderr.append(line).append("\n");
-                }
-            } catch (Throwable ignored) {
-            }
-
-            int exitCode = process.waitFor();
-            return new ShellResult(exitCode, stdout.toString(), stderr.toString());
+            ProcessRunner.Result result = ProcessRunner.collect(process, 15000);
+            return new ShellResult(result.exitCode, result.stdout, result.stderr);
         } catch (Throwable t) {
             return new ShellResult(-1, "", "Lỗi thực thi: " + t.getMessage());
         } finally {
@@ -217,7 +193,7 @@ public class ShizukuHelper {
             // Re-verify permission
             boolean hasPerm = SystemClockHelper.hasSecureSettingsPermission(context);
             MAIN_HANDLER.post(() -> {
-                if (hasPerm || result.success) {
+                if (hasPerm) {
                     if (callback != null) callback.onComplete(true, "Đã cấp quyền WRITE_SECURE_SETTINGS thành công!");
                 } else {
                     String msg = result.stderr.isEmpty() ? result.stdout : result.stderr;
@@ -259,7 +235,7 @@ public class ShizukuHelper {
     public static void autoUnlock120Fps(CommandCallback callback) {
         EXECUTOR.execute(() -> {
             StringBuilder sb = new StringBuilder();
-            sb.append("pm disable-user --user 0 ").append(GamingFpsHelper.JOYOSE_PKG).append("; ")
+            sb.append("pm disable-user --user 0 ").append(GamingFpsHelper.JOYOSE_PKG).append(" && ")
               .append("pm clear ").append(GamingFpsHelper.POWERKEEPER_PKG);
 
             ShellResult result = executeCommand(sb.toString());
@@ -284,7 +260,7 @@ public class ShizukuHelper {
     public static void autoRestoreJoyose(CommandCallback callback) {
         EXECUTOR.execute(() -> {
             StringBuilder sb = new StringBuilder();
-            sb.append("pm enable ").append(GamingFpsHelper.JOYOSE_PKG).append("; ")
+            sb.append("pm enable ").append(GamingFpsHelper.JOYOSE_PKG).append(" && ")
               .append("settings put secure min_refresh_rate 60.0; ")
               .append("settings put secure peak_refresh_rate 120.0; ")
               .append("settings put secure user_refresh_rate 0; ")

@@ -2,11 +2,9 @@ package app.cd.mitool.util;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
-import android.widget.Toast;
 
 public class PrivateDnsHelper {
 
@@ -45,15 +43,7 @@ public class PrivateDnsHelper {
     }
 
     public static String cleanHostname(String hostname) {
-        if (hostname == null) return "";
-        hostname = hostname.trim();
-        if (hostname.toLowerCase().startsWith("https://")) hostname = hostname.substring(8);
-        if (hostname.toLowerCase().startsWith("http://")) hostname = hostname.substring(7);
-        int slashIdx = hostname.indexOf('/');
-        if (slashIdx >= 0) hostname = hostname.substring(0, slashIdx);
-        int colonIdx = hostname.indexOf(':');
-        if (colonIdx >= 0) hostname = hostname.substring(0, colonIdx);
-        return hostname.trim();
+        return DnsConfig.cleanHostname(hostname);
     }
 
     public static String getDnsDescription(Context context) {
@@ -62,19 +52,19 @@ public class PrivateDnsHelper {
 
         if (MODE_HOSTNAME.equalsIgnoreCase(mode) && !spec.isEmpty()) {
             if (DNS_ADGUARD.equalsIgnoreCase(spec) || DNS_ADGUARD_ALT.equalsIgnoreCase(spec)) {
-                return "🟢 Đang bật: AdGuard DNS (" + spec + ")";
+                return "🟢 Đã cấu hình: AdGuard DNS (" + spec + ")";
             } else if (DNS_CLOUDFLARE.equalsIgnoreCase(spec) || DNS_CLOUDFLARE_ALT.equalsIgnoreCase(spec)) {
-                return "🟢 Đang bật: Cloudflare 1.1.1.1 (" + spec + ")";
+                return "🟢 Đã cấu hình: Cloudflare 1.1.1.1 (" + spec + ")";
             } else if (DNS_CLOUDFLARE_FAMILY.equalsIgnoreCase(spec)) {
-                return "🟢 Đang bật: Cloudflare Family (Chặn web đen & QC)";
+                return "🟢 Đã cấu hình: Cloudflare Family (Chặn nội dung người lớn & mã độc)";
             } else if (DNS_CLOUDFLARE_SECURITY.equalsIgnoreCase(spec)) {
-                return "🟢 Đang bật: Cloudflare Security (Chặn mã độc)";
+                return "🟢 Đã cấu hình: Cloudflare Security (Chặn mã độc)";
             } else if (DNS_GOOGLE.equalsIgnoreCase(spec)) {
-                return "🟢 Đang bật: Google DNS (" + spec + ")";
+                return "🟢 Đã cấu hình: Google DNS (" + spec + ")";
             } else if (DNS_QUAD9.equalsIgnoreCase(spec)) {
-                return "🟢 Đang bật: Quad9 DNS (" + spec + ")";
+                return "🟢 Đã cấu hình: Quad9 DNS (" + spec + ")";
             } else {
-                return "🟢 Đang bật: " + spec;
+                return "🟢 Đã cấu hình: " + spec;
             }
         } else if (MODE_OFF.equalsIgnoreCase(mode)) {
             return "❌ Đang TẮT DNS riêng tư";
@@ -83,81 +73,70 @@ public class PrivateDnsHelper {
         }
     }
 
-    /**
-     * Apply Private DNS configuration via WRITE_SECURE_SETTINGS, Shizuku, Root, or manual fallback.
-     */
-    public static boolean setPrivateDns(Context context, String mode, String hostname) {
-        if (context == null) return false;
-        ContentResolver cr = context.getContentResolver();
+    public interface ApplyCallback {
+        void onComplete(boolean success, boolean needsPermission, String message);
+    }
+    private static final java.util.concurrent.ExecutorService EXECUTOR = java.util.concurrent.Executors.newSingleThreadExecutor();
+    private static final android.os.Handler MAIN = new android.os.Handler(android.os.Looper.getMainLooper());
 
-        // Clean hostname: trim and strip any accidental "https://", "http://", port, or path
-        hostname = cleanHostname(hostname);
-
-        boolean wrote = false;
-
-        // 1. Try ContentResolver if WRITE_SECURE_SETTINGS is granted
+    public static void setPrivateDns(Context context, String mode, String hostname, ApplyCallback callback) {
+        Context app = context.getApplicationContext();
+        String host = cleanHostname(hostname);
+        EXECUTOR.execute(() -> {
+            if (android.os.Build.VERSION.SDK_INT < 28) {
+                MAIN.post(() -> callback.onComplete(false, false, "DNS riêng tư cần Android 9 trở lên."));
+                return;
+            }
+            if (!(MODE_OFF.equals(mode) || MODE_AUTO.equals(mode) || MODE_HOSTNAME.equals(mode))
+                    || (MODE_HOSTNAME.equals(mode) && !DnsConfig.isValidHostname(host))) {
+                MAIN.post(() -> callback.onComplete(false, false, "Nhập tên máy chủ DoT hợp lệ, ví dụ one.one.one.one; không dùng địa chỉ IP."));
+                return;
+            }
+            String oldMode = getCurrentDnsMode(app);
+            String oldHost = getCurrentDnsSpecifier(app);
+            boolean privileged = SystemClockHelper.hasSecureSettingsPermission(app) || ShizukuHelper.hasShizukuPermission();
+            boolean wrote = writeSettings(app, mode, host);
+            boolean verified = wrote && mode.equals(getCurrentDnsMode(app))
+                    && (!MODE_HOSTNAME.equals(mode) || host.equalsIgnoreCase(getCurrentDnsSpecifier(app)));
+            if (!verified && (!oldMode.equals(getCurrentDnsMode(app)) || !oldHost.equals(getCurrentDnsSpecifier(app)))) {
+                writeSettings(app, oldMode, oldHost);
+            }
+            MAIN.post(() -> callback.onComplete(verified, !verified && !privileged,
+                    verified ? "Đã lưu cấu hình DNS. Khả năng kết nối phụ thuộc mạng và máy chủ DoT."
+                    : "Chưa áp dụng được DNS. Cần quyền WRITE_SECURE_SETTINGS, Shizuku hoặc Root; có thể cấu hình thủ công."));
+        });
+    }
+    private static boolean writeSettings(Context context, String mode, String host) {
         if (SystemClockHelper.hasSecureSettingsPermission(context)) {
             try {
-                Settings.Global.putString(cr, "private_dns_mode", mode);
-                if (MODE_HOSTNAME.equalsIgnoreCase(mode) && !hostname.isEmpty()) {
-                    Settings.Global.putString(cr, "private_dns_specifier", hostname);
-                }
-                wrote = true;
-            } catch (Throwable ignored) {
-            }
+                boolean provider = Settings.Global.putString(context.getContentResolver(), "private_dns_specifier", host);
+                if (provider && Settings.Global.putString(context.getContentResolver(), "private_dns_mode", mode)) return true;
+            } catch (Exception ignored) {}
         }
-
-        // 2. Try Shizuku if not written yet
-        if (!wrote && ShizukuHelper.hasShizukuPermission()) {
-            String cmd = "settings put global private_dns_mode " + mode;
-            if (MODE_HOSTNAME.equalsIgnoreCase(mode) && !hostname.isEmpty()) {
-                cmd += " && settings put global private_dns_specifier " + hostname;
-            }
-            final String finalCmd = cmd;
-            new Thread(() -> ShizukuHelper.executeCommand(finalCmd)).start();
-            wrote = true;
-        }
-
-        // 3. Try Root if not written yet
-        if (!wrote) {
-            String cmd = "settings put global private_dns_mode " + mode;
-            if (MODE_HOSTNAME.equalsIgnoreCase(mode) && !hostname.isEmpty()) {
-                cmd += " && settings put global private_dns_specifier " + hostname;
-            }
-            wrote = GamingFpsHelper.runRootCommand(cmd);
-        }
-
-        // 4. Fallback: Copy hostname & open settings screen
-        if (!wrote) {
-            if (!hostname.isEmpty()) {
-                ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-                if (cm != null) {
-                    cm.setPrimaryClip(ClipData.newPlainText("Private DNS", hostname));
-                }
-            }
-            openPrivateDnsSettings(context);
-            Toast.makeText(context, "Đã sao chép '" + hostname + "'! Hãy dán vào ô 'Tên máy chủ nhà cung cấp DNS riêng tư'.", Toast.LENGTH_LONG).show();
-            return false;
-        }
-
-        return true;
+        String cmd = "settings put global private_dns_specifier " + shellQuote(host)
+                + " && settings put global private_dns_mode " + shellQuote(mode);
+        if (ShizukuHelper.hasShizukuPermission()) return ShizukuHelper.executeCommand(cmd).success;
+        return GamingFpsHelper.runRootCommand(cmd);
     }
-
+    private static String shellQuote(String value) {
+        return "'" + value.replace("'", "'\"'\"'") + "'";
+    }
+    public static void copyHostname(Context context, String hostname) {
+        ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        if (cm != null && hostname != null && !hostname.isEmpty()) {
+            cm.setPrimaryClip(ClipData.newPlainText("Private DNS", cleanHostname(hostname)));
+        }
+    }
     public static boolean openPrivateDnsSettings(Context context) {
         if (context == null) return false;
-        String[] actions = {
-                "android.settings.NETWORK_PROVIDER_SETTINGS",
-                Settings.ACTION_WIRELESS_SETTINGS,
-                Settings.ACTION_WIFI_SETTINGS
-        };
+        String[] actions = {"android.settings.PRIVATE_DNS_SETTINGS", Settings.ACTION_WIRELESS_SETTINGS, Settings.ACTION_SETTINGS};
         for (String act : actions) {
             try {
                 Intent intent = new Intent(act);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
                 return true;
-            } catch (Throwable ignored) {
-            }
+            } catch (Exception ignored) {}
         }
         return false;
     }

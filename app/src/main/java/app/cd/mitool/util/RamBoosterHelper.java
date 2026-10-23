@@ -81,8 +81,7 @@ public class RamBoosterHelper {
             // 1. Shizuku Deep Boost if available
             if (ShizukuHelper.hasShizukuPermission()) {
                 try {
-                    ShizukuHelper.executeCommand("am kill-all && pm trim-caches 999999999");
-                    usedShizuku = true;
+                    usedShizuku = ShizukuHelper.executeCommand("am kill-all && pm trim-caches 999999999").success;
                 } catch (Throwable ignored) {
                 }
             }

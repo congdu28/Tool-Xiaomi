@@ -208,7 +208,7 @@ public class DeviceInfoHelper {
 
         String brand = Build.MANUFACTURER;
         if (brand != null && !brand.isEmpty()) {
-            brand = brand.substring(0, 1).toUpperCase() + brand.substring(1).toLowerCase();
+            brand = brand.substring(0, 1).toUpperCase(java.util.Locale.ROOT) + brand.substring(1).toLowerCase(java.util.Locale.ROOT);
         } else {
             brand = "Xiaomi";
         }

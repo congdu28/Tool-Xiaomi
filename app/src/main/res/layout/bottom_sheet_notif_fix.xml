@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:lineSpacingExtra="2dp"
-            android:text="Mở khóa kết nối Google FCM &amp; Tự khởi chạy cho ROM nội địa HyperOS/MIUI. Nhận thông báo tức thì mà không cần khóa đa nhiệm, tiết kiệm pin."
+            android:text="Cho phép ứng dụng được chọn chạy nền và miễn Doze. Kiểm tra thêm quyền thông báo, Tự khởi chạy và giới hạn pin MIUI. Kết quả nhận thông báo còn phụ thuộc ứng dụng và kết nối mạng."
             android:textColor="@color/text_secondary"
             android:textSize="12sp" />
 

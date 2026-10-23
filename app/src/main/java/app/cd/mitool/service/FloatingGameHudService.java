@@ -22,7 +22,6 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
-import android.view.Choreographer;
 import android.view.ContextThemeWrapper;
 import android.view.Display;
 import android.view.Gravity;
@@ -110,8 +109,7 @@ public class FloatingGameHudService extends Service {
     private boolean isScreenOn = true;
 
     // FPS calculation variables
-    private int frameCount = 0;
-    private long lastFpsSampleTime = 0;
+    private boolean hardwareFpsAvailable;
     private int currentFps = 60;
     private int maxDisplayHz = 120;
 
@@ -127,34 +125,6 @@ public class FloatingGameHudService extends Service {
 
     private final Handler metricsHandler = new Handler(Looper.getMainLooper());
     private Runnable metricsRunnable;
-
-    private final Choreographer.FrameCallback frameCallback = new Choreographer.FrameCallback() {
-        @Override
-        public void doFrame(long frameTimeNanos) {
-            if (!isScreenOn) return;
-            frameCount++;
-            long now = System.currentTimeMillis();
-            long diff = now - lastFpsSampleTime;
-            if (diff >= 1000) {
-                int hwFps = readHardwareFps();
-                if (hwFps > 0) {
-                    currentFps = hwFps;
-                } else {
-                    currentFps = (int) Math.round((frameCount * 1000.0) / Math.max(1, diff));
-                    if (currentFps > maxDisplayHz + 5) currentFps = maxDisplayHz;
-                }
-                frameCount = 0;
-                lastFpsSampleTime = now;
-                updateFpsViews();
-            }
-            if (isScreenOn) {
-                try {
-                    Choreographer.getInstance().postFrameCallback(this);
-                } catch (Throwable ignored) {
-                }
-            }
-        }
-    };
 
     private int readHardwareFps() {
         for (String path : HARDWARE_FPS_SYSFS) {
@@ -197,21 +167,11 @@ public class FloatingGameHudService extends Service {
 
             if (Intent.ACTION_SCREEN_OFF.equals(action)) {
                 isScreenOn = false;
-                try {
-                    Choreographer.getInstance().removeFrameCallback(frameCallback);
-                } catch (Throwable ignored) {
-                }
                 if (metricsRunnable != null) {
                     metricsHandler.removeCallbacks(metricsRunnable);
                 }
             } else if (Intent.ACTION_SCREEN_ON.equals(action)) {
                 isScreenOn = true;
-                lastFpsSampleTime = System.currentTimeMillis();
-                frameCount = 0;
-                try {
-                    Choreographer.getInstance().postFrameCallback(frameCallback);
-                } catch (Throwable ignored) {
-                }
                 if (metricsRunnable != null) {
                     metricsHandler.post(metricsRunnable);
                 }
@@ -610,23 +570,16 @@ public class FloatingGameHudService extends Service {
     }
 
     private void startMetricPolling() {
-        lastFpsSampleTime = System.currentTimeMillis();
-        frameCount = 0;
-        try {
-            Choreographer.getInstance().postFrameCallback(frameCallback);
-        } catch (Throwable ignored) {
-        }
-
         metricsRunnable = new Runnable() {
             @Override
             public void run() {
                 if (isScreenOn) {
                     if (prefs.isGameHudShowFps()) {
                         int hwFps = readHardwareFps();
-                        if (hwFps > 0) {
-                            currentFps = hwFps;
-                            updateFpsViews();
-                        }
+                        hardwareFpsAvailable = hwFps > 0;
+                        currentFps = hardwareFpsAvailable ? hwFps
+                                : app.cd.mitool.util.RefreshRateHelper.getCurrentRefreshRate(FloatingGameHudService.this);
+                        updateFpsViews();
                     }
                     if (prefs.isGameHudShowCpu()) {
                         measureCpuUsage();
@@ -712,11 +665,11 @@ public class FloatingGameHudService extends Service {
 
     private void updateFpsViews() {
         if (!prefs.isGameHudShowFps()) return;
-        String fpsText = currentFps + " FPS";
+        String fpsText = currentFps + (hardwareFpsAvailable ? " FPS (HW)" : " Hz");
         int fpsColor = Color.parseColor("#00E676"); // Default Neon Green
-        if (currentFps < 55) {
+        if (hardwareFpsAvailable && currentFps < 55) {
             fpsColor = Color.parseColor("#FF5252"); // Red (lag)
-        } else if (currentFps < 85 && maxDisplayHz >= 90) {
+        } else if (hardwareFpsAvailable && currentFps < 85 && maxDisplayHz >= 90) {
             fpsColor = Color.parseColor("#FF9800"); // Orange (throttled)
         }
 
@@ -808,11 +761,6 @@ public class FloatingGameHudService extends Service {
         super.onDestroy();
         try {
             unregisterReceiver(screenReceiver);
-        } catch (Throwable ignored) {
-        }
-
-        try {
-            Choreographer.getInstance().removeFrameCallback(frameCallback);
         } catch (Throwable ignored) {
         }
 

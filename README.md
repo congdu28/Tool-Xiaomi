@@ -14,7 +14,7 @@ Bộ tiện ích mở rộng tối ưu chuyên biệt cho điện thoại **Xiao
 - **Tự động cấp quyền `WRITE_SECURE_SETTINGS`**: Không cần cắm cáp vào máy tính hay gõ lệnh ADB phức tạp. Chỉ cần mở Shizuku -> Bấm 1 nút trong Mi Tool là xong!
 - **⚡ 1-Chạm Mở Khóa Toàn Bộ 120 FPS Game**: Tự động vô hiệu hóa Joyose (thủ phạm khóa 89 FPS), xóa sạch cache bóp nhiệt PowerKeeper và ép màn hình cố định 120Hz & Speed Mode chống tụt xung.
 - **🔄 1-Chạm Khôi Phục Joyose Mặc Định**: Phục hồi dịch vụ Joyose và đưa tần số quét màn hình về tự động khi không chơi game.
-- **📋 Quy Trình 5 Bước Minh Bạch & Trực Quan**: Hướng dẫn chi tiết từng bước, theo dõi trạng thái Shizuku, Joyose và tần số quét theo thời gian thực (real-time).
+- **📋 Quy Trình 4 Bước Minh Bạch & Trực Quan**: Hướng dẫn chi tiết từng bước, theo dõi trạng thái Shizuku, Joyose và tần số quét theo thời gian thực (real-time).
 
 ### 2. 🔋 Tùy Chỉnh Cảnh Báo Pin & Âm Thanh Cá Nhân Hóa
 - **Thanh trượt chọn mức % bảo vệ pin**: Tự do kéo chọn mức sạc mong muốn (50% - 95%, mặc định 80%) thay vì cố định một mức.
@@ -46,12 +46,12 @@ Bộ tiện ích mở rộng tối ưu chuyên biệt cho điện thoại **Xiao
 - Khi có bản mới, ứng dụng tự động hiển thị danh sách thay đổi và nút **"Tải & Cài đặt ngay"** để cập nhật trực tiếp trên máy mà không cần mở trình duyệt web.
 
 ### 7. 🔔 Khắc Phục Trễ Thông Báo (Fix Delayed Notifications)
-- **Chống kill app nhắn tin**: Giải quyết triệt để lỗi chậm thông báo và lỡ cuộc gọi trên HyperOS/MIUI cho Zalo, Messenger, Telegram, WhatsApp, Gmail, Teams...
-- **1-Chạm tối ưu hàng loạt**: Bỏ qua tối ưu hóa pin (Doze whitelist), cho phép chạy nền và bật tự khởi chạy (MIUI Autostart) qua Shizuku.
-- **Lối tắt bảo vệ**: Hướng dẫn khóa ứng dụng trong đa nhiệm (Recent Apps) để bảo vệ 100% không bị dọn RAM.
+- **Chống kill app nhắn tin**: Hỗ trợ giảm chậm thông báo và lỡ cuộc gọi trên HyperOS/MIUI cho Zalo, Messenger, Telegram, WhatsApp, Gmail, Teams...
+- **1-Chạm tối ưu hàng loạt**: Miễn Doze và cho phép chạy nền qua Shizuku, xác minh từng ứng dụng. Kiểm tra Tự khởi chạy, giới hạn pin MIUI và quyền thông báo qua các lối tắt Cài đặt.
+- **Lối tắt bảo vệ**: Hướng dẫn khóa ứng dụng trong đa nhiệm (Recent Apps) để hạn chế bị dọn RAM.
 
 ### 8. 🎮 Mini Game HUD Nổi (FPS & Hiệu Năng Thời Gian Thực)
-- **Lớp phủ nổi siêu nhẹ**: Đo FPS thực tế, tần số quét màn hình, % CPU, % RAM, Nhiệt độ và Công suất xả ($W$) khi chơi game.
+- **Lớp phủ nổi siêu nhẹ**: Hiển thị FPS từ cảm biến phần cứng nếu đọc được (FPS HW); khi không có nguồn đo sẽ hiển thị tần số quét Hz. Hiển thị thêm % CPU, % RAM, Nhiệt độ và Công suất xả ($W$) khi chơi game.
 - **Chạm chuyển chế độ**: Dễ dàng đổi giữa chế độ Gọn (Compact) và Bảng điều khiển (Expanded).
 - **Quick Settings Tile**: Bật/tắt HUD nổi ngay từ bảng điều khiển kéo xuống của Xiaomi mà không cần thoát game.
 

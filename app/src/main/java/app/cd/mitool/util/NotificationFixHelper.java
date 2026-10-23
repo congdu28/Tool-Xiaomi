@@ -189,114 +189,68 @@ public class NotificationFixHelper {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
             if (pm != null) {
-                return pm.isIgnoringBatteryOptimizations(packageName);
+                try { return pm.isIgnoringBatteryOptimizations(packageName); }
+                catch (RuntimeException ignored) { return false; }
             }
         }
         return false;
     }
 
-    /**
-     * Batch optimize multiple applications via Shizuku.
-     */
+    /** Apply only to selected installed packages; verify the documented Android controls. */
     public static void applyBatchFix(Context context, List<String> packageNames, FixCallback callback) {
-        if (!ShizukuHelper.hasShizukuPermission()) {
-            if (callback != null) {
-                callback.onComplete(false, 0, "Cần cấp quyền Shizuku để tự động tối ưu hóa!");
-            }
-            return;
-        }
-
+        Context app = context.getApplicationContext();
+        java.util.LinkedHashSet<String> selected = new java.util.LinkedHashSet<>();
+        if (packageNames != null) selected.addAll(packageNames);
         EXECUTOR.execute(() -> {
-            // 0. Deep GMS / FCM Infrastructure Unlocking (Global ROM Push Hub)
-            StringBuilder gmsCmd = new StringBuilder();
-            gmsCmd.append("dumpsys deviceidle whitelist +com.google.android.gms ; ");
-            gmsCmd.append("dumpsys deviceidle whitelist +com.google.android.gsf ; ");
-            gmsCmd.append("dumpsys deviceidle whitelist +com.google.android.gms.persistent ; ");
-            gmsCmd.append("cmd appops set com.google.android.gms WAKE_LOCK allow ; ");
-            gmsCmd.append("cmd appops set com.google.android.gms RUN_ANY_IN_BACKGROUND allow ; ");
-            gmsCmd.append("cmd appops set com.google.android.gms 10008 allow ; ");
-            gmsCmd.append("cmd appops set com.google.android.gms AUTO_START allow ; ");
-            gmsCmd.append("cmd appops set com.google.android.gsf RUN_ANY_IN_BACKGROUND allow ; ");
-            gmsCmd.append("cmd appops set com.google.android.gsf 10008 allow ; ");
-            gmsCmd.append("am set-standby-bucket com.google.android.gms active ; ");
-            gmsCmd.append("am set-standby-bucket com.google.android.gsf active");
-            ShizukuHelper.executeCommand(gmsCmd.toString());
-
-            // 0.1 Inject into Xiaomi's hidden MILLET_NO_RESTRICT_APP (Greezer Anti-Freeze List)
-            injectMilletNoRestrictApps(packageNames);
-
-            int successCount = 0;
-            int total = packageNames.size();
-
-            for (int i = 0; i < total; i++) {
-                String pkg = packageNames.get(i);
-                final int index = i + 1;
-                MAIN_HANDLER.post(() -> {
-                    if (callback != null) callback.onProgress(index, total, pkg);
-                });
-
-                StringBuilder cmd = new StringBuilder();
-                // 1. Whitelist from Doze
-                cmd.append("dumpsys deviceidle whitelist +").append(pkg).append(" ; ");
-                // 2. Allow running in background (AppOps)
-                cmd.append("cmd appops set ").append(pkg).append(" RUN_IN_BACKGROUND allow ; ");
-                cmd.append("cmd appops set ").append(pkg).append(" RUN_ANY_IN_BACKGROUND allow ; ");
-                // 3. MIUI OP_AUTO_START (10008) and AUTO_START
-                cmd.append("cmd appops set ").append(pkg).append(" 10008 allow ; ");
-                cmd.append("cmd appops set ").append(pkg).append(" AUTO_START allow ; ");
-                cmd.append("cmd appops set ").append(pkg).append(" BOOT_COMPLETED allow ; ");
-                cmd.append("cmd appops set ").append(pkg).append(" START_FOREGROUND allow ; ");
-                cmd.append("cmd appops set ").append(pkg).append(" POST_NOTIFICATION allow ; ");
-                cmd.append("cmd appops set ").append(pkg).append(" WAKE_LOCK allow ; ");
-                // 4. Force Active Standby Bucket
-                cmd.append("am set-standby-bucket ").append(pkg).append(" active");
-
-                ShizukuHelper.ShellResult result = ShizukuHelper.executeCommand(cmd.toString());
-                if (result.success || result.exitCode == 0) {
-                    successCount++;
-                }
+            int count = 0;
+            int index = 0;
+            java.util.List<String> failed = new java.util.ArrayList<>();
+            for (String pkg : selected) {
+                final int progress = ++index;
+                MAIN_HANDLER.post(() -> { if (callback != null) callback.onProgress(progress, selected.size(), pkg); });
+                if (applyAndVerify(app, pkg)) count++;
+                else failed.add(String.valueOf(pkg));
             }
-
-            final int finalSuccess = successCount;
+            final int verified = count;
             MAIN_HANDLER.post(() -> {
-                PreferencesHelper prefs = new PreferencesHelper(context);
-                prefs.setNotifFixLastApplied(System.currentTimeMillis());
-                if (callback != null) {
-                    callback.onComplete(true, finalSuccess, "Đã tối ưu thành công " + finalSuccess + "/" + total + " ứng dụng!");
-                }
+                if (verified > 0) new PreferencesHelper(app).setNotifFixLastApplied(System.currentTimeMillis());
+                if (callback != null) callback.onComplete(!selected.isEmpty() && verified == selected.size(), verified,
+                        "Đã xác minh miễn Doze và quyền chạy nền: " + verified + "/" + selected.size()
+                        + ". Tự khởi chạy và giới hạn pin MIUI cần kiểm tra trong Cài đặt."
+                        + (failed.isEmpty() ? "" : "\nChưa hoàn tất: " + android.text.TextUtils.join(", ", failed)));
             });
         });
     }
 
-    /**
-     * Fix a single app via Shizuku.
-     */
     public static void fixSingleApp(Context context, String packageName, ShizukuHelper.CommandCallback callback) {
-        if (!ShizukuHelper.hasShizukuPermission()) {
-            if (callback != null) callback.onComplete(false, "Cần cấp quyền Shizuku");
-            return;
-        }
-
-        EXECUTOR.execute(() -> {
-            StringBuilder cmd = new StringBuilder();
-            cmd.append("dumpsys deviceidle whitelist +").append(packageName).append(" ; ");
-            cmd.append("cmd appops set ").append(packageName).append(" RUN_IN_BACKGROUND allow ; ");
-            cmd.append("cmd appops set ").append(packageName).append(" RUN_ANY_IN_BACKGROUND allow ; ");
-            cmd.append("cmd appops set ").append(packageName).append(" 10008 allow ; ");
-            cmd.append("cmd appops set ").append(packageName).append(" AUTO_START allow ; ");
-            cmd.append("cmd appops set ").append(packageName).append(" BOOT_COMPLETED allow ; ");
-            cmd.append("cmd appops set ").append(packageName).append(" START_FOREGROUND allow ; ");
-            cmd.append("cmd appops set ").append(packageName).append(" POST_NOTIFICATION allow ; ");
-            cmd.append("cmd appops set ").append(packageName).append(" WAKE_LOCK allow ; ");
-            cmd.append("am set-standby-bucket ").append(packageName).append(" active");
-
-            ShizukuHelper.ShellResult result = ShizukuHelper.executeCommand(cmd.toString());
-            MAIN_HANDLER.post(() -> {
-                if (callback != null) {
-                    callback.onComplete(result.success, result.success ? "Đã tối ưu hóa " + packageName : "Lỗi: " + result.stderr);
-                }
-            });
+        applyBatchFix(context, java.util.Collections.singletonList(packageName), new FixCallback() {
+            @Override public void onProgress(int current, int total, String appName) {}
+            @Override public void onComplete(boolean success, int count, String message) {
+                if (callback != null) callback.onComplete(success, message);
+            }
         });
+    }
+
+    private static boolean applyAndVerify(Context context, String pkg) {
+        if (pkg == null || !pkg.matches("[a-zA-Z0-9_]+(?:\\.[a-zA-Z0-9_]+)+")
+                || !ShizukuHelper.hasShizukuPermission()) return false;
+        try { context.getPackageManager().getApplicationInfo(pkg, 0); }
+        catch (PackageManager.NameNotFoundException e) { return false; }
+        ShizukuHelper.ShellResult doze = ShizukuHelper.executeCommand("dumpsys deviceidle whitelist +" + pkg);
+        ShizukuHelper.ShellResult background = ShizukuHelper.executeCommand("cmd appops set " + pkg + " RUN_IN_BACKGROUND allow");
+        boolean ok = doze.success && background.success;
+        if (Build.VERSION.SDK_INT >= 28) {
+            ok &= ShizukuHelper.executeCommand("cmd appops set " + pkg + " RUN_ANY_IN_BACKGROUND allow").success;
+        }
+        ShizukuHelper.ShellResult check = ShizukuHelper.executeCommand("cmd appops get " + pkg + " RUN_IN_BACKGROUND");
+        ok &= check.success && check.stdout.contains("allow");
+        if (Build.VERSION.SDK_INT >= 28) {
+            ShizukuHelper.ShellResult any = ShizukuHelper.executeCommand("cmd appops get " + pkg + " RUN_ANY_IN_BACKGROUND");
+            ok &= any.success && any.stdout.contains("allow");
+        }
+        // Vendor autostart operations differ between ROMs. Never guess numeric AppOps IDs
+        // or write undocumented global lists. Leave those controls to the user's MIUI settings.
+        return ok && isIgnoringBatteryOptimizations(context, pkg);
     }
 
     /**
@@ -390,6 +344,18 @@ public class NotificationFixHelper {
         }
     }
 
+    public static boolean openAppNotificationSettings(Context context, String packageName) {
+        try {
+            Intent intent = new Intent("android.settings.APP_NOTIFICATION_SETTINGS");
+            intent.putExtra("android.provider.extra.APP_PACKAGE", packageName);
+            intent.putExtra("app_package", packageName);
+            intent.putExtra("app_uid", context.getPackageManager().getApplicationInfo(packageName, 0).uid);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+            return true;
+        } catch (Exception ignored) { return openAppDetails(context, packageName); }
+    }
+
     /**
      * Open system application details settings.
      */
@@ -404,38 +370,6 @@ public class NotificationFixHelper {
         } catch (Throwable t) {
             Toast.makeText(context, "Không thể mở thông tin ứng dụng", Toast.LENGTH_SHORT).show();
             return false;
-        }
-    }
-
-    /**
-     * Inject packages into Xiaomi's hidden MILLET_NO_RESTRICT_APP settings list.
-     * Prevents Xiaomi's Greezer engine from freezing GMS and critical messaging apps.
-     */
-    public static void injectMilletNoRestrictApps(List<String> packages) {
-        try {
-            ShizukuHelper.ShellResult res = ShizukuHelper.executeCommand("settings get system MILLET_NO_RESTRICT_APP");
-            String current = (res != null && res.stdout != null) ? res.stdout.trim() : "";
-            java.util.LinkedHashSet<String> set = new java.util.LinkedHashSet<>();
-            if (!current.isEmpty() && !current.equals("null")) {
-                for (String p : current.split(",")) {
-                    if (!p.trim().isEmpty()) set.add(p.trim());
-                }
-            }
-            set.add("com.google.android.gms");
-            set.add("com.google.android.gsf");
-            set.add("com.google.android.gms.persistent");
-            if (packages != null) {
-                for (String p : packages) {
-                    if (p != null && !p.trim().isEmpty()) set.add(p.trim());
-                }
-            }
-            StringBuilder sb = new StringBuilder();
-            for (String p : set) {
-                if (sb.length() > 0) sb.append(",");
-                sb.append(p);
-            }
-            ShizukuHelper.executeCommand("settings put system MILLET_NO_RESTRICT_APP \"" + sb.toString() + "\"");
-        } catch (Throwable ignored) {
         }
     }
 

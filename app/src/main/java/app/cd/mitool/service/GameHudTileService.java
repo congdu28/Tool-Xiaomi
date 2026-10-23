@@ -28,6 +28,8 @@ public class GameHudTileService extends TileService {
         updateTileState();
     }
 
+    // The Intent overload is required below Android 14; the newer API is guarded below.
+    @android.annotation.SuppressLint("StartActivityAndCollapseDeprecated")
     @Override
     public void onClick() {
         super.onClick();

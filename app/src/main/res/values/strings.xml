@@ -145,7 +145,7 @@
 
     <!-- Group 3: Safe Debloater -->
     <string name="debloater_title">🛡️ Gỡ / Đóng Băng Ứng Dụng Rác (Debloater)</string>
-    <string name="debloater_desc">Đóng băng an toàn các ứng dụng rác, quảng cáo và thu thập dữ liệu ngầm của Xiaomi/HyperOS. 100% an toàn không lo treo logo (Bootloop).</string>
+    <string name="debloater_desc" formatted="false">Đóng băng an toàn các ứng dụng rác, quảng cáo và thu thập dữ liệu ngầm của Xiaomi/HyperOS. 100% an toàn không lo treo logo (Bootloop).</string>
     <string name="btn_debloater_open_list">📋 Danh sách &amp; Quản lý ứng dụng rác</string>
     <string name="btn_debloater_freeze_all">❄️ 1-Chạm đóng băng ứng dụng rác khuyên dùng</string>
     <string name="btn_debloater_restore_all">🔄 Khôi phục toàn bộ ứng dụng</string>
@@ -197,7 +197,7 @@
 
     <!-- Mini Game HUD (Floating FPS) -->
     <string name="game_hud_title">Mini Game HUD Nổi (FPS &amp; Hiệu Năng)</string>
-    <string name="game_hud_desc">Lớp phủ nổi siêu nhẹ đo FPS thời gian thực, % CPU, % RAM, Nhiệt độ và Công suất xả pin khi chơi game.</string>
+    <string name="game_hud_desc" formatted="false">Lớp phủ nổi siêu nhẹ đo FPS thời gian thực, % CPU, % RAM, Nhiệt độ và Công suất xả pin khi chơi game.</string>
     <string name="game_hud_enable">Bật Game HUD nổi trên màn hình</string>
     <string name="game_hud_mode_compact">Chế độ Gọn (FPS + Nhiệt độ)</string>
     <string name="game_hud_mode_full">Chế độ Bảng điều khiển (Đầy đủ CPU, RAM, Watt)</string>

@@ -239,6 +239,9 @@ public class MainActivity extends AppCompatActivity {
     private final Handler batteryTickerHandler = new Handler(Looper.getMainLooper());
     private Runnable batteryTickerRunnable;
     private Runnable refreshGameFpsSheetState = null;
+    private Runnable refreshDnsSheetState;
+    private Runnable refreshNotificationSheetState;
+    private boolean dnsApplying;
 
     private final Shizuku.OnRequestPermissionResultListener shizukuPermissionListener =
             new Shizuku.OnRequestPermissionResultListener() {
@@ -250,6 +253,7 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             Toast.makeText(MainActivity.this, "Từ chối quyền Shizuku", Toast.LENGTH_SHORT).show();
                         }
+                        if (refreshNotificationSheetState != null) refreshNotificationSheetState.run();
                         updateShizukuDisplay();
                         updateDeviceSpecsDisplay();
                         updateToolsCardSummaries();
@@ -267,6 +271,7 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            if (refreshNotificationSheetState != null) refreshNotificationSheetState.run();
                             updateShizukuDisplay();
                             updateDeviceSpecsDisplay();
                             updateToolsCardSummaries();
@@ -285,6 +290,7 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            if (refreshNotificationSheetState != null) refreshNotificationSheetState.run();
                             updateShizukuDisplay();
                             updateDeviceSpecsDisplay();
                             updateToolsCardSummaries();
@@ -1319,7 +1325,7 @@ public class MainActivity extends AppCompatActivity {
         if (btnAddHudTile != null) {
             btnAddHudTile.setOnClickListener(v -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    StatusBarManager sbm = (StatusBarManager) getSystemService(Context.STATUS_BAR_SERVICE);
+                    StatusBarManager sbm = getSystemService(StatusBarManager.class);
                     if (sbm != null) {
                         sbm.requestAddTileService(
                                 new ComponentName(MainActivity.this, GameHudTileService.class),
@@ -1833,42 +1839,34 @@ public class MainActivity extends AppCompatActivity {
         MaterialButton btnOff = view.findViewById(R.id.bs_btn_dns_off);
         MaterialButton btnOpenSettings = view.findViewById(R.id.bs_btn_open_dns_settings);
 
-        tvStatus.setText(PrivateDnsHelper.getDnsDescription(this));
-        String currentMode = PrivateDnsHelper.getCurrentDnsMode(this);
-        if (PrivateDnsHelper.MODE_HOSTNAME.equalsIgnoreCase(currentMode)) {
-            tvStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
-        } else if (PrivateDnsHelper.MODE_OFF.equalsIgnoreCase(currentMode)) {
-            tvStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_red));
-        } else {
+        refreshDnsSheetState = () -> {
+            tvStatus.setText(dnsApplying ? "⏳ Đang áp dụng và xác minh DNS..." : PrivateDnsHelper.getDnsDescription(this));
             tvStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_cyan));
-        }
+        };
+        refreshDnsSheetState.run();
+        bs.setOnDismissListener(dialog -> refreshDnsSheetState = null);
 
         btnAdguard.setOnClickListener(v -> {
             applyPrivateDns(PrivateDnsHelper.MODE_HOSTNAME, PrivateDnsHelper.DNS_ADGUARD, "AdGuard DNS (Chặn QC)");
-            bs.dismiss();
         });
 
         btnFamily.setOnClickListener(v -> {
             applyPrivateDns(PrivateDnsHelper.MODE_HOSTNAME, PrivateDnsHelper.DNS_CLOUDFLARE_FAMILY, "Cloudflare Family (Chặn Web Độc)");
-            bs.dismiss();
         });
 
         btnCf.setOnClickListener(v -> {
             applyPrivateDns(PrivateDnsHelper.MODE_HOSTNAME, PrivateDnsHelper.DNS_CLOUDFLARE, "Cloudflare 1.1.1.1");
-            bs.dismiss();
         });
 
         if (btnGoogle != null) {
             btnGoogle.setOnClickListener(v -> {
                 applyPrivateDns(PrivateDnsHelper.MODE_HOSTNAME, PrivateDnsHelper.DNS_GOOGLE, "Google DNS");
-                bs.dismiss();
             });
         }
 
         if (btnQuad9 != null) {
             btnQuad9.setOnClickListener(v -> {
                 applyPrivateDns(PrivateDnsHelper.MODE_HOSTNAME, PrivateDnsHelper.DNS_QUAD9, "Quad9 DNS (Bảo mật)");
-                bs.dismiss();
             });
         }
 
@@ -1879,18 +1877,15 @@ public class MainActivity extends AppCompatActivity {
         if (btnAuto != null) {
             btnAuto.setOnClickListener(v -> {
                 applyPrivateDns(PrivateDnsHelper.MODE_AUTO, "", "DNS Tự Động (Nhà mạng)");
-                bs.dismiss();
             });
         }
 
         btnOff.setOnClickListener(v -> {
             applyPrivateDns(PrivateDnsHelper.MODE_OFF, "", "Tắt DNS Riêng Tư");
-            bs.dismiss();
         });
 
         btnOpenSettings.setOnClickListener(v -> {
             PrivateDnsHelper.openPrivateDnsSettings(MainActivity.this);
-            bs.dismiss();
         });
 
         bs.show();
@@ -1932,9 +1927,6 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
                     applyPrivateDns(PrivateDnsHelper.MODE_HOSTNAME, cleaned, "Tùy chọn: " + cleaned);
-                    if (parentBs != null && parentBs.isShowing()) {
-                        parentBs.dismiss();
-                    }
                 })
                 .setNegativeButton("Hủy", null)
                 .show();
@@ -2541,47 +2533,51 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout layoutApps = view.findViewById(R.id.bs_layout_notif_apps);
         TextView tvEmpty = view.findViewById(R.id.bs_tv_notif_empty);
 
-        boolean hasShizuku = ShizukuHelper.hasShizukuPermission();
-        if (hasShizuku) {
-            if (ivShizukuIcon != null) {
-                ivShizukuIcon.setImageResource(R.drawable.ic_shield_check);
-                ivShizukuIcon.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.neon_green)));
+        Runnable updatePermissionState = () -> {
+            boolean hasShizuku = ShizukuHelper.hasShizukuPermission();
+            if (hasShizuku) {
+                if (ivShizukuIcon != null) {
+                    ivShizukuIcon.setImageResource(R.drawable.ic_shield_check);
+                    ivShizukuIcon.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.neon_green)));
+                }
+                if (tvShizukuStatus != null) {
+                    tvShizukuStatus.setText("⚡ Shizuku: Đã cấp quyền (Tự động 1-chạm)");
+                    tvShizukuStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
+                }
+                if (tvShizukuDesc != null) {
+                    tvShizukuDesc.setText("Sẵn sàng miễn Doze và cho phép chạy nền. Kiểm tra thêm Tự khởi chạy, pin và quyền thông báo trong Cài đặt.");
+                }
+                if (btnGrantShizuku != null) {
+                    btnGrantShizuku.setVisibility(View.GONE);
+                }
+                if (btnBatchFix != null) {
+                    btnBatchFix.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.neon_green)));
+                    btnBatchFix.setTextColor(0xFF0D1117);
+                }
+            } else {
+                if (ivShizukuIcon != null) {
+                    ivShizukuIcon.setImageResource(R.drawable.ic_shield_alert);
+                    ivShizukuIcon.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.mi_orange)));
+                }
+                if (tvShizukuStatus != null) {
+                    tvShizukuStatus.setText("⚠️ Shizuku: Chưa cấp quyền");
+                    tvShizukuStatus.setTextColor(ContextCompat.getColor(this, R.color.mi_orange));
+                }
+                if (tvShizukuDesc != null) {
+                    tvShizukuDesc.setText("Cấp quyền Shizuku để tối ưu 1-chạm hoặc dùng các phím tắt hệ thống bên dưới.");
+                }
+                if (btnGrantShizuku != null) {
+                    btnGrantShizuku.setVisibility(View.VISIBLE);
+                    btnGrantShizuku.setOnClickListener(v -> ShizukuHelper.requestShizukuPermission(MainActivity.this));
+                }
+                if (btnBatchFix != null) {
+                    btnBatchFix.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.card_highlight)));
+                    btnBatchFix.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
+                }
             }
-            if (tvShizukuStatus != null) {
-                tvShizukuStatus.setText("⚡ Shizuku: Đã cấp quyền (Tự động 1-chạm)");
-                tvShizukuStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
-            }
-            if (tvShizukuDesc != null) {
-                tvShizukuDesc.setText("Đã sẵn sàng mở khóa FCM Push Hub (GMS) và tự động cấu hình ứng dụng.");
-            }
-            if (btnGrantShizuku != null) {
-                btnGrantShizuku.setVisibility(View.GONE);
-            }
-            if (btnBatchFix != null) {
-                btnBatchFix.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.neon_green)));
-                btnBatchFix.setTextColor(0xFF0D1117);
-            }
-        } else {
-            if (ivShizukuIcon != null) {
-                ivShizukuIcon.setImageResource(R.drawable.ic_shield_alert);
-                ivShizukuIcon.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.mi_orange)));
-            }
-            if (tvShizukuStatus != null) {
-                tvShizukuStatus.setText("⚠️ Shizuku: Chưa cấp quyền");
-                tvShizukuStatus.setTextColor(ContextCompat.getColor(this, R.color.mi_orange));
-            }
-            if (tvShizukuDesc != null) {
-                tvShizukuDesc.setText("Cấp quyền Shizuku để tối ưu 1-chạm hoặc dùng các phím tắt hệ thống bên dưới.");
-            }
-            if (btnGrantShizuku != null) {
-                btnGrantShizuku.setVisibility(View.VISIBLE);
-                btnGrantShizuku.setOnClickListener(v -> ShizukuHelper.requestShizukuPermission(MainActivity.this));
-            }
-            if (btnBatchFix != null) {
-                btnBatchFix.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.card_highlight)));
-                btnBatchFix.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
-            }
-        }
+
+        };
+        updatePermissionState.run();
 
         final List<NotificationFixHelper.TargetApp> apps = new ArrayList<>();
         final int[] activeFilter = {0}; // 0: all, 1: recommended, 2: selected, 3: unoptimized
@@ -2601,7 +2597,7 @@ public class MainActivity extends AppCompatActivity {
         };
 
         Runnable applyFilter = () -> {
-            String q = currentQuery[0].trim().toLowerCase();
+            String q = currentQuery[0].trim().toLowerCase(Locale.ROOT);
             int visibleCount = 0;
             int mode = activeFilter[0];
 
@@ -2621,8 +2617,8 @@ public class MainActivity extends AppCompatActivity {
 
                 boolean matchQuery = true;
                 if (!q.isEmpty()) {
-                    String name = (app.label != null) ? app.label.toLowerCase() : "";
-                    String pkg = (app.packageName != null) ? app.packageName.toLowerCase() : "";
+                    String name = (app.label != null) ? app.label.toLowerCase(Locale.ROOT) : "";
+                    String pkg = (app.packageName != null) ? app.packageName.toLowerCase(Locale.ROOT) : "";
                     matchQuery = name.contains(q) || pkg.contains(q);
                 }
 
@@ -2687,6 +2683,7 @@ public class MainActivity extends AppCompatActivity {
         new Thread(() -> {
             final List<NotificationFixHelper.TargetApp> loaded = NotificationFixHelper.getAllInstalledApps(MainActivity.this);
             runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed() || !bs.isShowing()) return;
                 if (pbLoading != null) pbLoading.setVisibility(View.GONE);
                 apps.clear();
                 apps.addAll(loaded);
@@ -2714,11 +2711,11 @@ public class MainActivity extends AppCompatActivity {
 
                     Runnable updateAppBadge = () -> {
                         if (app.isOptimized) {
-                            tvBadge.setText("✓ Không giới hạn pin");
+                            tvBadge.setText("✓ Được miễn Doze");
                             tvBadge.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_green));
                             tvBadge.setBackgroundResource(R.drawable.bg_badge_green);
                         } else {
-                            tvBadge.setText("⚠️ Chưa tối ưu pin");
+                            tvBadge.setText("⚠️ Chưa miễn Doze");
                             tvBadge.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.mi_orange));
                             tvBadge.setBackgroundResource(R.drawable.bg_badge_orange);
                         }
@@ -2736,16 +2733,19 @@ public class MainActivity extends AppCompatActivity {
                     itemView.setOnClickListener(v -> cb.setChecked(!cb.isChecked()));
 
                     btnAction.setOnClickListener(v -> {
+                        boolean hasShizuku = ShizukuHelper.hasShizukuPermission();
                         String[] options = hasShizuku
                                 ? new String[]{
                                         "⚡ Tối ưu ngay bằng Shizuku (1-Chạm)",
                                         "🔋 Tiết kiệm pin MIUI (Không giới hạn)",
                                         "🚀 Tự khởi chạy MIUI (Autostart)",
+                                        "🔔 Quyền thông báo",
                                         "⚙️ Thông tin ứng dụng"
                                 }
                                 : new String[]{
                                         "🔋 Tiết kiệm pin MIUI (Không giới hạn)",
                                         "🚀 Tự khởi chạy MIUI (Autostart)",
+                                        "🔔 Quyền thông báo",
                                         "⚙️ Thông tin ứng dụng"
                                 };
 
@@ -2765,6 +2765,8 @@ public class MainActivity extends AppCompatActivity {
                                             NotificationFixHelper.openAppBatterySaver(MainActivity.this, app.packageName);
                                         } else if (actionIndex == 1) {
                                             NotificationFixHelper.openMiuiAutostart(MainActivity.this);
+                                        } else if (actionIndex == 2) {
+                                            NotificationFixHelper.openAppNotificationSettings(MainActivity.this, app.packageName);
                                         } else {
                                             NotificationFixHelper.openAppDetails(MainActivity.this, app.packageName);
                                         }
@@ -2856,11 +2858,11 @@ public class MainActivity extends AppCompatActivity {
                             TextView badge = item.findViewById(R.id.tv_app_status_badge);
                             if (badge != null) {
                                 if (target.isOptimized) {
-                                    badge.setText("✓ Không giới hạn pin");
+                                    badge.setText("✓ Được miễn Doze");
                                     badge.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_green));
                                     badge.setBackgroundResource(R.drawable.bg_badge_green);
                                 } else {
-                                    badge.setText("⚠️ Chưa tối ưu pin");
+                                    badge.setText("⚠️ Chưa miễn Doze");
                                     badge.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.mi_orange));
                                     badge.setBackgroundResource(R.drawable.bg_badge_orange);
                                 }
@@ -2879,6 +2881,22 @@ public class MainActivity extends AppCompatActivity {
             btnOpenFcmDiag.setOnClickListener(v -> NotificationFixHelper.openFcmDiagnostics(MainActivity.this));
         }
 
+        refreshNotificationSheetState = () -> {
+            updatePermissionState.run();
+            for (int i = 0; i < layoutApps.getChildCount(); i++) {
+                View item = layoutApps.getChildAt(i);
+                NotificationFixHelper.TargetApp target = (NotificationFixHelper.TargetApp) item.getTag();
+                target.isOptimized = NotificationFixHelper.isIgnoringBatteryOptimizations(this, target.packageName);
+                TextView badge = item.findViewById(R.id.tv_app_status_badge);
+                if (badge != null) {
+                    badge.setText(target.isOptimized ? "✓ Được miễn Doze" : "⚠️ Chưa miễn Doze");
+                    badge.setTextColor(ContextCompat.getColor(this, target.isOptimized ? R.color.neon_green : R.color.mi_orange));
+                    badge.setBackgroundResource(target.isOptimized ? R.drawable.bg_badge_green : R.drawable.bg_badge_orange);
+                }
+            }
+            applyFilter.run();
+        };
+        bs.setOnDismissListener(dialog -> refreshNotificationSheetState = null);
         bs.show();
     }
 
@@ -2931,7 +2949,7 @@ public class MainActivity extends AppCompatActivity {
     private void requestAddHzTile() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             try {
-                android.app.StatusBarManager sbm = (android.app.StatusBarManager) getSystemService(Context.STATUS_BAR_SERVICE);
+                android.app.StatusBarManager sbm = getSystemService(android.app.StatusBarManager.class);
                 if (sbm != null) {
                     sbm.requestAddTileService(
                             new ComponentName(this, RefreshRateTileService.class),
@@ -2960,16 +2978,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void applyPrivateDns(String mode, String hostname, final String label) {
-        boolean success = PrivateDnsHelper.setPrivateDns(this, mode, hostname);
-        if (success) {
-            Toast.makeText(this, "Đã áp dụng: " + label, Toast.LENGTH_SHORT).show();
-            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    updateToolsCardSummaries();
-                }
-            }, 600);
-        }
+        if (dnsApplying) return;
+        dnsApplying = true;
+        if (refreshDnsSheetState != null) refreshDnsSheetState.run();
+        PrivateDnsHelper.setPrivateDns(this, mode, hostname, (success, needsPermission, message) -> {
+            dnsApplying = false;
+            if (isFinishing() || isDestroyed()) return;
+            if (refreshDnsSheetState != null) refreshDnsSheetState.run();
+            updateToolsCardSummaries();
+            if (success || !needsPermission) {
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+                return;
+            }
+            new MaterialAlertDialogBuilder(this)
+                    .setTitle("Cần quyền để áp dụng " + label)
+                    .setMessage(message + "\n\nCấp quyền Shizuku rồi chọn lại DNS. Với cách thủ công, chọn mục DNS riêng tư trong Cài đặt và dán tên máy chủ, sau đó bấm Lưu.")
+                    .setPositiveButton("Cấp quyền Shizuku", (d, w) -> ShizukuHelper.requestShizukuPermission(this))
+                    .setNeutralButton("Cài đặt thủ công", (d, w) -> {
+                        PrivateDnsHelper.copyHostname(this, hostname);
+                        boolean opened = PrivateDnsHelper.openPrivateDnsSettings(this);
+                        Toast.makeText(this, opened ? (hostname.isEmpty() ? "Chọn chế độ DNS mong muốn trong Cài đặt."
+                                : "Đã sao chép " + hostname + ". Dán vào tên máy chủ DNS riêng tư và bấm Lưu.")
+                                : "Không mở được Cài đặt. Vui lòng tìm DNS riêng tư trong Cài đặt hệ thống.", Toast.LENGTH_LONG).show();
+                    })
+                    .setNegativeButton("Hủy", null).show();
+        });
     }
 
     private void handleDebloatFreezeRecommended() {
@@ -3937,6 +3970,7 @@ public class MainActivity extends AppCompatActivity {
                                     btnShizukuGrantAuto.setEnabled(true);
                                     btnShizukuGrantAuto.setText(R.string.btn_shizuku_grant_auto);
                                     Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+                                    if (refreshNotificationSheetState != null) refreshNotificationSheetState.run();
                                     updateShizukuDisplay();
                                     updateDeviceSpecsDisplay();
                                     updateToolsCardSummaries();
@@ -4103,6 +4137,8 @@ public class MainActivity extends AppCompatActivity {
         updateBatteryDisplay();
         loadBatteryDrainApps();
         updateShizukuDisplay();
+        if (refreshDnsSheetState != null) refreshDnsSheetState.run();
+        if (refreshNotificationSheetState != null) refreshNotificationSheetState.run();
         if (refreshGameFpsSheetState != null) {
             refreshGameFpsSheetState.run();
         }
@@ -4126,6 +4162,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         stopBatteryRealtimeTicker();
+        refreshDnsSheetState = null;
+        refreshNotificationSheetState = null;
+        refreshGameFpsSheetState = null;
         try {
             Shizuku.removeRequestPermissionResultListener(shizukuPermissionListener);
             Shizuku.removeBinderReceivedListener(shizukuBinderReceivedListener);

@@ -178,8 +178,7 @@ public class RefreshRateHelper {
             os.writeBytes(command + "\n");
             os.writeBytes("exit\n");
             os.flush();
-            int exitCode = process.waitFor();
-            return exitCode == 0;
+            return ProcessRunner.collect(process, 15000).exitCode == 0;
         } catch (Exception e) {
             return false;
         } finally {
