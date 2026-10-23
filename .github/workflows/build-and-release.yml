@@ -43,7 +43,7 @@ jobs:
             TAG="${{ github.ref_name }}"
           else
             VER=$(grep "versionName" app/build.gradle | head -n 1 | awk -F"'" '{print $2}')
-            TAG="v${VER:-1.0.55}"
+            TAG="v${VER:-1.0.56}"
           fi
           echo "TAG_NAME=${TAG}" >> $GITHUB_ENV
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
@@ -98,13 +98,17 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             Bản cập nhật ${{ env.TAG_NAME }}:
-            - 🔝 **Tối Ưu Vị Trí Tab Tính Năng & Cài Đặt**:
-              1. Đưa thẻ "Khắc phục trễ thông báo" lên vị trí **ĐẦU TIÊN** trong Tab Tính Năng (Tools) để người dùng truy cập ngay lập tức.
-              2. Đưa thẻ "Cập nhật ứng dụng" lên vị trí **ĐẦU TIÊN** trong Tab Cài Đặt (Settings), hỗ trợ kiểm tra và xem trạng thái cập nhật nhanh chóng.
-            - 📱 **Mở Rộng Không Giới Hạn: Chọn Bất Cứ Ứng Dụng Nào Trên Máy**:
-              1. Loại bỏ giới hạn danh sách 12 app: Hệ thống tự động quét và nạp **toàn bộ 100% ứng dụng** đã cài đặt trên máy người dùng.
-              2. 🔍 Tích hợp **Thanh tìm kiếm thời gian thực** (Real-time Search) tìm nhanh theo tên app hoặc tên gói (package).
-              3. 🏷️ Bộ lọc thông minh 4 chế độ: `Tất cả`, `⭐ Khuyên dùng`, `Đã chọn`, `⚠️ Chưa tối ưu`.
-              4. ⚡ Cơ chế tải danh sách bất đồng bộ ngầm siêu tốc, chuyển động 120Hz mượt mà tuyệt đối không bị đơ lag.
-            - 🚀 Xuất xưởng Release APK v1.0.49 tối ưu hóa hoàn hảo.
+            - ⚡ **1-Chạm Mở Khóa Toàn Bộ 120 FPS Game (Tự Động Hóa Qua Shizuku)**:
+              1. Tự động vô hiệu hóa dịch vụ Joyose ngầm của HyperOS/MIUI để gỡ bỏ triệt để giới hạn bóp 89 FPS trong Liên Quân Mobile, Tốc Chiến, PUBG.
+              2. Tự động dọn dẹp và xóa sạch dữ liệu & cache của Pin & Hiệu suất (PowerKeeper) trực tiếp qua Shizuku mà không cần thao tác cài đặt thủ công.
+              3. Tự động kích hoạt Speed Mode, ép màn hình cố định 120Hz và tắt cơ chế thermal_limit_refresh_rate chống tụt Hz khi nóng máy.
+              4. Cập nhật huy hiệu trạng thái Joyose và tần số quét thời gian thực (real-time badge).
+              5. Hộp thoại thông báo hoàn tất tự động hóa kèm nút mở game chiến ngay.
+            - 🔄 **1-Chạm Khôi Phục Joyose & Màn Hình Mặc Định**:
+              1. Phục hồi dịch vụ Joyose và đưa tần số quét màn hình về tự động (Auto) khi kết thúc chơi game.
+            - 📋 **Minh Bạch Quy Trình Chuẩn 5 Bước**:
+              1. Giao diện trực quan hóa từng bước độc lập: Kết nối Shizuku -> Quản lý Joyose -> Dọn dẹp PowerKeeper -> Ép 120Hz -> Khởi động Game & Mini Game HUD.
+              2. Tự động phát hiện và gọi popup cấp quyền Shizuku; cập nhật giao diện thời gian thực (live).
+            - 🎮 Tương thích hoàn hảo với Thư viện Game tùy chỉnh và Mini Game HUD nổi.
+            - 🚀 Xuất xưởng Release APK ${{ env.TAG_NAME }} mượt mà, ổn định.
           files: output-apks/*.apk

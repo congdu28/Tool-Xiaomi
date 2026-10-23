@@ -252,6 +252,101 @@ public class ShizukuHelper {
     }
 
     /**
+     * Automatically unlock 120 FPS via Shizuku in 1-tap:
+     * 1. Disable Joyose (removes 89 FPS thermal throttle)
+     * 2. Clear PowerKeeper cache & data (resets dynamic throttle limits)
+     * 3. Apply 120Hz refresh rate and speed mode
+     */
+    public static void autoUnlock120Fps(CommandCallback callback) {
+        EXECUTOR.execute(() -> {
+            StringBuilder sb = new StringBuilder();
+            sb.append("pm disable-user --user 0 ").append(GamingFpsHelper.JOYOSE_PKG).append("; ")
+              .append("pm clear ").append(GamingFpsHelper.POWERKEEPER_PKG).append("; ")
+              .append("settings put secure min_refresh_rate 120.0; ")
+              .append("settings put secure peak_refresh_rate 120.0; ")
+              .append("settings put secure user_refresh_rate 120; ")
+              .append("settings put system user_refresh_rate 120; ")
+              .append("settings put secure miui_refresh_rate 120; ")
+              .append("settings put system miui_refresh_rate 120; ")
+              .append("settings put system min_refresh_rate 120.0; ")
+              .append("settings put system peak_refresh_rate 120.0; ")
+              .append("settings put system thermal_limit_refresh_rate 0; ")
+              .append("settings put global speed_mode 1; ")
+              .append("settings put global fps_limit 0; ")
+              .append("settings put global smart_fps 0; ")
+              .append("settings put system power_mode high");
+
+            ShellResult result = executeCommand(sb.toString());
+            MAIN_HANDLER.post(() -> {
+                if (result.success) {
+                    if (callback != null) {
+                        callback.onComplete(true, "⚡ Đã mở khóa 120 FPS toàn diện! (Đã tắt Joyose, xóa cache PowerKeeper và ép 120Hz)");
+                    }
+                } else {
+                    String err = !result.stderr.isEmpty() ? result.stderr : result.stdout;
+                    if (callback != null) {
+                        callback.onComplete(false, "Lỗi mở khóa: " + err);
+                    }
+                }
+            });
+        });
+    }
+
+    /**
+     * Restore default Joyose state and reset screen refresh rate to Auto.
+     */
+    public static void autoRestoreJoyose(CommandCallback callback) {
+        EXECUTOR.execute(() -> {
+            StringBuilder sb = new StringBuilder();
+            sb.append("pm enable ").append(GamingFpsHelper.JOYOSE_PKG).append("; ")
+              .append("settings put secure min_refresh_rate 60.0; ")
+              .append("settings put secure peak_refresh_rate 120.0; ")
+              .append("settings put secure user_refresh_rate 0; ")
+              .append("settings put system user_refresh_rate 0; ")
+              .append("settings put secure miui_refresh_rate 0; ")
+              .append("settings put system miui_refresh_rate 0; ")
+              .append("settings put system thermal_limit_refresh_rate 0; ")
+              .append("settings put global speed_mode 0");
+
+            ShellResult result = executeCommand(sb.toString());
+            MAIN_HANDLER.post(() -> {
+                if (result.success) {
+                    if (callback != null) {
+                        callback.onComplete(true, "🔄 Đã khôi phục dịch vụ Joyose & cài đặt màn hình mặc định!");
+                    }
+                } else {
+                    String err = !result.stderr.isEmpty() ? result.stderr : result.stdout;
+                    if (callback != null) {
+                        callback.onComplete(false, "Lỗi khôi phục: " + err);
+                    }
+                }
+            });
+        });
+    }
+
+    /**
+     * Clear Battery and Performance (PowerKeeper) app cache & data via Shizuku shell.
+     */
+    public static void clearPowerKeeper(CommandCallback callback) {
+        EXECUTOR.execute(() -> {
+            String cmd = "pm clear " + GamingFpsHelper.POWERKEEPER_PKG;
+            ShellResult result = executeCommand(cmd);
+            MAIN_HANDLER.post(() -> {
+                if (result.success) {
+                    if (callback != null) {
+                        callback.onComplete(true, "🗑️ Đã xóa sạch dữ liệu & cache của Pin & Hiệu suất (PowerKeeper)!");
+                    }
+                } else {
+                    String err = !result.stderr.isEmpty() ? result.stderr : result.stdout;
+                    if (callback != null) {
+                        callback.onComplete(false, "Lỗi xóa cache: " + err);
+                    }
+                }
+            });
+        });
+    }
+
+    /**
      * Set display refresh rate via Shizuku shell.
      */
     public static void setRefreshRateViaShizuku(int targetRate, CommandCallback callback) {

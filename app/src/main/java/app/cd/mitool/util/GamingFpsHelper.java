@@ -1,5 +1,6 @@
 package app.cd.mitool.util;
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ComponentName;
@@ -12,6 +13,7 @@ import android.net.Uri;
 import android.provider.Settings;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 
 import java.io.DataOutputStream;
@@ -113,22 +115,222 @@ public class GamingFpsHelper {
         return wroteAny;
     }
 
+    public interface ActionCallback {
+        void onComplete(boolean success, String message);
+    }
+
+    /**
+     * 1-Tap Full Auto Unlock:
+     * - Disables Joyose
+     * - Clears PowerKeeper cache & data
+     * - Applies 120Hz mode & speed settings
+     */
+    public static void autoUnlock120Fps(Activity activity, ActionCallback callback) {
+        if (activity == null) return;
+
+        // 1. Root method
+        boolean hasRoot = runRootCommand("pm disable-user --user 0 " + JOYOSE_PKG + " && pm clear " + POWERKEEPER_PKG);
+        if (hasRoot) {
+            applyGaming120Mode(activity);
+            if (callback != null) {
+                callback.onComplete(true, "🔥 Đã mở khóa 120 FPS toàn diện bằng quyền Root!");
+            }
+            return;
+        }
+
+        // 2. Shizuku with permission
+        if (ShizukuHelper.hasShizukuPermission()) {
+            ShizukuHelper.autoUnlock120Fps((success, message) -> {
+                if (success) {
+                    applyGaming120Mode(activity);
+                }
+                if (callback != null) callback.onComplete(success, message);
+            });
+            return;
+        }
+
+        // 3. Shizuku running without permission
+        if (ShizukuHelper.isShizukuRunning()) {
+            ShizukuHelper.requestShizukuPermission(activity);
+            if (callback != null) {
+                callback.onComplete(false, "Vui lòng bấm 'Cho phép' trong cửa sổ Shizuku!");
+            }
+            return;
+        }
+
+        // 4. Shizuku not running
+        showShizukuSetupDialog(activity, CMD_DISABLE_JOYOSE + " && adb shell pm clear " + POWERKEEPER_PKG);
+        if (callback != null) {
+            callback.onComplete(false, "Shizuku chưa chạy. Vui lòng khởi chạy Shizuku để tự động hóa 1-chạm.");
+        }
+    }
+
+    /**
+     * 1-Tap Restore Joyose:
+     */
+    public static void autoRestoreJoyose(Activity activity, ActionCallback callback) {
+        if (activity == null) return;
+
+        boolean hasRoot = runRootCommand("pm enable " + JOYOSE_PKG);
+        if (hasRoot) {
+            if (callback != null) {
+                callback.onComplete(true, "🔄 Đã khôi phục dịch vụ Joyose bằng Root.");
+            }
+            return;
+        }
+
+        if (ShizukuHelper.hasShizukuPermission()) {
+            ShizukuHelper.autoRestoreJoyose((success, message) -> {
+                if (callback != null) callback.onComplete(success, message);
+            });
+            return;
+        }
+
+        if (ShizukuHelper.isShizukuRunning()) {
+            ShizukuHelper.requestShizukuPermission(activity);
+            if (callback != null) {
+                callback.onComplete(false, "Vui lòng cấp quyền trong cửa sổ Shizuku!");
+            }
+            return;
+        }
+
+        showShizukuSetupDialog(activity, CMD_ENABLE_JOYOSE);
+        if (callback != null) {
+            callback.onComplete(false, "Shizuku chưa chạy.");
+        }
+    }
+
+    /**
+     * Disable Joyose independently with callback.
+     */
+    public static void disableJoyose(Activity activity, ActionCallback callback) {
+        if (activity == null) return;
+
+        boolean root = runRootCommand("pm disable-user --user 0 " + JOYOSE_PKG);
+        if (root) {
+            if (callback != null) callback.onComplete(true, "🔥 Đã vô hiệu hóa Joyose bằng quyền Root! Khóa 89 FPS đã được gỡ bỏ.");
+            return;
+        }
+
+        if (ShizukuHelper.hasShizukuPermission()) {
+            ShizukuHelper.setJoyoseEnabled(false, (success, message) -> {
+                if (callback != null) callback.onComplete(success, message);
+            });
+            return;
+        }
+
+        if (ShizukuHelper.isShizukuRunning()) {
+            ShizukuHelper.requestShizukuPermission(activity);
+            if (callback != null) callback.onComplete(false, "Vui lòng cấp quyền trong cửa sổ Shizuku!");
+            return;
+        }
+
+        copyToClipboard(activity, "Lệnh tắt Joyose", CMD_DISABLE_JOYOSE);
+        showShizukuSetupDialog(activity, CMD_DISABLE_JOYOSE);
+        if (callback != null) callback.onComplete(false, "Đã sao chép lệnh ADB tắt Joyose!");
+    }
+
+    /**
+     * Enable Joyose independently with callback.
+     */
+    public static void enableJoyose(Activity activity, ActionCallback callback) {
+        if (activity == null) return;
+
+        boolean root = runRootCommand("pm enable " + JOYOSE_PKG);
+        if (root) {
+            if (callback != null) callback.onComplete(true, "🔄 Đã bật lại Joyose bằng quyền Root.");
+            return;
+        }
+
+        if (ShizukuHelper.hasShizukuPermission()) {
+            ShizukuHelper.setJoyoseEnabled(true, (success, message) -> {
+                if (callback != null) callback.onComplete(success, message);
+            });
+            return;
+        }
+
+        if (ShizukuHelper.isShizukuRunning()) {
+            ShizukuHelper.requestShizukuPermission(activity);
+            if (callback != null) callback.onComplete(false, "Vui lòng cấp quyền trong cửa sổ Shizuku!");
+            return;
+        }
+
+        copyToClipboard(activity, "Lệnh bật Joyose", CMD_ENABLE_JOYOSE);
+        showShizukuSetupDialog(activity, CMD_ENABLE_JOYOSE);
+        if (callback != null) callback.onComplete(false, "Đã sao chép lệnh ADB bật Joyose!");
+    }
+
+    /**
+     * Clear PowerKeeper cache & data directly via Root or Shizuku, or fallback to App Info.
+     */
+    public static void clearPowerKeeper(Activity activity, ActionCallback callback) {
+        if (activity == null) return;
+
+        boolean root = runRootCommand("pm clear " + POWERKEEPER_PKG);
+        if (root) {
+            if (callback != null) callback.onComplete(true, "🗑️ Đã xóa sạch cache PowerKeeper bằng Root!");
+            return;
+        }
+
+        if (ShizukuHelper.hasShizukuPermission()) {
+            ShizukuHelper.clearPowerKeeper((success, message) -> {
+                if (callback != null) callback.onComplete(success, message);
+            });
+            return;
+        }
+
+        openPowerKeeperAppInfo(activity);
+        if (callback != null) {
+            callback.onComplete(false, "Đang mở Thông tin ứng dụng Pin & Hiệu suất -> Chọn 'Xóa dữ liệu'");
+        }
+    }
+
+    /**
+     * Guide user to start or install Shizuku when automation is requested.
+     */
+    public static void showShizukuSetupDialog(Activity activity, String fallbackCommand) {
+        if (activity == null || activity.isFinishing()) return;
+        boolean installed = ShizukuHelper.isShizukuInstalled(activity);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity)
+                .setTitle(installed ? "🚀 Cần Khởi Chạy Shizuku" : "📥 Cài Đặt Shizuku")
+                .setMessage(installed
+                        ? "Dịch vụ Shizuku chưa chạy.\n\nĐể kích hoạt tính năng tự động hóa 1-chạm không cần máy tính, bạn chỉ cần mở ứng dụng Shizuku và bấm 'Bắt đầu' (Start) qua Ghép đôi không dây (Wireless Debugging).\n\nHoặc bạn có thể sao chép lệnh ADB để chạy thủ công từ máy tính."
+                        : "Ứng dụng cần công cụ Shizuku để tự động hóa 1-chạm mà không cần máy tính.\n\nShizuku là giải pháp ADB on-device an toàn, mã nguồn mở, không cần root.")
+                .setPositiveButton(installed ? "🚀 Mở Shizuku" : "📥 Tải Shizuku", (dialog, which) -> {
+                    if (installed) {
+                        ShizukuHelper.openShizukuApp(activity);
+                    } else {
+                        ShizukuHelper.openShizukuDownload(activity);
+                    }
+                })
+                .setNegativeButton("Đóng", null);
+
+        if (fallbackCommand != null && !fallbackCommand.isEmpty()) {
+            builder.setNeutralButton("📋 Chép lệnh ADB", (dialog, which) -> {
+                copyToClipboard(activity, "Lệnh ADB", fallbackCommand);
+                Toast.makeText(activity, "📋 Đã sao chép lệnh ADB vào khay nhớ tạm!", Toast.LENGTH_SHORT).show();
+            });
+        }
+
+        builder.show();
+    }
+
     /**
      * Try disabling Joyose directly with root, or Shizuku 1-tap, or copy ADB command to clipboard.
-     * Returns true if root or Shizuku succeeded, false if copied to clipboard.
+     * Preserved for backward compatibility.
      */
     public static boolean handleDisableJoyose(Context context) {
+        if (context instanceof Activity) {
+            disableJoyose((Activity) context, (success, message) -> Toast.makeText(context, message, Toast.LENGTH_LONG).show());
+            return true;
+        }
         boolean rootSuccess = runRootCommand("pm disable-user --user 0 " + JOYOSE_PKG);
         if (rootSuccess) {
             Toast.makeText(context, "🔥 Đã vô hiệu hóa Joyose bằng quyền Root! Khóa 89 FPS đã được gỡ bỏ.", Toast.LENGTH_LONG).show();
             return true;
         } else if (ShizukuHelper.hasShizukuPermission()) {
-            ShizukuHelper.setJoyoseEnabled(false, new ShizukuHelper.CommandCallback() {
-                @Override
-                public void onComplete(boolean success, String message) {
-                    Toast.makeText(context, message, Toast.LENGTH_LONG).show();
-                }
-            });
+            ShizukuHelper.setJoyoseEnabled(false, (success, message) -> Toast.makeText(context, message, Toast.LENGTH_LONG).show());
             return true;
         } else {
             copyToClipboard(context, "Lệnh tắt Joyose", CMD_DISABLE_JOYOSE);
@@ -139,19 +341,19 @@ public class GamingFpsHelper {
 
     /**
      * Try enabling Joyose directly with root, or Shizuku 1-tap, or copy ADB command to clipboard.
+     * Preserved for backward compatibility.
      */
     public static boolean handleEnableJoyose(Context context) {
+        if (context instanceof Activity) {
+            enableJoyose((Activity) context, (success, message) -> Toast.makeText(context, message, Toast.LENGTH_SHORT).show());
+            return true;
+        }
         boolean rootSuccess = runRootCommand("pm enable " + JOYOSE_PKG);
         if (rootSuccess) {
             Toast.makeText(context, "🔄 Đã bật lại Joyose bằng quyền Root.", Toast.LENGTH_SHORT).show();
             return true;
         } else if (ShizukuHelper.hasShizukuPermission()) {
-            ShizukuHelper.setJoyoseEnabled(true, new ShizukuHelper.CommandCallback() {
-                @Override
-                public void onComplete(boolean success, String message) {
-                    Toast.makeText(context, message, Toast.LENGTH_LONG).show();
-                }
-            });
+            ShizukuHelper.setJoyoseEnabled(true, (success, message) -> Toast.makeText(context, message, Toast.LENGTH_SHORT).show());
             return true;
         } else {
             copyToClipboard(context, "Lệnh bật Joyose", CMD_ENABLE_JOYOSE);

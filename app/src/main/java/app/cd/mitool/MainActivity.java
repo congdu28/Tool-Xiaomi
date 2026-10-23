@@ -238,6 +238,7 @@ public class MainActivity extends AppCompatActivity {
     private BroadcastReceiver batteryReceiver;
     private final Handler batteryTickerHandler = new Handler(Looper.getMainLooper());
     private Runnable batteryTickerRunnable;
+    private Runnable refreshGameFpsSheetState = null;
 
     private final Shizuku.OnRequestPermissionResultListener shizukuPermissionListener =
             new Shizuku.OnRequestPermissionResultListener() {
@@ -252,6 +253,9 @@ public class MainActivity extends AppCompatActivity {
                         updateShizukuDisplay();
                         updateDeviceSpecsDisplay();
                         updateToolsCardSummaries();
+                        if (refreshGameFpsSheetState != null) {
+                            refreshGameFpsSheetState.run();
+                        }
                     }
                 }
             };
@@ -266,6 +270,9 @@ public class MainActivity extends AppCompatActivity {
                             updateShizukuDisplay();
                             updateDeviceSpecsDisplay();
                             updateToolsCardSummaries();
+                            if (refreshGameFpsSheetState != null) {
+                                refreshGameFpsSheetState.run();
+                            }
                         }
                     });
                 }
@@ -281,6 +288,9 @@ public class MainActivity extends AppCompatActivity {
                             updateShizukuDisplay();
                             updateDeviceSpecsDisplay();
                             updateToolsCardSummaries();
+                            if (refreshGameFpsSheetState != null) {
+                                refreshGameFpsSheetState.run();
+                            }
                         }
                     });
                 }
@@ -1083,58 +1093,193 @@ public class MainActivity extends AppCompatActivity {
         configureBottomSheet(bs);
 
         TextView tvStatus = view.findViewById(R.id.bs_tv_joyose_status);
+        TextView tvShizukuStatus = view.findViewById(R.id.bs_tv_shizuku_status);
+        TextView tvScreenHzStatus = view.findViewById(R.id.bs_tv_screen_hz_status);
+        MaterialButton btnShizukuAction = view.findViewById(R.id.bs_btn_shizuku_action);
+        MaterialButton btnAutoUnlock = view.findViewById(R.id.bs_btn_auto_unlock_120);
+        MaterialButton btnAutoRestore = view.findViewById(R.id.bs_btn_auto_restore_joyose);
+        MaterialButton btnStep1Shizuku = view.findViewById(R.id.bs_btn_step1_shizuku);
         MaterialButton btnGame120 = view.findViewById(R.id.bs_btn_game_120_mode);
         MaterialButton btnDisableJoyose = view.findViewById(R.id.bs_btn_copy_disable_joyose);
         MaterialButton btnEnableJoyose = view.findViewById(R.id.bs_btn_copy_enable_joyose);
         MaterialButton btnClearPk = view.findViewById(R.id.bs_btn_clear_powerkeeper);
+        MaterialButton btnClearPkManual = view.findViewById(R.id.bs_btn_clear_pk_manual);
         MaterialButton btnPerAppHz = view.findViewById(R.id.bs_btn_open_per_app_hz);
         MaterialButton btnAov = view.findViewById(R.id.bs_btn_launch_aov);
 
-        GamingFpsHelper.JoyoseStatus status = GamingFpsHelper.checkJoyoseStatus(this);
-        if (status == GamingFpsHelper.JoyoseStatus.DISABLED_UNLOCKED) {
-            tvStatus.setText("Joyose: ĐÃ TẮT (120 FPS Unlocked)");
-            tvStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
-        } else if (status == GamingFpsHelper.JoyoseStatus.ACTIVE_LOCKED) {
-            tvStatus.setText("Joyose: ĐANG CHẠY (Khóa 89 FPS)");
-            tvStatus.setTextColor(ContextCompat.getColor(this, R.color.mi_orange));
-        } else {
-            tvStatus.setText("Joyose: Không có / Đã gỡ bỏ");
-            tvStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_cyan));
+        Runnable updateFpsSheetDisplay = () -> {
+            // 1. Shizuku Status
+            if (tvShizukuStatus != null) {
+                if (ShizukuHelper.hasShizukuPermission()) {
+                    tvShizukuStatus.setText("🟢 Shizuku: Đã kết nối & Cấp quyền");
+                    tvShizukuStatus.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_green));
+                    if (btnShizukuAction != null) {
+                        btnShizukuAction.setVisibility(View.GONE);
+                    }
+                    if (btnStep1Shizuku != null) {
+                        btnStep1Shizuku.setText("✓ Đã kết nối Shizuku thành công");
+                        btnStep1Shizuku.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_green));
+                    }
+                } else if (ShizukuHelper.isShizukuRunning()) {
+                    tvShizukuStatus.setText("🟡 Shizuku: Đang chạy (Chờ cấp quyền)");
+                    tvShizukuStatus.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.mi_orange));
+                    if (btnShizukuAction != null) {
+                        btnShizukuAction.setVisibility(View.VISIBLE);
+                        btnShizukuAction.setText("⚡ Cấp quyền");
+                        btnShizukuAction.setOnClickListener(v -> ShizukuHelper.requestShizukuPermission(MainActivity.this));
+                    }
+                    if (btnStep1Shizuku != null) {
+                        btnStep1Shizuku.setText("⚡ Cấp quyền Shizuku ngay");
+                        btnStep1Shizuku.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.mi_orange));
+                    }
+                } else {
+                    tvShizukuStatus.setText("🔴 Shizuku: Chưa kết nối");
+                    tvShizukuStatus.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_red));
+                    if (btnShizukuAction != null) {
+                        btnShizukuAction.setVisibility(View.VISIBLE);
+                        btnShizukuAction.setText(ShizukuHelper.isShizukuInstalled(MainActivity.this) ? "🚀 Mở Shizuku" : "📥 Tải Shizuku");
+                        btnShizukuAction.setOnClickListener(v -> {
+                            if (ShizukuHelper.isShizukuInstalled(MainActivity.this)) {
+                                ShizukuHelper.openShizukuApp(MainActivity.this);
+                            } else {
+                                ShizukuHelper.openShizukuDownload(MainActivity.this);
+                            }
+                        });
+                    }
+                    if (btnStep1Shizuku != null) {
+                        btnStep1Shizuku.setText(ShizukuHelper.isShizukuInstalled(MainActivity.this) ? "🚀 Khởi chạy Shizuku" : "📥 Tải Shizuku");
+                        btnStep1Shizuku.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_cyan));
+                    }
+                }
+            }
+
+            // 2. Joyose Status
+            if (tvStatus != null) {
+                GamingFpsHelper.JoyoseStatus joyoseStatus = GamingFpsHelper.checkJoyoseStatus(MainActivity.this);
+                if (joyoseStatus == GamingFpsHelper.JoyoseStatus.DISABLED_UNLOCKED) {
+                    tvStatus.setText("Joyose: ĐÃ TẮT (120 FPS Unlocked) 🎉");
+                    tvStatus.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_green));
+                } else if (joyoseStatus == GamingFpsHelper.JoyoseStatus.ACTIVE_LOCKED) {
+                    tvStatus.setText("Joyose: ĐANG CHẠY (Khóa 89 FPS) ⚠️");
+                    tvStatus.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.mi_orange));
+                } else {
+                    tvStatus.setText("Joyose: Không có / Đã gỡ bỏ");
+                    tvStatus.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_cyan));
+                }
+            }
+
+            // 3. Screen Refresh Rate
+            if (tvScreenHzStatus != null) {
+                int curHz = RefreshRateHelper.getCurrentRefreshRate(MainActivity.this);
+                tvScreenHzStatus.setText("Màn hình: " + curHz + " Hz");
+            }
+        };
+
+        refreshGameFpsSheetState = updateFpsSheetDisplay;
+        bs.setOnDismissListener(dialog -> refreshGameFpsSheetState = null);
+        updateFpsSheetDisplay.run();
+
+        // 1-Tap Auto Unlock 120 FPS
+        if (btnAutoUnlock != null) {
+            btnAutoUnlock.setOnClickListener(v -> {
+                btnAutoUnlock.setEnabled(false);
+                btnAutoUnlock.setText("⏳ Đang tự động mở khóa 120 FPS...");
+                GamingFpsHelper.autoUnlock120Fps(MainActivity.this, (success, message) -> {
+                    btnAutoUnlock.setEnabled(true);
+                    btnAutoUnlock.setText("⚡ 1-CHẠM MỞ KHÓA TOÀN BỘ 120 FPS");
+                    Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+                    updateFpsSheetDisplay.run();
+                    updateToolsCardSummaries();
+                    updateDeviceSpecsDisplay();
+                    if (success) {
+                        showPostUnlockSuccessDialog();
+                    }
+                });
+            });
         }
 
-        btnGame120.setOnClickListener(v -> {
-            boolean ok = GamingFpsHelper.applyGaming120Mode(MainActivity.this);
-            Toast.makeText(MainActivity.this, ok ? "⚡ Đã kích hoạt Game Mode 120Hz!" : "Cần cấp quyền WRITE_SECURE_SETTINGS", Toast.LENGTH_SHORT).show();
-            updateToolsCardSummaries();
-            updateDeviceSpecsDisplay();
-            bs.dismiss();
-        });
+        // 1-Tap Auto Restore Joyose
+        if (btnAutoRestore != null) {
+            btnAutoRestore.setOnClickListener(v -> {
+                btnAutoRestore.setEnabled(false);
+                btnAutoRestore.setText("⏳ Đang khôi phục Joyose...");
+                GamingFpsHelper.autoRestoreJoyose(MainActivity.this, (success, message) -> {
+                    btnAutoRestore.setEnabled(true);
+                    btnAutoRestore.setText("🔄 1-Chạm Khôi Phục Joyose & Mặc Định");
+                    Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                    updateFpsSheetDisplay.run();
+                    updateToolsCardSummaries();
+                    updateDeviceSpecsDisplay();
+                });
+            });
+        }
 
+        // Step 1: Shizuku
+        if (btnStep1Shizuku != null) {
+            btnStep1Shizuku.setOnClickListener(v -> {
+                if (ShizukuHelper.hasShizukuPermission()) {
+                    Toast.makeText(MainActivity.this, "🟢 Shizuku đã được cấp quyền và đang hoạt động tốt!", Toast.LENGTH_SHORT).show();
+                } else if (ShizukuHelper.isShizukuRunning()) {
+                    ShizukuHelper.requestShizukuPermission(MainActivity.this);
+                } else if (ShizukuHelper.isShizukuInstalled(MainActivity.this)) {
+                    ShizukuHelper.openShizukuApp(MainActivity.this);
+                } else {
+                    ShizukuHelper.openShizukuDownload(MainActivity.this);
+                }
+            });
+        }
+
+        // Step 2: Disable / Enable Joyose
         btnDisableJoyose.setOnClickListener(v -> {
-            GamingFpsHelper.handleDisableJoyose(MainActivity.this);
-            updateToolsCardSummaries();
-            bs.dismiss();
+            GamingFpsHelper.disableJoyose(MainActivity.this, (success, message) -> {
+                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                updateFpsSheetDisplay.run();
+                updateToolsCardSummaries();
+                updateDeviceSpecsDisplay();
+            });
         });
 
         btnEnableJoyose.setOnClickListener(v -> {
-            GamingFpsHelper.handleEnableJoyose(MainActivity.this);
-            updateToolsCardSummaries();
-            bs.dismiss();
+            GamingFpsHelper.enableJoyose(MainActivity.this, (success, message) -> {
+                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                updateFpsSheetDisplay.run();
+                updateToolsCardSummaries();
+                updateDeviceSpecsDisplay();
+            });
         });
 
+        // Step 3: Clear PowerKeeper (Shizuku 1-tap or App Settings)
         btnClearPk.setOnClickListener(v -> {
-            GamingFpsHelper.openPowerKeeperAppInfo(MainActivity.this);
-            bs.dismiss();
+            GamingFpsHelper.clearPowerKeeper(MainActivity.this, (success, message) -> {
+                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+            });
+        });
+
+        if (btnClearPkManual != null) {
+            btnClearPkManual.setOnClickListener(v -> {
+                GamingFpsHelper.openPowerKeeperAppInfo(MainActivity.this);
+            });
+        }
+
+        // Step 4: Game 120Hz & Per-app Hz
+        btnGame120.setOnClickListener(v -> {
+            boolean ok = GamingFpsHelper.applyGaming120Mode(MainActivity.this);
+            Toast.makeText(MainActivity.this, ok ? "⚡ Đã kích hoạt Game Mode 120Hz!" : "Cần cấp quyền WRITE_SECURE_SETTINGS", Toast.LENGTH_SHORT).show();
+            updateFpsSheetDisplay.run();
+            updateToolsCardSummaries();
+            updateDeviceSpecsDisplay();
         });
 
         btnPerAppHz.setOnClickListener(v -> {
             GamingFpsHelper.openPerAppRefreshRate(MainActivity.this);
-            bs.dismiss();
         });
 
+        // Step 5: Launch Game
         btnAov.setOnClickListener(v -> {
-            GamingFpsHelper.launchLienQuanMobile(MainActivity.this);
-            bs.dismiss();
+            boolean launched = GamingFpsHelper.launchLienQuanMobile(MainActivity.this);
+            if (!launched) {
+                Toast.makeText(MainActivity.this, "Không tìm thấy Liên Quân Mobile hoặc Honor of Kings trên máy", Toast.LENGTH_SHORT).show();
+            }
         });
 
         // Mini Game HUD controls
@@ -1526,6 +1671,24 @@ public class MainActivity extends AppCompatActivity {
         } catch (Throwable t) {
             Toast.makeText(this, "Lỗi mở HUD: " + t.getMessage(), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void showPostUnlockSuccessDialog() {
+        if (isFinishing()) return;
+        boolean isAovInstalled = GamingFpsHelper.isLienQuanInstalled(this);
+        new AlertDialog.Builder(this)
+                .setTitle("🎉 Mở Khóa 120 FPS Thành Công!")
+                .setMessage("✓ Dịch vụ Joyose đã được vô hiệu hóa hoàn toàn\n" +
+                           "✓ Cache bóp nhiệt độ PowerKeeper đã dọn sạch\n" +
+                           "✓ Màn hình đã ép cố định 120Hz & Speed Mode\n\n" +
+                           "Bạn đã sẵn sàng tận hưởng trải nghiệm 120 FPS mượt mà không lo bị khóa 89 FPS!")
+                .setPositiveButton(isAovInstalled ? "⚔️ Mở Liên Quân Ngay" : "OK", (dialog, which) -> {
+                    if (isAovInstalled) {
+                        GamingFpsHelper.launchLienQuanMobile(MainActivity.this);
+                    }
+                })
+                .setNegativeButton("Đóng", null)
+                .show();
     }
 
     private void showAddGameAppPickerDialog(Runnable onGameAdded) {
@@ -3955,6 +4118,9 @@ public class MainActivity extends AppCompatActivity {
         updateBatteryDisplay();
         loadBatteryDrainApps();
         updateShizukuDisplay();
+        if (refreshGameFpsSheetState != null) {
+            refreshGameFpsSheetState.run();
+        }
         registerBatteryMonitorReceiver();
         startBatteryRealtimeTicker();
 

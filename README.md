@@ -10,9 +10,11 @@ Bộ tiện ích mở rộng tối ưu chuyên biệt cho điện thoại **Xiao
 
 ## ✨ Tính Năng Nổi Bật
 
-### 1. ⚡ Tích Hợp Shizuku Trực Tiếp (1-Chạm Không Cần Máy Tính)
+### 1. ⚡ Tích Hợp Shizuku Trực Tiếp (1-Chạm Tự Động Hóa Không Cần Máy Tính)
 - **Tự động cấp quyền `WRITE_SECURE_SETTINGS`**: Không cần cắm cáp vào máy tính hay gõ lệnh ADB phức tạp. Chỉ cần mở Shizuku -> Bấm 1 nút trong Mi Tool là xong!
-- **1-Chạm Vô Hiệu Hóa / Bật Lại Joyose**: Gỡ bỏ triệt để thủ phạm bóp xung và khóa 89 FPS trong Liên Quân Mobile (AOV) và các game nặng.
+- **⚡ 1-Chạm Mở Khóa Toàn Bộ 120 FPS Game**: Tự động vô hiệu hóa Joyose (thủ phạm khóa 89 FPS), xóa sạch cache bóp nhiệt PowerKeeper và ép màn hình cố định 120Hz & Speed Mode chống tụt xung.
+- **🔄 1-Chạm Khôi Phục Joyose Mặc Định**: Phục hồi dịch vụ Joyose và đưa tần số quét màn hình về tự động khi không chơi game.
+- **📋 Quy Trình 5 Bước Minh Bạch & Trực Quan**: Hướng dẫn chi tiết từng bước, theo dõi trạng thái Shizuku, Joyose và tần số quét theo thời gian thực (real-time).
 
 ### 2. 🔋 Tùy Chỉnh Cảnh Báo Pin & Âm Thanh Cá Nhân Hóa
 - **Thanh trượt chọn mức % bảo vệ pin**: Tự do kéo chọn mức sạc mong muốn (50% - 95%, mặc định 80%) thay vì cố định một mức.
