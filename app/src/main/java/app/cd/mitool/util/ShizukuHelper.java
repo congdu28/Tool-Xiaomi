@@ -311,38 +311,8 @@ public class ShizukuHelper {
     /**
      * Set display refresh rate via Shizuku shell.
      */
-    public static void setRefreshRateViaShizuku(int targetRate, CommandCallback callback) {
-        EXECUTOR.execute(() -> {
-            float rateFloat = (float) targetRate;
-            StringBuilder cmd = new StringBuilder();
-            if (targetRate <= 0) {
-                cmd.append("settings put secure min_refresh_rate 60.0; ")
-                   .append("settings put secure peak_refresh_rate 120.0; ")
-                   .append("settings put system user_refresh_rate 0; ")
-                   .append("settings put system miui_refresh_rate 0; ")
-                   .append("settings put secure miui_refresh_rate 0; ")
-                   .append("settings put system thermal_limit_refresh_rate 0");
-            } else {
-                cmd.append("settings put secure peak_refresh_rate ").append(rateFloat).append("; ")
-                   .append("settings put secure min_refresh_rate ").append(rateFloat).append("; ")
-                   .append("settings put secure user_refresh_rate ").append(targetRate).append("; ")
-                   .append("settings put system user_refresh_rate ").append(targetRate).append("; ")
-                   .append("settings put secure miui_refresh_rate ").append(targetRate).append("; ")
-                   .append("settings put system miui_refresh_rate ").append(targetRate).append("; ")
-                   .append("settings put system min_refresh_rate ").append(rateFloat).append("; ")
-                   .append("settings put system peak_refresh_rate ").append(rateFloat).append("; ")
-                   .append("settings put system thermal_limit_refresh_rate 0; ")
-                   .append("settings put global speed_mode 1");
-            }
-            ShellResult result = executeCommand(cmd.toString());
-            MAIN_HANDLER.post(() -> {
-                if (result.success) {
-                    if (callback != null) callback.onComplete(true, "Đã áp dụng tần số quét " + (targetRate <= 0 ? "Tự động" : targetRate + "Hz") + " qua Shizuku!");
-                } else {
-                    if (callback != null) callback.onComplete(false, "Lỗi: " + result.stderr);
-                }
-            });
-        });
+    public static void setRefreshRateViaShizuku(Context context, int targetRate, CommandCallback callback) {
+        RefreshRateHelper.applyAsync(context, targetRate, callback);
     }
 
     /**

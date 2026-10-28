@@ -52,7 +52,7 @@ public class PreferencesHelper {
     }
 
     public boolean isNotifClockEnabled() {
-        return prefs.getBoolean(KEY_NOTIF_CLOCK_ENABLED, true);
+        return prefs.getBoolean(KEY_NOTIF_CLOCK_ENABLED, false);
     }
 
     public void setNotifClockEnabled(boolean enabled) {

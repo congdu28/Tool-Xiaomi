@@ -1,18 +1,17 @@
-## Mi Tool v1.0.58 — Sửa DNS riêng tư và tối ưu thông báo
+## Mi Tool v1.0.59 — Giảm tải nền và sửa logic theo dõi pin
 
-- **DNS riêng tư:** giữ bảng lựa chọn khi áp dụng, chạy lệnh ở nền và xác minh cấu hình trước khi báo thành công. Ghi tên máy chủ trước khi bật chế độ DoT. Có hướng dẫn cấp quyền Shizuku hoặc cấu hình thủ công khi thiếu quyền. Kiểm tra hostname, từ chối địa chỉ IP và dữ liệu không hợp lệ; thông báo rõ trên Android dưới 9.
-- **Khắc phục trễ thông báo:** chỉ xử lý ứng dụng được chọn; xác minh miễn Doze và quyền chạy nền cho từng ứng dụng. Bỏ các lệnh AppOps theo số và thay đổi hệ thống chưa được xác minh. Thêm lối tắt quyền thông báo; cập nhật trạng thái sau khi cấp quyền hoặc trở về từ Cài đặt. Tự khởi chạy và giới hạn pin MIUI được kiểm tra riêng trong giao diện hệ thống.
-- **Shizuku/Root:** giới hạn thời gian chờ lệnh, đọc stdout/stderr đồng thời để hạn chế treo do đầy bộ đệm.
-- **Debloat:** chạy ở nền, kiểm tra trạng thái đóng băng/khôi phục và báo số ứng dụng thực sự thành công.
-- **HUD:** hiển thị Hz khi không có nguồn FPS phần cứng; nguồn phần cứng được ghi rõ FPS (HW). Bỏ phép đếm khung hình của HUD làm FPS game.
-- **Cập nhật và tiện ích:** kiểm tra tải APK thành công trước khi mở trình cài đặt; sửa xác nhận quyền, trạng thái RAM và thao tác buộc dừng thủ công.
-- Sửa XML, định dạng chuỗi và các lỗi Lint; cập nhật tài liệu kiểm tra.
+- **Đổi tần số quét:** chỉ thay đổi cấu hình màn hình, bỏ tác dụng phụ bật speed_mode và sửa thermal_limit_refresh_rate. Lưu cấu hình trước khi ép Hz để khôi phục, giữ đúng giá trị và các khóa vốn không tồn tại. Auto ở bản nâng cấp chưa có bản lưu sẽ gỡ giới hạn Hz thay vì cố định 60/120 Hz. Chạy thao tác ở nền, kiểm tra tần số hỗ trợ và đọc lại giá trị trước khi lưu trạng thái thành công.
+- **Thông báo và đồng hồ:** không tự bật cờ đồng hồ khi dịch vụ được khởi động để theo dõi pin. Đồng hồ giây mặc định tắt nếu chưa từng được chọn. Giảm nhịp cập nhật khi không cần giây, dùng lại số đo pin giữa các lần cập nhật đồng hồ, bỏ kiểm tra cập nhật mạng trong vòng ticker. Khởi tạo trạng thái màn hình thực tế và không lên lịch polling khi màn hình tắt.
+- **Widget và giao diện:** bỏ cập nhật toàn bộ widget theo nhịp làm mới trang pin; không tạo alarm khi không có widget. Chỉ đọc cảm biến liên tục ở tab Pin đang hiển thị, giảm nhịp đọc và tránh truy vấn danh sách ứng dụng trùng nhau.
+- **Số đo pin:** đổi microampere sang milliampere đúng cho cả dòng rất nhỏ lúc máy nghỉ; xử lý cảm biến không hỗ trợ. Bỏ công suất/dòng điện giả định và dừng đánh giá cáp khi thiếu số đo.
+- **Chẩn đoán:** bỏ lịch sử pin tự dựng; biểu đồ bắt đầu thu thập số đo thật ở bản này. So sánh tốc độ tụt pin theo thời gian, gom nhiều mẫu liên tiếp và không suy luận xuyên qua lần sạc hoặc khoảng thiếu dữ liệu. Danh sách thời gian dùng ứng dụng không còn được trình bày như số đo hao pin theo ứng dụng.
+- Bỏ xử lý trùng sự kiện cắm/rút sạc giữa dịch vụ thông báo và receiver.
 
-### Kiểm tra và lưu ý
+### Kiểm tra và giới hạn
 
-- Đã build Debug/Release, kiểm tra chữ ký APK, chạy 6 unit test và Lint (0 lỗi). Workflow phát hành chạy lại test, Lint và build trước khi đăng APK.
-- Chưa kiểm tra trên điện thoại Xiaomi thật. Khả năng nhận thông báo còn phụ thuộc quyền thông báo, cấu hình pin/tự khởi chạy của ROM và kết nối mạng.
-- DNS tự động cần WRITE_SECURE_SETTINGS, Shizuku hoặc Root. Khi dùng cách thủ công, cần dán tên máy chủ trong Cài đặt và bấm Lưu. Lưu cấu hình thành công chưa xác nhận kết nối DoT thành công.
-- FPS (HW) phụ thuộc nguồn sysfs trên thiết bị và có thể phản ánh tần số hiển thị.
+- Chạy unit test, Lint và build Release trước khi phát hành; có kiểm thử riêng cho số đo lúc nghỉ, nhịp polling, phân tích tụt pin và khôi phục cấu hình Hz.
+- Chưa đo tác động nhiệt/pin trên điện thoại Xiaomi thật. Bản sửa xử lý tải thừa và dữ liệu gây hiểu nhầm trong Mi Tool; chưa xác định được ứng dụng hoặc phần cứng gây nóng trên từng máy.
+- Việc bỏ lịch sử tự dựng khiến biểu đồ cần thu thập dữ liệu mới. Tốc độ tụt pin chưa chứng minh ứng dụng chạy nền là thủ phạm.
+- Bản lưu cấu hình Hz chỉ có từ lần áp dụng ở bản mới. Với các thay đổi hiệu năng cũ, hãy kiểm tra và chọn **Cân bằng** trong Cài đặt pin hệ thống; app không đoán giá trị OEM ban đầu của các khóa hiệu năng/nhiệt.
 
-Cài file **Mi-Tool-v1.0.58-Release.apk** bên dưới để cập nhật.
+Cài **Mi-Tool-v1.0.59-Release.apk** để cập nhật.

@@ -2560,7 +2560,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
-                                android:text="Biểu đồ trực quan phát hiện khung giờ máy bị tụt pin hoặc wakelock ngầm"
+                                android:text="Lịch sử mức pin đã đo; chưa đủ dữ liệu để kết luận ứng dụng hay wakelock gây hao pin"
                                 android:textColor="@color/text_muted"
                                 android:textSize="11sp" />
 
@@ -2615,7 +2615,7 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="🔋 Ứng Dụng Tiêu Hao Pin Nhiều Nhất"
+                                        android:text="📱 Thời Gian Dùng Ứng Dụng"
                                         android:textColor="@color/mi_orange"
                                         android:textSize="14sp"
                                         android:textStyle="bold" />
@@ -2625,7 +2625,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginTop="2dp"
-                                        android:text="Xếp hạng theo thời gian hoạt động &amp; mức tiêu thụ ước tính"
+                                        android:text="Thời gian hiển thị ứng dụng; không phải năng lượng tiêu thụ"
                                         android:textColor="@color/text_muted"
                                         android:textSize="11sp" />
                                 </LinearLayout>
@@ -2717,7 +2717,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="⚠️ Cần quyền 'Truy cập dữ liệu sử dụng' để xem danh sách app hao pin."
+                                    android:text="⚠️ Cần quyền 'Truy cập dữ liệu sử dụng' để xem thời gian dùng ứng dụng."
                                     android:textColor="@color/neon_yellow"
                                     android:textSize="12sp" />
 
@@ -2788,7 +2788,7 @@
                                 android:layout_marginTop="10dp"
                                 android:gravity="center"
                                 android:padding="16dp"
-                                android:text="Đang quét ứng dụng tiêu hao pin..."
+                                android:text="Đang đọc thời gian dùng ứng dụng..."
                                 android:textColor="@color/text_muted"
                                 android:textSize="12sp" />
 

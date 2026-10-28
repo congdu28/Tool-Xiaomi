@@ -7,24 +7,15 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 public class BatteryHistoryHelper {
 
-    public static class BatteryPoint {
-        public final long timestamp; // Epoch milliseconds
-        public final int level; // 0 - 100
-        public final boolean isCharging;
-
+    public static class BatteryPoint extends BatteryDrainAnalyzer.Point {
         public BatteryPoint(long timestamp, int level, boolean isCharging) {
-            this.timestamp = timestamp;
-            this.level = Math.max(0, Math.min(100, level));
-            this.isCharging = isCharging;
+            super(timestamp, level, isCharging);
         }
     }
 
@@ -42,15 +33,23 @@ public class BatteryHistoryHelper {
         }
     }
 
-    private static final String PREF_KEY_HISTORY = "pref_battery_history_data_v2";
+    private static final String PREF_KEY_HISTORY = "pref_battery_history_measured_v3";
     private static final long MAX_AGE_MS = 36 * 3600 * 1000L; // Retain up to 36 hours
     private static final long MIN_INTERVAL_MS = 15 * 60 * 1000L; // Record at least every 15 mins
+
+    private static long lastRecordedElapsed = -1;
+    private static int lastRecordedLevel = -1;
+    private static boolean lastRecordedCharging;
 
     /**
      * Records a battery level snapshot.
      */
     public static synchronized void recordSnapshot(Context context, int level, boolean isCharging) {
-        if (context == null || level <= 0) return;
+        if (context == null || level < 0 || level > 100) return;
+        long elapsedNow = android.os.SystemClock.elapsedRealtime();
+        if (lastRecordedElapsed >= 0 && elapsedNow >= lastRecordedElapsed
+                && elapsedNow - lastRecordedElapsed < MIN_INTERVAL_MS
+                && Math.abs(lastRecordedLevel - level) < 2 && lastRecordedCharging == isCharging) return;
         PreferencesHelper prefs = new PreferencesHelper(context);
         long now = System.currentTimeMillis();
 
@@ -58,9 +57,13 @@ public class BatteryHistoryHelper {
         if (!list.isEmpty()) {
             BatteryPoint last = list.get(list.size() - 1);
             long elapsed = now - last.timestamp;
+            if (elapsed < 0) { list.clear(); elapsed = MIN_INTERVAL_MS; }
             int levelDiff = Math.abs(last.level - level);
             // Don't duplicate if under interval and no meaningful change
             if (elapsed < MIN_INTERVAL_MS && levelDiff < 2 && last.isCharging == isCharging) {
+                lastRecordedElapsed = elapsedNow - Math.max(0, elapsed);
+                lastRecordedLevel = last.level;
+                lastRecordedCharging = last.isCharging;
                 return;
             }
         }
@@ -77,76 +80,22 @@ public class BatteryHistoryHelper {
         }
 
         saveRawHistory(prefs, pruned);
+        lastRecordedElapsed = elapsedNow;
+        lastRecordedLevel = level;
+        lastRecordedCharging = isCharging;
     }
 
-    /**
-     * Retrieves the history points for the last 24 hours.
-     * If fewer than 4 points exist, synthesizes realistic historical points based on
-     * current level and last unplug timestamp to ensure an immediate, informative chart.
-     */
+    /** Returns recorded observations only. v3 intentionally excludes old synthetic history. */
     public static synchronized List<BatteryPoint> getHistory(Context context) {
         if (context == null) return new ArrayList<>();
-        PreferencesHelper prefs = new PreferencesHelper(context);
-        List<BatteryPoint> list = getRawHistory(prefs);
-
+        BatteryHelper.BatteryInfo battery = BatteryHelper.getBatteryInfo(context);
+        recordSnapshot(context, battery.level, battery.isCharging);
         long now = System.currentTimeMillis();
-        int currentLevel = BatteryHelper.getBatteryPercentage(context);
-        boolean isCharging = BatteryHelper.isCharging(context);
-
-        if (list.size() < 4) {
-            list = synthesizeRealisticHistory(context, currentLevel, isCharging, now);
-            saveRawHistory(prefs, list);
-        } else {
-            // Ensure the latest point reflects the current minute
-            BatteryPoint last = list.get(list.size() - 1);
-            if (now - last.timestamp > 10 * 60 * 1000L) {
-                list.add(new BatteryPoint(now, currentLevel, isCharging));
-            }
+        List<BatteryPoint> result = new ArrayList<>();
+        for (BatteryPoint point : getRawHistory(new PreferencesHelper(context))) {
+            if (point.timestamp >= now - 24 * 3600000L && point.timestamp <= now) result.add(point);
         }
-
-        return list;
-    }
-
-    /**
-     * Synthesizes 24-hour battery history points based on actual unplug session data.
-     */
-    private static List<BatteryPoint> synthesizeRealisticHistory(Context context, int currentLevel, boolean isCharging, long now) {
-        List<BatteryPoint> list = new ArrayList<>();
-        PreferencesHelper prefs = new PreferencesHelper(context);
-
-        long lastUnplug = prefs.getSotLastUnplugTime();
-        int lastUnplugLevel = prefs.getSotLastUnplugLevel();
-        if (lastUnplugLevel <= 0) lastUnplugLevel = 100;
-
-        long twentyFourHoursAgo = now - (24 * 3600 * 1000L);
-
-        // Generate points at 2-hour increments
-        for (int i = 12; i >= 0; i--) {
-            long t = now - (i * 2 * 3600 * 1000L);
-            int synthLevel;
-
-            if (isCharging) {
-                // If currently charging, interpolate rise towards current level
-                float progress = (12 - i) / 12.0f;
-                synthLevel = Math.round(Math.max(20, currentLevel - 40) + (progress * 40));
-            } else if (lastUnplug > twentyFourHoursAgo && t < lastUnplug) {
-                // Before unplug moment: device was on charger or full
-                synthLevel = Math.min(100, lastUnplugLevel + ((i % 3) == 0 ? 0 : 2));
-            } else {
-                // Between unplug moment and now: natural discharge curve
-                float fraction = (12 - i) / 12.0f;
-                int dropTotal = Math.max(5, lastUnplugLevel - currentLevel);
-                synthLevel = Math.round(lastUnplugLevel - (fraction * dropTotal));
-            }
-
-            synthLevel = Math.max(5, Math.min(100, synthLevel));
-            list.add(new BatteryPoint(t, synthLevel, isCharging && i <= 1));
-        }
-
-        // Guarantee final point matches exact current level
-        list.set(list.size() - 1, new BatteryPoint(now, currentLevel, isCharging));
-
-        return list;
+        return result;
     }
 
     /**
@@ -158,43 +107,16 @@ public class BatteryHistoryHelper {
         }
 
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-        int maxDrop = 0;
-        String maxDropSpan = "";
-
-        for (int i = 0; i < points.size() - 1; i++) {
-            BatteryPoint p1 = points.get(i);
-            BatteryPoint p2 = points.get(i + 1);
-
-            // Only consider discharging phases
-            if (!p1.isCharging && !p2.isCharging && p1.level > p2.level) {
-                int drop = p1.level - p2.level;
-                long durationMs = p2.timestamp - p1.timestamp;
-                if (durationMs > 0 && durationMs <= (4 * 3600 * 1000L)) {
-                    if (drop > maxDrop) {
-                        maxDrop = drop;
-                        maxDropSpan = timeFormat.format(new Date(p1.timestamp)) + " - " + timeFormat.format(new Date(p2.timestamp));
-                    }
-                }
-            }
-        }
-
-        if (maxDrop >= 6) {
-            return new DrainAnalysis(
-                    "⚠️ Tụt pin nhiều nhất: " + maxDropSpan + " (-" + maxDrop + "%). Kiểm tra ứng dụng chạy ngầm!",
-                    maxDrop,
-                    maxDropSpan,
-                    true
-            );
-        } else if (maxDrop > 0) {
-            return new DrainAnalysis(
-                    "✅ Mức tiêu thụ ổn định (Tụt cao nhất: " + maxDropSpan + " ~ -" + maxDrop + "%)",
-                    maxDrop,
-                    maxDropSpan,
-                    false
-            );
-        } else {
-            return new DrainAnalysis("✅ Thiết bị đang hoạt động ổn định, không có hiện tượng tụt pin bất thường.", 0, "", false);
-        }
+        BatteryDrainAnalyzer.Result analysis = BatteryDrainAnalyzer.fastest(points);
+        if (analysis == null) return new DrainAnalysis("Chưa đủ khoảng đo liên tục để phân tích hao pin.", 0, "", false);
+        BatteryDrainAnalyzer.Point peakStart = analysis.start, peakEnd = analysis.end;
+        double peakRate = analysis.percentPerHour;
+        int drop = peakStart.level - peakEnd.level;
+        String span = timeFormat.format(new Date(peakStart.timestamp)) + " - " + timeFormat.format(new Date(peakEnd.timestamp));
+        boolean rapid = MonitoringPolicy.isRapidDrain(drop, peakEnd.timestamp - peakStart.timestamp);
+        return new DrainAnalysis((rapid ? "⚠️ Tụt pin nhanh: " : "Khoảng đo hao pin cao nhất: ")
+                + span + String.format(Locale.getDefault(), " (-%d%%, ~%.1f%%/giờ). ", drop, peakRate)
+                + "Chưa xác định nguyên nhân hoặc ứng dụng gây hao pin.", drop, span, rapid);
     }
 
     private static List<BatteryPoint> getRawHistory(PreferencesHelper prefs) {

@@ -48,32 +48,14 @@ public class RefreshRateTileService extends TileService {
                 } else if (supported.contains(90)) {
                     targetRate = 90;
                 } else {
-                    targetRate = 120;
+                    targetRate = java.util.Collections.max(supported);
                 }
             }
 
-            boolean applied;
-            if (ShizukuHelper.hasShizukuPermission()) {
-                ShizukuHelper.setRefreshRateViaShizuku(targetRate, null);
-                applied = true;
-            } else {
-                applied = RefreshRateHelper.setRefreshRate(this, targetRate);
-            }
-
-            PreferencesHelper prefs = new PreferencesHelper(this);
-            prefs.setTargetRefreshRate(targetRate);
-
-            if (applied) {
-                if (targetRate <= 60) {
-                    Toast.makeText(this, "🔋 Đã chuyển sang 60Hz (Tiết kiệm pin)", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "⚡ Đã chuyển sang " + targetRate + "Hz (Siêu mượt)", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Toast.makeText(this, "Cần cấp quyền WRITE_SECURE_SETTINGS (Xem trong Mi Tool) để đổi tần số quét.", Toast.LENGTH_LONG).show();
-            }
-
-            updateTileState();
+            RefreshRateHelper.applyAsync(this, targetRate, (success, message) -> {
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+                updateTileState();
+            });
         } catch (Exception e) {
             Toast.makeText(this, "Lỗi chuyển tần số quét: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }

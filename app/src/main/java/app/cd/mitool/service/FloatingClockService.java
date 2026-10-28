@@ -83,6 +83,8 @@ public class FloatingClockService extends Service {
     public void onCreate() {
         super.onCreate();
         prefs = new PreferencesHelper(this);
+        android.os.PowerManager power = (android.os.PowerManager) getSystemService(POWER_SERVICE);
+        isScreenOn = power != null && power.isInteractive();
         sdfStandard = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
         sdfMs = new SimpleDateFormat("HH:mm:ss.SS", Locale.getDefault());
 
@@ -305,12 +307,14 @@ public class FloatingClockService extends Service {
     }
 
     private void startClockTicker() {
+        if (!isScreenOn) return;
         if (clockRunnable != null) {
             handler.removeCallbacks(clockRunnable);
         }
         clockRunnable = new Runnable() {
             @Override
             public void run() {
+                if (!isScreenOn) return;
                 updateTime();
                 boolean showMs = prefs.isClockShowMs();
                 long delay = showMs ? 45 : (1000 - (System.currentTimeMillis() % 1000));

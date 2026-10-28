@@ -7,9 +7,6 @@ import android.os.BatteryManager;
 import android.os.Handler;
 import android.os.Looper;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -102,7 +99,7 @@ public class ChargingTesterHelper {
 
             state.plugType = batteryIntent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
             int rawVoltage = batteryIntent.getIntExtra(BatteryManager.EXTRA_VOLTAGE, 0);
-            state.voltageV = rawVoltage > 0 ? (rawVoltage / 1000.0f) : 3.85f;
+            state.voltageV = rawVoltage > 0 ? (rawVoltage / 1000.0f) : 0f;
 
             int rawTemp = batteryIntent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, 0);
             state.temperatureC = rawTemp / 10.0f;
@@ -115,26 +112,7 @@ public class ChargingTesterHelper {
             currentNow = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW);
         }
 
-        int currentMa = Math.abs(currentNow);
-        if (currentMa > 10000) {
-            currentMa = currentMa / 1000;
-        }
-
-        // Fallback to sysfs if BatteryManager returned 0
-        if (currentMa <= 0) {
-            currentMa = readCurrentFromSysfs();
-        }
-
-        // Intelligent estimation if hardware HAL returns 0 while charging
-        if (state.isCharging && currentMa <= 0) {
-            if (state.plugType == BatteryManager.BATTERY_PLUGGED_AC) {
-                currentMa = 2200; // Typical AC fast charge default
-            } else if (state.plugType == BatteryManager.BATTERY_PLUGGED_USB) {
-                currentMa = 500;
-            } else {
-                currentMa = 1000;
-            }
-        }
+        int currentMa = BatteryMeasurements.milliAmps(currentNow);
 
         state.currentMa = currentMa;
         state.powerW = (state.voltageV * state.currentMa) / 1000.0f;
@@ -148,7 +126,12 @@ public class ChargingTesterHelper {
             state.protocolColor = R.color.text_secondary;
             state.statusDescription = "Đang xả pin cho các hoạt động của hệ thống";
         } else {
-            if (state.powerW >= 26.0f || state.currentMa >= 4500 || state.estimatedAdapterWatt >= 30.0f) {
+            if (state.currentMa <= 0 || state.voltageV <= 0) {
+                state.protocolName = "Đang sạc (chưa có số đo công suất)";
+                state.protocolBadge = "CHƯA CÓ SỐ ĐO";
+                state.protocolColor = R.color.text_secondary;
+                state.statusDescription = "Thiết bị chưa cung cấp đủ số đo dòng điện/điện áp.";
+            } else if (state.powerW >= 26.0f || state.currentMa >= 4500 || state.estimatedAdapterWatt >= 30.0f) {
                 state.protocolName = "Mi Turbo Charge / HyperCharge (33W - 120W+)";
                 state.protocolBadge = "🚀 SIÊU NHANH MI TURBO";
                 state.protocolColor = R.color.mi_orange;
@@ -207,6 +190,11 @@ public class ChargingTesterHelper {
                     return;
                 }
 
+                if (live.currentMa <= 0 || live.voltageV <= 0) {
+                    isTestingActive = false;
+                    listener.onError("Thiết bị chưa cung cấp đủ số đo dòng điện/điện áp để đánh giá.");
+                    return;
+                }
                 currentStep++;
                 currentSamples.add(live.currentMa);
                 voltageSamples.add(live.voltageV);
@@ -319,29 +307,4 @@ public class ChargingTesterHelper {
         return new CableTestResult(score, stars, title, desc, color, avgPower, maxPower, avgCurrent, maxCurrent, minCurrent, avgVolt, stability, isUnstable);
     }
 
-    private static int readCurrentFromSysfs() {
-        String[] paths = {
-                "/sys/class/power_supply/battery/current_now",
-                "/sys/class/power_supply/battery/batt_current",
-                "/sys/class/power_supply/usb/current_now"
-        };
-        for (String path : paths) {
-            try {
-                File f = new File(path);
-                if (f.exists() && f.canRead()) {
-                    BufferedReader br = new BufferedReader(new FileReader(f));
-                    String line = br.readLine();
-                    br.close();
-                    if (line != null && !line.trim().isEmpty()) {
-                        int val = Integer.parseInt(line.trim());
-                        int absVal = Math.abs(val);
-                        if (absVal > 10000) absVal /= 1000;
-                        if (absVal > 0) return absVal;
-                    }
-                }
-            } catch (Throwable ignored) {
-            }
-        }
-        return 0;
-    }
 }

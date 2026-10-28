@@ -173,6 +173,7 @@ public class FloatingGameHudService extends Service {
             } else if (Intent.ACTION_SCREEN_ON.equals(action)) {
                 isScreenOn = true;
                 if (metricsRunnable != null) {
+                    metricsHandler.removeCallbacks(metricsRunnable);
                     metricsHandler.post(metricsRunnable);
                 }
             }
@@ -183,6 +184,8 @@ public class FloatingGameHudService extends Service {
     public void onCreate() {
         super.onCreate();
         prefs = new PreferencesHelper(this);
+        android.os.PowerManager power = (android.os.PowerManager) getSystemService(POWER_SERVICE);
+        isScreenOn = power != null && power.isInteractive();
         activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         batteryManager = (BatteryManager) getSystemService(Context.BATTERY_SERVICE);
 
@@ -589,10 +592,10 @@ public class FloatingGameHudService extends Service {
                     }
                     updateMetricsViews();
                 }
-                metricsHandler.postDelayed(this, 1000);
+                if (isScreenOn) metricsHandler.postDelayed(this, 1000);
             }
         };
-        metricsHandler.post(metricsRunnable);
+        if (isScreenOn) metricsHandler.post(metricsRunnable);
     }
 
     private void measureBatteryMetrics() {
@@ -607,13 +610,9 @@ public class FloatingGameHudService extends Service {
                               status == BatteryManager.BATTERY_STATUS_FULL);
 
                 int voltageMv = bIntent.getIntExtra(BatteryManager.EXTRA_VOLTAGE, 4000);
-                long currentUa = 0;
-                if (batteryManager != null) {
-                    currentUa = Math.abs(batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW));
-                }
-                if (currentUa > 0 && voltageMv > 0) {
-                    currentPowerW = (voltageMv / 1000.0f) * (currentUa / 1000000.0f);
-                }
+                int currentMa = batteryManager == null ? 0 : app.cd.mitool.util.BatteryMeasurements.milliAmps(
+                        batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW));
+                currentPowerW = app.cd.mitool.util.BatteryMeasurements.watts(voltageMv, currentMa);
             }
         } catch (Throwable ignored) {
         }

@@ -116,27 +116,9 @@ public class BatteryHelper {
             }
         }
 
-        // Convert current from microampere to milliampere if needed
-        int currentMa = Math.abs(currentNow);
-        if (currentMa > 10000) {
-            // Value is in microamperes
-            currentMa = currentMa / 1000;
-        }
-        info.currentMa = currentMa;
-
-        // Calculate power (W = V * A)
-        if (info.voltageMv > 0 && info.currentMa > 0) {
-            info.powerWatt = (info.voltageMv / 1000.0f) * (info.currentMa / 1000.0f);
-        } else if (info.isCharging && info.voltageMv > 0) {
-            // Intelligent fallback when hardware doesn't report current_now while charging
-            float fallbackAmp = (plugged == BatteryManager.BATTERY_PLUGGED_AC) ? 2.0f : 0.5f;
-            info.powerWatt = (info.voltageMv / 1000.0f) * fallbackAmp;
-        } else if (!info.isCharging && info.voltageMv > 0) {
-            // Typical screen-on discharge consumption (~450mA)
-            info.powerWatt = (info.voltageMv / 1000.0f) * 0.45f;
-        } else {
-            info.powerWatt = 0.0f;
-        }
+        info.currentMa = BatteryMeasurements.milliAmps(currentNow);
+        info.powerWatt = BatteryMeasurements.watts(info.voltageMv, info.currentMa);
+        // Missing sensor readings stay unavailable; never fabricate discharge/charge power.
 
         // Calculate estimated minutes
         if (info.isFull && !info.isCharging) {

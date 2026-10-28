@@ -1,7 +1,6 @@
 package app.cd.mitool.util;
 
 import android.content.ComponentName;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -10,7 +9,6 @@ import android.view.Display;
 import android.view.WindowManager;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -66,135 +64,87 @@ public class RefreshRateHelper {
         return 60;
     }
 
-    /**
-     * Force refresh rate (min == peak == user) to lock FPS and prevent throttling.
-     * @param targetRate 0 for Default/Auto, or 60, 90, 120, 144.
-     * @return true if successfully written to Settings or applied via Root.
-     */
-    public static boolean setRefreshRate(Context context, int targetRate) {
-        ContentResolver cr = context.getContentResolver();
-        float rateFloat = (float) targetRate;
+    private static final java.util.concurrent.ExecutorService EXECUTOR = java.util.concurrent.Executors.newSingleThreadExecutor();
+    private static final android.os.Handler MAIN = new android.os.Handler(android.os.Looper.getMainLooper());
+    private static final String SNAPSHOT = "refresh_rate_original_v1";
 
-        // Try Root command first for instant, permission-free execution
-        StringBuilder rootCmd = new StringBuilder();
-        if (targetRate <= 0) {
-            rootCmd.append("settings put secure min_refresh_rate 60.0; ")
-                    .append("settings put secure peak_refresh_rate 120.0; ")
-                    .append("settings put system user_refresh_rate 0; ")
-                    .append("settings put system miui_refresh_rate 0; ")
-                    .append("settings put secure miui_refresh_rate 0; ")
-                    .append("settings put system thermal_limit_refresh_rate 0");
-        } else {
-            rootCmd.append("settings put secure peak_refresh_rate ").append(rateFloat).append("; ")
-                    .append("settings put secure min_refresh_rate ").append(rateFloat).append("; ")
-                    .append("settings put secure user_refresh_rate ").append(targetRate).append("; ")
-                    .append("settings put system user_refresh_rate ").append(targetRate).append("; ")
-                    .append("settings put secure miui_refresh_rate ").append(targetRate).append("; ")
-                    .append("settings put system miui_refresh_rate ").append(targetRate).append("; ")
-                    .append("settings put system min_refresh_rate ").append(rateFloat).append("; ")
-                    .append("settings put system peak_refresh_rate ").append(rateFloat).append("; ")
-                    .append("settings put system thermal_limit_refresh_rate 0; ")
-                    .append("settings put global speed_mode 1");
-        }
-
-        if (runRootCommand(rootCmd.toString())) {
-            return true;
-        }
-
-        // Standard ContentResolver (requires WRITE_SECURE_SETTINGS or WRITE_SETTINGS)
-        boolean wroteAny = false;
-        try {
-            if (targetRate <= 0) {
-                try {
-                    Settings.Secure.putFloat(cr, "min_refresh_rate", 60.0f);
-                    Settings.Secure.putFloat(cr, "peak_refresh_rate", 120.0f);
-                    Settings.Secure.putInt(cr, "user_refresh_rate", 0);
-                    wroteAny = true;
-                } catch (Exception ignored) {
-                }
-                try {
-                    Settings.System.putInt(cr, "user_refresh_rate", 0);
-                    Settings.System.putInt(cr, "miui_refresh_rate", 0);
-                    Settings.Secure.putInt(cr, "miui_refresh_rate", 0);
-                    Settings.System.putInt(cr, "thermal_limit_refresh_rate", 0);
-                    wroteAny = true;
-                } catch (Exception ignored) {
-                }
-                return wroteAny;
-            }
-
-            // AVOID DisplayModeDirector COLLISION:
-            // When increasing rate (e.g. 60 -> 120), peak MUST be set first so min <= peak!
-            // When decreasing rate (e.g. 120 -> 60), min MUST be set first so min <= peak!
-            float currentPeak = 120.0f;
-            try {
-                currentPeak = Settings.Secure.getFloat(cr, "peak_refresh_rate", 120.0f);
-            } catch (Exception ignored) {
-            }
-
-            if (rateFloat >= currentPeak) {
-                try {
-                    Settings.Secure.putFloat(cr, "peak_refresh_rate", rateFloat);
-                    Settings.Secure.putFloat(cr, "min_refresh_rate", rateFloat);
-                    Settings.Secure.putInt(cr, "user_refresh_rate", targetRate);
-                    wroteAny = true;
-                } catch (Exception ignored) {
-                }
-            } else {
-                try {
-                    Settings.Secure.putFloat(cr, "min_refresh_rate", rateFloat);
-                    Settings.Secure.putFloat(cr, "peak_refresh_rate", rateFloat);
-                    Settings.Secure.putInt(cr, "user_refresh_rate", targetRate);
-                    wroteAny = true;
-                } catch (Exception ignored) {
-                }
-            }
-
-            // Xiaomi MIUI / HyperOS specific settings
-            try {
-                Settings.System.putInt(cr, "user_refresh_rate", targetRate);
-                Settings.System.putFloat(cr, "min_refresh_rate", rateFloat);
-                Settings.System.putFloat(cr, "peak_refresh_rate", rateFloat);
-                Settings.System.putInt(cr, "miui_refresh_rate", targetRate);
-                Settings.Secure.putInt(cr, "miui_refresh_rate", targetRate);
-                Settings.System.putInt(cr, "thermal_limit_refresh_rate", 0);
-                Settings.Global.putInt(cr, "speed_mode", 1);
-                wroteAny = true;
-            } catch (Exception ignored) {
-            }
-
-        } catch (Exception ignored) {
-        }
-
-        return wroteAny;
+    public static void applyAsync(Context context, int targetRate, ShizukuHelper.CommandCallback callback) {
+        Context app = context.getApplicationContext();
+        EXECUTOR.execute(() -> {
+            boolean success = setRefreshRate(app, targetRate);
+            if (success) new PreferencesHelper(app).setTargetRefreshRate(targetRate);
+            MAIN.post(() -> { if (callback != null) callback.onComplete(success, success
+                    ? (targetRate == 0 ? "Đã khôi phục cấu hình tần số quét trước khi ép Hz (hoặc mặc định hệ thống)."
+                    : "Đã lưu cấu hình " + targetRate + " Hz.")
+                    : "Chưa áp dụng được. Kiểm tra quyền Shizuku/Root hoặc tần số quét thiết bị hỗ trợ."); });
+        });
     }
 
-    private static boolean runRootCommand(String command) {
-        java.io.DataOutputStream os = null;
-        Process process = null;
+    /** Must run on a worker thread. Preserves original overrides across fixed-rate changes. */
+    public static synchronized boolean setRefreshRate(Context context, int targetRate) {
+        if (targetRate < 0 || (targetRate > 0 && !getSupportedRefreshRates(context).contains(targetRate))) return false;
+        android.content.SharedPreferences storage = context.getSharedPreferences("refresh_rate_snapshot", Context.MODE_PRIVATE);
+        java.util.Map<String, String> original = null;
+        boolean captured = false;
         try {
-            process = Runtime.getRuntime().exec("su");
-            os = new java.io.DataOutputStream(process.getOutputStream());
-            os.writeBytes(command + "\n");
-            os.writeBytes("exit\n");
-            os.flush();
-            return ProcessRunner.collect(process, 15000).exitCode == 0;
-        } catch (Exception e) {
-            return false;
-        } finally {
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (Exception ignored) {
+            if (storage.contains(SNAPSHOT)) {
+                org.json.JSONObject json = new org.json.JSONObject(storage.getString(SNAPSHOT, "{}"));
+                original = new java.util.LinkedHashMap<>();
+                for (String key : RefreshRatePlan.KEYS) original.put(key, json.isNull(key) ? null : json.getString(key));
+            } else if (targetRate > 0) {
+                org.json.JSONObject json = new org.json.JSONObject();
+                original = new java.util.LinkedHashMap<>();
+                for (String key : RefreshRatePlan.KEYS) {
+                    String value = read(context, key);
+                    original.put(key, value);
+                    json.put(key, value == null ? org.json.JSONObject.NULL : value);
                 }
+                // Persist before touching any setting, so partial failures can be recovered.
+                if (!storage.edit().putString(SNAPSHOT, json.toString()).commit()) return false;
+                captured = true;
             }
-            if (process != null) {
+            java.util.Map<String, String> changes = RefreshRatePlan.changes(targetRate, original);
+            boolean written = false;
+            if (SystemClockHelper.hasSecureSettingsPermission(context) && SystemClockHelper.canWriteSystemSettings(context)) {
                 try {
-                    process.destroy();
-                } catch (Exception ignored) {
-                }
+                    write(context, "secure:min_refresh_rate", "0");
+                    write(context, "system:min_refresh_rate", "0");
+                    written = true;
+                    for (java.util.Map.Entry<String, String> entry : changes.entrySet()) written &= write(context, entry.getKey(), entry.getValue());
+                } catch (RuntimeException ignored) { written = false; }
             }
-        }
+            if (!written) {
+                String command = RefreshRatePlan.shell(changes);
+                written = ShizukuHelper.hasShizukuPermission()
+                        ? ShizukuHelper.executeCommand(command).success : GamingFpsHelper.runRootCommand(command);
+            }
+            if (!written) {
+                if (captured) {
+                    boolean unchanged = true;
+                    for (java.util.Map.Entry<String, String> entry : original.entrySet()) {
+                        unchanged &= java.util.Objects.equals(entry.getValue(), read(context, entry.getKey()));
+                    }
+                    if (unchanged) storage.edit().remove(SNAPSHOT).apply();
+                }
+                return false;
+            }
+            for (java.util.Map.Entry<String, String> entry : changes.entrySet()) {
+                if (!java.util.Objects.equals(entry.getValue(), read(context, entry.getKey()))) return false;
+            }
+            if (targetRate == 0) storage.edit().remove(SNAPSHOT).apply();
+            return true;
+        } catch (Exception ignored) { return false; }
+    }
+
+    private static String read(Context context, String qualifiedKey) {
+        String[] key = qualifiedKey.split(":");
+        return key[0].equals("secure") ? Settings.Secure.getString(context.getContentResolver(), key[1])
+                : Settings.System.getString(context.getContentResolver(), key[1]);
+    }
+    private static boolean write(Context context, String qualifiedKey, String value) {
+        String[] key = qualifiedKey.split(":");
+        return key[0].equals("secure") ? Settings.Secure.putString(context.getContentResolver(), key[1], value)
+                : Settings.System.putString(context.getContentResolver(), key[1], value);
     }
 
     /**
@@ -212,13 +162,7 @@ public class RefreshRateHelper {
      * Generate ADB command string to force refresh rate.
      */
     public static String getAdbCommand(int targetRate) {
-        if (targetRate <= 0) {
-            return "adb shell \"settings put secure min_refresh_rate 60.0 && settings put secure peak_refresh_rate 120.0 && settings put system user_refresh_rate 0 && settings put system thermal_limit_refresh_rate 0\"";
-        }
-        return "adb shell \"settings put secure peak_refresh_rate " + targetRate + ".0 && " +
-               "settings put secure min_refresh_rate " + targetRate + ".0 && " +
-               "settings put system user_refresh_rate " + targetRate + " && " +
-               "settings put system thermal_limit_refresh_rate 0\"";
+        return "adb shell \"" + RefreshRatePlan.shell(RefreshRatePlan.changes(targetRate, null)) + "\"";
     }
 
     /**

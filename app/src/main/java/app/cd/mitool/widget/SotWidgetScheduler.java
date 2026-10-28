@@ -16,6 +16,9 @@ public class SotWidgetScheduler {
     public static void scheduleNext(Context context) {
         if (context == null) return;
         try {
+            int[] widgets = android.appwidget.AppWidgetManager.getInstance(context).getAppWidgetIds(
+                    new android.content.ComponentName(context, SotAppWidgetProvider.class));
+            if (widgets == null || widgets.length == 0) { cancel(context); return; }
             PreferencesHelper prefs = new PreferencesHelper(context);
             int intervalMinutes = prefs.getWidgetRefreshInterval();
             AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);

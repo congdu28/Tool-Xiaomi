@@ -526,6 +526,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
+                stopBatteryRealtimeTicker();
                 if (id == R.id.nav_home) {
                     tabDeviceScroll.setVisibility(View.VISIBLE);
                     tabToolsScroll.setVisibility(View.GONE);
@@ -546,6 +547,8 @@ public class MainActivity extends AppCompatActivity {
                     tabBatteryScroll.setVisibility(View.VISIBLE);
                     tabSettingsScroll.setVisibility(View.GONE);
                     updateBatteryDisplay();
+                    loadBatteryDrainApps();
+                    startBatteryRealtimeTicker();
                     return true;
                 } else if (id == R.id.nav_settings) {
                     tabDeviceScroll.setVisibility(View.GONE);
@@ -2904,46 +2907,22 @@ public class MainActivity extends AppCompatActivity {
     // REFRESH RATE & PRIVATE DNS & DEBLOATER CORE LOGIC
     // =========================================================================
 
+    private boolean refreshRateApplying;
     private void applyRefreshRate(final int targetRate) {
-        if (targetRate > 0 && (targetRate < 30 || targetRate > 240)) {
-            Toast.makeText(this, "Tần số quét phải từ 30Hz đến 240Hz!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            try {
+        if (refreshRateApplying) return;
+        refreshRateApplying = true;
+        RefreshRateHelper.applyAsync(this, targetRate, (success, message) -> {
+            refreshRateApplying = false;
+            if (isFinishing() || isDestroyed()) return;
+            if (success) {
                 WindowManager.LayoutParams lp = getWindow().getAttributes();
-                lp.preferredRefreshRate = (float) (targetRate > 0 ? targetRate : 0);
+                lp.preferredRefreshRate = targetRate;
                 getWindow().setAttributes(lp);
-            } catch (Exception ignored) {
             }
-        }
-
-        prefs.setTargetRefreshRate(targetRate);
-
-        boolean success;
-        if (ShizukuHelper.hasShizukuPermission()) {
-            ShizukuHelper.setRefreshRateViaShizuku(targetRate, null);
-            success = true;
-        } else {
-            success = RefreshRateHelper.setRefreshRate(this, targetRate);
-        }
-
-        if (success) {
-            String msg = (targetRate == 0) ? "Đã đặt tần số quét Mặc định (Auto - Hệ thống tự điều tiết)." : ("Đã cố định tần số quét " + targetRate + "Hz!");
-            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-
-            final Handler h = new Handler(Looper.getMainLooper());
-            h.postDelayed(() -> { updateToolsCardSummaries(); updateDeviceSpecsDisplay(); }, 400);
-            h.postDelayed(() -> { updateToolsCardSummaries(); updateDeviceSpecsDisplay(); }, 1000);
-        } else {
-            Toast.makeText(this, "Cần cấp quyền WRITE_SECURE_SETTINGS qua Shizuku hoặc Root!", Toast.LENGTH_LONG).show();
-            ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-            if (cm != null) {
-                cm.setPrimaryClip(ClipData.newPlainText("ADB Refresh Rate", RefreshRateHelper.getAdbCommand(targetRate)));
-                Toast.makeText(this, "Đã sao chép lệnh ADB để ép tần số quét!", Toast.LENGTH_SHORT).show();
-            }
-        }
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+            updateToolsCardSummaries();
+            updateDeviceSpecsDisplay();
+        });
     }
 
     private void requestAddHzTile() {
@@ -3465,7 +3444,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         updateDrainChart();
-        app.cd.mitool.widget.SotAppWidgetProvider.updateAllWidgets(this);
     }
 
     private void updateDrainChart() {
@@ -3484,14 +3462,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private boolean drainQueryRunning;
     private void loadBatteryDrainApps() {
-        if (layoutDrainAppsContainer == null) return;
+        if (layoutDrainAppsContainer == null || tabBatteryScroll == null
+                || tabBatteryScroll.getVisibility() != View.VISIBLE || drainQueryRunning) return;
 
         if (tvDrainAppsSubtitle != null) {
             if (currentDrainFilter == BatteryUsageHelper.FILTER_SINCE_UNPLUG) {
-                tvDrainAppsSubtitle.setText("Tính từ lần rút sạc gần nhất (hoặc từ khi đặt lại mốc)");
+                tvDrainAppsSubtitle.setText("Thời gian dùng từ lúc rút sạc; không phải thống kê pin/chạy nền của hệ thống");
             } else {
-                tvDrainAppsSubtitle.setText("Tổng hợp toàn bộ hoạt động từ 00:00 sáng hôm nay");
+                tvDrainAppsSubtitle.setText("Thời gian dùng từ 00:00; không dùng để kết luận ứng dụng gây hao pin");
             }
         }
 
@@ -3509,9 +3489,17 @@ public class MainActivity extends AppCompatActivity {
             tvDrainAppsEmpty.setText("Đang phân tích dữ liệu ứng dụng & tiêu thụ pin...");
         }
 
+        drainQueryRunning = true;
+        final int filter = currentDrainFilter;
+        Context app = getApplicationContext();
         new Thread(() -> {
-            List<BatteryUsageHelper.AppDrainItem> items = BatteryUsageHelper.getDrainApps(this, currentDrainFilter, 12);
-            runOnUiThread(() -> renderDrainAppsList(items));
+            List<BatteryUsageHelper.AppDrainItem> items = BatteryUsageHelper.getDrainApps(app, filter, 12);
+            runOnUiThread(() -> {
+                drainQueryRunning = false;
+                if (isFinishing() || isDestroyed()) return;
+                if (filter != currentDrainFilter) { loadBatteryDrainApps(); return; }
+                renderDrainAppsList(items);
+            });
         }).start();
     }
 
@@ -3522,7 +3510,7 @@ public class MainActivity extends AppCompatActivity {
         if (items == null || items.isEmpty()) {
             if (tvDrainAppsEmpty != null) {
                 tvDrainAppsEmpty.setVisibility(View.VISIBLE);
-                tvDrainAppsEmpty.setText("Chưa ghi nhận ứng dụng tiêu hao pin đáng kể.");
+                tvDrainAppsEmpty.setText("Chưa đủ dữ liệu thời gian dùng ứng dụng.");
             }
             return;
         }
@@ -3571,9 +3559,9 @@ public class MainActivity extends AppCompatActivity {
             // App info
             if (tvName != null) tvName.setText(item.appName);
             if (tvDuration != null) tvDuration.setText(item.formattedTime);
-            if (tvPercentage != null) tvPercentage.setText("(" + item.percentage + "%)");
+            if (tvPercentage != null) tvPercentage.setText("(" + item.percentage + "% thời gian)");
             if (tvEstBattery != null) {
-                tvEstBattery.setText(String.format(Locale.getDefault(), "~%.1f%%", item.estimatedBatteryDrain));
+                tvEstBattery.setText("Chưa có số đo pin theo ứng dụng");
             }
 
             // Progress bar
@@ -3604,11 +3592,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateBatteryDisplay() {
         if (tvBatteryPercent == null) return;
-        int level = BatteryHelper.getBatteryPercentage(this);
-        boolean isCharging = BatteryHelper.isCharging(this);
-        int plugType = BatteryHelper.getPlugType(this);
-        float temp = BatteryHelper.getBatteryTemperature(this);
-        float volt = BatteryHelper.getBatteryVoltage(this);
+        BatteryHelper.BatteryInfo info = BatteryHelper.getBatteryInfo(this);
+        int level = info.level;
+        boolean isCharging = info.isCharging;
+        int plugType = info.plugType;
+        float temp = info.temperature;
+        float volt = info.voltageMv / 1000.0f;
 
         tvBatteryPercent.setText(level + "%");
         tvBatteryTemp.setText(String.format(Locale.getDefault(), "%.1f °C", temp));
@@ -3621,7 +3610,7 @@ public class MainActivity extends AppCompatActivity {
                     : "Đang sạc";
             tvBatteryPlugType.setText("Nguồn: " + plugStr);
 
-            String eta = BatteryHelper.getEstimatedChargeTime(this);
+            String eta = info.formattedEta;
             tvChargeEta.setText(eta != null ? eta : "Đang ước tính...");
         } else {
             tvBatteryPlugType.setText("Nguồn: Pin thiết bị");
@@ -3635,16 +3624,17 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateBatteryPowerRealtime() {
         if (tvBatteryPower == null) return;
-        float powerW = BatteryHelper.getBatteryPowerWatts(this);
-        int currentMa = BatteryHelper.getBatteryCurrentNow(this);
-        boolean isCharging = BatteryHelper.isCharging(this);
+        BatteryHelper.BatteryInfo info = BatteryHelper.getBatteryInfo(this);
+        float powerW = info.powerWatt;
+        int currentMa = info.currentMa;
+        boolean isCharging = info.isCharging;
 
         if (powerW > 0.0f) {
             String prefix = isCharging ? "+" : "-";
             tvBatteryPower.setText(String.format(Locale.getDefault(), "%s%.1f W", prefix, powerW));
             tvBatteryPower.setTextColor(ContextCompat.getColor(this, isCharging ? R.color.neon_green : R.color.neon_cyan));
         } else {
-            tvBatteryPower.setText("0.0 W");
+            tvBatteryPower.setText("Chưa có số đo");
             tvBatteryPower.setTextColor(ContextCompat.getColor(this, R.color.text_muted));
         }
 
@@ -3695,6 +3685,7 @@ public class MainActivity extends AppCompatActivity {
             tvChargingCurrentLabel.setText(state.isCharging ? "🔌 Dòng sạc" : "🔋 Dòng xả");
         }
 
+        if (tvChargingCurrentVal != null && state.currentMa <= 0) tvChargingCurrentVal.setText("Chưa có số đo");
         if (tvChargingCurrentVal != null && state.currentMa > 0) {
             String prefix = state.isCharging ? "+" : "";
             tvChargingCurrentVal.setText(prefix + state.currentMa + " mA");
@@ -3707,8 +3698,8 @@ public class MainActivity extends AppCompatActivity {
             batteryReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    updateBatteryDisplay();
-                    updateDeviceSpecsDisplay();
+                    if (tabBatteryScroll != null && tabBatteryScroll.getVisibility() == View.VISIBLE) updateBatteryDisplay();
+                    if (tabDeviceScroll != null && tabDeviceScroll.getVisibility() == View.VISIBLE) updateDeviceSpecsDisplay();
                 }
             };
             IntentFilter filter = new IntentFilter();
@@ -3732,6 +3723,7 @@ public class MainActivity extends AppCompatActivity {
     private int batteryRealtimeTickCounter = 0;
 
     private void startBatteryRealtimeTicker() {
+        if (tabBatteryScroll == null || tabBatteryScroll.getVisibility() != View.VISIBLE) return;
         if (batteryTickerRunnable == null) {
             batteryRealtimeTickCounter = 0;
             batteryTickerRunnable = new Runnable() {
@@ -3740,13 +3732,13 @@ public class MainActivity extends AppCompatActivity {
                     updateBatteryPowerRealtime();
                     updateChargingTesterUI(null);
                     batteryRealtimeTickCounter++;
-                    if (batteryRealtimeTickCounter % 15 == 0) {
+                    if (batteryRealtimeTickCounter % 3 == 0) {
                         updateSotView();
                     }
-                    batteryTickerHandler.postDelayed(this, 1000);
+                    batteryTickerHandler.postDelayed(this, 5000);
                 }
             };
-            batteryTickerHandler.postDelayed(batteryTickerRunnable, 1000);
+            batteryTickerHandler.postDelayed(batteryTickerRunnable, 5000);
         }
     }
 
@@ -4045,6 +4037,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void startNotificationClockService() {
         Intent intent = new Intent(this, NotificationClockService.class);
+        intent.setAction(NotificationClockService.ACTION_START);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(intent);
         } else {
@@ -4134,7 +4127,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         updateDeviceSpecsDisplay();
         updateToolsCardSummaries();
-        updateBatteryDisplay();
+        if (tabBatteryScroll.getVisibility() == View.VISIBLE) updateBatteryDisplay();
         loadBatteryDrainApps();
         updateShizukuDisplay();
         if (refreshDnsSheetState != null) refreshDnsSheetState.run();

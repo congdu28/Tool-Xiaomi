@@ -241,7 +241,7 @@ public class BatteryDrainChartView extends View {
                 BatteryHistoryHelper.BatteryPoint prev = visiblePoints.get(i - 1);
                 int drop = prev.level - p.level;
                 long dur = p.timestamp - prev.timestamp;
-                if (!prev.isCharging && !p.isCharging && drop >= 5 && dur <= 3 * 3600 * 1000L) {
+                if (!prev.isCharging && !p.isCharging && app.cd.mitool.util.MonitoringPolicy.isRapidDrain(drop, dur)) {
                     isSteepDrop = true;
                 }
             }
