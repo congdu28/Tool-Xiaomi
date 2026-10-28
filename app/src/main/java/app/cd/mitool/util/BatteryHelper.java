@@ -146,15 +146,7 @@ public class BatteryHelper {
     }
 
     public static String formatRemainingTime(int level) {
-        if (level <= 0) return "Cần cắm sạc ngay";
-        int totalMinutes = Math.round(level * 5.5f);
-        int hours = totalMinutes / 60;
-        int mins = totalMinutes % 60;
-        if (hours > 0) {
-            return "Còn ~" + hours + "h " + mins + "p sử dụng";
-        } else {
-            return "Còn ~" + mins + " phút sử dụng";
-        }
+        return level <= 0 ? "Cần sạc pin" : "Thời gian dùng còn lại phụ thuộc tác vụ và kết nối";
     }
 
     private static long calculateEstimatedMinutes(int currentLevel, int currentMa, int plugType, long systemRemainingMs, float powerWatt) {
@@ -363,138 +355,35 @@ public class BatteryHelper {
             }
         }
 
-        return 5000;
+        return 0;
     }
 
-    public static BatteryCapacityData getBatteryCapacityData(Context context) {
-        long now = System.currentTimeMillis();
-        if (cachedCapacityData != null && (now - lastCapacityDataFetchTime) < CAPACITY_CACHE_TTL_MS) {
-            return cachedCapacityData;
-        }
-
+    public static synchronized BatteryCapacityData getBatteryCapacityData(Context context) {
+        long now = android.os.SystemClock.elapsedRealtime();
+        if (cachedCapacityData != null && now - lastCapacityDataFetchTime < 5 * 60000L) return cachedCapacityData;
         BatteryCapacityData data = new BatteryCapacityData();
         data.designMah = getBatteryDesignCapacity(context);
         data.cycleCount = getBatteryCycleCount();
-
-        int level = (context != null) ? getBatteryPercentage(context) : 50;
-        long actualVal = -1;
-
-        // 1. If Shizuku is granted, parse dumpsys battery for Xiaomi HyperOS official stats
-        if (ShizukuHelper.hasShizukuPermission()) {
-            try {
-                ShizukuHelper.ShellResult res = ShizukuHelper.executeCommand("dumpsys battery");
-                if (res != null && res.success && res.stdout != null) {
-                    String[] lines = res.stdout.split("\n");
-                    for (String line : lines) {
-                        String trimmed = line.trim();
-                        if (trimmed.startsWith("mSavedBatteryAsoc:")) {
-                            String v = trimmed.substring("mSavedBatteryAsoc:".length()).trim();
-                            try {
-                                int asoc = Integer.parseInt(v);
-                                if (asoc > 0 && asoc <= 100) {
-                                    data.healthPercent = asoc;
-                                }
-                            } catch (Exception ignored) {}
-                        } else if (trimmed.startsWith("mSavedBatteryUsage:")) {
-                            String v = trimmed.substring("mSavedBatteryUsage:".length()).trim();
-                            try {
-                                int usage = Integer.parseInt(v);
-                                if (usage >= 0 && usage < 10000) {
-                                    data.cycleCount = usage;
-                                }
-                            } catch (Exception ignored) {}
-                        } else if (trimmed.startsWith("Charge counter:")) {
-                            String v = trimmed.substring("Charge counter:".length()).trim();
-                            try {
-                                long counter = Long.parseLong(v);
-                                if (counter > 50000) counter /= 1000;
-                                if (counter > 50 && counter < 30000 && level > 5) {
-                                    actualVal = Math.round((counter / (float) level) * 100);
-                                }
-                            } catch (Exception ignored) {}
-                        }
-                    }
-                }
-            } catch (Throwable ignored) {
-            }
+        for (String path : new String[]{"/sys/class/power_supply/battery/charge_full", "/sys/class/power_supply/bms/charge_full"}) {
+            long value = readSysfsLong(path);
+            if (value > 50000) value /= 1000;
+            if (value >= 500 && value <= 30000) { data.actualMah = (int) value; break; }
         }
-
-        // 2. Sysfs charge_full & CIT nodes
-        if (actualVal <= 0) {
-            String[] fullPaths = {
-                    "/sys/class/power_supply/battery/charge_full",
-                    "/sys/class/power_supply/bms/charge_full",
-                    "/sys/class/power_supply/battery/fg_fullcap",
-                    "/sys/class/power_supply/battery/charge_counter_ext"
-            };
-            for (String path : fullPaths) {
-                long val = readSysfsLong(path);
-                if (val > 0) {
-                    if (val > 50000) val /= 1000;
-                    if (val >= 500 && val <= 30000) {
-                        actualVal = val;
-                        break;
-                    }
-                }
-            }
-        }
-
-        // 3. BatteryManager CHARGE_COUNTER
-        if (actualVal <= 0 && context != null && level > 5) {
-            try {
-                BatteryManager bm = (BatteryManager) context.getSystemService(Context.BATTERY_SERVICE);
-                if (bm != null) {
-                    int counter = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER);
-                    if (counter > 0) {
-                        int cMah = counter > 50000 ? counter / 1000 : counter;
-                        if (cMah > 50) {
-                            actualVal = Math.round((cMah / (float) level) * 100);
-                        }
-                    }
-                }
-            } catch (Throwable ignored) {
-            }
-        }
-
-        // 4. Sysfs State Of Health (SOH) if healthPercent not yet parsed from ASOC
-        if (data.healthPercent <= 0) {
-            long soh = readSysfsLong("/sys/class/power_supply/battery/soh");
-            if (soh <= 0) soh = readSysfsLong("/sys/class/power_supply/bms/soh");
-
-            if (soh > 0 && soh <= 100) {
-                data.healthPercent = (float) soh;
-            }
-        }
-
-        // Finalize healthPercent and actualMah
-        if (data.healthPercent > 0) {
-            if (actualVal <= 0) {
-                actualVal = Math.round(data.designMah * (data.healthPercent / 100.0f));
-            }
-        } else if (actualVal > 0) {
-            data.healthPercent = Math.min(100.0f, (actualVal / (float) data.designMah) * 100.0f);
+        long soh = readSysfsLong("/sys/class/power_supply/battery/soh");
+        if (soh <= 0) soh = readSysfsLong("/sys/class/power_supply/bms/soh");
+        if (soh > 0 && soh <= 100) {
+            data.healthPercent = soh;
+            data.healthDescription = "Hệ thống báo SOH: " + soh + "%";
         } else {
-            if (data.cycleCount > 0) {
-                float estLoss = (data.cycleCount / 100.0f) * 2.2f;
-                data.healthPercent = Math.max(70.0f, Math.min(100.0f, 100.0f - estLoss));
-                actualVal = Math.round(data.designMah * (data.healthPercent / 100.0f));
-            } else {
-                data.healthPercent = 96.0f;
-                actualVal = Math.round(data.designMah * 0.96f);
+            data.healthDescription = "Chưa có số đo độ chai pin";
+        }
+        if (context != null) {
+            BatteryManager manager = (BatteryManager) context.getSystemService(Context.BATTERY_SERVICE);
+            if (manager != null) {
+                int counter = manager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER);
+                if (counter > 0) data.currentMah = counter / 1000;
             }
         }
-
-        data.actualMah = (int) actualVal;
-        data.currentMah = Math.round(data.actualMah * (level / 100.0f));
-
-        if (data.healthPercent >= 90) {
-            data.healthDescription = "Tuyệt vời (" + Math.round(data.healthPercent) + "%)";
-        } else if (data.healthPercent >= 80) {
-            data.healthDescription = "Tốt (" + Math.round(data.healthPercent) + "%)";
-        } else {
-            data.healthDescription = "Đã chai (" + Math.round(data.healthPercent) + "%)";
-        }
-
         cachedCapacityData = data;
         lastCapacityDataFetchTime = now;
         return data;

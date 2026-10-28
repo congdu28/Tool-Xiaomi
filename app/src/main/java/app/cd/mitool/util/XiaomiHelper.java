@@ -1,5 +1,6 @@
 package app.cd.mitool.util;
 
+import app.cd.mitool.R;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -88,7 +89,7 @@ public class XiaomiHelper {
                 context.startActivity(intent);
             } catch (Exception e2) {
                 openAppDetailsSettings(context);
-                Toast.makeText(context, "Vui lòng tìm mục 'Tự khởi chạy' (Autostart) trong cài đặt ứng dụng.", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, R.string.message_0a8f0ed117, Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -113,7 +114,7 @@ public class XiaomiHelper {
                 context.startActivity(intent);
             } catch (Exception e2) {
                 openAppDetailsSettings(context);
-                Toast.makeText(context, "Vui lòng chọn 'Tiết kiệm pin' -> 'Không giới hạn'.", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, R.string.message_cbc35ac48d, Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -131,7 +132,7 @@ public class XiaomiHelper {
             context.startActivity(intent);
         } catch (Exception e) {
             openAppDetailsSettings(context);
-            Toast.makeText(context, "Vui lòng bật quyền 'Hiển thị trên màn hình khóa' và 'Cửa sổ bật lên'.", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.message_6e91e7ed01, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -150,7 +151,7 @@ public class XiaomiHelper {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
             } catch (Exception e2) {
-                Toast.makeText(context, "Bạn có thể bấm *#*#4636#*#* trong bàn phím quay số để xem.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.message_f0c8e61633, Toast.LENGTH_SHORT).show();
             }
         }
     }

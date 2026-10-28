@@ -148,7 +148,7 @@ public class PreferencesHelper {
     }
 
     public boolean isChargingHudEnabled() {
-        return prefs.getBoolean(KEY_CHARGING_HUD_ENABLED, true);
+        return prefs.getBoolean(KEY_CHARGING_HUD_ENABLED, false);
     }
 
     public void setChargingHudEnabled(boolean enabled) {
@@ -189,7 +189,7 @@ public class PreferencesHelper {
     }
 
     public boolean isAlert100Enabled() {
-        return prefs.getBoolean(KEY_ALERT_100, true);
+        return prefs.getBoolean(KEY_ALERT_100, false);
     }
 
     public void setAlert100Enabled(boolean enabled) {
@@ -197,7 +197,7 @@ public class PreferencesHelper {
     }
 
     public boolean isAlertTempEnabled() {
-        return prefs.getBoolean(KEY_ALERT_TEMP, true);
+        return prefs.getBoolean(KEY_ALERT_TEMP, false);
     }
 
     public void setAlertTempEnabled(boolean enabled) {
@@ -205,7 +205,7 @@ public class PreferencesHelper {
     }
 
     public boolean isLockscreenNotifEnabled() {
-        return prefs.getBoolean(KEY_LOCKSCREEN_NOTIF, true);
+        return prefs.getBoolean(KEY_LOCKSCREEN_NOTIF, false);
     }
 
     public void setLockscreenNotifEnabled(boolean enabled) {
@@ -213,7 +213,7 @@ public class PreferencesHelper {
     }
 
     public boolean isLockscreenAmbientEnabled() {
-        return prefs.getBoolean(KEY_LOCKSCREEN_AMBIENT, true);
+        return prefs.getBoolean(KEY_LOCKSCREEN_AMBIENT, false);
     }
 
     public void setLockscreenAmbientEnabled(boolean enabled) {

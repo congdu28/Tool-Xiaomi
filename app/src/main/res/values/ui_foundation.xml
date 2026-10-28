@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+  <string name="overview_title">Tổng quan</string>
+  <string name="tools_title">Tiện ích</string>
+  <string name="tools_intro">Chọn việc bạn muốn làm. Các thay đổi nâng cao luôn có giải thích trước khi áp dụng.</string>
+  <string name="tools_search">Tìm DNS, thông báo, đồng hồ…</string>
+  <string name="tools_empty">Không tìm thấy tiện ích phù hợp. Thử từ khóa khác hoặc xóa nội dung tìm kiếm.</string>
+  <string name="group_connections">Kết nối và thông báo</string>
+  <string name="group_display">Màn hình và đồng hồ</string>
+  <string name="group_battery">Pin và bộ nhớ</string>
+  <string name="group_advanced">Công cụ nâng cao</string>
+  <string name="feature_notifications">Thông báo ứng dụng</string>
+  <string name="feature_notifications_desc">Kiểm tra quyền chạy nền và miễn Doze cho ứng dụng bạn chọn.</string>
+  <string name="feature_dns">DNS riêng tư</string>
+  <string name="feature_dns_desc">Chọn máy chủ DNS hoặc trở về cấu hình mạng hệ thống.</string>
+  <string name="feature_calls">Cuộc gọi qua 4G và Wi-Fi</string>
+  <string name="feature_calls_desc">Lối tắt VoLTE và VoWiFi; phụ thuộc nhà mạng và ROM.</string>
+  <string name="feature_display">Tần số quét màn hình</string>
+  <string name="feature_display_desc">Chọn Hz được hỗ trợ hoặc khôi phục cấu hình trước đó.</string>
+  <string name="feature_clock">Đồng hồ giây</string>
+  <string name="feature_clock_desc">Tùy chọn đồng hồ trong thông báo hoặc cửa sổ nổi.</string>
+  <string name="feature_alerts">Cảnh báo pin và sạc</string>
+  <string name="feature_alerts_desc">Nhắc mức pin, nhiệt độ và tùy chỉnh âm báo.</string>
+  <string name="feature_memory">Bộ nhớ và ứng dụng</string>
+  <string name="feature_memory_desc">Xem RAM và mở quản lý ứng dụng trong hệ thống.</string>
+  <string name="feature_gaming">HUD và dịch vụ trò chơi</string>
+  <string name="feature_gaming_desc">Theo dõi số đo thiết bị; quản lý Joyose khi có quyền.</string>
+  <string name="feature_packages">Đóng băng ứng dụng</string>
+  <string name="feature_packages_desc">Công cụ nâng cao, cần Shizuku hoặc Root. Có thể ảnh hưởng chức năng hệ thống.</string>
+  <string name="feature_system">Lối tắt hệ thống</string>
+  <string name="feature_system_desc">Mở kiểm tra phần cứng, dọn bộ nhớ và cài đặt quảng cáo.</string>
+  <string name="action_close">Đóng</string>
+  <string name="action_cancel">Hủy</string>
+  <string name="action_apply">Áp dụng</string>
+  <string name="action_continue">Tiếp tục</string>
+  <string name="details_show">Xem thông số thiết bị</string>
+  <string name="details_hide">Ẩn thông số thiết bị</string>
+  <string name="overview_battery">Pin và nhiệt độ</string>
+  <string name="overview_battery_hint">Mở tab Pin để xem số đo và lịch sử. Dữ liệu chưa xác định được ứng dụng gây nóng.</string>
+  <string name="quick_notifications">Thông báo</string>
+  <string name="quick_battery">Xem pin</string>
+  <string name="quick_dns">DNS riêng tư</string>
+  <string name="quick_permissions">Cài đặt quyền</string>
+  <style name="Widget.MiTool.Button" parent="Widget.Material3.Button">
+    <item name="android:minHeight">48dp</item>
+    <item name="android:minWidth">0dp</item>
+    <item name="android:textSize">14sp</item>
+    <item name="android:textAllCaps">false</item>
+    <item name="android:letterSpacing">0</item>
+    <item name="android:maxLines">3</item>
+    <item name="cornerRadius">12dp</item>
+    <item name="android:paddingLeft">16dp</item>
+    <item name="android:paddingRight">16dp</item>
+    <item name="android:paddingTop">10dp</item>
+    <item name="android:paddingBottom">10dp</item>
+    <item name="backgroundTint">@color/card_highlight</item>
+    <item name="android:textColor">@color/button_label</item>
+  </style>
+  <style name="Widget.MiTool.Button.Primary" parent="Widget.MiTool.Button">
+    <item name="backgroundTint">?attr/colorPrimary</item>
+    <item name="android:textColor">?attr/colorOnPrimary</item>
+  </style>
+  <style name="Widget.MiTool.Button.Text" parent="Widget.Material3.Button.TextButton">
+    <item name="android:minHeight">48dp</item>
+    <item name="android:textSize">14sp</item>
+    <item name="android:textAllCaps">false</item>
+    <item name="android:letterSpacing">0</item>
+    <item name="android:textColor">@color/mi_orange</item>
+  </style>
+  <string name="summary_hz_system">Theo cấu hình hệ thống · Hiện tại %1$d Hz</string>
+  <string name="summary_hz_selected">Đã chọn %1$d Hz · Hiện tại %2$d Hz</string>
+  <string name="summary_packages_frozen">Đã tắt %1$d/%2$d ứng dụng trong danh sách</string>
+  <string name="summary_packages_available">Có %1$d ứng dụng trong danh sách. Xem mô tả trước khi thay đổi.</string>
+  <string name="summary_dns_configured">Đã cấu hình: %1$s</string>
+  <string name="summary_alert_count">%1$d tùy chọn cảnh báo hoặc màn hình sạc đang bật</string>
+  <string name="summary_alert_off">Chưa bật cảnh báo hoặc màn hình sạc</string>
+  <string name="summary_memory">Đang dùng %1$.1f/%2$.1f GB RAM · Xem quản lý ứng dụng</string>
+  <string name="summary_clock_off">Chưa bật đồng hồ</string>
+  <string name="success_system_changes">Đã hoàn tất thao tác hệ thống</string>
+  <string name="success_joyose_body">Đã thực hiện lệnh tắt Joyose và xóa dữ liệu Pin và Hiệu suất. FPS của trò chơi chưa được xác nhận. Bật lại Joyose không phục hồi dữ liệu đã xóa.</string>
+  <string name="action_open_game">Mở trò chơi</string>
+</resources>

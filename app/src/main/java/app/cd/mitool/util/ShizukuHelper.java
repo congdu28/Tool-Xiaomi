@@ -217,7 +217,7 @@ public class ShizukuHelper {
             ShellResult result = executeCommand(cmd);
             MAIN_HANDLER.post(() -> {
                 if (result.success) {
-                    String msg = enable ? "Đã bật lại Joyose thành công!" : "Đã vô hiệu hóa Joyose (mở khóa 120 FPS)!";
+                    String msg = enable ? "Đã bật lại Joyose thành công!" : "Đã tắt Joyose.";
                     if (callback != null) callback.onComplete(true, msg);
                 } else {
                     String err = !result.stderr.isEmpty() ? result.stderr : result.stdout;
@@ -242,7 +242,7 @@ public class ShizukuHelper {
             MAIN_HANDLER.post(() -> {
                 if (result.success) {
                     if (callback != null) {
-                        callback.onComplete(true, "⚡ Đã mở khóa 120 FPS! (Đã tắt Joyose & xóa dữ liệu Pin và Hiệu suất)");
+                        callback.onComplete(true, "⚡ Đã thực hiện thao tác Joyose và Pin và Hiệu suất. (Đã tắt Joyose & xóa dữ liệu Pin và Hiệu suất)");
                     }
                 } else {
                     String err = !result.stderr.isEmpty() ? result.stderr : result.stdout;
@@ -259,22 +259,13 @@ public class ShizukuHelper {
      */
     public static void autoRestoreJoyose(CommandCallback callback) {
         EXECUTOR.execute(() -> {
-            StringBuilder sb = new StringBuilder();
-            sb.append("pm enable ").append(GamingFpsHelper.JOYOSE_PKG).append(" && ")
-              .append("settings put secure min_refresh_rate 60.0; ")
-              .append("settings put secure peak_refresh_rate 120.0; ")
-              .append("settings put secure user_refresh_rate 0; ")
-              .append("settings put system user_refresh_rate 0; ")
-              .append("settings put secure miui_refresh_rate 0; ")
-              .append("settings put system miui_refresh_rate 0; ")
-              .append("settings put system thermal_limit_refresh_rate 0; ")
-              .append("settings put global speed_mode 0");
+            StringBuilder sb = new StringBuilder("pm enable --user 0 " + GamingFpsHelper.JOYOSE_PKG);
 
             ShellResult result = executeCommand(sb.toString());
             MAIN_HANDLER.post(() -> {
                 if (result.success) {
                     if (callback != null) {
-                        callback.onComplete(true, "🔄 Đã khôi phục dịch vụ Joyose & cài đặt màn hình mặc định!");
+                        callback.onComplete(true, "🔄 Đã bật lại Joyose. Dữ liệu đã xóa không được phục hồi.");
                     }
                 } else {
                     String err = !result.stderr.isEmpty() ? result.stderr : result.stdout;

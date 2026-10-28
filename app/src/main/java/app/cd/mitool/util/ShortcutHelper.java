@@ -29,7 +29,7 @@ public class ShortcutHelper {
      */
     public static boolean pinNotificationToggleShortcut(Context context) {
         if (!ShortcutManagerCompat.isRequestPinShortcutSupported(context)) {
-            Toast.makeText(context, "Trình khởi chạy của máy không hỗ trợ tự động ghim phím tắt. Bạn có thể nhấn giữ biểu tượng Mi-Tool ngoài màn hình chính để kéo phím tắt ra!", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.message_93e0c3b4fb, Toast.LENGTH_LONG).show();
             return false;
         }
 
@@ -47,9 +47,9 @@ public class ShortcutHelper {
 
             boolean result = ShortcutManagerCompat.requestPinShortcut(context, shortcutInfo, null);
             if (result) {
-                Toast.makeText(context, "Đã gửi yêu cầu tạo lối tắt ra Màn hình chính!\n(Nếu chưa thấy icon, hãy bật quyền 'Lối tắt màn hình chính' trong Cài đặt ứng dụng)", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, R.string.message_b9a86048f2, Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(context, "Không thể tạo lối tắt tự động. Hãy nhấn giữ biểu tượng app ngoài màn hình chính!", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, R.string.message_3dfd4b742d, Toast.LENGTH_LONG).show();
             }
             return result;
         } catch (Exception e) {
@@ -76,9 +76,9 @@ public class ShortcutHelper {
                             executor,
                             resultCode -> {
                                 if (resultCode == StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ADDED) {
-                                    Toast.makeText(context, "Đã thêm nút 'Thông báo Mi-Tool' vào Bảng điều khiển!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(context, R.string.message_5eaf7881a3, Toast.LENGTH_SHORT).show();
                                 } else if (resultCode == StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ALREADY_ADDED) {
-                                    Toast.makeText(context, "Nút 'Thông báo Mi-Tool' đã có trong Bảng điều khiển của bạn!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(context, R.string.message_4668eb9ffa, Toast.LENGTH_SHORT).show();
                                 }
                             }
                     );
@@ -87,7 +87,7 @@ public class ShortcutHelper {
             } catch (Exception ignored) {
             }
         }
-        Toast.makeText(context, "💡 Cách thêm: Vuốt thanh thông báo xuống -> Chạm biểu tượng Bút chì ✏️ -> Tìm 'Thông báo Mi-Tool' và kéo lên!", Toast.LENGTH_LONG).show();
+        Toast.makeText(context, R.string.message_a60251a65d, Toast.LENGTH_LONG).show();
     }
 
     /**
@@ -108,9 +108,9 @@ public class ShortcutHelper {
                             executor,
                             resultCode -> {
                                 if (resultCode == StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ADDED) {
-                                    Toast.makeText(context, "Đã thêm nút 'Tần số quét' vào Bảng điều khiển!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(context, R.string.message_21b9a83ad1, Toast.LENGTH_SHORT).show();
                                 } else if (resultCode == StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ALREADY_ADDED) {
-                                    Toast.makeText(context, "Nút 'Tần số quét' đã có trong Bảng điều khiển của bạn!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(context, R.string.message_fe0e504af4, Toast.LENGTH_SHORT).show();
                                 }
                             }
                     );
@@ -119,6 +119,6 @@ public class ShortcutHelper {
             } catch (Exception ignored) {
             }
         }
-        Toast.makeText(context, "💡 Cách thêm: Vuốt thanh thông báo xuống -> Chạm biểu tượng Bút chì ✏️ -> Tìm 'Tần số quét' và kéo lên!", Toast.LENGTH_LONG).show();
+        Toast.makeText(context, R.string.message_59c02cb5e1, Toast.LENGTH_LONG).show();
     }
 }

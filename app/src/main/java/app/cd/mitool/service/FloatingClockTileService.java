@@ -36,7 +36,7 @@ public class FloatingClockTileService extends TileService {
         super.onClick();
         try {
             if (!Settings.canDrawOverlays(this)) {
-                Toast.makeText(this, "Vui lòng mở Mi Tool và cấp quyền Hiển thị trên ứng dụng khác!", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.message_acb34cbd38, Toast.LENGTH_LONG).show();
                 Intent appIntent = new Intent(this, MainActivity.class);
                 appIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 if (Build.VERSION.SDK_INT >= 34) {
@@ -57,12 +57,12 @@ public class FloatingClockTileService extends TileService {
                 Intent serviceIntent = new Intent(this, FloatingClockService.class);
                 serviceIntent.setAction(FloatingClockService.ACTION_RELOAD_SETTINGS);
                 ContextCompat.startForegroundService(this, serviceIntent);
-                Toast.makeText(this, "⏰ Đã bật Đồng hồ giây nổi", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.message_2c00e1afac, Toast.LENGTH_SHORT).show();
             } else {
                 Intent stopIntent = new Intent(this, FloatingClockService.class);
                 stopIntent.setAction(FloatingClockService.ACTION_STOP);
                 startService(stopIntent);
-                Toast.makeText(this, "⏰ Đã tắt Đồng hồ giây nổi", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.message_8d618c02ce, Toast.LENGTH_SHORT).show();
             }
 
             updateTileState();

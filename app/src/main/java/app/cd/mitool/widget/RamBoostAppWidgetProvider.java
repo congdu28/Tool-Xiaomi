@@ -37,23 +37,7 @@ public class RamBoostAppWidgetProvider extends AppWidgetProvider {
         String action = intent != null ? intent.getAction() : null;
 
         if (ACTION_BOOST_RAM.equals(action)) {
-            // Run synchronous boost in background thread
-            new Thread(() -> {
-                final RamBoosterHelper.BoostResult result = RamBoosterHelper.boostRamSync(context);
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    String msg;
-                    if (result.freedMb > 0) {
-                        msg = "🚀 Đã giải phóng +" + result.freedMb + " MB RAM (" + result.killedCount + " tiến trình)";
-                    } else {
-                        msg = "⚡ RAM đang ở trạng thái tối ưu (" + result.afterStats.percentUsed + "% tải)";
-                    }
-                    if (result.usedShizuku) {
-                        msg += " [Shizuku Deep Boost]";
-                    }
-                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
-                    updateAllWidgets(context);
-                });
-            }).start();
+            updateAllWidgets(context);
         } else if (ACTION_REFRESH_RAM.equals(action)
                 || Intent.ACTION_USER_PRESENT.equals(action)) {
             updateAllWidgets(context);
@@ -83,12 +67,12 @@ public class RamBoostAppWidgetProvider extends AppWidgetProvider {
 
         views.setTextViewText(R.id.widget_tv_ram_free, String.format(Locale.getDefault(), "%.1f GB Trống", freeGb));
         views.setTextViewText(R.id.widget_tv_ram_percent, stats.percentUsed + "% Tải");
-        views.setTextViewText(R.id.widget_tv_ram_sub, String.format(Locale.getDefault(), "Tổng %.1f GB • Chạm để dọn ngay", totalGb));
+        views.setTextViewText(R.id.widget_tv_ram_sub, String.format(Locale.getDefault(), "Tổng %.1f GB • Chạm để xem bộ nhớ", totalGb));
 
         // PendingIntent to perform 1-Tap Boost
-        Intent boostIntent = new Intent(context, RamBoostAppWidgetProvider.class);
-        boostIntent.setAction(ACTION_BOOST_RAM);
-        PendingIntent boostPi = PendingIntent.getBroadcast(
+        Intent boostIntent = new Intent(context, app.cd.mitool.MainActivity.class);
+        boostIntent.putExtra("extra_open_memory", true);
+        PendingIntent boostPi = PendingIntent.getActivity(
                 context,
                 2001,
                 boostIntent,

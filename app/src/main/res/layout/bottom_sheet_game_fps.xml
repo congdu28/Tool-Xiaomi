@@ -1,1125 +1,144 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/bg_bottom_sheet"
-    android:fillViewport="true"
-    android:overScrollMode="never">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
-
-        <!-- Drag Handle -->
-        <View
-            android:layout_width="40dp"
-            android:layout_height="4dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/bg_drag_handle" />
-
-        <!-- Header Title -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="26dp"
-                android:layout_height="26dp"
-                android:src="@drawable/ic_gamepad"
-                app:tint="@color/mi_orange" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_weight="1"
-                android:text="Mở Khóa 120 FPS &amp; Joyose"
-                android:textColor="@color/text_primary"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Tự động hóa vô hiệu hóa Joyose và xóa dữ liệu Pin &amp; Hiệu suất để gỡ bỏ triệt để giới hạn khóa 89 FPS trong Liên Quân, Tốc Chiến, PUBG."
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp" />
-
-        <!-- LIVE STATUS CARD -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:background="@drawable/bg_card_rounded"
-            android:orientation="vertical"
-            android:padding="12dp">
-
-            <!-- Shizuku Connection Status Row -->
-            <LinearLayout
-                android:id="@+id/bs_layout_shizuku_status"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/bs_tv_shizuku_status"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:singleLine="true"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:text="🟢 Shizuku: Đang kiểm tra..."
-                    android:textColor="@color/neon_green"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/bs_btn_shizuku_action"
-                    android:layout_width="wrap_content"
-                    android:layout_height="32dp"
-                    android:backgroundTint="@color/card_highlight"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:insetLeft="0dp"
-                    android:insetRight="0dp"
-                    android:minWidth="0dp"
-                    android:minHeight="0dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:singleLine="true"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:text="⚡ Cấp quyền"
-                    android:textColor="@color/neon_green"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    app:cornerRadius="6dp"
-                    app:strokeColor="@color/neon_green"
-                    app:strokeWidth="1dp" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:background="@color/card_dark_stroke" />
-
-            <!-- Joyose Status Row -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/bs_tv_joyose_status"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:singleLine="true"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:text="Joyose: Đang kiểm tra..."
-                    android:textColor="@color/neon_cyan"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/bs_tv_screen_hz_status"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:singleLine="true"
-                    android:maxLines="1"
-                    android:text="🛡️ An Toàn 100%"
-                    android:textColor="@color/neon_green"
-                    android:textSize="11sp" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- SECTION: 1-TAP AUTOMATION (HERO) -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:background="@drawable/bg_card_rounded"
-            android:orientation="vertical"
-            android:padding="14dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="⚡ TỰ ĐỘNG HÓA 1-CHẠM (KHUYẾN NGHỊ)"
-                android:textColor="@color/mi_orange"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:text="Chỉ cần 1 chạm: Tự động tắt Joyose &amp; xóa sạch dữ liệu Pin &amp; Hiệu suất (PowerKeeper)."
-                android:textColor="@color/text_secondary"
-                android:textSize="11sp" />
-
-            <!-- Big Action Button 1: Auto Unlock 120 FPS -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/bs_btn_auto_unlock_120"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:minHeight="46dp"
-                android:backgroundTint="@color/mi_orange"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:paddingLeft="12dp"
-                android:paddingRight="12dp"
-                android:singleLine="true"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:text="⚡ 1-CHẠM MỞ KHÓA TOÀN BỘ 120 FPS"
-                android:textColor="@color/white"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                app:cornerRadius="10dp" />
-
-            <!-- Big Action Button 2: Auto Restore Joyose -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/bs_btn_auto_restore_joyose"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:minHeight="42dp"
-                android:backgroundTint="@color/card_highlight"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:paddingLeft="12dp"
-                android:paddingRight="12dp"
-                android:singleLine="true"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:text="🔄 1-Chạm Khôi Phục Joyose Mặc Định"
-                android:textColor="@color/text_primary"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                app:cornerRadius="10dp"
-                app:strokeColor="@color/card_dark_stroke"
-                app:strokeWidth="1dp" />
-
-            <!-- Safety Note -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_badge_green"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:padding="8dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="💡 "
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Chỉ XÓA DỮ LIỆU bộ đệm và tắt Joyose tạm thời, KHÔNG gỡ cài đặt app hệ thống. Có thể khôi phục lại bất kỳ lúc nào."
-                    android:textColor="@color/neon_green"
-                    android:textSize="10.5sp" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- SECTION: STEP-BY-STEP DETAILED WORKFLOW -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:background="@drawable/bg_card_rounded"
-            android:orientation="vertical"
-            android:padding="14dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="📋 QUY TRÌNH 4 BƯỚC MỞ KHÓA 120 FPS"
-                android:textColor="@color/neon_cyan"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="Thao tác từng bước độc lập nếu bạn muốn tùy biến thủ công:"
-                android:textColor="@color/text_secondary"
-                android:textSize="11sp" />
-
-            <!-- BƯỚC 1 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="1️⃣ Bước 1: Kết nối Shizuku (Không cần máy tính)"
-                    android:textColor="@color/text_primary"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="Cung cấp môi trường ADB an toàn trên máy để tự động chạy lệnh ngầm."
-                    android:textColor="@color/text_secondary"
-                    android:textSize="11sp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/bs_btn_step1_shizuku"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="42dp"
-                    android:layout_marginTop="6dp"
-                    android:backgroundTint="@color/card_highlight"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:insetLeft="0dp"
-                    android:insetRight="0dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:singleLine="true"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:text="⚡ Kiểm tra / Cấp quyền Shizuku"
-                    android:textColor="@color/neon_green"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    app:cornerRadius="8dp"
-                    app:strokeColor="@color/neon_green"
-                    app:strokeWidth="1dp" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="10dp"
-                android:background="@color/card_dark_stroke" />
-
-            <!-- BƯỚC 2 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="2️⃣ Bước 2: Vô hiệu hóa Dịch vụ Joyose (Thủ phạm 89 FPS)"
-                    android:textColor="@color/text_primary"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="Joyose ngầm bóp GPU xuống 89 FPS khi chơi Liên Quân / PUBG. Tắt dịch vụ này sẽ mở khóa 120 FPS."
-                    android:textColor="@color/text_secondary"
-                    android:textSize="11sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="💡 Ghi chú: Chỉ vô hiệu hóa tiến trình, KHÔNG PHẢI gỡ cài đặt."
-                    android:textColor="@color/neon_cyan"
-                    android:textSize="10.5sp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/bs_btn_copy_disable_joyose"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:minHeight="42dp"
-                        android:layout_marginEnd="5dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/card_highlight"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        android:insetLeft="0dp"
-                        android:insetRight="0dp"
-                        android:paddingLeft="6dp"
-                        android:paddingRight="6dp"
-                        android:singleLine="true"
-                        android:maxLines="1"
-                        android:ellipsize="end"
-                        android:text="⚡ Tắt Joyose"
-                        android:textColor="@color/neon_green"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        app:cornerRadius="8dp"
-                        app:strokeColor="@color/neon_green"
-                        app:strokeWidth="1dp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/bs_btn_copy_enable_joyose"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:minHeight="42dp"
-                        android:layout_marginStart="5dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/card_highlight"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        android:insetLeft="0dp"
-                        android:insetRight="0dp"
-                        android:paddingLeft="6dp"
-                        android:paddingRight="6dp"
-                        android:singleLine="true"
-                        android:maxLines="1"
-                        android:ellipsize="end"
-                        android:text="🔄 Bật lại Joyose"
-                        android:textColor="@color/text_primary"
-                        android:textSize="12sp"
-                        app:cornerRadius="8dp"
-                        app:strokeColor="@color/card_dark_stroke"
-                        app:strokeWidth="1dp" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="10dp"
-                android:background="@color/card_dark_stroke" />
-
-            <!-- BƯỚC 3 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="3️⃣ Bước 3: Xóa dữ liệu Pin &amp; Hiệu suất (PowerKeeper)"
-                    android:textColor="@color/text_primary"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="Đặt lại bộ đệm điều tiết FPS cũ để hệ thống nhận diện mức hiệu năng 120 FPS tối đa."
-                    android:textColor="@color/text_secondary"
-                    android:textSize="11sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="💡 Ghi chú: Đây là thao tác XÓA DỮ LIỆU (Clear Data), KHÔNG PHẢI gỡ cài đặt ứng dụng."
-                    android:textColor="@color/neon_green"
-                    android:textSize="10.5sp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/bs_btn_clear_powerkeeper"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:minHeight="42dp"
-                        android:layout_marginEnd="5dp"
-                        android:layout_weight="1.25"
-                        android:backgroundTint="@color/card_highlight"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        android:insetLeft="0dp"
-                        android:insetRight="0dp"
-                        android:paddingLeft="6dp"
-                        android:paddingRight="6dp"
-                        android:singleLine="true"
-                        android:maxLines="1"
-                        android:ellipsize="end"
-                        android:text="⚡ Xóa Dữ Liệu (Shizuku)"
-                        android:textColor="@color/neon_cyan"
-                        android:textSize="11.5sp"
-                        android:textStyle="bold"
-                        app:cornerRadius="8dp"
-                        app:strokeColor="@color/neon_cyan"
-                        app:strokeWidth="1dp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/bs_btn_clear_pk_manual"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:minHeight="42dp"
-                        android:layout_marginStart="5dp"
-                        android:layout_weight="0.75"
-                        android:backgroundTint="@color/card_highlight"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        android:insetLeft="0dp"
-                        android:insetRight="0dp"
-                        android:paddingLeft="6dp"
-                        android:paddingRight="6dp"
-                        android:singleLine="true"
-                        android:maxLines="1"
-                        android:ellipsize="end"
-                        android:text="⚙️ Mở Cài Đặt"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="11.5sp"
-                        app:cornerRadius="8dp"
-                        app:strokeColor="@color/card_dark_stroke"
-                        app:strokeWidth="1dp" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="10dp"
-                android:background="@color/card_dark_stroke" />
-
-            <!-- BƯỚC 4 (KHỞI ĐỘNG GAME) -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="4️⃣ Bước 4: Khởi Động Game &amp; Đo FPS Thực Tế"
-                    android:textColor="@color/text_primary"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="Mở game chiến ngay 120 FPS mượt mà và bật Mini Game HUD bên dưới để kiểm chứng FPS."
-                    android:textColor="@color/text_secondary"
-                    android:textSize="11sp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/bs_btn_launch_aov"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="44dp"
-                    android:layout_marginTop="8dp"
-                    android:backgroundTint="@color/card_highlight"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:insetLeft="0dp"
-                    android:insetRight="0dp"
-                    android:paddingLeft="12dp"
-                    android:paddingRight="12dp"
-                    android:singleLine="true"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:text="⚔️ Mở Liên Quân Mobile (AOV)"
-                    android:textColor="@color/neon_cyan"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    app:cornerRadius="8dp"
-                    app:strokeColor="@color/neon_cyan"
-                    app:strokeWidth="1dp" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <!-- Mini Game HUD (FPS & Performance Monitor) -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/bg_card_rounded"
-            android:orientation="vertical"
-            android:padding="14dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/ic_gamepad"
-                    app:tint="@color/neon_green" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:text="Mini Game HUD Nổi (FPS &amp; Hiệu Năng)"
-                    android:textColor="@color/text_primary"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/bs_switch_game_hud"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Hiển thị thanh nổi thời gian thực đo FPS, CPU, RAM và nhiệt độ máy khi chơi game. Chạm để mở rộng hoặc thu nhỏ."
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/bs_btn_toggle_game_hud"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="4dp"
-                    android:layout_weight="1"
-                    android:minHeight="40dp"
-                    android:minWidth="0dp"
-                    android:backgroundTint="@color/card_highlight"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:insetLeft="0dp"
-                    android:insetRight="0dp"
-                    android:paddingLeft="4dp"
-                    android:paddingRight="4dp"
-                    android:text="🎮 Bật / Tắt HUD"
-                    android:textColor="@color/neon_green"
-                    android:textSize="11sp"
-                    app:cornerRadius="8dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/bs_btn_add_hud_qs_tile"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:layout_weight="1"
-                    android:minHeight="40dp"
-                    android:minWidth="0dp"
-                    android:backgroundTint="@color/card_highlight"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:insetLeft="0dp"
-                    android:insetRight="0dp"
-                    android:paddingLeft="4dp"
-                    android:paddingRight="4dp"
-                    android:text="🎛️ Thêm vào Quick Settings"
-                    android:textColor="@color/text_primary"
-                    android:textSize="11sp"
-                    app:cornerRadius="8dp" />
-            </LinearLayout>
-
-            <!-- Tùy chỉnh HUD (Kích thước, Độ mờ, Thông số) -->
-            <LinearLayout
-                android:id="@+id/bs_layout_hud_customization"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:background="@drawable/bg_card_rounded"
-                android:orientation="vertical"
-                android:padding="12dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🎨 Tùy Chỉnh Kích Thước &amp; Độ Mờ"
-                    android:textColor="@color/neon_cyan"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
-
-                <!-- 1. Kích thước (Scale) -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Kích thước HUD:"
-                        android:textColor="@color/text_primary"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/bs_tv_hud_scale_val"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="100% (Chuẩn)"
-                        android:textColor="@color/neon_green"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <SeekBar
-                    android:id="@+id/bs_sb_hud_scale"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:max="70"
-                    android:progress="30"
-                    android:progressTint="@color/neon_green"
-                    android:thumbTint="@color/neon_green" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/bs_btn_scale_small"
-                        android:layout_width="0dp"
-                        android:layout_height="32dp"
-                        android:layout_marginEnd="4dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/card_highlight"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        android:padding="0dp"
-                        android:text="Nhỏ (80%)"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="10sp"
-                        app:cornerRadius="6dp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/bs_btn_scale_standard"
-                        android:layout_width="0dp"
-                        android:layout_height="32dp"
-                        android:layout_marginStart="2dp"
-                        android:layout_marginEnd="2dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/card_highlight"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        android:padding="0dp"
-                        android:text="Chuẩn (100%)"
-                        android:textColor="@color/neon_green"
-                        android:textSize="10sp"
-                        app:cornerRadius="6dp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/bs_btn_scale_large"
-                        android:layout_width="0dp"
-                        android:layout_height="32dp"
-                        android:layout_marginStart="4dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/card_highlight"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        android:padding="0dp"
-                        android:text="Lớn (120%)"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="10sp"
-                        app:cornerRadius="6dp" />
-                </LinearLayout>
-
-                <!-- 2. Độ trong suốt NỀN HUD -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Độ mờ Nền HUD (Capsule):"
-                        android:textColor="@color/text_primary"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/bs_tv_hud_bg_opacity_val"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="85% (Kính mờ)"
-                        android:textColor="@color/neon_cyan"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <SeekBar
-                    android:id="@+id/bs_sb_hud_bg_opacity"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:max="100"
-                    android:progress="85"
-                    android:progressTint="@color/neon_cyan"
-                    android:thumbTint="@color/neon_cyan" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/bs_btn_bg_transparent"
-                        android:layout_width="0dp"
-                        android:layout_height="32dp"
-                        android:layout_marginEnd="3dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/card_highlight"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        android:padding="0dp"
-                        android:text="Không nền (0%)"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="10sp"
-                        app:cornerRadius="6dp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/bs_btn_bg_glass"
-                        android:layout_width="0dp"
-                        android:layout_height="32dp"
-                        android:layout_marginStart="2dp"
-                        android:layout_marginEnd="2dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/card_highlight"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        android:padding="0dp"
-                        android:text="Kính mờ (50%)"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="10sp"
-                        app:cornerRadius="6dp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/bs_btn_bg_dark"
-                        android:layout_width="0dp"
-                        android:layout_height="32dp"
-                        android:layout_marginStart="3dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/card_highlight"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        android:padding="0dp"
-                        android:text="Đậm (85%)"
-                        android:textColor="@color/neon_cyan"
-                        android:textSize="10sp"
-                        app:cornerRadius="6dp" />
-                </LinearLayout>
-
-                <!-- 3. Độ rõ / mờ CHỮ HUD -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Độ rõ Chữ &amp; Biểu tượng:"
-                        android:textColor="@color/text_primary"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/bs_tv_hud_text_opacity_val"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="100% (Sắc nét)"
-                        android:textColor="@color/mi_orange"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <SeekBar
-                    android:id="@+id/bs_sb_hud_text_opacity"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:max="70"
-                    android:progress="70"
-                    android:progressTint="@color/mi_orange"
-                    android:thumbTint="@color/mi_orange" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/bs_btn_text_dim"
-                        android:layout_width="0dp"
-                        android:layout_height="32dp"
-                        android:layout_marginEnd="4dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/card_highlight"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        android:padding="0dp"
-                        android:text="Mờ nhẹ (65%)"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="10sp"
-                        app:cornerRadius="6dp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/bs_btn_text_bright"
-                        android:layout_width="0dp"
-                        android:layout_height="32dp"
-                        android:layout_marginStart="4dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/card_highlight"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        android:padding="0dp"
-                        android:text="Rõ nét (100%)"
-                        android:textColor="@color/mi_orange"
-                        android:textSize="10sp"
-                        app:cornerRadius="6dp" />
-                </LinearLayout>
-
-                <!-- 3. Các thông số hiển thị -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:text="📊 Thông Số Hiển Thị Trên HUD"
-                    android:textColor="@color/neon_cyan"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="⚡ FPS thời gian thực"
-                        android:textColor="@color/text_primary"
-                        android:textSize="12sp" />
-
-                    <com.google.android.material.materialswitch.MaterialSwitch
-                        android:id="@+id/bs_switch_hud_fps"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="🌡️ Nhiệt độ máy &amp; Pin (°C)"
-                        android:textColor="@color/text_primary"
-                        android:textSize="12sp" />
-
-                    <com.google.android.material.materialswitch.MaterialSwitch
-                        android:id="@+id/bs_switch_hud_temp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="💻 Tải CPU (%)"
-                        android:textColor="@color/text_primary"
-                        android:textSize="12sp" />
-
-                    <com.google.android.material.materialswitch.MaterialSwitch
-                        android:id="@+id/bs_switch_hud_cpu"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="🧠 Dung lượng RAM (%)"
-                        android:textColor="@color/text_primary"
-                        android:textSize="12sp" />
-
-                    <com.google.android.material.materialswitch.MaterialSwitch
-                        android:id="@+id/bs_switch_hud_ram"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="🔋 Công suất xả/sạc pin (Watt)"
-                        android:textColor="@color/text_primary"
-                        android:textSize="12sp" />
-
-                    <com.google.android.material.materialswitch.MaterialSwitch
-                        android:id="@+id/bs_switch_hud_power"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- Thư Viện Tựa Game Của Bạn -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/bg_card_rounded"
-            android:orientation="vertical"
-            android:padding="14dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/ic_gamepad"
-                    app:tint="@color/neon_green" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:text="🎮 Thư Viện Game Của Bạn"
-                    android:textColor="@color/text_primary"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/bs_btn_add_custom_game"
-                    android:layout_width="wrap_content"
-                    android:layout_height="34dp"
-                    android:backgroundTint="@color/card_highlight"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:insetLeft="0dp"
-                    android:insetRight="0dp"
-                    android:minWidth="0dp"
-                    android:minHeight="0dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:text="➕ Thêm Game"
-                    android:textColor="@color/neon_green"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    app:cornerRadius="8dp"
-                    app:strokeColor="@color/neon_green"
-                    app:strokeWidth="1dp" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Bấm &quot;⚔️ Chơi Ngay&quot; để tự động bật HUD nổi FPS và mở game chỉ với 1 chạm. Bấm &quot;➕ Thêm Game&quot; để tùy ý thêm bất kỳ tựa game hay ứng dụng nào của bạn."
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
-
-            <!-- Dynamic Game Items Container -->
-            <LinearLayout
-                android:id="@+id/bs_layout_game_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="vertical" />
-
-            <!-- Empty state when no games added -->
-            <TextView
-                android:id="@+id/bs_tv_no_games"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="6dp"
-                android:gravity="center"
-                android:text="Chưa có game nào trong danh sách.\nBấm &quot;➕ Thêm Game&quot; để thêm trò chơi yêu thích của bạn!"
-                android:textColor="@color/text_muted"
-                android:textSize="12sp"
-                android:visibility="gone" />
-
-        </LinearLayout>
+<?xml version='1.0' encoding='utf-8'?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_bottom_sheet" android:paddingTop="12dp">
+    <View android:layout_width="40dp" android:layout_height="4dp" android:layout_gravity="center_horizontal" android:layout_marginBottom="16dp" android:background="@drawable/bg_drag_handle" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp" android:paddingStart="20dp" android:paddingEnd="20dp">
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/feature_gaming" android:textColor="@color/text_primary" android:textSize="22sp" android:layout_weight="1" android:textStyle="bold" android:layout_marginBottom="0dp" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/sheet_close" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/action_close" android:contentDescription="@string/action_close" style="@style/Widget.MiTool.Button.Text" android:minHeight="48dp" />
     </LinearLayout>
-
-</androidx.core.widget.NestedScrollView>
+    <androidx.core.widget.NestedScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@android:color/transparent" android:fillViewport="true" android:overScrollMode="never">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingStart="20dp" android:paddingEnd="20dp" android:paddingBottom="24dp">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/copy_bottom_sheet_game_fps_text_da423eb" android:textSize="14sp" android:textColor="@color/text_secondary" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:background="@drawable/bg_card_rounded" android:orientation="vertical" android:padding="12dp">
+                <LinearLayout android:id="@+id/bs_layout_shizuku_status" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+                    <TextView android:id="@+id/bs_tv_shizuku_status" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:singleLine="true" android:maxLines="1" android:ellipsize="end" android:text="@string/copy_bottom_sheet_game_fps_bs_tv_shizuk_d443811" android:textColor="@color/neon_green" android:textSize="12sp" android:textStyle="bold" />
+                    <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_shizuku_action" android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingLeft="10dp" android:paddingRight="10dp" android:text="@string/copy_bottom_sheet_game_fps_bs_btn_shizu_a973201" android:textStyle="bold" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                </LinearLayout>
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="8dp" android:layout_marginBottom="8dp" android:background="@color/card_dark_stroke" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+                    <TextView android:id="@+id/bs_tv_joyose_status" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:singleLine="true" android:maxLines="1" android:ellipsize="end" android:text="@string/copy_bottom_sheet_game_fps_bs_tv_joyose_90a8c51" android:textColor="@color/neon_cyan" android:textSize="12sp" android:textStyle="bold" />
+                    <TextView android:id="@+id/bs_tv_screen_hz_status" android:layout_width="wrap_content" android:layout_height="wrap_content" android:singleLine="true" android:maxLines="1" android:text="@string/copy_bottom_sheet_game_fps_bs_tv_screen_58df566" android:textColor="@color/neon_green" android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:background="@drawable/bg_card_rounded" android:orientation="vertical" android:padding="14dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_bottom_sheet_game_fps_text_c4da66f" android:textColor="@color/mi_orange" android:textSize="13sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:text="@string/copy_bottom_sheet_game_fps_text_0f44530" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_auto_unlock_120" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:paddingLeft="12dp" android:paddingRight="12dp" android:text="@string/copy_bottom_sheet_game_fps_bs_btn_auto_df6109b" android:textStyle="bold" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_auto_restore_joyose" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:paddingLeft="12dp" android:paddingRight="12dp" android:text="@string/copy_bottom_sheet_game_fps_bs_btn_auto_21da933" android:textStyle="bold" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:background="@drawable/bg_badge_green" android:orientation="horizontal" android:gravity="center_vertical" android:padding="8dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_bottom_sheet_game_fps_text_b858cb2" android:textSize="12sp" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/copy_bottom_sheet_game_fps_text_992be30" android:textColor="@color/neon_green" android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:background="@drawable/bg_card_rounded" android:orientation="vertical" android:padding="14dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_bottom_sheet_game_fps_text_68aaa5b" android:textColor="@color/neon_cyan" android:textSize="13sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="@string/copy_bottom_sheet_game_fps_text_75b8c9a" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:orientation="vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_bottom_sheet_game_fps_text_26eef54" android:textColor="@color/text_primary" android:textSize="12sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="@string/copy_bottom_sheet_game_fps_text_5e16337" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                    <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_step1_shizuku" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:paddingLeft="10dp" android:paddingRight="10dp" android:text="@string/copy_bottom_sheet_game_fps_bs_btn_step1_e036845" android:textStyle="bold" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                </LinearLayout>
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="10dp" android:background="@color/card_dark_stroke" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:orientation="vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_bottom_sheet_game_fps_text_449131a" android:textColor="@color/text_primary" android:textSize="12sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="@string/copy_bottom_sheet_game_fps_text_d8a1b07" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="@string/copy_bottom_sheet_game_fps_text_8a52f40" android:textColor="@color/neon_cyan" android:textSize="12sp" />
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:orientation="horizontal">
+                        <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_copy_disable_joyose" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="5dp" android:layout_weight="1" android:paddingLeft="6dp" android:paddingRight="6dp" android:text="@string/game_fps_btn_copy_disable" android:textStyle="bold" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_copy_enable_joyose" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="5dp" android:layout_weight="1" android:paddingLeft="6dp" android:paddingRight="6dp" android:text="@string/copy_bottom_sheet_game_fps_bs_btn_auto_21da933" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                    </LinearLayout>
+                </LinearLayout>
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="10dp" android:background="@color/card_dark_stroke" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:orientation="vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_bottom_sheet_game_fps_text_fc6f9f7" android:textColor="@color/text_primary" android:textSize="12sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="@string/copy_bottom_sheet_game_fps_text_05a825e" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="@string/copy_bottom_sheet_game_fps_text_2897ad6" android:textColor="@color/neon_green" android:textSize="12sp" />
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:orientation="horizontal">
+                        <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_clear_powerkeeper" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="5dp" android:layout_weight="1.25" android:paddingLeft="6dp" android:paddingRight="6dp" android:text="@string/copy_bottom_sheet_game_fps_bs_btn_clear_df44c5d" android:textStyle="bold" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_clear_pk_manual" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="5dp" android:layout_weight="0.75" android:paddingLeft="6dp" android:paddingRight="6dp" android:text="@string/copy_activity_main_btn_drain_open_setti_7c0990b" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                    </LinearLayout>
+                </LinearLayout>
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="10dp" android:background="@color/card_dark_stroke" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:orientation="vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_bottom_sheet_game_fps_text_0cbb99b" android:textColor="@color/text_primary" android:textSize="12sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="@string/copy_bottom_sheet_game_fps_text_ca85094" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                    <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_launch_aov" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:paddingLeft="12dp" android:paddingRight="12dp" android:text="@string/game_fps_btn_launch_aov" android:textStyle="bold" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:background="@drawable/bg_card_rounded" android:orientation="vertical" android:padding="14dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+                    <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_gamepad" app:tint="@color/neon_green" android:importantForAccessibility="no" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:layout_weight="1" android:text="@string/game_hud_title" android:textColor="@color/text_primary" android:textSize="14sp" android:textStyle="bold" />
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/bs_switch_game_hud" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" />
+                </LinearLayout>
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/copy_bottom_sheet_game_fps_text_c8c7460" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:orientation="horizontal">
+                    <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_toggle_game_hud" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="4dp" android:layout_weight="1" android:paddingLeft="4dp" android:paddingRight="4dp" android:text="@string/copy_bottom_sheet_game_fps_bs_btn_toggl_e98d3e5" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                    <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_add_hud_qs_tile" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="4dp" android:layout_weight="1" android:paddingLeft="4dp" android:paddingRight="4dp" android:text="@string/copy_bottom_sheet_game_fps_bs_btn_add_h_ce54d09" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                </LinearLayout>
+                <LinearLayout android:id="@+id/bs_layout_hud_customization" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:background="@drawable/bg_card_rounded" android:orientation="vertical" android:padding="12dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_bottom_sheet_game_fps_text_8b9078c" android:textColor="@color/neon_cyan" android:textSize="13sp" android:textStyle="bold" />
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:gravity="center_vertical" android:orientation="horizontal">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/copy_bottom_sheet_game_fps_text_9c9846c" android:textColor="@color/text_primary" android:textSize="12sp" />
+                        <TextView android:id="@+id/bs_tv_hud_scale_val" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_bottom_sheet_game_fps_bs_tv_hud_sc_77c6cd9" android:textColor="@color/neon_green" android:textSize="12sp" android:textStyle="bold" />
+                    </LinearLayout>
+                    <SeekBar android:id="@+id/bs_sb_hud_scale" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:max="70" android:progress="30" android:progressTint="@color/neon_green" android:thumbTint="@color/neon_green" />
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:orientation="horizontal">
+                        <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_scale_small" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="4dp" android:layout_weight="1" android:padding="0dp" android:text="@string/copy_bottom_sheet_game_fps_bs_btn_scale_e001036" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_scale_standard" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="2dp" android:layout_marginEnd="2dp" android:layout_weight="1" android:padding="0dp" android:text="@string/copy_bottom_sheet_game_fps_bs_btn_scale_ea1974d" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_scale_large" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="4dp" android:layout_weight="1" android:padding="0dp" android:text="@string/copy_bottom_sheet_game_fps_bs_btn_scale_eaf8ffa" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:gravity="center_vertical" android:orientation="horizontal">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/copy_bottom_sheet_game_fps_text_e2facd4" android:textColor="@color/text_primary" android:textSize="12sp" />
+                        <TextView android:id="@+id/bs_tv_hud_bg_opacity_val" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_bottom_sheet_game_fps_bs_tv_hud_bg_854972f" android:textColor="@color/neon_cyan" android:textSize="12sp" android:textStyle="bold" />
+                    </LinearLayout>
+                    <SeekBar android:id="@+id/bs_sb_hud_bg_opacity" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:max="100" android:progress="85" android:progressTint="@color/neon_cyan" android:thumbTint="@color/neon_cyan" />
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:orientation="horizontal">
+                        <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_bg_transparent" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="3dp" android:layout_weight="1" android:padding="0dp" android:text="@string/copy_bottom_sheet_game_fps_bs_btn_bg_tr_9b62083" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_bg_glass" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="2dp" android:layout_marginEnd="2dp" android:layout_weight="1" android:padding="0dp" android:text="@string/copy_bottom_sheet_game_fps_bs_btn_bg_gl_a168851" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_bg_dark" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="3dp" android:layout_weight="1" android:padding="0dp" android:text="@string/copy_bottom_sheet_game_fps_bs_btn_bg_da_7bba9fd" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:gravity="center_vertical" android:orientation="horizontal">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/copy_bottom_sheet_game_fps_text_9903602" android:textColor="@color/text_primary" android:textSize="12sp" />
+                        <TextView android:id="@+id/bs_tv_hud_text_opacity_val" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_bottom_sheet_game_fps_bs_tv_hud_te_ce055f4" android:textColor="@color/mi_orange" android:textSize="12sp" android:textStyle="bold" />
+                    </LinearLayout>
+                    <SeekBar android:id="@+id/bs_sb_hud_text_opacity" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:max="70" android:progress="70" android:progressTint="@color/mi_orange" android:thumbTint="@color/mi_orange" />
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:orientation="horizontal">
+                        <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_text_dim" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="4dp" android:layout_weight="1" android:padding="0dp" android:text="@string/copy_bottom_sheet_game_fps_bs_btn_text_70f7dbb" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_text_bright" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="4dp" android:layout_weight="1" android:padding="0dp" android:text="@string/copy_bottom_sheet_game_fps_bs_btn_text_e2ec99b" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                    </LinearLayout>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:text="@string/copy_bottom_sheet_game_fps_text_9b8cfbb" android:textColor="@color/neon_cyan" android:textSize="13sp" android:textStyle="bold" />
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:gravity="center_vertical" android:orientation="horizontal">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/copy_bottom_sheet_game_fps_text_0295dd0" android:textColor="@color/text_primary" android:textSize="12sp" />
+                        <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/bs_switch_hud_fps" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" />
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/copy_bottom_sheet_game_fps_text_b347925" android:textColor="@color/text_primary" android:textSize="12sp" />
+                        <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/bs_switch_hud_temp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" />
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/copy_bottom_sheet_game_fps_text_545829b" android:textColor="@color/text_primary" android:textSize="12sp" />
+                        <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/bs_switch_hud_cpu" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" />
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/copy_bottom_sheet_game_fps_text_30ab2f2" android:textColor="@color/text_primary" android:textSize="12sp" />
+                        <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/bs_switch_hud_ram" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" />
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/copy_bottom_sheet_game_fps_text_561ea51" android:textColor="@color/text_primary" android:textSize="12sp" />
+                        <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/bs_switch_hud_power" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:background="@drawable/bg_card_rounded" android:orientation="vertical" android:padding="14dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+                    <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_gamepad" app:tint="@color/neon_green" android:importantForAccessibility="no" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:layout_weight="1" android:text="@string/copy_bottom_sheet_game_fps_text_4ec1a5e" android:textColor="@color/text_primary" android:textSize="14sp" android:textStyle="bold" />
+                    <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_add_custom_game" android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingLeft="10dp" android:paddingRight="10dp" android:text="@string/copy_bottom_sheet_game_fps_bs_btn_add_c_8da13bd" android:textStyle="bold" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                </LinearLayout>
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/copy_bottom_sheet_game_fps_text_190b5fe" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                <LinearLayout android:id="@+id/bs_layout_game_list" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:orientation="vertical" />
+                <TextView android:id="@+id/bs_tv_no_games" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:layout_marginBottom="6dp" android:gravity="center" android:text="@string/copy_bottom_sheet_game_fps_bs_tv_no_gam_aff95eb" android:textColor="@color/text_muted" android:textSize="12sp" android:visibility="gone" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

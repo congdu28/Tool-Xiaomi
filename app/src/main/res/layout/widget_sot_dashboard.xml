@@ -1,205 +1,31 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/widget_sot_root"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/bg_widget_card"
-    android:orientation="vertical"
-    android:padding="10dp">
-
-    <!-- Header Row -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/widget_tv_sot_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="⚡ HYPEROS BATTERY &amp; SOT"
-                android:textColor="@color/mi_orange"
-                android:textSize="10.5sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/widget_tv_sot_total_bar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="1dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="🕒 Tổng dùng máy: --h --p"
-                android:textColor="@color/text_secondary"
-                android:textSize="9sp" />
+<?xml version='1.0' encoding='utf-8'?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/widget_sot_root" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/bg_widget_card" android:orientation="vertical" android:padding="10dp">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+            <TextView android:id="@+id/widget_tv_sot_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_widget_sot_dashboard_widget_tv_sot_9820e9b" android:textColor="@color/mi_orange" android:textSize="10.5sp" android:textStyle="bold" />
+            <TextView android:id="@+id/widget_tv_sot_total_bar" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:ellipsize="end" android:maxLines="1" android:text="@string/copy_widget_sot_dashboard_widget_tv_sot_9b03cc2" android:textColor="@color/text_secondary" android:textSize="9sp" />
         </LinearLayout>
-
-        <ImageView
-            android:id="@+id/widget_btn_sot_refresh"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
-            android:contentDescription="Refresh"
-            android:padding="3dp"
-            android:src="@drawable/ic_widget_sync" />
+        <ImageView android:id="@+id/widget_btn_sot_refresh" android:layout_width="26dp" android:layout_height="26dp" android:contentDescription="@string/copy_widget_sot_widget_btn_sot_refresh_56e3bad" android:padding="3dp" android:src="@drawable/ic_widget_sync" />
     </LinearLayout>
-
-    <!-- 2x2 Grid Content -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="6dp"
-        android:layout_weight="1"
-        android:orientation="horizontal">
-
-        <!-- Box 1: SOT -->
-        <LinearLayout
-            android:id="@+id/widget_box_1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="4dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_widget_box_dark"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="4dp">
-
-            <TextView
-                android:id="@+id/widget_tv_label_sot"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="⏱️ SOT"
-                android:textColor="@color/text_secondary"
-                android:textSize="9sp" />
-
-            <TextView
-                android:id="@+id/widget_tv_sot_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-black"
-                android:text="--h --m"
-                android:textColor="@color/neon_cyan"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/widget_tv_sot_total"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="1dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="Tổng: --h --p"
-                android:textColor="@color/text_secondary"
-                android:textSize="8.5sp" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_marginTop="6dp" android:layout_weight="1" android:orientation="horizontal">
+        <LinearLayout android:id="@+id/widget_box_1" android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginEnd="4dp" android:layout_weight="1" android:background="@drawable/bg_widget_box_dark" android:gravity="center" android:orientation="vertical" android:padding="4dp">
+            <TextView android:id="@+id/widget_tv_label_sot" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_widget_sot_dashboard_widget_tv_lab_d496963" android:textColor="@color/text_secondary" android:textSize="9sp" />
+            <TextView android:id="@+id/widget_tv_sot_time" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-black" android:text="@string/copy_widget_sot_widget_tv_sot_time_70aacef" android:textColor="@color/neon_cyan" android:textSize="15sp" />
+            <TextView android:id="@+id/widget_tv_sot_total" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:ellipsize="end" android:maxLines="1" android:text="@string/copy_widget_sot_dashboard_widget_tv_sot_d064aa0" android:textColor="@color/text_secondary" android:textSize="8.5sp" />
         </LinearLayout>
-
-        <!-- Box 2: Battery -->
-        <LinearLayout
-            android:id="@+id/widget_box_2"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="4dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_widget_box_dark"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="4dp">
-
-            <TextView
-                android:id="@+id/widget_tv_label_battery"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🔋 Mức Pin"
-                android:textColor="@color/text_secondary"
-                android:textSize="9sp" />
-
-            <TextView
-                android:id="@+id/widget_tv_sot_battery"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-black"
-                android:text="--%"
-                android:textColor="@color/neon_green"
-                android:textSize="16sp" />
+        <LinearLayout android:id="@+id/widget_box_2" android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="4dp" android:layout_weight="1" android:background="@drawable/bg_widget_box_dark" android:gravity="center" android:orientation="vertical" android:padding="4dp">
+            <TextView android:id="@+id/widget_tv_label_battery" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_widget_sot_dashboard_widget_tv_lab_8b45895" android:textColor="@color/text_secondary" android:textSize="9sp" />
+            <TextView android:id="@+id/widget_tv_sot_battery" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-black" android:text="@string/copy_widget_sot_widget_tv_sot_battery_9d292c0" android:textColor="@color/neon_green" android:textSize="16sp" />
         </LinearLayout>
     </LinearLayout>
-
-    <!-- Bottom Row (Boxes 3 & 4) -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="6dp"
-        android:layout_weight="1"
-        android:orientation="horizontal">
-
-        <!-- Box 3: Temperature -->
-        <LinearLayout
-            android:id="@+id/widget_box_3"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="4dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_widget_box_dark"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="4dp">
-
-            <TextView
-                android:id="@+id/widget_tv_label_temp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🌡️ Nhiệt độ"
-                android:textColor="@color/text_secondary"
-                android:textSize="9sp" />
-
-            <TextView
-                android:id="@+id/widget_tv_sot_temp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-black"
-                android:text="--°C"
-                android:textColor="@color/neon_yellow"
-                android:textSize="14sp" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_marginTop="6dp" android:layout_weight="1" android:orientation="horizontal">
+        <LinearLayout android:id="@+id/widget_box_3" android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginEnd="4dp" android:layout_weight="1" android:background="@drawable/bg_widget_box_dark" android:gravity="center" android:orientation="vertical" android:padding="4dp">
+            <TextView android:id="@+id/widget_tv_label_temp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_activity_main_text_63cc749" android:textColor="@color/text_secondary" android:textSize="9sp" />
+            <TextView android:id="@+id/widget_tv_sot_temp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-black" android:text="@string/copy_widget_sot_widget_tv_sot_temp_b6aba70" android:textColor="@color/neon_yellow" android:textSize="14sp" />
         </LinearLayout>
-
-        <!-- Box 4: Estimator / Sub -->
-        <LinearLayout
-            android:id="@+id/widget_box_4"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="4dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_widget_box_dark"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="4dp">
-
-            <TextView
-                android:id="@+id/widget_tv_label_sub"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="⚡ Dự kiến"
-                android:textColor="@color/text_secondary"
-                android:textSize="9sp" />
-
-            <TextView
-                android:id="@+id/widget_tv_sot_sub"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:gravity="center"
-                android:maxLines="1"
-                android:text="Còn ~--h --p"
-                android:textColor="@color/text_primary"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+        <LinearLayout android:id="@+id/widget_box_4" android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="4dp" android:layout_weight="1" android:background="@drawable/bg_widget_box_dark" android:gravity="center" android:orientation="vertical" android:padding="4dp">
+            <TextView android:id="@+id/widget_tv_label_sub" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_widget_sot_dashboard_widget_tv_lab_2e608f3" android:textColor="@color/text_secondary" android:textSize="9sp" />
+            <TextView android:id="@+id/widget_tv_sot_sub" android:layout_width="wrap_content" android:layout_height="wrap_content" android:ellipsize="end" android:gravity="center" android:maxLines="1" android:text="@string/copy_widget_sot_dashboard_widget_tv_sot_8e67d23" android:textColor="@color/text_primary" android:textSize="12sp" android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
-
 </LinearLayout>

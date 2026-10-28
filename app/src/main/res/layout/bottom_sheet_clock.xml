@@ -1,337 +1,52 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/bg_bottom_sheet"
-    android:fillViewport="true"
-    android:overScrollMode="never">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
-
-        <!-- Drag Handle -->
-        <View
-            android:layout_width="40dp"
-            android:layout_height="4dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/bg_drag_handle" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="⏰ Đồng Hồ Giây HyperOS"
-            android:textColor="@color/text_primary"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Hỗ trợ hiển thị giờ phút giây chính xác phục vụ săn sale, thi cử và theo dõi thời gian realtime."
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp" />
-
-        <!-- Option 1: Notification Clock -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:background="@color/card_highlight"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="12dp">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Đồng hồ trên Thanh thông báo"
-                    android:textColor="@color/text_primary"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="Ghim trên màn hình khóa &amp; thanh kéo"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="11sp" />
-            </LinearLayout>
-
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/bs_switch_notif_clock"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <!-- Option 2: Floating Clock Capsule -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@color/card_highlight"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="12dp">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Đồng hồ nổi Capsule trên màn hình"
-                    android:textColor="@color/text_primary"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="Nổi trên mọi ứng dụng &amp; game"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="11sp" />
-            </LinearLayout>
-
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/bs_switch_floating_clock"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <!-- Floating Sub-options container -->
-        <LinearLayout
-            android:id="@+id/bs_layout_floating_sub_options"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Vị trí ghim sẵn:"
-                android:textColor="@color/text_muted"
-                android:textSize="11sp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:orientation="horizontal">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/bs_btn_preset_top_left"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="3dp"
-                    android:layout_weight="1"
-                    android:minHeight="36dp"
-                    android:minWidth="0dp"
-                    android:backgroundTint="@color/card_dark"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:insetLeft="0dp"
-                    android:insetRight="0dp"
-                    android:paddingLeft="2dp"
-                    android:paddingRight="2dp"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:text="Góc trái"
-                    android:textColor="@color/neon_green"
-                    android:textSize="11sp"
-                    app:cornerRadius="6dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/bs_btn_preset_beside"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="3dp"
-                    android:layout_marginEnd="3dp"
-                    android:layout_weight="1"
-                    android:minHeight="36dp"
-                    android:minWidth="0dp"
-                    android:backgroundTint="@color/card_dark"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:insetLeft="0dp"
-                    android:insetRight="0dp"
-                    android:paddingLeft="2dp"
-                    android:paddingRight="2dp"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:text="Cạnh giờ"
-                    android:textColor="@color/text_primary"
-                    android:textSize="11sp"
-                    app:cornerRadius="6dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/bs_btn_preset_notch"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="3dp"
-                    android:layout_marginEnd="3dp"
-                    android:layout_weight="1"
-                    android:minHeight="36dp"
-                    android:minWidth="0dp"
-                    android:backgroundTint="@color/card_dark"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:insetLeft="0dp"
-                    android:insetRight="0dp"
-                    android:paddingLeft="2dp"
-                    android:paddingRight="2dp"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:text="Tai thỏ"
-                    android:textColor="@color/text_primary"
-                    android:textSize="11sp"
-                    app:cornerRadius="6dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/bs_btn_preset_free"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="3dp"
-                    android:layout_weight="1"
-                    android:minHeight="36dp"
-                    android:minWidth="0dp"
-                    android:backgroundTint="@color/card_dark"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:insetLeft="0dp"
-                    android:insetRight="0dp"
-                    android:paddingLeft="2dp"
-                    android:paddingRight="2dp"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:text="Tự do"
-                    android:textColor="@color/text_primary"
-                    android:textSize="11sp"
-                    app:cornerRadius="6dp" />
-            </LinearLayout>
-
-            <!-- Sub Switches -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="12dp"
-                    android:layout_weight="1"
-                    android:text="Nền trong suốt"
-                    android:textColor="@color/text_primary"
-                    android:textSize="12sp" />
-
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/bs_switch_clock_transparent"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="12dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Khóa vị trí &amp; Chạm xuyên thấu"
-                        android:textColor="@color/text_primary"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Cho phép vuốt thông báo &amp; thao tác app phía dưới"
-                        android:textColor="@color/text_muted"
-                        android:textSize="10sp" />
-                </LinearLayout>
-
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/bs_switch_clock_lock"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="12dp"
-                    android:layout_weight="1"
-                    android:text="Hiển thị mili-giây (.SS)"
-                    android:textColor="@color/text_primary"
-                    android:textSize="12sp" />
-
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/bs_switch_clock_ms"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- Quick Settings Tile button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/bs_btn_add_clock_tile"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:minHeight="44dp"
-            android:backgroundTint="@color/card_highlight"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:insetLeft="0dp"
-            android:insetRight="0dp"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:maxLines="2"
-            android:text="🎛️ Thêm phím Đồng hồ vào Trung tâm điều khiển"
-            android:textColor="@color/neon_cyan"
-            android:textSize="11.5sp"
-            app:cornerRadius="8dp" />
-
+<?xml version='1.0' encoding='utf-8'?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_bottom_sheet" android:paddingTop="12dp">
+    <View android:layout_width="40dp" android:layout_height="4dp" android:layout_gravity="center_horizontal" android:layout_marginBottom="16dp" android:background="@drawable/bg_drag_handle" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp" android:paddingStart="20dp" android:paddingEnd="20dp">
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="@string/copy_bottom_sheet_clock_text_cd5cb17" android:textColor="@color/text_primary" android:textSize="22sp" android:textStyle="bold" android:layout_weight="1" android:layout_marginBottom="0dp" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/sheet_close" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/action_close" android:contentDescription="@string/action_close" style="@style/Widget.MiTool.Button.Text" android:minHeight="48dp" />
     </LinearLayout>
-
-</androidx.core.widget.NestedScrollView>
+    <androidx.core.widget.NestedScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@android:color/transparent" android:fillViewport="true" android:overScrollMode="never">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingStart="20dp" android:paddingEnd="20dp" android:paddingBottom="24dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/copy_bottom_sheet_clock_text_6a5771e" android:textColor="@color/text_secondary" android:textSize="12sp" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:background="@color/card_highlight" android:gravity="center_vertical" android:orientation="horizontal" android:padding="12dp">
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="12dp" android:layout_weight="1" android:orientation="vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_bottom_sheet_clock_text_15d4c80" android:textColor="@color/text_primary" android:textSize="14sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="@string/copy_bottom_sheet_clock_text_52a28ac" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                </LinearLayout>
+                <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/bs_switch_notif_clock" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:background="@color/card_highlight" android:gravity="center_vertical" android:orientation="horizontal" android:padding="12dp">
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="12dp" android:layout_weight="1" android:orientation="vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_bottom_sheet_clock_text_3a09105" android:textColor="@color/text_primary" android:textSize="14sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="@string/copy_bottom_sheet_clock_text_ef99f23" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                </LinearLayout>
+                <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/bs_switch_floating_clock" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" />
+            </LinearLayout>
+            <LinearLayout android:id="@+id/bs_layout_floating_sub_options" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:orientation="vertical" android:visibility="gone">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/copy_bottom_sheet_clock_text_2c65bef" android:textColor="@color/text_muted" android:textSize="12sp" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:orientation="horizontal">
+                    <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_preset_top_left" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="3dp" android:layout_weight="1" android:paddingLeft="2dp" android:paddingRight="2dp" android:text="@string/copy_bottom_sheet_clock_bs_btn_preset_t_bff6d69" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                    <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_preset_beside" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="3dp" android:layout_marginEnd="3dp" android:layout_weight="1" android:paddingLeft="2dp" android:paddingRight="2dp" android:text="@string/copy_bottom_sheet_clock_bs_btn_preset_b_6293b18" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                    <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_preset_notch" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="3dp" android:layout_marginEnd="3dp" android:layout_weight="1" android:paddingLeft="2dp" android:paddingRight="2dp" android:text="@string/copy_bottom_sheet_clock_bs_btn_preset_n_2484fe5" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                    <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_preset_free" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="3dp" android:layout_weight="1" android:paddingLeft="2dp" android:paddingRight="2dp" android:text="@string/copy_bottom_sheet_clock_bs_btn_preset_f_40d06bc" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:gravity="center_vertical" android:orientation="horizontal">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="12dp" android:layout_weight="1" android:text="@string/copy_bottom_sheet_clock_text_6643778" android:textColor="@color/text_primary" android:textSize="12sp" />
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/bs_switch_clock_transparent" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" />
+                </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:gravity="center_vertical" android:orientation="horizontal">
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="12dp" android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_bottom_sheet_clock_text_81637a2" android:textColor="@color/text_primary" android:textSize="12sp" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_bottom_sheet_clock_text_df2bd88" android:textColor="@color/text_muted" android:textSize="12sp" />
+                    </LinearLayout>
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/bs_switch_clock_lock" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" />
+                </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:gravity="center_vertical" android:orientation="horizontal">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="12dp" android:layout_weight="1" android:text="@string/copy_bottom_sheet_clock_text_a65ff3f" android:textColor="@color/text_primary" android:textSize="12sp" />
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/bs_switch_clock_ms" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" />
+                </LinearLayout>
+            </LinearLayout>
+            <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_add_clock_tile" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:paddingLeft="8dp" android:paddingRight="8dp" android:text="@string/btn_add_clock_tile" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

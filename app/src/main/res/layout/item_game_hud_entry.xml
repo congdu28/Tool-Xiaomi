@@ -1,86 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
-    android:background="@drawable/bg_card_rounded"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:padding="12dp">
-
-    <!-- Game App Icon -->
-    <ImageView
-        android:id="@+id/iv_game_icon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:contentDescription="Game Icon"
-        android:src="@drawable/ic_gamepad" />
-
-    <!-- Game App Title & Package -->
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="8dp"
-        android:layout_weight="1"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/tv_game_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:text="Tên trò chơi"
-            android:textColor="@color/text_primary"
-            android:textSize="13sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tv_game_package"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:text="com.game.package"
-            android:textColor="@color/text_secondary"
-            android:textSize="10sp" />
+<?xml version='1.0' encoding='utf-8'?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:background="@drawable/bg_card_rounded" android:gravity="center_vertical" android:orientation="horizontal" android:padding="12dp">
+    <ImageView android:id="@+id/iv_game_icon" android:layout_width="40dp" android:layout_height="40dp" android:contentDescription="@string/copy_item_game_hud_entry_iv_game_icon_c8d3d36" android:src="@drawable/ic_gamepad" />
+    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:layout_marginEnd="8dp" android:layout_weight="1" android:orientation="vertical">
+        <TextView android:id="@+id/tv_game_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:ellipsize="end" android:singleLine="true" android:text="@string/copy_item_game_hud_entry_tv_game_title_f562131" android:textColor="@color/text_primary" android:textSize="13sp" android:textStyle="bold" />
+        <TextView android:id="@+id/tv_game_package" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:ellipsize="end" android:singleLine="true" android:text="@string/copy_item_game_hud_entry_tv_game_packag_7b70886" android:textColor="@color/text_secondary" android:textSize="12sp" />
     </LinearLayout>
-
-    <!-- 1-Tap Launch & Open HUD Action Button -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_launch_game_with_hud"
-        android:layout_width="wrap_content"
-        android:layout_height="34dp"
-        android:backgroundTint="@color/neon_green"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:insetLeft="0dp"
-        android:insetRight="0dp"
-        android:minWidth="0dp"
-        android:minHeight="0dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:text="⚔️ Chơi Ngay"
-        android:textColor="#0D1117"
-        android:textSize="11sp"
-        android:textStyle="bold"
-        app:cornerRadius="8dp" />
-
-    <!-- Remove Game Button -->
-    <ImageView
-        android:id="@+id/btn_delete_game"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:contentDescription="Remove Game"
-        android:focusable="true"
-        android:padding="6dp"
-        android:src="@drawable/ic_close"
-        app:tint="@color/text_muted" />
-
+    <com.google.android.material.button.MaterialButton android:id="@+id/btn_launch_game_with_hud" android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingLeft="10dp" android:paddingRight="10dp" android:text="@string/copy_item_game_hud_entry_btn_launch_gam_23e7fe4" android:textStyle="bold" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+    <ImageView android:id="@+id/btn_delete_game" android:layout_width="30dp" android:layout_height="30dp" android:layout_marginStart="8dp" android:background="?attr/selectableItemBackgroundBorderless" android:clickable="true" android:contentDescription="@string/copy_item_game_hud_entry_btn_delete_gam_d019ba7" android:focusable="true" android:padding="6dp" android:src="@drawable/ic_close" app:tint="@color/text_muted" />
 </LinearLayout>

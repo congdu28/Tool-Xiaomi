@@ -35,7 +35,7 @@ public class GameHudTileService extends TileService {
         super.onClick();
         try {
             if (!Settings.canDrawOverlays(this)) {
-                Toast.makeText(this, "Vui lòng cấp quyền Hiển thị trên ứng dụng khác cho Mi Tool!", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.message_3551a17c89, Toast.LENGTH_LONG).show();
                 Intent appIntent = new Intent(this, MainActivity.class);
                 appIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 if (Build.VERSION.SDK_INT >= 34) {
@@ -55,12 +55,12 @@ public class GameHudTileService extends TileService {
             if (newState) {
                 Intent serviceIntent = new Intent(this, FloatingGameHudService.class);
                 ContextCompat.startForegroundService(this, serviceIntent);
-                Toast.makeText(this, "🎮 Đã bật Mini Game HUD (FPS)", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.message_79d1762490, Toast.LENGTH_SHORT).show();
             } else {
                 Intent stopIntent = new Intent(this, FloatingGameHudService.class);
                 stopIntent.setAction(FloatingGameHudService.ACTION_STOP);
                 startService(stopIntent);
-                Toast.makeText(this, "🎮 Đã tắt Mini Game HUD", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.message_84696a9c8b, Toast.LENGTH_SHORT).show();
             }
 
             updateTileState();

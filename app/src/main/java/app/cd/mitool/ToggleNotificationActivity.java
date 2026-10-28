@@ -34,12 +34,12 @@ public class ToggleNotificationActivity extends Activity {
                 Intent intent = new Intent(this, NotificationClockService.class);
                 intent.setAction(NotificationClockService.ACTION_START);
                 ContextCompat.startForegroundService(this, intent);
-                Toast.makeText(this, "⚡ Đã bật thanh thông báo Mi-Tool", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.message_4e09d4fa5b, Toast.LENGTH_SHORT).show();
             } else {
                 Intent intent = new Intent(this, NotificationClockService.class);
                 intent.setAction(NotificationClockService.ACTION_STOP);
                 startService(intent);
-                Toast.makeText(this, "✕ Đã tắt thanh thông báo Mi-Tool", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.message_cb902a4f54, Toast.LENGTH_SHORT).show();
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

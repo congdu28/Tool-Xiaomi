@@ -289,46 +289,12 @@ public class SotHelper {
         }
 
         long lastUnplug = prefs.getSotLastUnplugTime();
-        int lastLevel = prefs.getSotLastUnplugLevel();
-        if (lastLevel <= 0) lastLevel = 100;
-
-        int drop = Math.max(0, lastLevel - currentLevel);
-        long sotMillis = getScreenOnTimeMillis(context);
-        long now = System.currentTimeMillis();
-        long totalElapsed = Math.max(0, now - lastUnplug);
-
-        double rateSotMin;
-        double rateMixedMin;
-        float drainRatePerHour = 0f;
-
-        if (drop >= 2 && sotMillis >= 5 * 60 * 1000L && totalElapsed > 0) {
-            // Real measured rate based on actual device usage
-            rateSotMin = (sotMillis / (double) drop) / 60000.0;
-            // Clamp between 3.5 min/1% (heavy gaming) and 10.0 min/1% (reading/dark mode)
-            rateSotMin = Math.max(3.5, Math.min(10.0, rateSotMin));
-
-            rateMixedMin = (totalElapsed / (double) drop) / 60000.0;
-            rateMixedMin = Math.max(rateSotMin, Math.min(30.0, rateMixedMin));
-
-            drainRatePerHour = (float) ((drop * 3600000.0) / Math.max(60000L, totalElapsed));
-        } else {
-            // Intelligent Xiaomi standard baseline (~6 min/1% for 10h total SOT)
-            rateSotMin = 6.0;
-            rateMixedMin = 15.0; // ~25h total standby/mixed
-            if (drop > 0 && totalElapsed > 10 * 60 * 1000L) {
-                drainRatePerHour = (float) ((drop * 3600000.0) / totalElapsed);
-            }
-        }
-
-        long remainSotMins = Math.round(currentLevel * rateSotMin);
-        long remainMixedMins = Math.round(currentLevel * rateMixedMin);
-
-        String formattedSot = formatDuration(remainSotMins * 60000L);
-        String formattedMixed = formatDuration(remainMixedMins * 60000L);
-        String formattedRate = drainRatePerHour > 0.05f 
-                ? String.format(Locale.getDefault(), "~%.1f%% / giờ", drainRatePerHour) 
-                : "Đang tính...";
-
-        return new BatteryEstimate(remainSotMins, remainMixedMins, drainRatePerHour, formattedSot, formattedMixed, formattedRate);
+        BatteryEstimatePolicy.Estimate measured = prefs.isSotTrackerActive() ? BatteryEstimatePolicy.fromSession(
+                prefs.getSotLastUnplugLevel(), currentLevel, System.currentTimeMillis() - lastUnplug,
+                getScreenOnTimeMillis(context), BatteryHelper.isCharging(context)) : null;
+        if (measured == null) return new BatteryEstimate(0, 0, 0, "Đang thu thập", "Đang thu thập", "Chưa đủ số đo của phiên dùng pin");
+        return new BatteryEstimate(measured.screenMinutes, measured.mixedMinutes, measured.percentPerHour,
+                formatDuration(measured.screenMinutes * 60000L), formatDuration(measured.mixedMinutes * 60000L),
+                String.format(Locale.getDefault(), "~%.1f%%/giờ trong phiên này", measured.percentPerHour));
     }
 }

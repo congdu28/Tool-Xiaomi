@@ -1,0 +1,541 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+  <string name="copy_activity_lockscreen_charging_tv_lo_2223f80" formatted="false">21:45:00</string>
+  <string name="copy_activity_lockscreen_charging_tv_lo_734062a" formatted="false">Thứ ba, 20/10</string>
+  <string name="copy_activity_lockscreen_charging_tv_lo_b77a111" formatted="false">75%</string>
+  <string name="copy_activity_lockscreen_charging_tv_lo_4c40fc5" formatted="false">Sạc nhanh</string>
+  <string name="copy_activity_lockscreen_charging_tv_lo_415b23d" formatted="false">Còn ~24 phút nữa sạc đầy</string>
+  <string name="copy_activity_lockscreen_charging_tv_lo_7f7d500" formatted="false">Dự kiến đầy lúc 22:15</string>
+  <string name="copy_activity_lockscreen_charging_text_2e6559f" formatted="false">Công suất tức thời:</string>
+  <string name="copy_activity_lockscreen_charging_tv_lo_63cdf67" formatted="false">18.5W</string>
+  <string name="copy_activity_lockscreen_charging_text_035cf92" formatted="false">Điện áp / Cường độ:</string>
+  <string name="copy_activity_lockscreen_charging_tv_lo_2558799" formatted="false">9.1V • 2030mA</string>
+  <string name="copy_activity_lockscreen_charging_text_4f1592c" formatted="false">Nhiệt độ pin:</string>
+  <string name="copy_activity_lockscreen_charging_tv_lo_bbeaffa" formatted="false">34.2°C</string>
+  <string name="copy_activity_lockscreen_charging_tv_lo_09c3902" formatted="false">Chạm bất kỳ đâu để tắt màn hình sạc</string>
+  <string name="copy_activity_main_tv_device_model_head_16c091f" formatted="false">Đang đọc…</string>
+  <string name="copy_activity_main_tv_overview_battery_b148798" formatted="false">Đang đọc số đo…</string>
+  <string name="copy_activity_main_text_00fd91a" formatted="false">Thiết bị &amp; hệ thống</string>
+  <string name="copy_activity_main_text_5e3ae0f" formatted="false">Tên máy (Model):</string>
+  <string name="copy_activity_main_text_70af9b4" formatted="false">Tên mã (Codename):</string>
+  <string name="copy_activity_main_text_699f738" formatted="false">Nhà sản xuất:</string>
+  <string name="copy_activity_main_text_8780879" formatted="false">Hệ điều hành:</string>
+  <string name="copy_activity_main_text_e9f3491" formatted="false">Phiên bản Android:</string>
+  <string name="copy_activity_main_text_75706e6" formatted="false">Bản vá bảo mật:</string>
+  <string name="copy_activity_main_text_6c8ba5c" formatted="false">Vi xử lý &amp; hiệu năng (CPU)</string>
+  <string name="copy_activity_main_text_92fc259" formatted="false">Nhà cung cấp:</string>
+  <string name="copy_activity_main_text_9782509" formatted="false">Vi xử lý (SoC):</string>
+  <string name="copy_activity_main_text_6976538" formatted="false">Mã chip / Platform:</string>
+  <string name="copy_activity_main_text_2ae9fe4" formatted="false">Số nhân &amp; Xung nhịp:</string>
+  <string name="copy_activity_main_text_049c9c1" formatted="false">Kiến trúc tập lệnh:</string>
+  <string name="copy_activity_main_text_c351416" formatted="false">Màn hình &amp; hiển thị</string>
+  <string name="copy_activity_main_text_f5a53dd" formatted="false">Kích thước &amp; Tỉ lệ:</string>
+  <string name="copy_activity_main_text_21d522a" formatted="false">Độ phân giải:</string>
+  <string name="copy_activity_main_text_6babd75" formatted="false">Tần số quét:</string>
+  <string name="copy_activity_main_text_af51a3b" formatted="false">Mật độ điểm ảnh:</string>
+  <string name="copy_activity_main_text_e68e58c" formatted="false">Công nghệ tấm nền &amp; Chuẩn màu:</string>
+  <string name="copy_activity_main_text_ea383c2" formatted="false">Bộ nhớ ram, ZRAM &amp; lưu trữ ROM</string>
+  <string name="copy_activity_main_text_f60e57f" formatted="false">RAM vật lý</string>
+  <string name="copy_activity_main_text_79040b7" formatted="false">Mở rộng RAM HyperOS (ZRAM)</string>
+  <string name="copy_activity_main_text_74ffd2a" formatted="false">Bộ nhớ trong (ROM)</string>
+  <string name="copy_activity_main_text_59604ae" formatted="false">Tình trạng pin &amp; nguồn điện</string>
+  <string name="copy_activity_main_text_2ed8b10" formatted="false">Mức pin hiện tại:</string>
+  <string name="copy_activity_main_text_31a49b6" formatted="false">Dung lượng (Chuẩn / Thực):</string>
+  <string name="copy_activity_main_text_31b4c66" formatted="false">Chu kỳ sạc:</string>
+  <string name="copy_activity_main_text_6427874" formatted="false">Nhiệt độ &amp; Điện áp:</string>
+  <string name="copy_activity_main_text_6567d9f" formatted="false">Tình trạng sức khỏe:</string>
+  <string name="copy_activity_main_text_6279d8b" formatted="false">Cảm biến &amp; công suất sạc</string>
+  <string name="copy_activity_main_tv_charging_protocol_a0fab46" formatted="false">DÙNG PIN</string>
+  <string name="copy_activity_main_tv_charging_current_18e1a30" formatted="false">Dòng sạc</string>
+  <string name="copy_activity_main_tv_charging_current_0e1ac1d" formatted="false">-- mA</string>
+  <string name="copy_activity_main_text_63cc749" formatted="false">Nhiệt độ</string>
+  <string name="copy_activity_main_text_4769651" formatted="false">Thời gian dự kiến sạc đầy:</string>
+  <string name="copy_activity_main_tv_charge_eta_33e9bcd" formatted="false">Chưa cắm sạc</string>
+  <string name="copy_activity_main_text_449d025" formatted="false">Dung lượng &amp; chu kỳ sạc</string>
+  <string name="copy_activity_main_text_459cd38" formatted="false">Dung lượng pin định mức:</string>
+  <string name="copy_activity_main_text_fc0ced9" formatted="false">Dung lượng pin thực tế:</string>
+  <string name="copy_activity_main_text_62a47d2" formatted="false">Chu kỳ sạc (Số lần sạc):</string>
+  <string name="copy_activity_main_btn_test_cable_18a36c6" formatted="false">Đo dòng sạc (10 giây)</string>
+  <string name="copy_activity_main_btn_open_battery_sec_4e36945" formatted="false">Mở kiểm tra pin (CIT)</string>
+  <string name="copy_activity_main_tv_cable_rating_star_d853ab0" formatted="false">⭐⭐⭐⭐⭐ xuất sắc</string>
+  <string name="copy_activity_main_tv_cable_rating_desc_cab5ce5" formatted="false">Dây cáp và củ sạc tiếp xúc tốt...</string>
+  <string name="copy_activity_main_tv_cable_rating_metr_42b49a4" formatted="false">Dòng đỉnh: -- mA • Ổn định: --%</string>
+  <string name="copy_activity_main_text_7b14432" formatted="false">⏱ thời gian bật màn hình (SOT)</string>
+  <string name="copy_activity_main_btn_reset_sot_38f5bb9" formatted="false">Đặt lại</string>
+  <string name="copy_activity_main_btn_customize_sot_wi_00ab079" formatted="false">Tùy biến widget</string>
+  <string name="copy_activity_main_tv_sot_desc_1a0f990" formatted="false">Đếm tổng thời gian on-screen kể từ lần rút sạc gần nhất</string>
+  <string name="copy_activity_main_text_adfc27d" formatted="false">Màn hình bật (SOT)</string>
+  <string name="copy_activity_main_tv_sot_duration_bd52249" formatted="false">-- giờ -- phút</string>
+  <string name="copy_activity_main_text_ba5a430" formatted="false">Thời gian dùng máy</string>
+  <string name="copy_activity_main_text_8dedad2" formatted="false">Dự đoán thời lượng còn lại</string>
+  <string name="copy_activity_main_tv_sot_drain_rate_e7d1754" formatted="false">~--% / giờ</string>
+  <string name="copy_activity_main_text_18fa94f" formatted="false">Màn hình sáng (On-Screen):</string>
+  <string name="copy_activity_main_tv_sot_estimate_scre_14e3eb8" formatted="false">~-- giờ -- phút</string>
+  <string name="copy_activity_main_text_3d97b00" formatted="false">Dùng hỗn hợp (Sáng + Chờ):</string>
+  <string name="copy_activity_main_tv_sot_unplug_info_da2ff32" formatted="false">Đang tính toán mốc rút sạc...</string>
+  <string name="copy_activity_main_text_b8a67b2" formatted="false">Biểu đồ sụt pin 24 giờ</string>
+  <string name="copy_activity_main_text_4af28e5" formatted="false">Lịch sử mức pin đã đo; chưa đủ dữ liệu để kết luận ứng dụng hay wakelock gây hao pin</string>
+  <string name="copy_activity_main_tv_drain_chart_summa_1afcadd" formatted="false">Đang phân tích dữ liệu tiêu hao pin...</string>
+  <string name="copy_activity_main_tv_drain_apps_subtit_9e2c3f5" formatted="false">Thời gian hiển thị ứng dụng; không phải năng lượng tiêu thụ</string>
+  <string name="copy_activity_main_btn_refresh_drain_ap_61b0561" formatted="false">Làm mới</string>
+  <string name="copy_activity_main_btn_drain_filter_unp_c46d942" formatted="false">Từ lần rút sạc</string>
+  <string name="copy_activity_main_btn_drain_filter_tod_995580a" formatted="false">Hôm nay (24h)</string>
+  <string name="copy_activity_main_text_a34ad3e" formatted="false">Cần quyền \'Truy cập dữ liệu sử dụng\' để xem thời gian dùng ứng dụng.</string>
+  <string name="copy_activity_main_btn_drain_grant_shiz_6305a2b" formatted="false">Cấp qua Shizuku</string>
+  <string name="copy_activity_main_btn_drain_open_setti_7c0990b" formatted="false">Mở cài đặt</string>
+  <string name="copy_activity_main_tv_drain_apps_empty_e430324" formatted="false">Đang đọc thời gian dùng ứng dụng...</string>
+  <string name="copy_activity_main_text_01f3f39" formatted="false">Cài đặt</string>
+  <string name="copy_activity_main_text_47a5629" formatted="false">Kết nối Shizuku (khuyên dùng)</string>
+  <string name="copy_activity_main_tv_shizuku_badge_8ecb7f0" formatted="false">Shizuku</string>
+  <string name="copy_activity_main_text_bf85280" formatted="false">Quyền chạy nền ổn định (HyperOS / MIUI)</string>
+  <string name="copy_activity_main_text_6ec40db" formatted="false">Cho phép dịch vụ chạy liên tục sau khi khởi động máy.</string>
+  <string name="copy_activity_main_text_4b07741" formatted="false">2. Tiết kiệm pin (Không hạn chế)</string>
+  <string name="copy_activity_main_text_9780500" formatted="false">Ngăn Xiaomi ngắt kết nối dịch vụ sạc ngầm.</string>
+  <string name="copy_activity_main_text_9101be6" formatted="false">Giao diện &amp; chủ đề</string>
+  <string name="copy_activity_main_tv_theme_current_bad_d90f70a" formatted="false">Hệ thống</string>
+  <string name="copy_activity_main_text_eaf9f44" formatted="false">Tùy chọn tông màu sáng, tối hoặc tự động đồng bộ theo chế độ của hệ thống Xiaomi HyperOS.</string>
+  <string name="copy_activity_main_btn_theme_system_31dcad6" formatted="false">Tự động</string>
+  <string name="copy_activity_main_btn_theme_light_55942c0" formatted="false">Sáng</string>
+  <string name="copy_activity_main_btn_theme_dark_ca1dd55" formatted="false">Tối</string>
+  <string name="copy_activity_main_text_70e1d80" formatted="false">Widget màn hình chính</string>
+  <string name="copy_activity_main_text_6069d14" formatted="false">SOT &amp; pin</string>
+  <string name="copy_activity_main_text_53cd2a7" formatted="false">Tùy biến phong cách widget Bảng điều khiển / Kính mờ / Tối giản, hiển thị SOT, mức pin, tổng thời gian dùng máy và chu kỳ làm mới.</string>
+  <string name="copy_activity_main_btn_settings_customi_1add9e3" formatted="false">Tùy biến giao diện widget</string>
+  <string name="copy_activity_main_text_089f3b1" formatted="false">Cập nhật ứng dụng</string>
+  <string name="copy_activity_main_text_1e8f143" formatted="false">Đồng bộ github releases</string>
+  <string name="copy_activity_main_tv_settings_update_b_7493fae" formatted="false">CHÍNH THỨC</string>
+  <string name="copy_activity_main_text_61a0191" formatted="false">Phiên bản đang cài:</string>
+  <string name="copy_activity_main_tv_settings_current_e0ba675" formatted="false">v1.0.36</string>
+  <string name="copy_activity_main_text_b322bd1" formatted="false">Kênh phát hành:</string>
+  <string name="copy_activity_main_text_cab70d0" formatted="false">Github releases (official)</string>
+  <string name="copy_activity_main_text_fdbdc8e" formatted="false">Kiểm tra gần nhất:</string>
+  <string name="copy_activity_main_tv_settings_last_che_332d45e" formatted="false">Vừa xong</string>
+  <string name="copy_activity_main_btn_check_update_now_36ad101" formatted="false">Kiểm tra bản cập nhật mới ngay</string>
+  <string name="copy_bottom_sheet_battery_alert_text_7866b03" formatted="false">Tự động phát thông báo giọng nói Tiếng Việt, chuông báo sạc bảo vệ pin và hiển thị HUD sạc HyperOS.</string>
+  <string name="copy_bottom_sheet_battery_alert_text_7678a0f" formatted="false">Thông báo giọng nói tiếng việt</string>
+  <string name="copy_bottom_sheet_battery_alert_text_41a6c86" formatted="false">Phát âm tiếng Việt khi cắm/rút sạc, pin đầy &amp; quá nhiệt</string>
+  <string name="copy_bottom_sheet_battery_alert_bs_btn_c953a9a" formatted="false">Thử phát giọng nói Tiếng Việt</string>
+  <string name="copy_bottom_sheet_battery_alert_text_74dc9b4" formatted="false">Khi cắm sạc (Báo mức pin &amp; công suất W)</string>
+  <string name="copy_bottom_sheet_battery_alert_text_d5bb8ee" formatted="false">Khi rút sạc (Báo mức pin còn lại)</string>
+  <string name="copy_bottom_sheet_battery_alert_bs_tv_v_86fe380" formatted="false">Khi sạc đạt ngưỡng bảo vệ (80%)</string>
+  <string name="copy_bottom_sheet_battery_alert_text_93345f6" formatted="false">Khi pin sạc đầy 100%</string>
+  <string name="copy_bottom_sheet_battery_alert_text_498ff8d" formatted="false">Cảnh báo khi pin quá nóng (&gt; 42°C)</string>
+  <string name="copy_bottom_sheet_battery_alert_bs_tv_a_7d2a168" formatted="false">Ngưỡng chuông báo bảo vệ pin (80%)</string>
+  <string name="copy_bottom_sheet_battery_alert_text_8e42784" formatted="false">Ngưỡng nhắc (không tự ngắt sạc):</string>
+  <string name="copy_bottom_sheet_battery_alert_bs_tv_a_5366a74" formatted="false">80%</string>
+  <string name="copy_bottom_sheet_battery_alert_text_9dda26d" formatted="false">Âm thanh chuông báo sạc:</string>
+  <string name="copy_bottom_sheet_battery_alert_bs_btn_7d17faa" formatted="false">Đổi nhạc</string>
+  <string name="copy_bottom_sheet_battery_alert_text_93d206c" formatted="false">Màn hình sạc HUD HyperOS (Ambient)</string>
+  <string name="copy_bottom_sheet_battery_alert_text_27eabb7" formatted="false">Báo chuông khi đầy 100%</string>
+  <string name="copy_bottom_sheet_battery_alert_text_f836185" formatted="false">Cảnh báo nhiệt độ pin quá nóng (&gt; 42°C)</string>
+  <string name="copy_bottom_sheet_battery_alert_bs_btn_79aa7ff" formatted="false">Xem Thời gian Sáng màn hình (SOT) &amp; Hao Pin</string>
+  <string name="copy_bottom_sheet_clock_text_cd5cb17" formatted="false">Đồng hồ giây</string>
+  <string name="copy_bottom_sheet_clock_text_6a5771e" formatted="false">Hỗ trợ hiển thị giờ phút giây chính xác phục vụ săn sale, thi cử và theo dõi thời gian realtime.</string>
+  <string name="copy_bottom_sheet_clock_text_15d4c80" formatted="false">Đồng hồ trên Thanh thông báo</string>
+  <string name="copy_bottom_sheet_clock_text_52a28ac" formatted="false">Ghim trên màn hình khóa &amp; thanh kéo</string>
+  <string name="copy_bottom_sheet_clock_text_3a09105" formatted="false">Đồng hồ nổi Capsule trên màn hình</string>
+  <string name="copy_bottom_sheet_clock_text_ef99f23" formatted="false">Nổi trên mọi ứng dụng &amp; game</string>
+  <string name="copy_bottom_sheet_clock_text_2c65bef" formatted="false">Vị trí ghim sẵn:</string>
+  <string name="copy_bottom_sheet_clock_bs_btn_preset_t_bff6d69" formatted="false">Góc trái</string>
+  <string name="copy_bottom_sheet_clock_bs_btn_preset_b_6293b18" formatted="false">Cạnh giờ</string>
+  <string name="copy_bottom_sheet_clock_bs_btn_preset_n_2484fe5" formatted="false">Tai thỏ</string>
+  <string name="copy_bottom_sheet_clock_bs_btn_preset_f_40d06bc" formatted="false">Tự do</string>
+  <string name="copy_bottom_sheet_clock_text_6643778" formatted="false">Nền trong suốt</string>
+  <string name="copy_bottom_sheet_clock_text_81637a2" formatted="false">Khóa vị trí &amp; Chạm xuyên thấu</string>
+  <string name="copy_bottom_sheet_clock_text_df2bd88" formatted="false">Cho phép vuốt thông báo &amp; thao tác app phía dưới</string>
+  <string name="copy_bottom_sheet_clock_text_a65ff3f" formatted="false">Hiển thị hai chữ số sau giây</string>
+  <string name="copy_bottom_sheet_debloater_text_3465cb6" formatted="false">Vô hiệu hóa ứng dụng được chọn, có thể ảnh hưởng chức năng hệ thống. Xem mô tả, chỉ chọn ứng dụng bạn hiểu rõ. Bạn có thể thử bật lại sau đó.</string>
+  <string name="copy_bottom_sheet_debloater_bs_btn_debl_5573596" formatted="false">Đóng băng đề xuất</string>
+  <string name="copy_bottom_sheet_debloater_bs_btn_debl_416af32" formatted="false">Bật lại ứng dụng đã tắt</string>
+  <string name="copy_bottom_sheet_debloater_bs_tv_deblo_a951940" formatted="false">Đang quét ứng dụng hệ thống...</string>
+  <string name="copy_bottom_sheet_game_fps_text_da423eb" formatted="false">Theo dõi số đo và quản lý Joyose. Các thao tác hệ thống cần Shizuku hoặc Root, có thể ảnh hưởng quản lý hiệu năng của ROM.</string>
+  <string name="copy_bottom_sheet_game_fps_bs_tv_shizuk_d443811" formatted="false">Shizuku: Đang kiểm tra...</string>
+  <string name="copy_bottom_sheet_game_fps_bs_btn_shizu_a973201" formatted="false">Cấp quyền</string>
+  <string name="copy_bottom_sheet_game_fps_bs_tv_joyose_90a8c51" formatted="false">Joyose: Đang kiểm tra...</string>
+  <string name="copy_bottom_sheet_game_fps_bs_tv_screen_58df566" formatted="false">Kiểm tra trạng thái trước khi thay đổi</string>
+  <string name="copy_bottom_sheet_game_fps_text_c4da66f" formatted="false">Thao tác nâng cao</string>
+  <string name="copy_bottom_sheet_game_fps_text_0f44530" formatted="false">Thao tác kết hợp sẽ tắt Joyose và xóa dữ liệu ứng dụng Pin và Hiệu suất. Bạn cần xác nhận trước khi chạy.</string>
+  <string name="copy_bottom_sheet_game_fps_bs_btn_auto_df6109b" formatted="false">Tắt Joyose và xóa dữ liệu</string>
+  <string name="copy_bottom_sheet_game_fps_bs_btn_auto_21da933" formatted="false">Bật lại Joyose</string>
+  <string name="copy_bottom_sheet_game_fps_text_b858cb2" formatted="false" />
+  <string name="copy_bottom_sheet_game_fps_text_992be30" formatted="false">Bật lại Joyose không phục hồi dữ liệu Pin và Hiệu suất đã xóa. Các mức FPS phụ thuộc trò chơi, phần cứng và ROM.</string>
+  <string name="copy_bottom_sheet_game_fps_text_68aaa5b" formatted="false">Các thao tác riêng lẻ</string>
+  <string name="copy_bottom_sheet_game_fps_text_75b8c9a" formatted="false">Thao tác từng bước độc lập nếu bạn muốn tùy biến thủ công:</string>
+  <string name="copy_bottom_sheet_game_fps_text_26eef54" formatted="false">1. Kết nối quyền hệ thống</string>
+  <string name="copy_bottom_sheet_game_fps_text_5e16337" formatted="false">Cung cấp môi trường ADB an toàn trên máy để tự động chạy lệnh ngầm.</string>
+  <string name="copy_bottom_sheet_game_fps_bs_btn_step1_e036845" formatted="false">Kiểm tra / Cấp quyền Shizuku</string>
+  <string name="copy_bottom_sheet_game_fps_text_449131a" formatted="false">2. Quản lý Joyose</string>
+  <string name="copy_bottom_sheet_game_fps_text_d8a1b07" formatted="false">Joyose thuộc hệ thống Xiaomi. Tắt dịch vụ có thể thay đổi hành vi quản lý trò chơi; chưa xác định tác động trên ROM của bạn.</string>
+  <string name="copy_bottom_sheet_game_fps_text_8a52f40" formatted="false">Ghi chú: Chỉ vô hiệu hóa tiến trình, KHÔNG PHẢI gỡ cài đặt.</string>
+  <string name="copy_bottom_sheet_game_fps_text_fc6f9f7" formatted="false">3. Dữ liệu Pin và Hiệu suất</string>
+  <string name="copy_bottom_sheet_game_fps_text_05a825e" formatted="false">Xóa dữ liệu ứng dụng Pin và Hiệu suất có thể đặt lại các tùy chỉnh của ứng dụng này. Dữ liệu đã xóa không thể khôi phục bằng Mi Tool.</string>
+  <string name="copy_bottom_sheet_game_fps_text_2897ad6" formatted="false">Ghi chú: Đây là thao tác XÓA DỮ LIỆU (Clear Data), KHÔNG PHẢI gỡ cài đặt ứng dụng.</string>
+  <string name="copy_bottom_sheet_game_fps_bs_btn_clear_df44c5d" formatted="false">Xóa dữ liệu (Shizuku)</string>
+  <string name="copy_bottom_sheet_game_fps_text_0cbb99b" formatted="false">4. Mở trò chơi và xem số đo</string>
+  <string name="copy_bottom_sheet_game_fps_text_ca85094" formatted="false">Mở trò chơi rồi bật HUD nếu cần. Hz và FPS (HW) không xác nhận FPS riêng của trò chơi.</string>
+  <string name="copy_bottom_sheet_game_fps_text_c8c7460" formatted="false">Hiển thị các số đo thiết bị đọc được. Chạm HUD để mở rộng. Nhiệt độ hiển thị là nhiệt độ pin.</string>
+  <string name="copy_bottom_sheet_game_fps_bs_btn_toggl_e98d3e5" formatted="false">Bật / tắt HUD</string>
+  <string name="copy_bottom_sheet_game_fps_bs_btn_add_h_ce54d09" formatted="false">Thêm vào quick settings</string>
+  <string name="copy_bottom_sheet_game_fps_text_8b9078c" formatted="false">Tùy chỉnh kích thước &amp; độ mờ</string>
+  <string name="copy_bottom_sheet_game_fps_text_9c9846c" formatted="false">Kích thước HUD:</string>
+  <string name="copy_bottom_sheet_game_fps_bs_tv_hud_sc_77c6cd9" formatted="false">100% (Chuẩn)</string>
+  <string name="copy_bottom_sheet_game_fps_bs_btn_scale_e001036" formatted="false">Nhỏ (80%)</string>
+  <string name="copy_bottom_sheet_game_fps_bs_btn_scale_ea1974d" formatted="false">Chuẩn (100%)</string>
+  <string name="copy_bottom_sheet_game_fps_bs_btn_scale_eaf8ffa" formatted="false">Lớn (120%)</string>
+  <string name="copy_bottom_sheet_game_fps_text_e2facd4" formatted="false">Độ mờ Nền HUD (Capsule):</string>
+  <string name="copy_bottom_sheet_game_fps_bs_tv_hud_bg_854972f" formatted="false">85% (Kính mờ)</string>
+  <string name="copy_bottom_sheet_game_fps_bs_btn_bg_tr_9b62083" formatted="false">Không nền (0%)</string>
+  <string name="copy_bottom_sheet_game_fps_bs_btn_bg_gl_a168851" formatted="false">Kính mờ (50%)</string>
+  <string name="copy_bottom_sheet_game_fps_bs_btn_bg_da_7bba9fd" formatted="false">Đậm (85%)</string>
+  <string name="copy_bottom_sheet_game_fps_text_9903602" formatted="false">Độ rõ Chữ &amp; Biểu tượng:</string>
+  <string name="copy_bottom_sheet_game_fps_bs_tv_hud_te_ce055f4" formatted="false">100% (Sắc nét)</string>
+  <string name="copy_bottom_sheet_game_fps_bs_btn_text_70f7dbb" formatted="false">Mờ nhẹ (65%)</string>
+  <string name="copy_bottom_sheet_game_fps_bs_btn_text_e2ec99b" formatted="false">Rõ nét (100%)</string>
+  <string name="copy_bottom_sheet_game_fps_text_9b8cfbb" formatted="false">Thông số hiển thị trên HUD</string>
+  <string name="copy_bottom_sheet_game_fps_text_0295dd0" formatted="false">FPS phần cứng hoặc tần số quét Hz</string>
+  <string name="copy_bottom_sheet_game_fps_text_b347925" formatted="false">Nhiệt độ pin (°C)</string>
+  <string name="copy_bottom_sheet_game_fps_text_545829b" formatted="false">Tải CPU (%)</string>
+  <string name="copy_bottom_sheet_game_fps_text_30ab2f2" formatted="false">Dung lượng RAM (%)</string>
+  <string name="copy_bottom_sheet_game_fps_text_561ea51" formatted="false">Công suất xả/sạc pin (Watt)</string>
+  <string name="copy_bottom_sheet_game_fps_text_4ec1a5e" formatted="false">Thư viện game của bạn</string>
+  <string name="copy_bottom_sheet_game_fps_bs_btn_add_c_8da13bd" formatted="false">Thêm Game</string>
+  <string name="copy_bottom_sheet_game_fps_text_190b5fe" formatted="false">Bấm " Chơi Ngay" để tự động bật HUD nổi FPS và mở game chỉ với 1 chạm. Bấm " Thêm Game" để tùy ý thêm bất kỳ tựa game hay ứng dụng nào của bạn.</string>
+  <string name="copy_bottom_sheet_game_fps_bs_tv_no_gam_aff95eb" formatted="false">Chưa có game nào trong danh sách.\nBấm " Thêm Game" để thêm trò chơi yêu thích của bạn!</string>
+  <string name="copy_bottom_sheet_hz_text_5f84af0" formatted="false">Tần số quét màn hình (Hz)</string>
+  <string name="copy_bottom_sheet_hz_text_500cb06" formatted="false">Chọn Hz được hỗ trợ hoặc khôi phục cấu hình. Mức cao có thể tăng tiêu thụ pin. Hz không phải FPS của ứng dụng.</string>
+  <string name="copy_bottom_sheet_hz_text_2fd269a" formatted="false">Tần số quét đang hoạt động:</string>
+  <string name="copy_bottom_sheet_hz_bs_tv_current_hz_fa93a12" formatted="false">120 Hz</string>
+  <string name="copy_bottom_sheet_hz_bs_tv_hz_current_m_25c9246" formatted="false">Chế độ đã chọn: Tự động (Auto)</string>
+  <string name="copy_bottom_sheet_hz_text_73728db" formatted="false">Khôi phục cấu hình trước khi ép Hz. Khi chưa có bản lưu, Mi Tool gỡ giới hạn do ứng dụng áp dụng. Hệ thống quyết định tần số thực tế.</string>
+  <string name="copy_bottom_sheet_hz_bs_btn_hz_auto_c614ba7" formatted="false">Auto</string>
+  <string name="copy_bottom_sheet_hz_bs_btn_hz_60_c3c79a4" formatted="false">60 Hz</string>
+  <string name="copy_bottom_sheet_hz_bs_btn_hz_90_471d028" formatted="false">90 Hz</string>
+  <string name="copy_bottom_sheet_hz_bs_btn_hz_144_89d6e8b" formatted="false">144 Hz</string>
+  <string name="copy_bottom_sheet_hz_bs_btn_hz_custom_66c5f1a" formatted="false">Tùy chỉnh</string>
+  <string name="copy_bottom_sheet_hz_bs_btn_add_hz_tile_57a4cca" formatted="false">Thêm phím Tần số quét vào Trung tâm điều khiển</string>
+  <string name="copy_bottom_sheet_hz_bs_btn_open_hz_set_a95e680" formatted="false">Mở Cài đặt Màn hình hệ thống</string>
+  <string name="copy_bottom_sheet_miui_utils_text_62812d4" formatted="false">Lối tắt truy cập các menu ẩn của Xiaomi: kiểm tra phần cứng, dọn dẹp bộ nhớ chuyên sâu và vô hiệu hóa các dịch vụ quảng cáo ngầm.</string>
+  <string name="copy_bottom_sheet_miui_utils_bs_btn_ope_e565ff1" formatted="false">Dọn dẹp chuyên sâu Xiaomi (deep clean)</string>
+  <string name="copy_bottom_sheet_miui_utils_bs_btn_ope_d14ec5b" formatted="false">Menu CIT ẩn\n(*#*#6484#*#*)</string>
+  <string name="copy_bottom_sheet_miui_utils_bs_btn_ope_65c5f67" formatted="false">Sóng &amp; pin\n(*#*#4636#*#*)</string>
+  <string name="copy_bottom_sheet_miui_utils_bs_btn_ope_d96d034" formatted="false">Tắt dịch vụ quảng cáo Xiaomi (msa)</string>
+  <string name="copy_bottom_sheet_miui_utils_bs_btn_ope_de30f6c" formatted="false">Cài đặt quyền riêng tư &amp; quảng cáo</string>
+  <string name="copy_bottom_sheet_notif_fix_text_638ad44" formatted="false">Khắc phục trễ thông báo</string>
+  <string name="copy_bottom_sheet_notif_fix_text_e7a507b" formatted="false">Cho phép ứng dụng được chọn chạy nền và miễn Doze. Kiểm tra thêm quyền thông báo, Tự khởi chạy và giới hạn pin MIUI. Kết quả nhận thông báo còn phụ thuộc ứng dụng và kết nối mạng.</string>
+  <string name="copy_bottom_sheet_notif_fix_bs_tv_notif_e0decee" formatted="false">Trạng thái Shizuku: Đang kiểm tra...</string>
+  <string name="copy_bottom_sheet_notif_fix_bs_tv_notif_b75ddae" formatted="false">Chọn ứng dụng cần nhận thông báo rồi áp dụng quyền chạy nền và miễn Doze qua Shizuku.</string>
+  <string name="copy_bottom_sheet_notif_fix_text_b344a0a" formatted="false">Công cụ cài đặt hệ thống MIUI / Google</string>
+  <string name="copy_bottom_sheet_notif_fix_bs_btn_open_5753660" formatted="false">Tự khởi chạy MIUI</string>
+  <string name="copy_bottom_sheet_notif_fix_bs_btn_open_d0e2c81" formatted="false">Tiết kiệm pin MIUI</string>
+  <string name="copy_bottom_sheet_notif_fix_bs_btn_open_540a864" formatted="false">Kiểm tra kết nối FCM Google (*#*#426#*#*)</string>
+  <string name="copy_bottom_sheet_notif_fix_text_2186598" formatted="false">Ứng dụng trên thiết bị</string>
+  <string name="copy_bottom_sheet_notif_fix_bs_tv_notif_a0dfb54" formatted="false">(Đã chọn: 0/0)</string>
+  <string name="copy_bottom_sheet_notif_fix_bs_tv_selec_d14d3f0" formatted="false">Chọn tất cả</string>
+  <string name="copy_bottom_sheet_notif_fix_bs_et_searc_14e79cf" formatted="false">Tìm kiếm ứng dụng bất kỳ...</string>
+  <string name="copy_bottom_sheet_notif_fix_bs_chip_fil_f7a578d" formatted="false">Tất cả</string>
+  <string name="copy_bottom_sheet_notif_fix_bs_chip_fil_1277429" formatted="false">⭐ Khuyên dùng</string>
+  <string name="copy_bottom_sheet_notif_fix_bs_chip_fil_40b56a1" formatted="false">Đã chọn</string>
+  <string name="copy_bottom_sheet_notif_fix_bs_chip_fil_77faa82" formatted="false">Chưa miễn doze</string>
+  <string name="copy_bottom_sheet_notif_fix_bs_tv_notif_364c655" formatted="false">Không tìm thấy ứng dụng phù hợp với tìm kiếm.</string>
+  <string name="copy_bottom_sheet_notif_fix_text_5ce2e6e" formatted="false">Kiểm tra để nhận thông báo ổn định</string>
+  <string name="copy_bottom_sheet_notif_fix_text_5240399" formatted="false">1. Kiểm tra quyền thông báo và kênh thông báo trong hệ thống.\n2. Kiểm tra tự khởi chạy và giới hạn pin của ROM. Miễn Doze chưa xác nhận các mục này.\n3. Thử nhận tin khi màn hình tắt. Kết quả còn phụ thuộc ứng dụng và mạng.</string>
+  <string name="copy_bottom_sheet_private_dns_text_da818e2" formatted="false">Chọn nhà cung cấp DNS-over-TLS. Cần quyền hệ thống để áp dụng trực tiếp; bạn có thể cấu hình thủ công khi thiếu quyền.</string>
+  <string name="copy_bottom_sheet_private_dns_bs_tv_pri_b9cc01f" formatted="false">Trạng thái: Đang kiểm tra...</string>
+  <string name="copy_bottom_sheet_private_dns_bs_btn_dn_eea5e5e" formatted="false">Cloudflare Family · lọc nội dung người lớn</string>
+  <string name="copy_bottom_sheet_private_dns_bs_btn_dn_56b95d6" formatted="false">Google DNS</string>
+  <string name="copy_bottom_sheet_private_dns_bs_btn_dn_595915e" formatted="false">Quad9 bảo mật</string>
+  <string name="copy_bottom_sheet_private_dns_bs_btn_dn_3ef99d3" formatted="false">DNS tùy chọn</string>
+  <string name="copy_bottom_sheet_private_dns_bs_btn_dn_3ce0ae6" formatted="false">Tự động theo mạng</string>
+  <string name="copy_bottom_sheet_private_dns_bs_btn_op_7074f80" formatted="false">Mở cài đặt DNS mạng hệ thống</string>
+  <string name="copy_bottom_sheet_ram_contentDescriptio_b64a54c" formatted="false">RAM Icon</string>
+  <string name="copy_bottom_sheet_ram_text_c2eecec" formatted="false">Xem số đo RAM và mở quản lý ứng dụng. Mi Tool không tự đóng hàng loạt ứng dụng đang chạy nền.</string>
+  <string name="copy_bottom_sheet_ram_bs_tv_shizuku_sta_6d849be" formatted="false">Đang đọc số đo RAM…</string>
+  <string name="copy_bottom_sheet_ram_text_1df527f" formatted="false">Mức tải bộ nhớ RAM</string>
+  <string name="copy_bottom_sheet_ram_bs_tv_ram_level_d_6221023" formatted="false">Hoạt động tối ưu</string>
+  <string name="copy_bottom_sheet_ram_bs_tv_ram_percent_4995f41" formatted="false">52%</string>
+  <string name="copy_bottom_sheet_ram_text_aa53de3" formatted="false">Đang dùng</string>
+  <string name="copy_bottom_sheet_ram_bs_tv_ram_used_defd3a5" formatted="false">-- GB</string>
+  <string name="copy_bottom_sheet_ram_text_b5b9cc7" formatted="false">Còn trống</string>
+  <string name="copy_bottom_sheet_ram_text_b01f68d" formatted="false">Tổng RAM</string>
+  <string name="copy_bottom_sheet_ram_bs_tv_ram_stats_89b58a9" formatted="false">-- / --</string>
+  <string name="copy_bottom_sheet_ram_bs_tv_boost_resul_90f0636" formatted="false">Số đo bộ nhớ hiện tại</string>
+  <string name="copy_bottom_sheet_ram_bs_tv_boost_resul_4a4494a" formatted="false">Mở quản lý ứng dụng để xem và chọn thao tác.</string>
+  <string name="copy_bottom_sheet_ram_bs_btn_boost_ram_aed0f53" formatted="false">Làm mới số đo RAM</string>
+  <string name="copy_bottom_sheet_ram_bs_btn_open_game_fc74884" formatted="false">Game Turbo</string>
+  <string name="copy_bottom_sheet_ram_bs_btn_open_runni_cec8eef" formatted="false">Quản lý ứng dụng</string>
+  <string name="copy_bottom_sheet_update_bs_update_subt_d8cb4d2" formatted="false">Xem thay đổi trước khi tải và cài đặt.</string>
+  <string name="copy_bottom_sheet_update_bs_update_tag_ba69b5b" formatted="false">MỚI NHẤT</string>
+  <string name="copy_bottom_sheet_update_text_c61e524" formatted="false">Bản hiện tại</string>
+  <string name="copy_bottom_sheet_update_bs_update_curr_768e6e3" formatted="false">v1.0.35</string>
+  <string name="copy_bottom_sheet_update_text_3e11984" formatted="false">Bản mới nhất</string>
+  <string name="copy_bottom_sheet_update_bs_update_chan_4d289b3" formatted="false">Nhật ký thay đổi:</string>
+  <string name="copy_bottom_sheet_update_bs_update_chan_5354ac5" formatted="false">Nội dung cập nhật...</string>
+  <string name="copy_bottom_sheet_update_bs_update_btn_dc79ed1" formatted="false">Tải bản cập nhật</string>
+  <string name="copy_bottom_sheet_volte_text_93e51f0" formatted="false">Mở mã kiểm tra và cài đặt VoLTE/VoWiFi. Tùy chọn phụ thuộc thiết bị, ROM và nhà mạng; không bảo đảm kích hoạt được dịch vụ.</string>
+  <string name="copy_bottom_sheet_volte_bs_btn_unlock_v_82bb783" formatted="false">Tùy chọn VoLTE</string>
+  <string name="copy_bottom_sheet_volte_bs_btn_unlock_v_cfbdd57" formatted="false">Tùy chọn VoWiFi</string>
+  <string name="copy_bottom_sheet_volte_bs_btn_open_rad_55b24a3" formatted="false">Sóng Radio\n(*#*#4636#*#*)</string>
+  <string name="copy_bottom_sheet_volte_bs_btn_open_sim_b5a2cb7" formatted="false">Cài đặt SIM\n&amp; Mạng di động</string>
+  <string name="copy_dialog_customize_widget_text_a7d9df8" formatted="false">Tùy biến widget SOT &amp; pin</string>
+  <string name="copy_dialog_customize_widget_text_f264b74" formatted="false">Tùy biến phong cách hiển thị, nhận diện theme hệ thống và chu kỳ làm mới</string>
+  <string name="copy_dialog_customize_widget_text_d39fa7c" formatted="false">Phong cách định dạng widget</string>
+  <string name="copy_dialog_customize_widget_rb_style_d_17177ba" formatted="false">Bảng điều khiển đầy đủ (4 ô chỉ số) (mặc định)</string>
+  <string name="copy_dialog_customize_widget_rb_style_h_da611a9" formatted="false">Chuẩn HyperOS kính mờ</string>
+  <string name="copy_dialog_customize_widget_rb_style_m_7af3bb9" formatted="false">Tối giản nhỏ gọn (minimalist)</string>
+  <string name="copy_dialog_customize_widget_text_33b12ab" formatted="false">Nhận diện giao diện (theme)</string>
+  <string name="copy_dialog_customize_widget_rb_theme_s_f909bb7" formatted="false">Tự động theo Hệ thống (Sáng / Tối)</string>
+  <string name="copy_dialog_customize_widget_rb_theme_d_b435259" formatted="false">Luôn kính mờ tối (dark HyperOS)</string>
+  <string name="copy_dialog_customize_widget_rb_theme_l_56e16da" formatted="false">Luôn kính mờ sáng (light frost)</string>
+  <string name="copy_dialog_customize_widget_text_c97080d" formatted="false">⏱ tần suất tự động làm mới</string>
+  <string name="copy_dialog_customize_widget_rb_interva_0ecfc9d" formatted="false">15 phút một lần</string>
+  <string name="copy_dialog_customize_widget_rb_interva_cb612b8" formatted="false">30 phút một lần (Khuyên dùng)</string>
+  <string name="copy_dialog_customize_widget_rb_interva_5d0a8e8" formatted="false">60 phút một lần</string>
+  <string name="copy_dialog_customize_widget_rb_interva_62c5af3" formatted="false">Chỉ khi bật màn hình / cắm sạc (Tiết kiệm pin nhất)</string>
+  <string name="copy_dialog_customize_widget_text_ea45d85" formatted="false">Hiển thị nhiệt độ pin</string>
+  <string name="copy_dialog_customize_widget_text_1c35fac" formatted="false">Hiển thị dự đoán thời lượng</string>
+  <string name="copy_dialog_customize_widget_btn_widget_bb38780" formatted="false">Lưu &amp; cập nhật widget</string>
+  <string name="copy_dialog_debloater_item_tv_debloat_a_b16a80b" formatted="false">Mi Video</string>
+  <string name="copy_dialog_debloater_item_tv_debloat_p_05ff041" formatted="false">com.miui.videoplayer</string>
+  <string name="copy_dialog_debloater_item_tv_debloat_s_b091a30" formatted="false">Đang chạy</string>
+  <string name="copy_dialog_debloater_item_tv_debloat_d_b24b43e" formatted="false">Trình xem video mặc định kèm nhiều thông báo tin tức và quảng cáo</string>
+  <string name="copy_dialog_debloater_list_text_b5b3b7f" formatted="false">Quản lý ứng dụng rác (safe debloater)</string>
+  <string name="copy_dialog_debloater_list_text_940558a" formatted="false">Bấm \'Đóng băng\' để vô hiệu hóa ứng dụng ngầm mà không gây lỗi máy. Có thể bật lại bất cứ lúc nào.</string>
+  <string name="copy_dialog_pick_game_app_text_9a882a7" formatted="false">Thêm game vào thư viện</string>
+  <string name="copy_dialog_pick_game_app_btn_game_pick_bbfa773" formatted="false">Close</string>
+  <string name="copy_dialog_pick_game_app_text_c989d65" formatted="false">Chọn bất kỳ tựa game hoặc ứng dụng nào đã cài đặt trên máy để theo dõi FPS nổi khi chơi:</string>
+  <string name="copy_dialog_pick_game_app_et_game_picke_39d453f" formatted="false">Tìm theo tên game hoặc gói...</string>
+  <string name="copy_dialog_pick_game_app_tv_game_picke_517defd" formatted="false">Không tìm thấy ứng dụng phù hợp</string>
+  <string name="copy_item_battery_drain_app_item_tv_ran_356a192" formatted="false">1</string>
+  <string name="copy_item_battery_drain_app_item_iv_ico_f54c835" formatted="false">App Icon</string>
+  <string name="copy_item_battery_drain_app_item_tv_nam_5603f52" formatted="false">Tên ứng dụng</string>
+  <string name="copy_item_battery_drain_app_item_tv_dur_c7607f1" formatted="false">1 giờ 25 phút</string>
+  <string name="copy_item_battery_drain_app_text_ecf727e" formatted="false">•</string>
+  <string name="copy_item_battery_drain_app_item_tv_per_5be8ff9" formatted="false">32%</string>
+  <string name="copy_item_battery_drain_app_item_tv_est_3994997" formatted="false">~4.5%</string>
+  <string name="copy_item_battery_drain_app_item_btn_st_a613049" formatted="false">Buộc dừng ứng dụng</string>
+  <string name="copy_item_game_hud_entry_iv_game_icon_c8d3d36" formatted="false">Game Icon</string>
+  <string name="copy_item_game_hud_entry_tv_game_title_f562131" formatted="false">Tên trò chơi</string>
+  <string name="copy_item_game_hud_entry_tv_game_packag_7b70886" formatted="false">com.game.package</string>
+  <string name="copy_item_game_hud_entry_btn_launch_gam_23e7fe4" formatted="false">Chơi Ngay</string>
+  <string name="copy_item_game_hud_entry_btn_delete_gam_d019ba7" formatted="false">Remove Game</string>
+  <string name="copy_item_notif_app_tv_app_category_3f5497d" formatted="false">Nhắn tin • com.zing.zalo</string>
+  <string name="copy_item_notif_app_tv_app_status_badge_20e8ec0" formatted="false">Chưa tối ưu pin</string>
+  <string name="copy_item_pick_game_entry_iv_pick_game_716f63b" formatted="false">Icon</string>
+  <string name="copy_item_pick_game_entry_tv_pick_game_e3e8284" formatted="false">Game</string>
+  <string name="copy_item_pick_game_entry_tv_pick_game_e1dfc2d" formatted="false">com.example.game</string>
+  <string name="copy_item_pick_game_entry_contentDescri_8598222" formatted="false">Select</string>
+  <string name="copy_layout_charging_hud_iv_hud_icon_805d4e2" formatted="false">Charging Icon</string>
+  <string name="copy_layout_charging_hud_tv_hud_title_805c43b" formatted="false">Đang sạc nhanh • 75%</string>
+  <string name="copy_layout_charging_hud_tv_hud_subtitl_4a3b8f3" formatted="false">Còn 24 phút là đầy pin • 33W</string>
+  <string name="copy_layout_floating_clock_tv_floating_a433b06" formatted="false">12:00:00</string>
+  <string name="copy_layout_floating_clock_tv_floating_fae31ec" formatted="false">100%</string>
+  <string name="copy_layout_floating_game_hud_tv_hud_co_04283a2" formatted="false">Chưa có số đo</string>
+  <string name="copy_layout_floating_game_hud_tv_hud_co_294f38d" formatted="false">37.5°C</string>
+  <string name="copy_layout_floating_game_hud_btn_hud_c_e4075cf" formatted="false">Close HUD</string>
+  <string name="copy_layout_floating_game_hud_tv_hud_ex_8fd50f0" formatted="false">GAME HUD</string>
+  <string name="copy_layout_floating_game_hud_tv_hud_ex_81c4c3f" formatted="false">CPU:</string>
+  <string name="copy_layout_floating_game_hud_tv_hud_ex_8ab0d45" formatted="false">28%</string>
+  <string name="copy_layout_floating_game_hud_tv_hud_ex_d8fd50d" formatted="false">RAM:</string>
+  <string name="copy_layout_floating_game_hud_tv_hud_ex_b378739" formatted="false">54%</string>
+  <string name="copy_layout_floating_game_hud_tv_hud_ex_5a08e30" formatted="false">Pin:</string>
+  <string name="copy_layout_floating_game_hud_tv_hud_ex_ab93224" formatted="false">Xả:</string>
+  <string name="copy_layout_floating_game_hud_tv_hud_ex_9c97bfa" formatted="false">3.2W</string>
+  <string name="copy_layout_floating_game_hud_tv_hud_ex_4baf54c" formatted="false">Chạm để thu gọn</string>
+  <string name="copy_widget_ram_boost_text_df7f6a6" formatted="false">Xem bộ nhớ</string>
+  <string name="copy_widget_ram_boost_widget_tv_ram_per_138b69d" formatted="false">52% Tải</string>
+  <string name="copy_widget_ram_boost_widget_tv_ram_fre_e3a5b1e" formatted="false">-- GB trống</string>
+  <string name="copy_widget_ram_boost_widget_tv_ram_sub_656fcbf" formatted="false">Chạm để xem bộ nhớ và quản lý ứng dụng</string>
+  <string name="copy_widget_ram_boost_widget_btn_ram_bo_eab2692" formatted="false">Xem bộ nhớ</string>
+  <string name="copy_widget_sot_widget_tv_sot_title_781e57a" formatted="false">⏱ SOT hyperos</string>
+  <string name="copy_widget_sot_widget_tv_sot_battery_9d292c0" formatted="false">--%</string>
+  <string name="copy_widget_sot_widget_tv_sot_temp_b6aba70" formatted="false">--°C</string>
+  <string name="copy_widget_sot_widget_btn_sot_refresh_56e3bad" formatted="false">Refresh</string>
+  <string name="copy_widget_sot_widget_tv_sot_time_70aacef" formatted="false">--h --m</string>
+  <string name="copy_widget_sot_widget_tv_sot_sub_c2f0fdc" formatted="false">Kể từ lần rút sạc gần nhất</string>
+  <string name="copy_widget_sot_dashboard_widget_tv_sot_9820e9b" formatted="false">Hyperos battery &amp; SOT</string>
+  <string name="copy_widget_sot_dashboard_widget_tv_sot_9b03cc2" formatted="false">Tổng dùng máy: --h --p</string>
+  <string name="copy_widget_sot_dashboard_widget_tv_lab_d496963" formatted="false">⏱ SOT</string>
+  <string name="copy_widget_sot_dashboard_widget_tv_sot_d064aa0" formatted="false">Tổng: --h --p</string>
+  <string name="copy_widget_sot_dashboard_widget_tv_lab_8b45895" formatted="false">Mức Pin</string>
+  <string name="copy_widget_sot_dashboard_widget_tv_lab_2e608f3" formatted="false">Dự kiến</string>
+  <string name="copy_widget_sot_dashboard_widget_tv_sot_8e67d23" formatted="false">Còn ~--h --p</string>
+  <string name="copy_widget_sot_minimal_widget_tv_sot_s_311b931" formatted="false">Kể từ lúc rút sạc</string>
+  <string name="copy_message_lockscreenchargingactivity_c7c3317" formatted="false">-- W</string>
+  <string name="copy_message_mainactivity_775a359" formatted="false">Shizuku: đã cấp</string>
+  <string name="copy_message_mainactivity_eaaced0" formatted="false">Shizuku: chờ cấp</string>
+  <string name="copy_message_mainactivity_686190c" formatted="false">Shizuku: chưa chạy</string>
+  <string name="copy_message_mainactivity_48458e4" formatted="false">Chưa kích hoạt Mở rộng RAM</string>
+  <string name="copy_message_mainactivity_5c35654" formatted="false">Tự động phân tích hệ thống</string>
+  <string name="copy_message_mainactivity_424b6e1" formatted="false">Joyose đã tắt. FPS còn phụ thuộc trò chơi và thiết bị.</string>
+  <string name="copy_message_mainactivity_723e32f" formatted="false">Joyose đang bật. Chạm để xem tùy chọn nâng cao.</string>
+  <string name="copy_message_mainactivity_50e8ff6" formatted="false">Joyose: Không có / Đã gỡ bỏ</string>
+  <string name="copy_message_mainactivity_2e79cfe" formatted="false">Đang tắt DNS riêng tư</string>
+  <string name="copy_message_mainactivity_24a63f5" formatted="false">Chế độ Tự động (Mặc định nhà mạng)</string>
+  <string name="copy_message_mainactivity_2fc4691" formatted="false">Đang bật: Cả thông báo &amp; Capsule nổi</string>
+  <string name="copy_message_mainactivity_d26bc7a" formatted="false">Đang bật: Đồng hồ thanh thông báo</string>
+  <string name="copy_message_mainactivity_20e430c" formatted="false">Đang bật: Đồng hồ nổi capsule</string>
+  <string name="copy_message_mainactivity_a124911" formatted="false">Đang tắt • Hỗ trợ săn sale &amp; hiển thị giây</string>
+  <string name="copy_message_mainactivity_0b41f06" formatted="false">Đang bật: Thông báo giọng nói Tiếng Việt</string>
+  <string name="copy_message_mainactivity_8b9cb0a" formatted="false">Tùy chỉnh lời nhắc, âm báo và màn hình sạc</string>
+  <string name="copy_message_mainactivity_6f422b1" formatted="false">Đã tối ưu chạy nền • Chống trễ tin nhắn Zalo, Messenger</string>
+  <string name="copy_message_mainactivity_b35523e" formatted="false">Kiểm tra quyền và giới hạn chạy nền theo từng ứng dụng</string>
+  <string name="copy_message_mainactivity_2e40b6a" formatted="false">Tùy chỉnh Tần số quét (Hz)</string>
+  <string name="copy_message_mainactivity_bec30f0" formatted="false">Nhập số Hz mong muốn (hoặc 0 để quay về chế độ Tự động):</string>
+  <string name="copy_message_mainactivity_56cb3a2" formatted="false">Shizuku: Đã kết nối &amp; Cấp quyền</string>
+  <string name="copy_message_mainactivity_02a192f" formatted="false">Đã kết nối Shizuku thành công</string>
+  <string name="copy_message_mainactivity_08f7af5" formatted="false">Shizuku: Đang chạy (Chờ cấp quyền)</string>
+  <string name="copy_message_mainactivity_c18218b" formatted="false">Cấp quyền Shizuku ngay</string>
+  <string name="copy_message_mainactivity_acf5220" formatted="false">Shizuku: Chưa kết nối</string>
+  <string name="copy_message_mainactivity_27168af" formatted="false">Joyose đã tắt; chưa xác nhận FPS của trò chơi.</string>
+  <string name="copy_message_mainactivity_6759b0d" formatted="false">Joyose: đang bật</string>
+  <string name="copy_message_mainactivity_09dba51" formatted="false">Đang thực hiện thay đổi hệ thống…</string>
+  <string name="copy_message_mainactivity_9d3cb73" formatted="false">Tắt Joyose và xóa dữ liệu Pin và Hiệu suất</string>
+  <string name="copy_message_mainactivity_594801d" formatted="false">Đang khôi phục Joyose...</string>
+  <string name="copy_message_mainactivity_2157d19" formatted="false">1-chạm khôi phục joyose &amp; mặc định</string>
+  <string name="copy_message_mainactivity_81007b4" formatted="false">80% (Nhỏ)</string>
+  <string name="copy_message_mainactivity_8cb1b2b" formatted="false">120% (Lớn)</string>
+  <string name="copy_message_mainactivity_67d50dc" formatted="false">0% (Không nền)</string>
+  <string name="copy_message_mainactivity_09c2a3e" formatted="false">50% (Kính mờ)</string>
+  <string name="copy_message_mainactivity_d25ed2f" formatted="false">85% (Đậm)</string>
+  <string name="copy_message_mainactivity_6355aa1" formatted="false">65% (Mờ nhẹ)</string>
+  <string name="copy_message_mainactivity_3142bfb" formatted="false">Thao tác hệ thống đã hoàn tất</string>
+  <string name="copy_message_mainactivity_0dd5cd6" formatted="false">Nhập DNS DoT tùy chọn</string>
+  <string name="copy_message_mainactivity_150e982" formatted="false">Nhập tên miền máy chủ DNS riêng tư hỗ trợ DoT (DNS-over-TLS). Tự động loại bỏ https:// hoặc cổng thừa.</string>
+  <string name="copy_message_mainactivity_69f6bdb" formatted="false">Số đo bộ nhớ của hệ thống</string>
+  <string name="copy_message_mainactivity_58f5eca" formatted="false">ℹ Chế độ tiêu chuẩn (Kết nối Shizuku để dọn sâu toàn bộ tiến trình ngầm)</string>
+  <string name="copy_message_mainactivity_aad8975" formatted="false">Số đo bộ nhớ hiện tại</string>
+  <string name="copy_message_mainactivity_61e9e1f" formatted="false">Mức tải bộ nhớ bình thường</string>
+  <string name="copy_message_mainactivity_ca35242" formatted="false">RAM đang được sử dụng nhiều; chưa xác định có vấn đề.</string>
+  <string name="copy_message_mainactivity_eb8243d" formatted="false">Shizuku: Đã cấp quyền (Tự động 1-chạm)</string>
+  <string name="copy_message_mainactivity_12d80e0" formatted="false">Sẵn sàng miễn Doze và cho phép chạy nền. Kiểm tra thêm Tự khởi chạy, pin và quyền thông báo trong Cài đặt.</string>
+  <string name="copy_message_mainactivity_6b1207c" formatted="false">Shizuku: Chưa cấp quyền</string>
+  <string name="copy_message_mainactivity_ea74838" formatted="false">Cấp quyền Shizuku để tối ưu 1-chạm hoặc dùng các phím tắt hệ thống bên dưới.</string>
+  <string name="copy_message_mainactivity_772d33b" formatted="false">(0 ứng dụng)</string>
+  <string name="copy_message_mainactivity_bab641b" formatted="false">Được miễn doze</string>
+  <string name="copy_message_mainactivity_bca2ab6" formatted="false">Cần quyền Shizuku để tự động hóa</string>
+  <string name="copy_message_mainactivity_bcdcfff" formatted="false">Để tự động cấp quyền Tự khởi chạy và Gỡ bỏ giới hạn pin cho hàng loạt ứng dụng trong 1 click, bạn cần cấp quyền Shizuku cho Mi Tool.\n\nNếu chưa có Shizuku, bạn có thể bấm nút \'Tự khởi chạy MIUI\' hoặc \'Tiết kiệm pin MIUI\' để cấu hình thủ công.</string>
+  <string name="copy_message_mainactivity_3e1f8a7" formatted="false">Đang tối ưu hóa...</string>
+  <string name="copy_message_mainactivity_763ac5b" formatted="false">Đã đóng băng</string>
+  <string name="copy_message_mainactivity_65bbd97" formatted="false">Kích hoạt lại ứng dụng</string>
+  <string name="copy_message_mainactivity_f03738a" formatted="false">ĐANG CHẠY</string>
+  <string name="copy_message_mainactivity_4a3f2a8" formatted="false">Tuyệt vời! Không tìm thấy ứng dụng rác nào trên thiết bị này.</string>
+  <string name="copy_message_mainactivity_ba13368" formatted="false">Thêm phím vào Trung tâm điều khiển</string>
+  <string name="copy_message_mainactivity_8dab4ae" formatted="false">Để thêm phím tắt Đồng hồ giây:\n\n1. Vuốt mở Trung tâm điều khiển (Bảng điều khiển).\n2. Chạm vào biểu tượng Chỉnh sửa (hình bút chì).\n3. Kéo ô \'Đồng hồ giây\' lên danh sách phím kích hoạt.</string>
+  <string name="copy_message_mainactivity_ff2dea7" formatted="false">Thông tin bí mật pin &amp; CIT</string>
+  <string name="copy_message_mainactivity_be8cd5b" formatted="false">Đo chất lượng (10s)</string>
+  <string name="copy_message_mainactivity_998a64f" formatted="false">Đang đo (0/10s)...</string>
+  <string name="copy_message_mainactivity_9510887" formatted="false">Đo lại củ cáp (10s)</string>
+  <string name="copy_message_mainactivity_2449dca" formatted="false">Vừa mới đây</string>
+  <string name="copy_message_mainactivity_86480bc" formatted="false">Vừa mới rút</string>
+  <string name="copy_message_mainactivity_8b189ff" formatted="false">&gt; 7 ngày</string>
+  <string name="copy_message_mainactivity_e8e4966" formatted="false">Thời gian dùng từ lúc rút sạc; không phải thống kê pin/chạy nền của hệ thống</string>
+  <string name="copy_message_mainactivity_cc32f60" formatted="false">Thời gian dùng từ 00:00; không dùng để kết luận ứng dụng gây hao pin</string>
+  <string name="copy_message_mainactivity_71d83d4" formatted="false">Đang phân tích dữ liệu ứng dụng &amp; tiêu thụ pin...</string>
+  <string name="copy_message_mainactivity_1212da6" formatted="false">Chưa đủ dữ liệu thời gian dùng ứng dụng.</string>
+  <string name="copy_message_mainactivity_e0fc835" formatted="false">Chưa có số đo pin theo ứng dụng</string>
+  <string name="copy_message_mainactivity_3fd46b5" formatted="false">Nguồn: Pin thiết bị</string>
+  <string name="copy_message_mainactivity_b0249d6" formatted="false">Chưa có số đo</string>
+  <string name="copy_message_mainactivity_928895a" formatted="false">Xem tại CIT</string>
+  <string name="copy_message_mainactivity_567d2ed" formatted="false">Đang kết nối GitHub...</string>
+  <string name="copy_message_mainactivity_03b2957" formatted="false">Đang cấp quyền qua Shizuku...</string>
+  <string name="copy_message_mainactivity_7cb8388" formatted="false">Đã kích hoạt</string>
+  <string name="copy_message_mainactivity_0e001f3" formatted="false">Đã cấp quyền secure settings</string>
+  <string name="copy_message_mainactivity_4c944b7" formatted="false">Chờ cấp quyền</string>
+  <string name="copy_message_mainactivity_ade013c" formatted="false">Cấp quyền Shizuku cho Mi Tool</string>
+  <string name="copy_action_a73cb8c" formatted="false">Về tự động (0hz)</string>
+  <string name="copy_action_5ba8778" formatted="false">Cấp quyền Shizuku</string>
+  <string name="copy_action_737ae56" formatted="false">Mở Tự khởi chạy</string>
+  <string name="copy_action_f46981b" formatted="false">Đã hiểu</string>
+  <string name="copy_action_07f0877" formatted="false">Cài đặt thủ công</string>
+  <string name="copy_action_60dfab3" formatted="false">Chép lệnh ADB</string>
+  <string name="copy_message_updatehelper_80917db" formatted="false">Có bản cập nhật mới!</string>
+  <string name="copy_message_updatehelper_fe71eac" formatted="false">Để sau</string>
+  <string name="copy_message_updatehelper_4dc1313" formatted="false">Bạn đang dùng bản mới nhất!</string>
+  <string name="copy_message_updatehelper_38b1c18" formatted="false">Hệ thống đã được đồng bộ phiên bản mới nhất từ GitHub</string>
+  <string name="copy_message_updatehelper_11fd90d" formatted="false">Trạng thái phiên bản:</string>
+  <string name="copy_message_updatehelper_1322f58" formatted="false">Tuyệt vời (Đã hiểu)</string>
+  <string name="copy_message_updatehelper_b436a19" formatted="false">Bắn thông báo thử nghiệm</string>
+  <string name="copy_message_updatehelper_568dcfc" formatted="false">Không thể kiểm tra cập nhật</string>
+  <string name="copy_message_updatehelper_a148d5f" formatted="false">Lỗi kết nối tới máy chủ GitHub Releases</string>
+  <string name="copy_message_updatehelper_49e777f" formatted="false">LỖI MẠNG</string>
+  <string name="copy_message_updatehelper_3958bcb" formatted="false">Chi tiết:</string>
+  <string name="copy_message_updatehelper_8e96f5d" formatted="false">Thử lại ngay</string>
+  <string name="copy_navigation_9c91841" formatted="false">Pin</string>
+  <string name="message_cfe33d4f06" formatted="false">Số đo hệ thống. Bạn không cần Shizuku để xem RAM.</string>
+  <string name="message_83254efbe7" formatted="false">Đã cấp quyền Shizuku thành công!</string>
+  <string name="message_78d0bb6782" formatted="false">Từ chối quyền Shizuku</string>
+  <string name="message_afc322642c" formatted="false">Shizuku đã được cấp quyền và đang hoạt động tốt!</string>
+  <string name="message_e0bf52937b" formatted="false">Không tìm thấy Liên Quân Mobile hoặc Honor of Kings trên máy</string>
+  <string name="message_e642e9cac1" formatted="false">Đã bật Mini Game HUD</string>
+  <string name="message_84696a9c8b" formatted="false">Đã tắt Mini Game HUD</string>
+  <string name="message_b52ccc075c" formatted="false">Bạn hãy vuốt thanh điều khiển xuống, chọn biểu tượng Cây bút / Chỉnh sửa rồi kéo phím \'Game HUD FPS\' vào bảng điều khiển!</string>
+  <string name="message_8768842a81" formatted="false">Vui lòng cấp quyền Hiển thị trên ứng dụng khác để mở HUD nổi</string>
+  <string name="message_c5aac2d6ea" formatted="false">Đã đọc lại số đo bộ nhớ. Android quản lý RAM theo nhu cầu sử dụng.</string>
+  <string name="message_b4881168f6" formatted="false">Không thể mở Cài đặt ứng dụng</string>
+  <string name="message_4ea961cd51" formatted="false">Đã bật thông báo giọng nói Tiếng Việt!</string>
+  <string name="message_f270fc3eb4" formatted="false">Đã đặt lại âm báo về mặc định</string>
+  <string name="message_e601c57420" formatted="false">Đã lưu tùy biến &amp; cập nhật Widget!</string>
+  <string name="message_f7def66603" formatted="false">Vui lòng chọn ít nhất 1 ứng dụng!</string>
+  <string name="message_93f3108c10" formatted="false">Đã thêm phím Tần số quét vào thanh điều khiển!</string>
+  <string name="message_abc5582eee" formatted="false">Tất cả ứng dụng rác khuyên dùng đã được đóng băng!</string>
+  <string name="message_64dea7ba2f" formatted="false">Không có ứng dụng nào đang bị đóng băng.</string>
+  <string name="message_6a3685d30f" formatted="false">Đã thêm phím Đồng hồ vào Trung tâm điều khiển thành công!</string>
+  <string name="message_708508bfdb" formatted="false">Đã đặt lại mốc tính thời gian sáng màn hình!</string>
+  <string name="message_4944883cd7" formatted="false">Đã làm mới danh sách tiêu thụ pin</string>
+  <string name="message_088de068d9" formatted="false">Vui lòng mở Shizuku và cấp quyền cho Mi Tool trước!</string>
+  <string name="message_4167ae242c" formatted="false">Đã hủy kiểm tra củ cáp</string>
+  <string name="message_6811b99e50" formatted="false">Đã hoàn thành đánh giá chất lượng củ cáp!</string>
+  <string name="message_353552eac6" formatted="false">Đang mở trang tải Shizuku...</string>
+  <string name="message_953a8dc535" formatted="false">Shizuku chưa chạy. Vui lòng mở Shizuku và bấm Bắt đầu (Start) trước!</string>
+  <string name="message_0f5b5fc30d" formatted="false">%.2f inch • Tỉ lệ %s</string>
+  <string name="message_57c7d8030e" formatted="false">%.1f GB / %.1f GB (Còn trống %.1f GB • %d%%)</string>
+  <string name="message_20245d5ec1" formatted="false">%.1f GB / %.1f GB (Đã dùng %d%%)</string>
+  <string name="message_746f383fc5" formatted="false">%.1f GB / %.1f GB</string>
+  <string name="message_4921cf7858" formatted="false">Còn trống: %.1f GB • Đã dùng %d%%</string>
+  <string name="message_5c7d8ca384" formatted="false">%d%% pin · %.1f °C</string>
+  <string name="message_30f6ffc400" formatted="false">%.1f °C • %.2f V</string>
+  <string name="message_d66a43c101" formatted="false">Đã dùng: %.1f GB / %.1f GB (%d%%) • Xem bộ nhớ và quản lý ứng dụng</string>
+  <string name="message_1cedd1517f" formatted="false">%.1f GB</string>
+  <string name="message_bd05147d75" formatted="false">Phát hiện: %d ứng dụng • Đang chạy: %d • Đã đóng băng: %d</string>
+  <string name="message_e44459d574" formatted="false">⏳ Đang đo (%d/%ds)...</string>
+  <string name="message_6525729d9b" formatted="false">Dòng đỉnh: %d mA • Dòng TB: %d mA • Ổn định: %d%% • Công suất: %.1f W</string>
+  <string name="message_5b83308024" formatted="false">%.1f °C</string>
+  <string name="message_bb89f8fc80" formatted="false">%.2f V</string>
+  <string name="message_c640b6bc35" formatted="false">%s%.1f W</string>
+  <string name="message_4e09d4fa5b" formatted="false">Đã bật thanh thông báo Mi-Tool</string>
+  <string name="message_cb902a4f54" formatted="false">Đã tắt thanh thông báo Mi-Tool</string>
+  <string name="message_acb34cbd38" formatted="false">Vui lòng mở Mi Tool và cấp quyền Hiển thị trên ứng dụng khác!</string>
+  <string name="message_2c00e1afac" formatted="false">⏰ Đã bật Đồng hồ giây nổi</string>
+  <string name="message_8d618c02ce" formatted="false">⏰ Đã tắt Đồng hồ giây nổi</string>
+  <string name="message_3551a17c89" formatted="false">Vui lòng cấp quyền Hiển thị trên ứng dụng khác cho Mi Tool!</string>
+  <string name="message_79d1762490" formatted="false">Đã bật Mini Game HUD (FPS)</string>
+  <string name="message_5c8185984b" formatted="false">Đã bật thông báo trạng thái Mi-Tool</string>
+  <string name="message_d52c0088c5" formatted="false">Đã tắt thông báo trạng thái Mi-Tool</string>
+  <string name="message_2c0b7fb956" formatted="false">Đã sao chép lệnh ADB vào khay nhớ tạm!</string>
+  <string name="message_71e4bd4b2a" formatted="false">Đã tắt Joyose. Chưa xác nhận FPS của trò chơi.</string>
+  <string name="message_6e2403a5fe" formatted="false">Đã sao chép lệnh ADB tắt Joyose! Hãy chạy lệnh trên máy tính hoặc dùng Shizuku 1-chạm.</string>
+  <string name="message_64be67e4a1" formatted="false">Đã bật lại Joyose bằng quyền Root.</string>
+  <string name="message_7d53463ea4" formatted="false">Đã sao chép lệnh ADB bật lại Joyose!</string>
+  <string name="message_82d33d7c05" formatted="false">Không thể mở mục Tự khởi chạy MIUI</string>
+  <string name="message_8037bb3357" formatted="false">Không thể mở trang Tiết kiệm pin</string>
+  <string name="message_2f14c9c4d3" formatted="false">Không thể mở thông tin ứng dụng</string>
+  <string name="message_feb651570e" formatted="false">Không thể mở trang kiểm tra FCM</string>
+  <string name="message_93e0c3b4fb" formatted="false">Trình khởi chạy của máy không hỗ trợ tự động ghim phím tắt. Bạn có thể nhấn giữ biểu tượng Mi-Tool ngoài màn hình chính để kéo phím tắt ra!</string>
+  <string name="message_b9a86048f2" formatted="false">Đã gửi yêu cầu tạo lối tắt ra Màn hình chính!\n(Nếu chưa thấy icon, hãy bật quyền \'Lối tắt màn hình chính\' trong Cài đặt ứng dụng)</string>
+  <string name="message_3dfd4b742d" formatted="false">Không thể tạo lối tắt tự động. Hãy nhấn giữ biểu tượng app ngoài màn hình chính!</string>
+  <string name="message_5eaf7881a3" formatted="false">Đã thêm nút \'Thông báo Mi-Tool\' vào Bảng điều khiển!</string>
+  <string name="message_4668eb9ffa" formatted="false">Nút \'Thông báo Mi-Tool\' đã có trong Bảng điều khiển của bạn!</string>
+  <string name="message_a60251a65d" formatted="false">Cách thêm: Vuốt thanh thông báo xuống -&gt; Chạm biểu tượng Bút chì  -&gt; Tìm \'Thông báo Mi-Tool\' và kéo lên!</string>
+  <string name="message_21b9a83ad1" formatted="false">Đã thêm nút \'Tần số quét\' vào Bảng điều khiển!</string>
+  <string name="message_fe0e504af4" formatted="false">Nút \'Tần số quét\' đã có trong Bảng điều khiển của bạn!</string>
+  <string name="message_59c02cb5e1" formatted="false">Cách thêm: Vuốt thanh thông báo xuống -&gt; Chạm biểu tượng Bút chì  -&gt; Tìm \'Tần số quét\' và kéo lên!</string>
+  <string name="message_d5f5d3fb1d" formatted="false">Đã bắn thông báo cập nhật lên thanh trạng thái!</string>
+  <string name="message_e8fc409fd0" formatted="false">Cho phép cài đặt, sau đó trở lại Mi Tool và chọn tải bản cập nhật.</string>
+  <string name="message_c2c7cc7fd1" formatted="false">Đang tải bản cập nhật... Vui lòng theo dõi thanh thông báo.</string>
+  <string name="message_66e3f7f1d0" formatted="false">Tải cập nhật thất bại. Vui lòng thử lại.</string>
+  <string name="message_4cc88acb5e" formatted="false">Không tìm thấy file cài đặt đã tải về.</string>
+  <string name="message_0a8f0ed117" formatted="false">Vui lòng tìm mục \'Tự khởi chạy\' (Autostart) trong cài đặt ứng dụng.</string>
+  <string name="message_cbc35ac48d" formatted="false">Vui lòng chọn \'Tiết kiệm pin\' -&gt; \'Không giới hạn\'.</string>
+  <string name="message_6e91e7ed01" formatted="false">Vui lòng bật quyền \'Hiển thị trên màn hình khóa\' và \'Cửa sổ bật lên\'.</string>
+  <string name="message_f0c8e61633" formatted="false">Bạn có thể bấm *#*#4636#*#* trong bàn phím quay số để xem.</string>
+</resources>

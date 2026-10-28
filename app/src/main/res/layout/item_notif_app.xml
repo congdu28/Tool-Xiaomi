@@ -1,110 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/item_notif_root"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
-    android:background="@drawable/bg_card_rounded"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:paddingStart="12dp"
-    android:paddingTop="12dp"
-    android:paddingEnd="12dp"
-    android:paddingBottom="12dp">
-
-    <!-- Checkbox with MaterialCheckBox for clean rendering on HyperOS / MIUI -->
-    <com.google.android.material.checkbox.MaterialCheckBox
-        android:id="@+id/cb_app_select"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:layout_marginEnd="8dp"
-        android:minWidth="0dp"
-        android:minHeight="0dp"
-        app:buttonTint="@color/mi_orange"
-        android:checked="true" />
-
-    <!-- App Icon -->
-    <ImageView
-        android:id="@+id/iv_app_icon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="12dp"
-        android:contentDescription="App Icon"
-        android:src="@drawable/ic_app_icon" />
-
-    <!-- App Info Column -->
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
-
-        <!-- App Name -->
-        <TextView
-            android:id="@+id/tv_app_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:text="Tên ứng dụng"
-            android:textColor="@color/text_primary"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
-        <!-- Category & Package Name -->
-        <TextView
-            android:id="@+id/tv_app_category"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:text="Nhắn tin • com.zing.zalo"
-            android:textColor="@color/text_secondary"
-            android:textSize="11sp" />
-
-        <!-- Status Badge: Dedicated row, will NEVER squeeze vertically! -->
-        <TextView
-            android:id="@+id/tv_app_status_badge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:background="@drawable/bg_badge_orange"
-            android:ellipsize="none"
-            android:includeFontPadding="false"
-            android:paddingStart="8dp"
-            android:paddingTop="3dp"
-            android:paddingEnd="8dp"
-            android:paddingBottom="3dp"
-            android:singleLine="true"
-            android:text="⚠️ Chưa tối ưu pin"
-            android:textColor="@color/mi_orange"
-            android:textSize="11sp"
-            android:textStyle="bold" />
-
+<?xml version='1.0' encoding='utf-8'?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/item_notif_root" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="10dp" android:background="@drawable/bg_card_rounded" android:gravity="center_vertical" android:orientation="horizontal" android:paddingStart="12dp" android:paddingTop="12dp" android:paddingEnd="12dp" android:paddingBottom="12dp">
+    <com.google.android.material.checkbox.MaterialCheckBox android:id="@+id/cb_app_select" android:layout_width="28dp" android:layout_height="28dp" android:layout_marginEnd="8dp" android:minWidth="0dp" android:minHeight="48dp" app:buttonTint="@color/mi_orange" android:checked="true" />
+    <ImageView android:id="@+id/iv_app_icon" android:layout_width="40dp" android:layout_height="40dp" android:layout_marginEnd="12dp" android:contentDescription="@string/copy_item_battery_drain_app_item_iv_ico_f54c835" android:src="@drawable/ic_app_icon" />
+    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+        <TextView android:id="@+id/tv_app_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:ellipsize="end" android:singleLine="true" android:text="@string/copy_item_battery_drain_app_item_tv_nam_5603f52" android:textColor="@color/text_primary" android:textSize="14sp" android:textStyle="bold" />
+        <TextView android:id="@+id/tv_app_category" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:ellipsize="end" android:singleLine="true" android:text="@string/copy_item_notif_app_tv_app_category_3f5497d" android:textColor="@color/text_secondary" android:textSize="12sp" />
+        <TextView android:id="@+id/tv_app_status_badge" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:background="@drawable/bg_badge_orange" android:ellipsize="none" android:includeFontPadding="false" android:paddingStart="8dp" android:paddingTop="3dp" android:paddingEnd="8dp" android:paddingBottom="3dp" android:singleLine="true" android:text="@string/copy_item_notif_app_tv_app_status_badge_20e8ec0" android:textColor="@color/mi_orange" android:textSize="12sp" android:textStyle="bold" />
     </LinearLayout>
-
-    <!-- App Action Button: Clean and compact -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_app_action"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="wrap_content"
-        android:layout_height="34dp"
-        android:layout_marginStart="8dp"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:insetLeft="0dp"
-        android:insetRight="0dp"
-        android:minWidth="0dp"
-        android:minHeight="0dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:text="Tùy chỉnh"
-        android:textColor="@color/neon_cyan"
-        android:textSize="11sp"
-        app:cornerRadius="8dp"
-        app:strokeColor="@color/card_dark_stroke"
-        app:strokeWidth="1dp" />
-
+    <com.google.android.material.button.MaterialButton android:id="@+id/btn_app_action" style="@style/Widget.MiTool.Button" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:paddingLeft="10dp" android:paddingRight="10dp" android:text="@string/copy_bottom_sheet_hz_bs_btn_hz_custom_66c5f1a" android:minHeight="48dp" />
 </LinearLayout>

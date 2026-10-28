@@ -1,430 +1,53 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/bg_bottom_sheet"
-    android:fillViewport="true"
-    android:overScrollMode="never">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
-
-        <!-- Drag Handle -->
-        <View
-            android:layout_width="40dp"
-            android:layout_height="4dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/bg_drag_handle" />
-
-        <!-- Title & Subtitle -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="🔔 Khắc Phục Trễ Thông Báo"
-            android:textColor="@color/text_primary"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:lineSpacingExtra="2dp"
-            android:text="Cho phép ứng dụng được chọn chạy nền và miễn Doze. Kiểm tra thêm quyền thông báo, Tự khởi chạy và giới hạn pin MIUI. Kết quả nhận thông báo còn phụ thuộc ứng dụng và kết nối mạng."
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp" />
-
-        <!-- Shizuku Mode Status Banner -->
-        <LinearLayout
-            android:id="@+id/bs_layout_shizuku_banner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:background="@drawable/bg_card_rounded"
-            android:orientation="vertical"
-            android:padding="12dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/bs_iv_notif_shizuku_icon"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:src="@drawable/ic_shield_check"
-                    app:tint="@color/neon_green" />
-
-                <TextView
-                    android:id="@+id/bs_tv_notif_shizuku_status"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_weight="1"
-                    android:text="Trạng thái Shizuku: Đang kiểm tra..."
-                    android:textColor="@color/text_primary"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/bs_btn_grant_shizuku"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="32dp"
-                    android:layout_marginStart="6dp"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:minWidth="0dp"
-                    android:minHeight="0dp"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
-                    android:text="Cấp quyền"
-                    android:textColor="@color/mi_orange"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    android:visibility="gone" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/bs_tv_notif_shizuku_desc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Tối ưu tự động toàn bộ ứng dụng chỉ bằng 1 chạm thông qua Shizuku."
-                android:textColor="@color/text_secondary"
-                android:textSize="11sp" />
-        </LinearLayout>
-
-        <!-- Main 1-Tap Batch Fix Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/bs_btn_batch_fix"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="12dp"
-            android:backgroundTint="@color/neon_green"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:insetLeft="0dp"
-            android:insetRight="0dp"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:text="⚡ 1-CHẠM FIX TẤT CẢ ỨNG DỤNG ĐÃ CHỌN"
-            android:textColor="#0D1117"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            app:cornerRadius="10dp" />
-
-        <!-- MIUI System Tools Title -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="🛠️ Công Cụ Cài Đặt Hệ Thống MIUI / Google"
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-
-        <!-- System Settings Shortcuts: 2-column + full-width -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/bs_btn_open_autostart"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:layout_weight="1"
-                android:minHeight="42dp"
-                android:minWidth="0dp"
-                android:backgroundTint="@color/card_highlight"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:paddingLeft="6dp"
-                android:paddingRight="6dp"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:text="🚀 Tự khởi chạy MIUI"
-                android:textColor="@color/text_primary"
-                android:textSize="11sp"
-                app:cornerRadius="8dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/bs_btn_open_powerkeeper"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_weight="1"
-                android:minHeight="42dp"
-                android:minWidth="0dp"
-                android:backgroundTint="@color/card_highlight"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:paddingLeft="6dp"
-                android:paddingRight="6dp"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:text="🔋 Tiết kiệm pin MIUI"
-                android:textColor="@color/text_primary"
-                android:textSize="11sp"
-                app:cornerRadius="8dp" />
-        </LinearLayout>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/bs_btn_open_fcm_diag"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:minHeight="42dp"
-            android:backgroundTint="@color/card_highlight"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:insetLeft="0dp"
-            android:insetRight="0dp"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:text="🔍 Kiểm Tra Kết Nối FCM Google (*#*#426#*#*)"
-            android:textColor="@color/neon_cyan"
-            android:textSize="11sp"
-            app:cornerRadius="8dp" />
-
-        <!-- Apps Section Toolbar -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="6dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="📱 Ứng dụng trên thiết bị"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/bs_tv_notif_selected_count"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:layout_weight="1"
-                android:text="(Đã chọn: 0/0)"
-                android:textColor="@color/text_muted"
-                android:textSize="11sp" />
-
-            <TextView
-                android:id="@+id/bs_tv_select_all"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackground"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="6dp"
-                android:text="Chọn tất cả"
-                android:textColor="@color/neon_cyan"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <!-- Real-time App Search Box -->
-        <LinearLayout
-            android:id="@+id/bs_layout_search"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/bg_card_rounded"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🔍"
-                android:textSize="13sp" />
-
-            <EditText
-                android:id="@+id/bs_et_search_apps"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:background="@null"
-                android:hint="Tìm kiếm ứng dụng bất kỳ..."
-                android:imeOptions="actionDone"
-                android:inputType="text"
-                android:maxLines="1"
-                android:textColor="@color/text_primary"
-                android:textColorHint="@color/text_muted"
-                android:textSize="12sp" />
-
-            <ImageView
-                android:id="@+id/bs_iv_clear_search"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                android:src="@drawable/ic_close"
-                android:visibility="gone"
-                app:tint="@color/text_muted" />
-        </LinearLayout>
-
-        <!-- Filter Chips Row -->
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:overScrollMode="never"
-            android:scrollbars="none">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/bs_chip_filter_all"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="6dp"
-                    android:background="@drawable/bg_badge_cyan"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:paddingStart="10dp"
-                    android:paddingTop="5dp"
-                    android:paddingEnd="10dp"
-                    android:paddingBottom="5dp"
-                    android:text="Tất cả"
-                    android:textColor="@color/neon_cyan"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/bs_chip_filter_recommended"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="6dp"
-                    android:background="@drawable/bg_card_rounded"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:paddingStart="10dp"
-                    android:paddingTop="5dp"
-                    android:paddingEnd="10dp"
-                    android:paddingBottom="5dp"
-                    android:text="⭐ Khuyên dùng"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/bs_chip_filter_selected"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="6dp"
-                    android:background="@drawable/bg_card_rounded"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:paddingStart="10dp"
-                    android:paddingTop="5dp"
-                    android:paddingEnd="10dp"
-                    android:paddingBottom="5dp"
-                    android:text="Đã chọn"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/bs_chip_filter_unoptimized"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/bg_card_rounded"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:paddingStart="10dp"
-                    android:paddingTop="5dp"
-                    android:paddingEnd="10dp"
-                    android:paddingBottom="5dp"
-                    android:text="⚠️ Chưa tối ưu"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </HorizontalScrollView>
-
-        <!-- Loading Spinner -->
-        <ProgressBar
-            android:id="@+id/bs_pb_loading_apps"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:indeterminateTint="@color/neon_green" />
-
-        <!-- Dynamic Container for Apps -->
-        <LinearLayout
-            android:id="@+id/bs_layout_notif_apps"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
-
-        <TextView
-            android:id="@+id/bs_tv_notif_empty"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:gravity="center"
-            android:text="Không tìm thấy ứng dụng phù hợp với tìm kiếm."
-            android:textColor="@color/text_muted"
-            android:textSize="12sp"
-            android:visibility="gone" />
-
-        <!-- Pro Tip & Explanation Card -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/bg_card_rounded"
-            android:orientation="vertical"
-            android:padding="14dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="💡 Cơ Chế Hoạt Động &amp; Bảo Vệ Pin"
-                android:textColor="@color/mi_orange"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:lineSpacingExtra="3dp"
-                android:text="1. Không cần khóa đa nhiệm: Sau khi cấp quyền Autostart và mở khóa FCM Push Hub (GMS), bạn có thể xóa sạch đa nhiệm. Thiết bị không cần duy trì ứng dụng trên RAM liên tục, giúp tiết kiệm pin tối đa.\n2. App Ngân hàng &amp; Gmail: Nhận biến động số dư OTT tức thời nhờ kết nối socket mtalk.google.com luôn thông suốt.\n3. Bật Thông báo nổi: Vào Thông tin ứng dụng -> Thông báo -> Bật 'Thông báo nổi' và 'Màn hình khóa' để tin nhắn bật sáng màn hình."
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
-        </LinearLayout>
-
+<?xml version='1.0' encoding='utf-8'?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_bottom_sheet" android:paddingTop="12dp">
+    <View android:layout_width="40dp" android:layout_height="4dp" android:layout_gravity="center_horizontal" android:layout_marginBottom="16dp" android:background="@drawable/bg_drag_handle" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp" android:paddingStart="20dp" android:paddingEnd="20dp">
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="@string/copy_bottom_sheet_notif_fix_text_638ad44" android:textColor="@color/text_primary" android:textSize="22sp" android:textStyle="bold" android:layout_weight="1" android:layout_marginBottom="0dp" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/sheet_close" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/action_close" android:contentDescription="@string/action_close" style="@style/Widget.MiTool.Button.Text" android:minHeight="48dp" />
     </LinearLayout>
-
-</androidx.core.widget.NestedScrollView>
+    <androidx.core.widget.NestedScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@android:color/transparent" android:fillViewport="true" android:overScrollMode="never">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingStart="20dp" android:paddingEnd="20dp" android:paddingBottom="24dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:lineSpacingExtra="2dp" android:text="@string/copy_bottom_sheet_notif_fix_text_e7a507b" android:textColor="@color/text_secondary" android:textSize="12sp" />
+            <LinearLayout android:id="@+id/bs_layout_shizuku_banner" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:background="@drawable/bg_card_rounded" android:orientation="vertical" android:padding="12dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+                    <ImageView android:id="@+id/bs_iv_notif_shizuku_icon" android:layout_width="22dp" android:layout_height="22dp" android:src="@drawable/ic_shield_check" app:tint="@color/neon_green" android:importantForAccessibility="no" />
+                    <TextView android:id="@+id/bs_tv_notif_shizuku_status" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="10dp" android:layout_weight="1" android:text="@string/copy_bottom_sheet_notif_fix_bs_tv_notif_e0decee" android:textColor="@color/text_primary" android:textSize="12sp" android:textStyle="bold" />
+                    <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_grant_shizuku" style="@style/Widget.MiTool.Button" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:paddingLeft="8dp" android:paddingRight="8dp" android:text="@string/copy_bottom_sheet_game_fps_bs_btn_shizu_a973201" android:textStyle="bold" android:visibility="gone" android:minHeight="48dp" />
+                </LinearLayout>
+                <TextView android:id="@+id/bs_tv_notif_shizuku_desc" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/copy_bottom_sheet_notif_fix_bs_tv_notif_b75ddae" android:textColor="@color/text_secondary" android:textSize="12sp" />
+            </LinearLayout>
+            <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_batch_fix" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:paddingLeft="12dp" android:paddingRight="12dp" android:text="@string/notif_fix_btn_batch" android:textStyle="bold" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="@string/copy_bottom_sheet_notif_fix_text_b344a0a" android:textColor="@color/text_secondary" android:textSize="12sp" android:textStyle="bold" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_open_autostart" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="4dp" android:layout_weight="1" android:paddingLeft="6dp" android:paddingRight="6dp" android:text="@string/copy_bottom_sheet_notif_fix_bs_btn_open_5753660" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_open_powerkeeper" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="4dp" android:layout_weight="1" android:paddingLeft="6dp" android:paddingRight="6dp" android:text="@string/copy_bottom_sheet_notif_fix_bs_btn_open_d0e2c81" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+            </LinearLayout>
+            <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_open_fcm_diag" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:paddingLeft="8dp" android:paddingRight="8dp" android:text="@string/copy_bottom_sheet_notif_fix_bs_btn_open_540a864" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:layout_marginBottom="6dp" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_bottom_sheet_notif_fix_text_2186598" android:textColor="@color/text_secondary" android:textSize="12sp" android:textStyle="bold" />
+                <TextView android:id="@+id/bs_tv_notif_selected_count" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:layout_weight="1" android:text="@string/copy_bottom_sheet_notif_fix_bs_tv_notif_a0dfb54" android:textColor="@color/text_muted" android:textSize="12sp" />
+                <TextView android:id="@+id/bs_tv_select_all" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="?attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:padding="6dp" android:text="@string/copy_bottom_sheet_notif_fix_bs_tv_selec_d14d3f0" android:textColor="@color/neon_cyan" android:textSize="12sp" android:textStyle="bold" android:minHeight="48dp" android:gravity="center" />
+            </LinearLayout>
+            <LinearLayout android:id="@+id/bs_layout_search" android:layout_width="match_parent" android:layout_height="40dp" android:layout_marginBottom="8dp" android:background="@drawable/bg_card_rounded" android:gravity="center_vertical" android:orientation="horizontal" android:paddingStart="12dp" android:paddingEnd="12dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_bottom_sheet_game_fps_text_b858cb2" android:textSize="13sp" />
+                <EditText android:id="@+id/bs_et_search_apps" android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="8dp" android:layout_weight="1" android:background="@null" android:hint="@string/copy_bottom_sheet_notif_fix_bs_et_searc_14e79cf" android:imeOptions="actionDone" android:inputType="text" android:maxLines="1" android:textColor="@color/text_primary" android:textColorHint="@color/text_muted" android:textSize="12sp" />
+                <ImageView android:id="@+id/bs_iv_clear_search" android:layout_width="20dp" android:layout_height="20dp" android:background="?attr/selectableItemBackgroundBorderless" android:clickable="true" android:focusable="true" android:src="@drawable/ic_close" android:visibility="gone" app:tint="@color/text_muted" android:importantForAccessibility="no" />
+            </LinearLayout>
+            <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="10dp" android:overScrollMode="never" android:scrollbars="none">
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal">
+                    <TextView android:id="@+id/bs_chip_filter_all" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginEnd="6dp" android:background="@drawable/bg_badge_cyan" android:clickable="true" android:focusable="true" android:paddingStart="10dp" android:paddingTop="5dp" android:paddingEnd="10dp" android:paddingBottom="5dp" android:text="@string/copy_bottom_sheet_notif_fix_bs_chip_fil_f7a578d" android:textColor="@color/neon_cyan" android:textSize="12sp" android:textStyle="bold" android:minHeight="48dp" android:gravity="center" />
+                    <TextView android:id="@+id/bs_chip_filter_recommended" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginEnd="6dp" android:background="@drawable/bg_card_rounded" android:clickable="true" android:focusable="true" android:paddingStart="10dp" android:paddingTop="5dp" android:paddingEnd="10dp" android:paddingBottom="5dp" android:text="@string/copy_bottom_sheet_notif_fix_bs_chip_fil_1277429" android:textColor="@color/text_secondary" android:textSize="12sp" android:textStyle="bold" android:minHeight="48dp" android:gravity="center" />
+                    <TextView android:id="@+id/bs_chip_filter_selected" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginEnd="6dp" android:background="@drawable/bg_card_rounded" android:clickable="true" android:focusable="true" android:paddingStart="10dp" android:paddingTop="5dp" android:paddingEnd="10dp" android:paddingBottom="5dp" android:text="@string/copy_bottom_sheet_notif_fix_bs_chip_fil_40b56a1" android:textColor="@color/text_secondary" android:textSize="12sp" android:textStyle="bold" android:minHeight="48dp" android:gravity="center" />
+                    <TextView android:id="@+id/bs_chip_filter_unoptimized" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/bg_card_rounded" android:clickable="true" android:focusable="true" android:paddingStart="10dp" android:paddingTop="5dp" android:paddingEnd="10dp" android:paddingBottom="5dp" android:text="@string/copy_bottom_sheet_notif_fix_bs_chip_fil_77faa82" android:textColor="@color/text_secondary" android:textSize="12sp" android:textStyle="bold" android:minHeight="48dp" android:gravity="center" />
+                </LinearLayout>
+            </HorizontalScrollView>
+            <ProgressBar android:id="@+id/bs_pb_loading_apps" android:layout_width="32dp" android:layout_height="32dp" android:layout_gravity="center_horizontal" android:layout_marginTop="16dp" android:layout_marginBottom="16dp" android:indeterminateTint="@color/neon_green" />
+            <LinearLayout android:id="@+id/bs_layout_notif_apps" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" />
+            <TextView android:id="@+id/bs_tv_notif_empty" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:layout_marginBottom="16dp" android:gravity="center" android:text="@string/copy_bottom_sheet_notif_fix_bs_tv_notif_364c655" android:textColor="@color/text_muted" android:textSize="12sp" android:visibility="gone" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:background="@drawable/bg_card_rounded" android:orientation="vertical" android:padding="14dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_bottom_sheet_notif_fix_text_5ce2e6e" android:textColor="@color/mi_orange" android:textSize="13sp" android:textStyle="bold" />
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:lineSpacingExtra="3dp" android:text="@string/copy_bottom_sheet_notif_fix_text_5240399" android:textColor="@color/text_secondary" android:textSize="12sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

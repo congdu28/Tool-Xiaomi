@@ -240,6 +240,7 @@ public class MainActivity extends AppCompatActivity {
     private Runnable batteryTickerRunnable;
     private Runnable refreshGameFpsSheetState = null;
     private Runnable refreshDnsSheetState;
+    private Runnable refreshHzSheetState;
     private Runnable refreshNotificationSheetState;
     private boolean dnsApplying;
 
@@ -249,9 +250,9 @@ public class MainActivity extends AppCompatActivity {
                 public void onRequestPermissionResult(int requestCode, int grantResult) {
                     if (requestCode == ShizukuHelper.SHIZUKU_REQ_CODE) {
                         if (grantResult == PackageManager.PERMISSION_GRANTED) {
-                            Toast.makeText(MainActivity.this, "Đã cấp quyền Shizuku thành công!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, R.string.message_83254efbe7, Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(MainActivity.this, "Từ chối quyền Shizuku", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, R.string.message_78d0bb6782, Toast.LENGTH_SHORT).show();
                         }
                         if (refreshNotificationSheetState != null) refreshNotificationSheetState.run();
                         updateShizukuDisplay();
@@ -308,6 +309,7 @@ public class MainActivity extends AppCompatActivity {
         applyAppTheme(prefs.getAppThemeMode());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        app.cd.mitool.ui.FeatureCatalog.bind(this);
 
         // Cancel old legacy notification IDs from previous versions
         NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -336,12 +338,8 @@ public class MainActivity extends AppCompatActivity {
             Shizuku.addBinderDeadListener(shizukuBinderDeadListener);
         } catch (Throwable ignored) {
         }
-        requestNotificationPermissionIfNeeded();
 
-        // Default start notification clock service if enabled
-        if (prefs.isNotifClockEnabled()) {
-            startNotificationClockService();
-        }
+        NotificationClockService.sync(this);
 
         // Auto check for updates from GitHub in background & schedule periodic alarm
         UpdateHelper.schedulePeriodicCheck(this);
@@ -359,6 +357,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleIncomingIntent(Intent intent) {
         if (intent == null) return;
+        if (intent.getBooleanExtra("extra_open_memory", false)) { bottomNav.setSelectedItemId(R.id.nav_tools); showRamBottomSheet(); }
         if (intent.getIntExtra("extra_tab_index", -1) == 1) {
             if (bottomNav != null) {
                 bottomNav.setSelectedItemId(R.id.nav_battery);
@@ -382,8 +381,8 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public WindowInsetsCompat onApplyWindowInsets(@NonNull View v, @NonNull WindowInsetsCompat insets) {
                     Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-                    v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
-                    return insets;
+                    v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+                    return WindowInsetsCompat.CONSUMED;
                 }
             });
         }
@@ -568,55 +567,17 @@ public class MainActivity extends AppCompatActivity {
     // =========================================================================
 
     private void setupDeviceSpecs() {
-        if (btnQuickGameMode != null) {
-            btnQuickGameMode.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    boolean ok = GamingFpsHelper.applyGaming120Mode(MainActivity.this);
-                    if (ok) {
-                        Toast.makeText(MainActivity.this, "⚡ Đã kích hoạt Game Mode 120Hz & Tối Đa Hiệu Năng!", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(MainActivity.this, "Cần cấp quyền WRITE_SECURE_SETTINGS (Xem Tab Cài Đặt)", Toast.LENGTH_SHORT).show();
-                    }
-                    updateDeviceSpecsDisplay();
-                    updateToolsCardSummaries();
-                }
-            });
-        }
-
-        if (btnQuickBoostRam != null) {
-            btnQuickBoostRam.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    btnQuickBoostRam.setEnabled(false);
-                    btnQuickBoostRam.setText("Đang dọn...");
-                    RamBoosterHelper.boostRam(MainActivity.this, new RamBoosterHelper.BoostCallback() {
-                        @Override
-                        public void onBoostComplete(long freedMb, RamBoosterHelper.MemoryStats newStats) {
-                            btnQuickBoostRam.setEnabled(true);
-                            btnQuickBoostRam.setText("🚀 Dọn Dẹp RAM");
-                            updateDeviceSpecsDisplay();
-                            updateToolsCardSummaries();
-                            Toast.makeText(MainActivity.this, "Đã giải phóng ~" + freedMb + " MB RAM!", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-            });
-        }
-
-        if (btnQuickDns != null) {
-            btnQuickDns.setOnClickListener(v -> showPrivateDnsBottomSheet());
-        }
-
-        if (btnQuickDebloat != null) {
-            btnQuickDebloat.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    handleDebloatFreezeRecommended();
-                }
-            });
-        }
-
+        if (btnQuickGameMode != null) btnQuickGameMode.setOnClickListener(v -> showNotificationFixBottomSheet());
+        if (btnQuickBoostRam != null) btnQuickBoostRam.setOnClickListener(v -> bottomNav.setSelectedItemId(R.id.nav_battery));
+        if (btnQuickDns != null) btnQuickDns.setOnClickListener(v -> showPrivateDnsBottomSheet());
+        if (btnQuickDebloat != null) btnQuickDebloat.setOnClickListener(v -> bottomNav.setSelectedItemId(R.id.nav_settings));
+        MaterialButton details = findViewById(R.id.btn_toggle_device_details);
+        details.setOnClickListener(v -> {
+            View panel = findViewById(R.id.layout_device_details);
+            boolean open = panel.getVisibility() != View.VISIBLE;
+            panel.setVisibility(open ? View.VISIBLE : View.GONE);
+            details.setText(open ? R.string.details_hide : R.string.details_show);
+        });
         updateDeviceSpecsDisplay();
     }
 
@@ -645,13 +606,13 @@ public class MainActivity extends AppCompatActivity {
 
             // Shizuku badge
             if (ShizukuHelper.hasShizukuPermission()) {
-                tvDeviceShizukuBadge.setText("🟢 Shizuku: Đã cấp");
+                tvDeviceShizukuBadge.setText(R.string.copy_message_mainactivity_775a359);
                 tvDeviceShizukuBadge.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
             } else if (ShizukuHelper.isShizukuRunning()) {
-                tvDeviceShizukuBadge.setText("🟡 Shizuku: Chờ cấp");
+                tvDeviceShizukuBadge.setText(R.string.copy_message_mainactivity_eaaced0);
                 tvDeviceShizukuBadge.setTextColor(ContextCompat.getColor(this, R.color.neon_yellow));
             } else {
-                tvDeviceShizukuBadge.setText("🔴 Shizuku: Chưa chạy");
+                tvDeviceShizukuBadge.setText(R.string.copy_message_mainactivity_686190c);
                 tvDeviceShizukuBadge.setTextColor(ContextCompat.getColor(this, R.color.text_muted));
             }
 
@@ -669,7 +630,7 @@ public class MainActivity extends AppCompatActivity {
             // Display
             DeviceInfoHelper.DisplayStats ds = DeviceInfoHelper.getDisplayStats(this);
             if (tvSpecDisplaySize != null) {
-                tvSpecDisplaySize.setText(String.format(Locale.getDefault(), "%.2f inch • Tỉ lệ %s", ds.screenInches, ds.aspectRatio));
+                tvSpecDisplaySize.setText(String.format(Locale.getDefault(), getString(R.string.message_0f5b5fc30d), ds.screenInches, ds.aspectRatio));
             }
             tvSpecDisplayRes.setText(ds.resolutionStandard);
             tvSpecDisplayHz.setText(ds.refreshRate + " Hz (" + (ds.refreshRate > 60 ? "Mượt mà" : "Tiết kiệm pin") + ")");
@@ -680,48 +641,49 @@ public class MainActivity extends AppCompatActivity {
 
             // RAM & Storage
             DeviceInfoHelper.MemoryStats ram = DeviceInfoHelper.getRamStats(this);
-            tvSpecRamText.setText(String.format(Locale.getDefault(), "%.1f GB / %.1f GB (Còn trống %.1f GB • %d%%)", ram.usedGb, ram.totalGb, ram.freeGb, ram.percentUsed));
+            tvSpecRamText.setText(String.format(Locale.getDefault(), getString(R.string.message_57c7d8030e), ram.usedGb, ram.totalGb, ram.freeGb, ram.percentUsed));
             pbSpecRam.setProgress(ram.percentUsed);
 
             // ZRAM (Swap / Extension)
             DeviceInfoHelper.ZramStats zram = DeviceInfoHelper.getZramStats();
             if (tvSpecZramText != null && pbSpecZram != null) {
                 if (zram.isEnabled && zram.totalGb > 0) {
-                    tvSpecZramText.setText(String.format(Locale.getDefault(), "%.1f GB / %.1f GB (Đã dùng %d%%)", zram.usedGb, zram.totalGb, zram.percentUsed));
+                    tvSpecZramText.setText(String.format(Locale.getDefault(), getString(R.string.message_20245d5ec1), zram.usedGb, zram.totalGb, zram.percentUsed));
                     pbSpecZram.setProgress(zram.percentUsed);
                 } else {
-                    tvSpecZramText.setText("Chưa kích hoạt Mở rộng RAM");
+                    tvSpecZramText.setText(R.string.copy_message_mainactivity_48458e4);
                     pbSpecZram.setProgress(0);
                 }
             }
 
             // ROM Storage
             DeviceInfoHelper.MemoryStats rom = DeviceInfoHelper.getInternalStorageStats();
-            tvSpecStorageText.setText(String.format(Locale.getDefault(), "%.1f GB / %.1f GB", rom.usedGb, rom.totalGb));
+            tvSpecStorageText.setText(String.format(Locale.getDefault(), getString(R.string.message_746f383fc5), rom.usedGb, rom.totalGb));
             if (tvSpecStorageSub != null) {
-                tvSpecStorageSub.setText(String.format(Locale.getDefault(), "Còn trống: %.1f GB • Đã dùng %d%%", rom.freeGb, rom.percentUsed));
+                tvSpecStorageSub.setText(String.format(Locale.getDefault(), getString(R.string.message_4921cf7858), rom.freeGb, rom.percentUsed));
             }
             pbSpecStorage.setProgress(rom.percentUsed);
 
             // Battery Overview
             BatteryHelper.BatteryInfo bInfo = BatteryHelper.getBatteryInfo(this);
+        TextView overview = findViewById(R.id.tv_overview_battery);
+        if (overview != null) overview.setText(String.format(Locale.getDefault(), getString(R.string.message_5c7d8ca384), bInfo.level, bInfo.temperature));
             BatteryHelper.BatteryCapacityData bCap = BatteryHelper.getBatteryCapacityData(this);
 
             tvSpecBatteryPercent.setText(bInfo.level + "% (" + (bInfo.isCharging ? bInfo.plugTypeName : "Đang dùng pin") + ")");
 
             if (tvSpecBatteryCapacity != null) {
-                tvSpecBatteryCapacity.setText(String.format(Locale.getDefault(), "%d / %d mAh (%d%%)", bCap.designMah, bCap.actualMah, Math.round(bCap.healthPercent)));
+                tvSpecBatteryCapacity.setText(bCap.designMah > 0 ? bCap.designMah + " mAh (thiết kế)" : "Thiết bị chưa cung cấp dung lượng thiết kế");
             }
-
             if (tvSpecBatteryCycles != null) {
-                if (bCap.cycleCount > 0) {
+                if (bCap.cycleCount >= 0) {
                     tvSpecBatteryCycles.setText(bCap.cycleCount + " Chu kỳ sạc");
                 } else {
-                    tvSpecBatteryCycles.setText("Tự động phân tích hệ thống");
+                    tvSpecBatteryCycles.setText(R.string.copy_message_mainactivity_5c35654);
                 }
             }
 
-            tvSpecBatteryTempVoltage.setText(String.format(Locale.getDefault(), "%.1f °C • %.2f V", bInfo.temperature, bInfo.voltageMv / 1000.0f));
+            tvSpecBatteryTempVoltage.setText(String.format(Locale.getDefault(), getString(R.string.message_30f6ffc400), bInfo.temperature, bInfo.voltageMv / 1000.0f));
             tvSpecBatteryHealth.setText(bCap.healthDescription);
         } catch (Throwable t) {
             android.util.Log.e("MiTool", "Error updating device specs display: " + t.getMessage(), t);
@@ -732,17 +694,25 @@ public class MainActivity extends AppCompatActivity {
     // TAB 2: GROUPED FEATURE CARDS & BOTTOM SHEETS
     // =========================================================================
 
+    private void openTool(Runnable open) {
+        View input = findViewById(R.id.et_tool_search);
+        android.view.inputmethod.InputMethodManager keyboard = (android.view.inputmethod.InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        if (keyboard != null) keyboard.hideSoftInputFromWindow(input.getWindowToken(), 0);
+        input.clearFocus();
+        open.run();
+    }
+
     private void setupToolsCards() {
-        if (cardToolHz != null) cardToolHz.setOnClickListener(v -> showHzBottomSheet());
-        if (cardToolGameFps != null) cardToolGameFps.setOnClickListener(v -> showGameFpsBottomSheet());
-        if (cardToolDebloater != null) cardToolDebloater.setOnClickListener(v -> showDebloaterDialog());
-        if (cardToolPrivateDns != null) cardToolPrivateDns.setOnClickListener(v -> showPrivateDnsBottomSheet());
-        if (cardToolVolte != null) cardToolVolte.setOnClickListener(v -> showVoLteBottomSheet());
-        if (cardToolRam != null) cardToolRam.setOnClickListener(v -> showRamBottomSheet());
-        if (cardToolClock != null) cardToolClock.setOnClickListener(v -> showClockBottomSheet());
-        if (cardToolBatteryAlert != null) cardToolBatteryAlert.setOnClickListener(v -> showBatteryAlertBottomSheet());
-        if (cardToolMiuiUtils != null) cardToolMiuiUtils.setOnClickListener(v -> showMiuiUtilsBottomSheet());
-        if (cardToolNotifFix != null) cardToolNotifFix.setOnClickListener(v -> showNotificationFixBottomSheet());
+        if (cardToolHz != null) cardToolHz.setOnClickListener(v -> openTool(() -> showHzBottomSheet()));
+        if (cardToolGameFps != null) cardToolGameFps.setOnClickListener(v -> openTool(() -> showGameFpsBottomSheet()));
+        if (cardToolDebloater != null) cardToolDebloater.setOnClickListener(v -> openTool(() -> showDebloaterDialog()));
+        if (cardToolPrivateDns != null) cardToolPrivateDns.setOnClickListener(v -> openTool(() -> showPrivateDnsBottomSheet()));
+        if (cardToolVolte != null) cardToolVolte.setOnClickListener(v -> openTool(() -> showVoLteBottomSheet()));
+        if (cardToolRam != null) cardToolRam.setOnClickListener(v -> openTool(() -> showRamBottomSheet()));
+        if (cardToolClock != null) cardToolClock.setOnClickListener(v -> openTool(() -> showClockBottomSheet()));
+        if (cardToolBatteryAlert != null) cardToolBatteryAlert.setOnClickListener(v -> openTool(() -> showBatteryAlertBottomSheet()));
+        if (cardToolMiuiUtils != null) cardToolMiuiUtils.setOnClickListener(v -> openTool(() -> showMiuiUtilsBottomSheet()));
+        if (cardToolNotifFix != null) cardToolNotifFix.setOnClickListener(v -> openTool(() -> showNotificationFixBottomSheet()));
 
         updateToolsCardSummaries();
     }
@@ -753,10 +723,10 @@ public class MainActivity extends AppCompatActivity {
             int currentHz = RefreshRateHelper.getCurrentRefreshRate(this);
             int targetHz = prefs.getTargetRefreshRate();
             if (targetHz == 0) {
-                tvToolHzSub.setText("Chế độ: Tự động (Auto) • Màn hình: " + currentHz + " Hz");
+                tvToolHzSub.setText(getString(R.string.summary_hz_system, currentHz));
                 tvToolHzSub.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
             } else {
-                tvToolHzSub.setText("Chế độ: Cố định " + targetHz + " Hz • Màn hình: " + currentHz + " Hz");
+                tvToolHzSub.setText(getString(R.string.summary_hz_selected, targetHz, currentHz));
                 tvToolHzSub.setTextColor(ContextCompat.getColor(this, R.color.neon_cyan));
             }
         }
@@ -765,13 +735,13 @@ public class MainActivity extends AppCompatActivity {
         if (tvToolGameFpsSub != null) {
             GamingFpsHelper.JoyoseStatus joyose = GamingFpsHelper.checkJoyoseStatus(this);
             if (joyose == GamingFpsHelper.JoyoseStatus.DISABLED_UNLOCKED) {
-                tvToolGameFpsSub.setText("Joyose: ĐÃ TẮT (120 FPS Unlocked) • Không bị khóa 89 FPS");
+                tvToolGameFpsSub.setText(R.string.copy_message_mainactivity_424b6e1);
                 tvToolGameFpsSub.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
             } else if (joyose == GamingFpsHelper.JoyoseStatus.ACTIVE_LOCKED) {
-                tvToolGameFpsSub.setText("Joyose: ĐANG CHẠY (Khóa 89 FPS) • Chạm để vô hiệu hóa");
+                tvToolGameFpsSub.setText(R.string.copy_message_mainactivity_723e32f);
                 tvToolGameFpsSub.setTextColor(ContextCompat.getColor(this, R.color.mi_orange));
             } else {
-                tvToolGameFpsSub.setText("Joyose: Không có / Đã gỡ bỏ");
+                tvToolGameFpsSub.setText(R.string.copy_message_mainactivity_50e8ff6);
                 tvToolGameFpsSub.setTextColor(ContextCompat.getColor(this, R.color.neon_cyan));
             }
         }
@@ -787,10 +757,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             if (frozen > 0) {
-                tvToolDebloaterSub.setText("Đã đóng băng " + frozen + "/" + installed + " app rác • Máy mượt, tiết kiệm pin");
+                tvToolDebloaterSub.setText(getString(R.string.summary_packages_frozen, frozen, installed));
                 tvToolDebloaterSub.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
             } else {
-                tvToolDebloaterSub.setText("Phát hiện " + installed + " app rác • Chạm để dọn dẹp an toàn");
+                tvToolDebloaterSub.setText(getString(R.string.summary_packages_available, installed));
                 tvToolDebloaterSub.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
             }
         }
@@ -806,21 +776,21 @@ public class MainActivity extends AppCompatActivity {
                 } else if (PrivateDnsHelper.DNS_CLOUDFLARE_FAMILY.equalsIgnoreCase(spec)) {
                     label = "Cloudflare Family (Chặn 18+)";
                 } else if (PrivateDnsHelper.DNS_CLOUDFLARE.equalsIgnoreCase(spec) || PrivateDnsHelper.DNS_CLOUDFLARE_ALT.equalsIgnoreCase(spec)) {
-                    label = "Cloudflare 1.1.1.1 (Tăng tốc)";
+                    label = "Cloudflare 1.1.1.1";
                 } else if (PrivateDnsHelper.DNS_CLOUDFLARE_SECURITY.equalsIgnoreCase(spec)) {
                     label = "Cloudflare Security (Chặn độc)";
                 } else if (PrivateDnsHelper.DNS_GOOGLE.equalsIgnoreCase(spec)) {
-                    label = "Google DNS (Ổn định)";
+                    label = "Google DNS";
                 } else if (PrivateDnsHelper.DNS_QUAD9.equalsIgnoreCase(spec)) {
                     label = "Quad9 DNS (Bảo mật)";
                 }
-                tvToolPrivateDnsSub.setText("Đang bật: " + label);
+                tvToolPrivateDnsSub.setText(getString(R.string.summary_dns_configured, label));
                 tvToolPrivateDnsSub.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
             } else if (PrivateDnsHelper.MODE_OFF.equalsIgnoreCase(mode)) {
-                tvToolPrivateDnsSub.setText("Đang tắt DNS riêng tư");
+                tvToolPrivateDnsSub.setText(R.string.copy_message_mainactivity_2e79cfe);
                 tvToolPrivateDnsSub.setTextColor(ContextCompat.getColor(this, R.color.neon_red));
             } else {
-                tvToolPrivateDnsSub.setText("Chế độ Tự động (Mặc định nhà mạng)");
+                tvToolPrivateDnsSub.setText(R.string.copy_message_mainactivity_24a63f5);
                 tvToolPrivateDnsSub.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
             }
         }
@@ -828,7 +798,7 @@ public class MainActivity extends AppCompatActivity {
         // RAM Card
         if (tvToolRamSub != null) {
             DeviceInfoHelper.MemoryStats ram = DeviceInfoHelper.getRamStats(this);
-            tvToolRamSub.setText(String.format(Locale.getDefault(), "Đã dùng: %.1f GB / %.1f GB (%d%%) • Chạm để dọn dẹp", ram.usedGb, ram.totalGb, ram.percentUsed));
+            tvToolRamSub.setText(String.format(Locale.getDefault(), getString(R.string.message_d66a43c101), ram.usedGb, ram.totalGb, ram.percentUsed));
         }
 
         // Clock Card
@@ -836,64 +806,40 @@ public class MainActivity extends AppCompatActivity {
             boolean notif = prefs.isNotifClockEnabled();
             boolean floatClock = prefs.isFloatingClockEnabled();
             if (notif && floatClock) {
-                tvToolClockSub.setText("Đang bật: Cả thông báo & Capsule nổi");
+                tvToolClockSub.setText(R.string.copy_message_mainactivity_2fc4691);
             } else if (notif) {
-                tvToolClockSub.setText("Đang bật: Đồng hồ thanh thông báo");
+                tvToolClockSub.setText(R.string.copy_message_mainactivity_d26bc7a);
             } else if (floatClock) {
-                tvToolClockSub.setText("Đang bật: Đồng hồ nổi capsule");
+                tvToolClockSub.setText(R.string.copy_message_mainactivity_20e430c);
             } else {
-                tvToolClockSub.setText("Đang tắt • Hỗ trợ săn sale & hiển thị giây");
+                tvToolClockSub.setText(R.string.copy_message_mainactivity_a124911);
             }
         }
 
         // Battery Alert Card
         if (tvToolBatteryAlertSub != null) {
-            int level = prefs.getBatteryAlertLevel();
-            boolean alertOn = prefs.isBatteryAlertLevelEnabled();
-            boolean voiceOn = prefs.isVoiceAlertMasterEnabled();
-            if (voiceOn && alertOn) {
-                tvToolBatteryAlertSub.setText("Đang bật: Cả Giọng nói TTS & Chuông sạc (" + level + "%)");
-                tvToolBatteryAlertSub.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
-            } else if (voiceOn) {
-                tvToolBatteryAlertSub.setText("Đang bật: Thông báo giọng nói Tiếng Việt");
-                tvToolBatteryAlertSub.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
-            } else if (alertOn) {
-                tvToolBatteryAlertSub.setText("Đang bật: Chuông báo sạc đạt " + level + "%");
-                tvToolBatteryAlertSub.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
-            } else {
-                tvToolBatteryAlertSub.setText("Giọng nói sạc, chuông báo & HUD Ambient");
-                tvToolBatteryAlertSub.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
-            }
+            int count = (prefs.isAlert80Enabled() ? 1 : 0) + (prefs.isAlert100Enabled() ? 1 : 0)
+                    + (prefs.isAlertTempEnabled() ? 1 : 0) + (prefs.isVoiceAlertMasterEnabled() ? 1 : 0)
+                    + (prefs.isLockscreenAmbientEnabled() ? 1 : 0) + (prefs.isChargingHudEnabled() ? 1 : 0);
+            tvToolBatteryAlertSub.setText(count > 0 ? getString(R.string.summary_alert_count, count) : getString(R.string.summary_alert_off));
+            tvToolBatteryAlertSub.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
         }
 
         // Notification Fixer Card
         if (tvToolNotifFixSub != null) {
             long lastFix = prefs.getNotifFixLastApplied();
             if (lastFix > 0) {
-                tvToolNotifFixSub.setText("Đã tối ưu chạy nền • Chống trễ tin nhắn Zalo, Messenger");
+                tvToolNotifFixSub.setText(R.string.copy_message_mainactivity_6f422b1);
                 tvToolNotifFixSub.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
             } else {
-                tvToolNotifFixSub.setText("Chống kill app Zalo, Messenger, Telegram... Chạm để tối ưu");
+                tvToolNotifFixSub.setText(R.string.copy_message_mainactivity_b35523e);
                 tvToolNotifFixSub.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
             }
         }
     }
 
     private void configureBottomSheet(BottomSheetDialog bs) {
-        if (bs == null) return;
-        bs.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                BottomSheetDialog d = (BottomSheetDialog) dialog;
-                FrameLayout bottomSheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
-                if (bottomSheet != null) {
-                    bottomSheet.setBackgroundResource(android.R.color.transparent);
-                    BottomSheetBehavior<FrameLayout> behavior = BottomSheetBehavior.from(bottomSheet);
-                    behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                    behavior.setSkipCollapsed(true);
-                }
-            }
-        });
+        app.cd.mitool.ui.SheetUi.configure(bs);
     }
 
     // --- BottomSheet 1: Refresh Rate ---
@@ -935,35 +881,30 @@ public class MainActivity extends AppCompatActivity {
         if (btnAuto != null) {
             btnAuto.setOnClickListener(v -> {
                 applyRefreshRate(0);
-                updateHzButtonsHighlight(view, 0);
                 scheduleHzRefresh(tvHz);
             });
         }
         if (btn60 != null) {
             btn60.setOnClickListener(v -> {
                 applyRefreshRate(60);
-                updateHzButtonsHighlight(view, 60);
                 scheduleHzRefresh(tvHz);
             });
         }
         if (btn90 != null) {
             btn90.setOnClickListener(v -> {
                 applyRefreshRate(90);
-                updateHzButtonsHighlight(view, 90);
                 scheduleHzRefresh(tvHz);
             });
         }
         if (btn120 != null) {
             btn120.setOnClickListener(v -> {
                 applyRefreshRate(120);
-                updateHzButtonsHighlight(view, 120);
                 scheduleHzRefresh(tvHz);
             });
         }
         if (btn144 != null) {
             btn144.setOnClickListener(v -> {
                 applyRefreshRate(144);
-                updateHzButtonsHighlight(view, 144);
                 scheduleHzRefresh(tvHz);
             });
         }
@@ -985,6 +926,11 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
+        refreshHzSheetState = () -> {
+            updateHzButtonsHighlight(view, prefs.getTargetRefreshRate());
+            tvHz.setText(RefreshRateHelper.getCurrentRefreshRate(this) + " Hz");
+        };
+        bs.setOnDismissListener(dialog -> refreshHzSheetState = null);
         bs.show();
     }
 
@@ -1057,44 +1003,55 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void showCustomHzDialog(final View bsView, final TextView tvHz) {
-        final android.widget.EditText input = new android.widget.EditText(this);
-        input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
-        int currentTarget = prefs.getTargetRefreshRate();
-        input.setText(currentTarget > 0 ? String.valueOf(currentTarget) : "120");
+    private void showCustomHzDialog(View view, TextView tvHz) {
+        showValueDialog("Tần số quét tùy chỉnh", "Chỉ áp dụng mức màn hình hỗ trợ: " + RefreshRateHelper.getSupportedRefreshRates(this),
+                prefs.getTargetRefreshRate() > 0 ? Integer.toString(prefs.getTargetRefreshRate()) : "", "Ví dụ: 90", true,
+                value -> {
+                    try { return RefreshRateHelper.getSupportedRefreshRates(this).contains(Integer.parseInt(value)) ? null : "Thiết bị chưa báo hỗ trợ mức Hz này."; }
+                    catch (NumberFormatException error) { return "Nhập một số Hz hợp lệ."; }
+                }, value -> applyRefreshRate(Integer.parseInt(value)));
+    }
+
+    private void showValueDialog(String title, String help, String value, String hint, boolean numeric,
+            java.util.function.Function<String, String> validate, java.util.function.Consumer<String> apply) {
+        com.google.android.material.textfield.TextInputLayout inputLayout = new com.google.android.material.textfield.TextInputLayout(this);
+        inputLayout.setBoxBackgroundMode(com.google.android.material.textfield.TextInputLayout.BOX_BACKGROUND_OUTLINE);
+        inputLayout.setHint(hint);
+        EditText input = new com.google.android.material.textfield.TextInputEditText(inputLayout.getContext());
+        input.setId(R.id.dialog_value_input);
+        input.setSingleLine(true);
+        input.setMinHeight((int) (56 * getResources().getDisplayMetrics().density));
+        input.setInputType(numeric ? android.text.InputType.TYPE_CLASS_NUMBER : android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_URI);
+        input.setText(value); input.setSelection(value.length());
         input.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
         input.setHintTextColor(ContextCompat.getColor(this, R.color.text_muted));
-
-        FrameLayout container = new FrameLayout(this);
-        int pad = (int) (20 * getResources().getDisplayMetrics().density);
-        container.setPadding(pad, pad / 2, pad, pad / 2);
-        container.addView(input);
-
-        new MaterialAlertDialogBuilder(this)
-                .setTitle("✏️ Tùy chỉnh Tần số quét (Hz)")
-                .setMessage("Nhập số Hz mong muốn (hoặc 0 để quay về chế độ Tự động):")
-                .setView(container)
-                .setPositiveButton("Áp dụng", (dialog, which) -> {
-                    String str = input.getText().toString().trim();
-                    try {
-                        int rate = Integer.parseInt(str);
-                        applyRefreshRate(rate);
-                        updateHzButtonsHighlight(bsView, rate);
-                        scheduleHzRefresh(tvHz);
-                    } catch (NumberFormatException e) {
-                        Toast.makeText(MainActivity.this, "Số Hz không hợp lệ!", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .setNeutralButton("Về Tự Động (0Hz)", (dialog, which) -> {
-                    applyRefreshRate(0);
-                    updateHzButtonsHighlight(bsView, 0);
-                    scheduleHzRefresh(tvHz);
-                })
-                .setNegativeButton("Hủy", null)
-                .show();
+        FrameLayout frame = new FrameLayout(this);
+        int gap = (int) (24 * getResources().getDisplayMetrics().density);
+        frame.setPadding(gap, gap / 2, gap, gap / 2);
+        inputLayout.addView(input);
+        frame.addView(inputLayout);
+        AlertDialog dialog = new MaterialAlertDialogBuilder(this).setTitle(title).setMessage(help).setView(frame)
+                .setPositiveButton(R.string.action_apply, null).setNegativeButton(R.string.action_cancel, null).create();
+        dialog.setOnShowListener(ignored -> {
+            input.requestFocus();
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(button -> {
+            String text = input.getText().toString().trim();
+            String error = validate.apply(text);
+            if (error != null) { inputLayout.setError(error); input.requestFocus(); return; }
+            dialog.dismiss(); apply.accept(text);
+            });
+        });
+        dialog.show();
     }
 
     // --- BottomSheet 2: Game 120 FPS ---
+    private void confirmChange(String title, String message, String action, Runnable apply) {
+        if (isFinishing() || isDestroyed()) return;
+        new MaterialAlertDialogBuilder(this).setTitle(title).setMessage(message)
+                .setNegativeButton(R.string.action_cancel, null)
+                .setPositiveButton(action, (dialog, which) -> apply.run()).show();
+    }
+
     private void showGameFpsBottomSheet() {
         BottomSheetDialog bs = new BottomSheetDialog(this);
         View view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_game_fps, null);
@@ -1118,29 +1075,29 @@ public class MainActivity extends AppCompatActivity {
             // 1. Shizuku Status
             if (tvShizukuStatus != null) {
                 if (ShizukuHelper.hasShizukuPermission()) {
-                    tvShizukuStatus.setText("🟢 Shizuku: Đã kết nối & Cấp quyền");
+                    tvShizukuStatus.setText(R.string.copy_message_mainactivity_56cb3a2);
                     tvShizukuStatus.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_green));
                     if (btnShizukuAction != null) {
                         btnShizukuAction.setVisibility(View.GONE);
                     }
                     if (btnStep1Shizuku != null) {
-                        btnStep1Shizuku.setText("✓ Đã kết nối Shizuku thành công");
+                        btnStep1Shizuku.setText(R.string.copy_message_mainactivity_02a192f);
                         btnStep1Shizuku.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_green));
                     }
                 } else if (ShizukuHelper.isShizukuRunning()) {
-                    tvShizukuStatus.setText("🟡 Shizuku: Đang chạy (Chờ cấp quyền)");
+                    tvShizukuStatus.setText(R.string.copy_message_mainactivity_08f7af5);
                     tvShizukuStatus.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.mi_orange));
                     if (btnShizukuAction != null) {
                         btnShizukuAction.setVisibility(View.VISIBLE);
-                        btnShizukuAction.setText("⚡ Cấp quyền");
+                        btnShizukuAction.setText(R.string.copy_bottom_sheet_game_fps_bs_btn_shizu_a973201);
                         btnShizukuAction.setOnClickListener(v -> ShizukuHelper.requestShizukuPermission(MainActivity.this));
                     }
                     if (btnStep1Shizuku != null) {
-                        btnStep1Shizuku.setText("⚡ Cấp quyền Shizuku ngay");
+                        btnStep1Shizuku.setText(R.string.copy_message_mainactivity_c18218b);
                         btnStep1Shizuku.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.mi_orange));
                     }
                 } else {
-                    tvShizukuStatus.setText("🔴 Shizuku: Chưa kết nối");
+                    tvShizukuStatus.setText(R.string.copy_message_mainactivity_acf5220);
                     tvShizukuStatus.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_red));
                     if (btnShizukuAction != null) {
                         btnShizukuAction.setVisibility(View.VISIBLE);
@@ -1164,13 +1121,13 @@ public class MainActivity extends AppCompatActivity {
             if (tvStatus != null) {
                 GamingFpsHelper.JoyoseStatus joyoseStatus = GamingFpsHelper.checkJoyoseStatus(MainActivity.this);
                 if (joyoseStatus == GamingFpsHelper.JoyoseStatus.DISABLED_UNLOCKED) {
-                    tvStatus.setText("Joyose: ĐÃ TẮT (120 FPS Unlocked) 🎉");
+                    tvStatus.setText(R.string.copy_message_mainactivity_27168af);
                     tvStatus.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_green));
                 } else if (joyoseStatus == GamingFpsHelper.JoyoseStatus.ACTIVE_LOCKED) {
-                    tvStatus.setText("Joyose: ĐANG CHẠY (Khóa 89 FPS) ⚠️");
+                    tvStatus.setText(R.string.copy_message_mainactivity_6759b0d);
                     tvStatus.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.mi_orange));
                 } else {
-                    tvStatus.setText("Joyose: Không có / Đã gỡ bỏ");
+                    tvStatus.setText(R.string.copy_message_mainactivity_50e8ff6);
                     tvStatus.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_cyan));
                 }
             }
@@ -1188,12 +1145,12 @@ public class MainActivity extends AppCompatActivity {
 
         // 1-Tap Auto Unlock 120 FPS
         if (btnAutoUnlock != null) {
-            btnAutoUnlock.setOnClickListener(v -> {
+            btnAutoUnlock.setOnClickListener(v -> confirmChange("Xóa dữ liệu Pin và Hiệu suất?", "Thao tác sẽ tắt Joyose và xóa dữ liệu ứng dụng Pin và Hiệu suất. Các tùy chỉnh của ứng dụng này có thể bị đặt lại. Bật lại Joyose không phục hồi dữ liệu đã xóa.", "Tắt Joyose và xóa dữ liệu", () -> {
                 btnAutoUnlock.setEnabled(false);
-                btnAutoUnlock.setText("⏳ Đang tự động mở khóa 120 FPS...");
+                btnAutoUnlock.setText(R.string.copy_message_mainactivity_09dba51);
                 GamingFpsHelper.autoUnlock120Fps(MainActivity.this, (success, message) -> {
                     btnAutoUnlock.setEnabled(true);
-                    btnAutoUnlock.setText("⚡ 1-CHẠM MỞ KHÓA TOÀN BỘ 120 FPS");
+                    btnAutoUnlock.setText(R.string.copy_message_mainactivity_9d3cb73);
                     Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
                     updateFpsSheetDisplay.run();
                     updateToolsCardSummaries();
@@ -1202,17 +1159,17 @@ public class MainActivity extends AppCompatActivity {
                         showPostUnlockSuccessDialog();
                     }
                 });
-            });
+            }));
         }
 
         // 1-Tap Auto Restore Joyose
         if (btnAutoRestore != null) {
             btnAutoRestore.setOnClickListener(v -> {
                 btnAutoRestore.setEnabled(false);
-                btnAutoRestore.setText("⏳ Đang khôi phục Joyose...");
+                btnAutoRestore.setText(R.string.copy_message_mainactivity_594801d);
                 GamingFpsHelper.autoRestoreJoyose(MainActivity.this, (success, message) -> {
                     btnAutoRestore.setEnabled(true);
-                    btnAutoRestore.setText("🔄 1-Chạm Khôi Phục Joyose & Mặc Định");
+                    btnAutoRestore.setText(R.string.copy_message_mainactivity_2157d19);
                     Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
                     updateFpsSheetDisplay.run();
                     updateToolsCardSummaries();
@@ -1225,7 +1182,7 @@ public class MainActivity extends AppCompatActivity {
         if (btnStep1Shizuku != null) {
             btnStep1Shizuku.setOnClickListener(v -> {
                 if (ShizukuHelper.hasShizukuPermission()) {
-                    Toast.makeText(MainActivity.this, "🟢 Shizuku đã được cấp quyền và đang hoạt động tốt!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, R.string.message_afc322642c, Toast.LENGTH_SHORT).show();
                 } else if (ShizukuHelper.isShizukuRunning()) {
                     ShizukuHelper.requestShizukuPermission(MainActivity.this);
                 } else if (ShizukuHelper.isShizukuInstalled(MainActivity.this)) {
@@ -1237,14 +1194,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Step 2: Disable / Enable Joyose
-        btnDisableJoyose.setOnClickListener(v -> {
+        btnDisableJoyose.setOnClickListener(v -> confirmChange("Tắt dịch vụ Joyose?", "Thay đổi có thể ảnh hưởng quản lý trò chơi và hiệu năng của ROM. Bạn có thể bật lại dịch vụ sau đó.", "Tắt Joyose", () -> {
             GamingFpsHelper.disableJoyose(MainActivity.this, (success, message) -> {
                 Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
                 updateFpsSheetDisplay.run();
                 updateToolsCardSummaries();
                 updateDeviceSpecsDisplay();
             });
-        });
+        }));
 
         btnEnableJoyose.setOnClickListener(v -> {
             GamingFpsHelper.enableJoyose(MainActivity.this, (success, message) -> {
@@ -1256,11 +1213,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Step 3: Clear PowerKeeper (Shizuku 1-tap or App Settings)
-        btnClearPk.setOnClickListener(v -> {
+        btnClearPk.setOnClickListener(v -> confirmChange("Xóa dữ liệu Pin và Hiệu suất?", "Dữ liệu và tùy chỉnh của ứng dụng này sẽ bị xóa. Mi Tool không có bản sao để khôi phục.", "Xóa dữ liệu", () -> {
             GamingFpsHelper.clearPowerKeeper(MainActivity.this, (success, message) -> {
                 Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
             });
-        });
+        }));
 
         if (btnClearPkManual != null) {
             btnClearPkManual.setOnClickListener(v -> {
@@ -1272,7 +1229,7 @@ public class MainActivity extends AppCompatActivity {
         btnAov.setOnClickListener(v -> {
             boolean launched = GamingFpsHelper.launchLienQuanMobile(MainActivity.this);
             if (!launched) {
-                Toast.makeText(MainActivity.this, "Không tìm thấy Liên Quân Mobile hoặc Honor of Kings trên máy", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, R.string.message_e0bf52937b, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -1297,13 +1254,13 @@ public class MainActivity extends AppCompatActivity {
                 if (isChecked) {
                     ensureGameHudPermissionAndStart(() -> {
                         syncHudSwitchState.run();
-                        Toast.makeText(MainActivity.this, "🎮 Đã bật Mini Game HUD", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, R.string.message_e642e9cac1, Toast.LENGTH_SHORT).show();
                     });
                 } else {
                     prefs.setGameHudEnabled(false);
                     stopFloatingGameHudService();
                     syncHudSwitchState.run();
-                    Toast.makeText(MainActivity.this, "🎮 Đã tắt Mini Game HUD", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, R.string.message_84696a9c8b, Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -1314,13 +1271,13 @@ public class MainActivity extends AppCompatActivity {
                 if (!cur) {
                     ensureGameHudPermissionAndStart(() -> {
                         syncHudSwitchState.run();
-                        Toast.makeText(MainActivity.this, "🎮 Đã bật Mini Game HUD", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, R.string.message_e642e9cac1, Toast.LENGTH_SHORT).show();
                     });
                 } else {
                     prefs.setGameHudEnabled(false);
                     stopFloatingGameHudService();
                     syncHudSwitchState.run();
-                    Toast.makeText(MainActivity.this, "🎮 Đã tắt Mini Game HUD", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, R.string.message_84696a9c8b, Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -1342,7 +1299,7 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
                 }
-                Toast.makeText(MainActivity.this, "Bạn hãy vuốt thanh điều khiển xuống, chọn biểu tượng Cây bút / Chỉnh sửa rồi kéo phím 'Game HUD FPS' vào bảng điều khiển!", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, R.string.message_b52ccc075c, Toast.LENGTH_LONG).show();
             });
         }
 
@@ -1387,7 +1344,7 @@ public class MainActivity extends AppCompatActivity {
             btnScaleSmall.setOnClickListener(v -> {
                 prefs.setGameHudScale(80);
                 if (sbScale != null) sbScale.setProgress(10);
-                if (tvScaleVal != null) tvScaleVal.setText("80% (Nhỏ)");
+                if (tvScaleVal != null) tvScaleVal.setText(R.string.copy_message_mainactivity_81007b4);
                 reloadGameHudSettings();
             });
         }
@@ -1395,7 +1352,7 @@ public class MainActivity extends AppCompatActivity {
             btnScaleStandard.setOnClickListener(v -> {
                 prefs.setGameHudScale(100);
                 if (sbScale != null) sbScale.setProgress(30);
-                if (tvScaleVal != null) tvScaleVal.setText("100% (Chuẩn)");
+                if (tvScaleVal != null) tvScaleVal.setText(R.string.copy_bottom_sheet_game_fps_bs_tv_hud_sc_77c6cd9);
                 reloadGameHudSettings();
             });
         }
@@ -1403,7 +1360,7 @@ public class MainActivity extends AppCompatActivity {
             btnScaleLarge.setOnClickListener(v -> {
                 prefs.setGameHudScale(120);
                 if (sbScale != null) sbScale.setProgress(50);
-                if (tvScaleVal != null) tvScaleVal.setText("120% (Lớn)");
+                if (tvScaleVal != null) tvScaleVal.setText(R.string.copy_message_mainactivity_8cb1b2b);
                 reloadGameHudSettings();
             });
         }
@@ -1443,7 +1400,7 @@ public class MainActivity extends AppCompatActivity {
             btnBgTransparent.setOnClickListener(v -> {
                 prefs.setGameHudBgOpacity(0);
                 if (sbBgOpacity != null) sbBgOpacity.setProgress(0);
-                if (tvBgOpacityVal != null) tvBgOpacityVal.setText("0% (Không nền)");
+                if (tvBgOpacityVal != null) tvBgOpacityVal.setText(R.string.copy_message_mainactivity_67d50dc);
                 reloadGameHudSettings();
             });
         }
@@ -1451,7 +1408,7 @@ public class MainActivity extends AppCompatActivity {
             btnBgGlass.setOnClickListener(v -> {
                 prefs.setGameHudBgOpacity(50);
                 if (sbBgOpacity != null) sbBgOpacity.setProgress(50);
-                if (tvBgOpacityVal != null) tvBgOpacityVal.setText("50% (Kính mờ)");
+                if (tvBgOpacityVal != null) tvBgOpacityVal.setText(R.string.copy_message_mainactivity_09c2a3e);
                 reloadGameHudSettings();
             });
         }
@@ -1459,7 +1416,7 @@ public class MainActivity extends AppCompatActivity {
             btnBgDark.setOnClickListener(v -> {
                 prefs.setGameHudBgOpacity(85);
                 if (sbBgOpacity != null) sbBgOpacity.setProgress(85);
-                if (tvBgOpacityVal != null) tvBgOpacityVal.setText("85% (Đậm)");
+                if (tvBgOpacityVal != null) tvBgOpacityVal.setText(R.string.copy_message_mainactivity_d25ed2f);
                 reloadGameHudSettings();
             });
         }
@@ -1497,7 +1454,7 @@ public class MainActivity extends AppCompatActivity {
             btnTextDim.setOnClickListener(v -> {
                 prefs.setGameHudTextOpacity(65);
                 if (sbTextOpacity != null) sbTextOpacity.setProgress(35);
-                if (tvTextOpacityVal != null) tvTextOpacityVal.setText("65% (Mờ nhẹ)");
+                if (tvTextOpacityVal != null) tvTextOpacityVal.setText(R.string.copy_message_mainactivity_6355aa1);
                 reloadGameHudSettings();
             });
         }
@@ -1505,7 +1462,7 @@ public class MainActivity extends AppCompatActivity {
             btnTextBright.setOnClickListener(v -> {
                 prefs.setGameHudTextOpacity(100);
                 if (sbTextOpacity != null) sbTextOpacity.setProgress(70);
-                if (tvTextOpacityVal != null) tvTextOpacityVal.setText("100% (Sắc nét)");
+                if (tvTextOpacityVal != null) tvTextOpacityVal.setText(R.string.copy_bottom_sheet_game_fps_bs_tv_hud_te_ce055f4);
                 reloadGameHudSettings();
             });
         }
@@ -1655,7 +1612,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent overlayIntent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                         Uri.parse("package:" + getPackageName()));
                 startActivity(overlayIntent);
-                Toast.makeText(this, "Vui lòng cấp quyền Hiển thị trên ứng dụng khác để mở HUD nổi", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.message_8768842a81, Toast.LENGTH_LONG).show();
                 return;
             }
 
@@ -1668,20 +1625,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showPostUnlockSuccessDialog() {
-        if (isFinishing()) return;
+        if (isFinishing() || isDestroyed()) return;
         boolean isAovInstalled = GamingFpsHelper.isLienQuanInstalled(this);
         new AlertDialog.Builder(this)
-                .setTitle("🎉 Mở Khóa 120 FPS Thành Công!")
-                .setMessage("✓ Dịch vụ Joyose đã được vô hiệu hóa\n" +
-                           "✓ Dữ liệu Pin & Hiệu suất (PowerKeeper) đã được xóa sạch\n\n" +
-                           "💡 Lưu ý: Hệ thống chỉ XÓA DỮ LIỆU (Clear Data) bộ đệm điều tiết FPS, hoàn toàn KHÔNG gỡ cài đặt ứng dụng hệ thống.\n\n" +
-                           "Bạn đã sẵn sàng tận hưởng trải nghiệm 120 FPS mượt mà không lo bị khóa 89 FPS!")
-                .setPositiveButton(isAovInstalled ? "⚔️ Mở Liên Quân Ngay" : "OK", (dialog, which) -> {
+                .setTitle(R.string.success_system_changes)
+                .setMessage(R.string.success_joyose_body)
+                .setPositiveButton(isAovInstalled ? getString(R.string.action_open_game) : getString(android.R.string.ok), (dialog, which) -> {
                     if (isAovInstalled) {
                         GamingFpsHelper.launchLienQuanMobile(MainActivity.this);
                     }
                 })
-                .setNegativeButton("Đóng", null)
+                .setNegativeButton(R.string.action_close, null)
                 .show();
     }
 
@@ -1825,6 +1779,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // --- BottomSheet 3: Private DNS ---
+    private void setChoiceSelected(MaterialButton button, boolean selected) {
+        if (button == null) return;
+        button.setStrokeColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.mi_orange)));
+        button.setStrokeWidth(selected ? (int) (2 * getResources().getDisplayMetrics().density) : 0);
+        button.setSelected(selected);
+    }
+
     private void showPrivateDnsBottomSheet() {
         BottomSheetDialog bs = new BottomSheetDialog(this);
         View view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_private_dns, null);
@@ -1845,6 +1806,20 @@ public class MainActivity extends AppCompatActivity {
         refreshDnsSheetState = () -> {
             tvStatus.setText(dnsApplying ? "⏳ Đang áp dụng và xác minh DNS..." : PrivateDnsHelper.getDnsDescription(this));
             tvStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_cyan));
+            String selectedMode = PrivateDnsHelper.getCurrentDnsMode(this);
+            String selectedHost = PrivateDnsHelper.getCurrentDnsSpecifier(this);
+            MaterialButton[] providers = {btnAdguard, btnFamily, btnCf, btnGoogle, btnQuad9};
+            String[] hosts = {PrivateDnsHelper.DNS_ADGUARD, PrivateDnsHelper.DNS_CLOUDFLARE_FAMILY,
+                    PrivateDnsHelper.DNS_CLOUDFLARE, PrivateDnsHelper.DNS_GOOGLE, PrivateDnsHelper.DNS_QUAD9};
+            boolean knownProvider = false;
+            for (int i = 0; i < providers.length; i++) {
+                boolean selected = PrivateDnsHelper.MODE_HOSTNAME.equals(selectedMode) && hosts[i].equalsIgnoreCase(selectedHost);
+                knownProvider |= selected;
+                setChoiceSelected(providers[i], selected);
+            }
+            setChoiceSelected(btnAuto, PrivateDnsHelper.MODE_AUTO.equals(selectedMode));
+            setChoiceSelected(btnOff, PrivateDnsHelper.MODE_OFF.equals(selectedMode));
+            setChoiceSelected(btnCustom, PrivateDnsHelper.MODE_HOSTNAME.equals(selectedMode) && !knownProvider);
         };
         refreshDnsSheetState.run();
         bs.setOnDismissListener(dialog -> refreshDnsSheetState = null);
@@ -1894,45 +1869,11 @@ public class MainActivity extends AppCompatActivity {
         bs.show();
     }
 
-    private void showCustomDnsInputDialog(BottomSheetDialog parentBs) {
-        final android.widget.EditText input = new android.widget.EditText(this);
-        input.setHint("Ví dụ: xxxxxx.dns.nextdns.io");
-        input.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
-        input.setHintTextColor(ContextCompat.getColor(this, R.color.text_muted));
-        input.setSingleLine(true);
-        String current = PrivateDnsHelper.getCurrentDnsSpecifier(this);
-        if (!current.isEmpty()) {
-            input.setText(current);
-            input.setSelection(current.length());
-        }
-
-        android.widget.FrameLayout container = new android.widget.FrameLayout(this);
-        android.widget.FrameLayout.LayoutParams params = new android.widget.FrameLayout.LayoutParams(
-                android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-                android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-        );
-        int margin = (int) (20 * getResources().getDisplayMetrics().density);
-        params.leftMargin = margin;
-        params.rightMargin = margin;
-        params.topMargin = (int) (8 * getResources().getDisplayMetrics().density);
-        input.setLayoutParams(params);
-        container.addView(input);
-
-        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-                .setTitle("Nhập DNS DoT Tùy Chọn")
-                .setMessage("Nhập tên miền máy chủ DNS riêng tư hỗ trợ DoT (DNS-over-TLS). Tự động loại bỏ https:// hoặc cổng thừa.")
-                .setView(container)
-                .setPositiveButton("Áp dụng", (dialog, which) -> {
-                    String host = input.getText() != null ? input.getText().toString().trim() : "";
-                    String cleaned = PrivateDnsHelper.cleanHostname(host);
-                    if (cleaned.isEmpty()) {
-                        Toast.makeText(MainActivity.this, "Vui lòng nhập tên máy chủ DNS hợp lệ!", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    applyPrivateDns(PrivateDnsHelper.MODE_HOSTNAME, cleaned, "Tùy chọn: " + cleaned);
-                })
-                .setNegativeButton("Hủy", null)
-                .show();
+    private void showCustomDnsInputDialog(BottomSheetDialog parent) {
+        showValueDialog("DNS tùy chỉnh", "Nhập tên máy chủ DNS-over-TLS. Không dùng địa chỉ IP.",
+                PrivateDnsHelper.getCurrentDnsSpecifier(this), "Ví dụ: dns.google", false,
+                value -> app.cd.mitool.util.DnsConfig.isValidHostname(PrivateDnsHelper.cleanHostname(value)) ? null : "Tên máy chủ chưa hợp lệ. Ví dụ: dns.google",
+                value -> applyPrivateDns(PrivateDnsHelper.MODE_HOSTNAME, PrivateDnsHelper.cleanHostname(value), "DNS tùy chỉnh"));
     }
 
     // --- BottomSheet 4: VoLTE & VoWiFi ---
@@ -1993,17 +1934,7 @@ public class MainActivity extends AppCompatActivity {
         MaterialButton btnTurbo = view.findViewById(R.id.bs_btn_open_game_turbo);
         MaterialButton btnRunningApps = view.findViewById(R.id.bs_btn_open_running_apps);
 
-        // Update Shizuku Status Banner
-        boolean hasShizuku = ShizukuHelper.isShizukuAvailable() && ShizukuHelper.hasShizukuPermission();
-        if (tvShizukuStatus != null) {
-            if (hasShizuku) {
-                tvShizukuStatus.setText("⚡ Shizuku Deep Boost: Đã sẵn sàng (Dọn sâu cấp hệ thống)");
-                tvShizukuStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
-            } else {
-                tvShizukuStatus.setText("ℹ️ Chế độ tiêu chuẩn (Kết nối Shizuku để dọn sâu toàn bộ tiến trình ngầm)");
-                tvShizukuStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_cyan));
-            }
-        }
+        if (tvShizukuStatus != null) tvShizukuStatus.setText(R.string.message_cfe33d4f06);
 
         Runnable updateRamUi = () -> {
             RamBoosterHelper.MemoryStats stats = RamBoosterHelper.getMemoryStats(MainActivity.this);
@@ -2023,52 +1954,27 @@ public class MainActivity extends AppCompatActivity {
             }
             if (tvLevelDesc != null) {
                 if (pct < 60) {
-                    tvLevelDesc.setText("Hoạt động tối ưu & mượt mà");
+                    tvLevelDesc.setText(R.string.copy_message_mainactivity_aad8975);
                     tvLevelDesc.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_green));
                 } else if (pct < 80) {
-                    tvLevelDesc.setText("Mức tải bộ nhớ bình thường");
+                    tvLevelDesc.setText(R.string.copy_message_mainactivity_61e9e1f);
                     tvLevelDesc.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_yellow));
                 } else {
-                    tvLevelDesc.setText("Bộ nhớ căng thẳng - Cần dọn dẹp");
+                    tvLevelDesc.setText(R.string.copy_message_mainactivity_ca35242);
                     tvLevelDesc.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_red));
                 }
             }
-            if (tvUsed != null) tvUsed.setText(String.format(Locale.getDefault(), "%.1f GB", usedGb));
-            if (tvFree != null) tvFree.setText(String.format(Locale.getDefault(), "%.1f GB", freeGb));
-            if (tvTotal != null) tvTotal.setText(String.format(Locale.getDefault(), "%.1f GB", totalGb));
+            if (tvUsed != null) tvUsed.setText(String.format(Locale.getDefault(), getString(R.string.message_1cedd1517f), usedGb));
+            if (tvFree != null) tvFree.setText(String.format(Locale.getDefault(), getString(R.string.message_1cedd1517f), freeGb));
+            if (tvTotal != null) tvTotal.setText(String.format(Locale.getDefault(), getString(R.string.message_1cedd1517f), totalGb));
         };
 
         updateRamUi.run();
 
         btnBoost.setOnClickListener(v -> {
-            btnBoost.setEnabled(false);
-            btnBoost.setText("⏳ Đang dọn dẹp & giải phóng RAM...");
-            RamBoosterHelper.boostRamDetailed(MainActivity.this, result -> {
-                btnBoost.setEnabled(true);
-                btnBoost.setText("🚀 Dọn Dẹp & Tăng Tốc RAM Ngay");
-                updateRamUi.run();
-                updateToolsCardSummaries();
-                updateDeviceSpecsDisplay();
-                app.cd.mitool.widget.RamBoostAppWidgetProvider.updateAllWidgets(MainActivity.this);
-
-                if (layoutResult != null && tvResultTitle != null && tvResultDesc != null) {
-                    layoutResult.setVisibility(View.VISIBLE);
-                    if (result.freedMb > 0) {
-                        tvResultTitle.setText("🎉 Đã giải phóng +" + result.freedMb + " MB RAM!");
-                        tvResultTitle.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_green));
-                        String desc = "Đã dọn dẹp bộ nhớ đệm và đóng " + result.killedCount + " tiến trình chạy nền.";
-                        if (result.usedShizuku) {
-                            desc += " (Đã dọn cấp hệ thống qua Shizuku Deep Boost)";
-                        }
-                        tvResultDesc.setText(desc);
-                    } else {
-                        tvResultTitle.setText("⚡ Bộ nhớ RAM đã ở trạng thái tối ưu!");
-                        tvResultTitle.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_cyan));
-                        tvResultDesc.setText("Hệ thống đã dọn dẹp bộ nhớ đệm và tối ưu các tiến trình chạy nền.");
-                    }
-                }
-                Toast.makeText(MainActivity.this, result.freedMb > 0 ? "Đã giải phóng ~" + result.freedMb + " MB RAM!" : "RAM đang ở trạng thái mượt mà!", Toast.LENGTH_SHORT).show();
-            });
+            updateRamUi.run();
+            updateToolsCardSummaries();
+            Toast.makeText(this, R.string.message_c5aac2d6ea, Toast.LENGTH_LONG).show();
         });
 
         btnTurbo.setOnClickListener(v -> {
@@ -2082,7 +1988,7 @@ public class MainActivity extends AppCompatActivity {
                     Intent it = new Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS);
                     startActivity(it);
                 } catch (Exception e) {
-                    Toast.makeText(MainActivity.this, "Không thể mở Cài đặt ứng dụng", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, R.string.message_b4881168f6, Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -2227,10 +2133,11 @@ public class MainActivity extends AppCompatActivity {
             if (layoutVoiceSub != null) layoutVoiceSub.setVisibility(voiceMaster ? View.VISIBLE : View.GONE);
             swVoiceMaster.setOnCheckedChangeListener((btn, isChecked) -> {
                 prefs.setVoiceAlertMasterEnabled(isChecked);
+                syncNotificationMonitoring();
                 if (layoutVoiceSub != null) layoutVoiceSub.setVisibility(isChecked ? View.VISIBLE : View.GONE);
                 if (isChecked) {
                     VoiceAlertHelper.init(MainActivity.this);
-                    Toast.makeText(MainActivity.this, "Đã bật thông báo giọng nói Tiếng Việt!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, R.string.message_4ea961cd51, Toast.LENGTH_SHORT).show();
                 }
                 updateToolsCardSummaries();
             });
@@ -2268,6 +2175,7 @@ public class MainActivity extends AppCompatActivity {
             swAlert80.setChecked(enabled);
             swAlert80.setOnCheckedChangeListener((btn, isChecked) -> {
                 prefs.setBatteryAlertLevelEnabled(isChecked);
+                syncNotificationMonitoring();
                 if (sliderLayout != null) sliderLayout.setVisibility(isChecked ? View.VISIBLE : View.GONE);
                 updateToolsCardSummaries();
             });
@@ -2315,10 +2223,10 @@ public class MainActivity extends AppCompatActivity {
             btnTest.setOnClickListener(v -> {
                 if (BatteryHelper.isPlayingAlert()) {
                     BatteryHelper.stopAlertTone();
-                    btnTest.setText("🔊 Nghe thử");
+                    btnTest.setText(R.string.btn_test_audio);
                 } else {
                     BatteryHelper.playAlertTone(MainActivity.this, prefs.getCustomAlertToneUri());
-                    btnTest.setText("⏹️ Dừng");
+                    btnTest.setText(R.string.btn_stop_audio);
                 }
             });
         }
@@ -2327,8 +2235,8 @@ public class MainActivity extends AppCompatActivity {
             btnReset.setOnClickListener(v -> {
                 prefs.setCustomAlertToneUri(null);
                 prefs.setCustomAlertToneTitle("Mặc định hệ thống");
-                if (tvTone != null) tvTone.setText("Mặc định hệ thống");
-                Toast.makeText(MainActivity.this, "Đã đặt lại âm báo về mặc định", Toast.LENGTH_SHORT).show();
+                if (tvTone != null) tvTone.setText(R.string.battery_alert_tone_default);
+                Toast.makeText(MainActivity.this, R.string.message_f270fc3eb4, Toast.LENGTH_SHORT).show();
             });
         }
 
@@ -2339,12 +2247,12 @@ public class MainActivity extends AppCompatActivity {
 
         if (swAlert100 != null) {
             swAlert100.setChecked(prefs.isAlert100Enabled());
-            swAlert100.setOnCheckedChangeListener((btn, isChecked) -> prefs.setAlert100Enabled(isChecked));
+            swAlert100.setOnCheckedChangeListener((btn, isChecked) -> { prefs.setAlert100Enabled(isChecked); syncNotificationMonitoring(); });
         }
 
         if (swAlertTemp != null) {
             swAlertTemp.setChecked(prefs.isAlertTempEnabled());
-            swAlertTemp.setOnCheckedChangeListener((btn, isChecked) -> prefs.setAlertTempEnabled(isChecked));
+            swAlertTemp.setOnCheckedChangeListener((btn, isChecked) -> { prefs.setAlertTempEnabled(isChecked); syncNotificationMonitoring(); });
         }
 
         MaterialButton btnViewSot = view.findViewById(R.id.bs_btn_view_sot_stats);
@@ -2460,7 +2368,7 @@ public class MainActivity extends AppCompatActivity {
                 app.cd.mitool.widget.SotWidgetScheduler.scheduleNext(this);
                 app.cd.mitool.widget.SotAppWidgetProvider.updateAllWidgets(this);
 
-                Toast.makeText(this, "Đã lưu tùy biến & cập nhật Widget!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.message_e601c57420, Toast.LENGTH_SHORT).show();
                 bs.dismiss();
             });
         }
@@ -2544,11 +2452,11 @@ public class MainActivity extends AppCompatActivity {
                     ivShizukuIcon.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.neon_green)));
                 }
                 if (tvShizukuStatus != null) {
-                    tvShizukuStatus.setText("⚡ Shizuku: Đã cấp quyền (Tự động 1-chạm)");
+                    tvShizukuStatus.setText(R.string.copy_message_mainactivity_eb8243d);
                     tvShizukuStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
                 }
                 if (tvShizukuDesc != null) {
-                    tvShizukuDesc.setText("Sẵn sàng miễn Doze và cho phép chạy nền. Kiểm tra thêm Tự khởi chạy, pin và quyền thông báo trong Cài đặt.");
+                    tvShizukuDesc.setText(R.string.copy_message_mainactivity_12d80e0);
                 }
                 if (btnGrantShizuku != null) {
                     btnGrantShizuku.setVisibility(View.GONE);
@@ -2563,11 +2471,11 @@ public class MainActivity extends AppCompatActivity {
                     ivShizukuIcon.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.mi_orange)));
                 }
                 if (tvShizukuStatus != null) {
-                    tvShizukuStatus.setText("⚠️ Shizuku: Chưa cấp quyền");
+                    tvShizukuStatus.setText(R.string.copy_message_mainactivity_6b1207c);
                     tvShizukuStatus.setTextColor(ContextCompat.getColor(this, R.color.mi_orange));
                 }
                 if (tvShizukuDesc != null) {
-                    tvShizukuDesc.setText("Cấp quyền Shizuku để tối ưu 1-chạm hoặc dùng các phím tắt hệ thống bên dưới.");
+                    tvShizukuDesc.setText(R.string.copy_message_mainactivity_ea74838);
                 }
                 if (btnGrantShizuku != null) {
                     btnGrantShizuku.setVisibility(View.VISIBLE);
@@ -2582,6 +2490,7 @@ public class MainActivity extends AppCompatActivity {
         };
         updatePermissionState.run();
 
+        btnBatchFix.setEnabled(false);
         final List<NotificationFixHelper.TargetApp> apps = new ArrayList<>();
         final int[] activeFilter = {0}; // 0: all, 1: recommended, 2: selected, 3: unoptimized
         final String[] currentQuery = {""};
@@ -2594,6 +2503,7 @@ public class MainActivity extends AppCompatActivity {
             if (tvSelectedCount != null) {
                 tvSelectedCount.setText("(Đã chọn " + selected + "/" + apps.size() + ")");
             }
+            if (btnBatchFix != null) btnBatchFix.setEnabled(selected > 0);
             if (tvSelectAll != null) {
                 tvSelectAll.setText(selected == apps.size() && !apps.isEmpty() ? "Bỏ chọn tất cả" : "Chọn tất cả");
             }
@@ -2693,7 +2603,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (apps.isEmpty()) {
                     if (tvEmpty != null) tvEmpty.setVisibility(View.VISIBLE);
-                    if (tvSelectedCount != null) tvSelectedCount.setText("(0 ứng dụng)");
+                    if (tvSelectedCount != null) tvSelectedCount.setText(R.string.copy_message_mainactivity_772d33b);
                     return;
                 }
 
@@ -2714,11 +2624,11 @@ public class MainActivity extends AppCompatActivity {
 
                     Runnable updateAppBadge = () -> {
                         if (app.isOptimized) {
-                            tvBadge.setText("✓ Được miễn Doze");
+                            tvBadge.setText(R.string.copy_message_mainactivity_bab641b);
                             tvBadge.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_green));
                             tvBadge.setBackgroundResource(R.drawable.bg_badge_green);
                         } else {
-                            tvBadge.setText("⚠️ Chưa miễn Doze");
+                            tvBadge.setText(R.string.copy_bottom_sheet_notif_fix_bs_chip_fil_77faa82);
                             tvBadge.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.mi_orange));
                             tvBadge.setBackgroundResource(R.drawable.bg_badge_orange);
                         }
@@ -2775,7 +2685,7 @@ public class MainActivity extends AppCompatActivity {
                                         }
                                     }
                                 })
-                                .setNegativeButton("Đóng", null)
+                                .setNegativeButton(R.string.action_close, null)
                                 .show();
                     });
 
@@ -2818,27 +2728,27 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (selectedPkgs.isEmpty()) {
-                Toast.makeText(MainActivity.this, "Vui lòng chọn ít nhất 1 ứng dụng!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, R.string.message_f7def66603, Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (!ShizukuHelper.hasShizukuPermission()) {
                 new MaterialAlertDialogBuilder(MainActivity.this)
-                        .setTitle("Cần Quyền Shizuku Để Tự Động Hóa")
-                        .setMessage("Để tự động cấp quyền Tự khởi chạy và Gỡ bỏ giới hạn pin cho hàng loạt ứng dụng trong 1 click, bạn cần cấp quyền Shizuku cho Mi Tool.\n\nNếu chưa có Shizuku, bạn có thể bấm nút 'Tự khởi chạy MIUI' hoặc 'Tiết kiệm pin MIUI' để cấu hình thủ công.")
-                        .setPositiveButton("Cấp quyền Shizuku", (dialog, which) -> {
+                        .setTitle(R.string.copy_message_mainactivity_bca2ab6)
+                        .setMessage(R.string.copy_message_mainactivity_bcdcfff)
+                        .setPositiveButton(R.string.copy_action_5ba8778, (dialog, which) -> {
                             ShizukuHelper.requestShizukuPermission(MainActivity.this);
                         })
-                        .setNeutralButton("Mở Tự khởi chạy", (dialog, which) -> {
+                        .setNeutralButton(R.string.copy_action_737ae56, (dialog, which) -> {
                             NotificationFixHelper.openMiuiAutostart(MainActivity.this);
                         })
-                        .setNegativeButton("Đóng", null)
+                        .setNegativeButton(R.string.action_close, null)
                         .show();
                 return;
             }
 
             btnBatchFix.setEnabled(false);
-            btnBatchFix.setText("⏳ Đang tối ưu hóa...");
+            btnBatchFix.setText(R.string.copy_message_mainactivity_3e1f8a7);
 
             NotificationFixHelper.applyBatchFix(MainActivity.this, selectedPkgs, new NotificationFixHelper.FixCallback() {
                 @Override
@@ -2849,7 +2759,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(boolean success, int count, String message) {
                     btnBatchFix.setEnabled(true);
-                    btnBatchFix.setText("⚡ 1-CHẠM FIX TẤT CẢ ỨNG DỤNG ĐÃ CHỌN");
+                    btnBatchFix.setText(R.string.notif_fix_btn_batch);
                     Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
 
                     // Refresh all item badges on the screen in-place
@@ -2861,11 +2771,11 @@ public class MainActivity extends AppCompatActivity {
                             TextView badge = item.findViewById(R.id.tv_app_status_badge);
                             if (badge != null) {
                                 if (target.isOptimized) {
-                                    badge.setText("✓ Được miễn Doze");
+                                    badge.setText(R.string.copy_message_mainactivity_bab641b);
                                     badge.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.neon_green));
                                     badge.setBackgroundResource(R.drawable.bg_badge_green);
                                 } else {
-                                    badge.setText("⚠️ Chưa miễn Doze");
+                                    badge.setText(R.string.copy_bottom_sheet_notif_fix_bs_chip_fil_77faa82);
                                     badge.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.mi_orange));
                                     badge.setBackgroundResource(R.drawable.bg_badge_orange);
                                 }
@@ -2913,6 +2823,7 @@ public class MainActivity extends AppCompatActivity {
         refreshRateApplying = true;
         RefreshRateHelper.applyAsync(this, targetRate, (success, message) -> {
             refreshRateApplying = false;
+            if (refreshHzSheetState != null) refreshHzSheetState.run();
             if (isFinishing() || isDestroyed()) return;
             if (success) {
                 WindowManager.LayoutParams lp = getWindow().getAttributes();
@@ -2937,7 +2848,7 @@ public class MainActivity extends AppCompatActivity {
                             getMainExecutor(),
                             result -> {
                                 if (result == android.app.StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ADDED) {
-                                    Toast.makeText(MainActivity.this, "Đã thêm phím Tần số quét vào thanh điều khiển!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(MainActivity.this, R.string.message_93f3108c10, Toast.LENGTH_SHORT).show();
                                 }
                             }
                     );
@@ -2947,12 +2858,12 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         new MaterialAlertDialogBuilder(this)
-                .setTitle("Thêm phím Tần số quét vào Trung tâm điều khiển")
+                .setTitle(R.string.copy_bottom_sheet_hz_bs_btn_add_hz_tile_57a4cca)
                 .setMessage("Để thêm nút chuyển 60Hz / 120Hz vào thanh trạng thái kéo xuống của HyperOS / MIUI:\n\n"
                         + "1. Kéo thanh trạng thái (Trung tâm điều khiển) xuống.\n"
                         + "2. Bấm vào biểu tượng Sửa / Cây bút (chỉnh sửa ô chức năng).\n"
                         + "3. Tìm ô 'Tần số quét Hz' của Mi Tool ở bên dưới và kéo lên thanh chính.")
-                .setPositiveButton("Đã hiểu", null)
+                .setPositiveButton(R.string.copy_action_f46981b, null)
                 .show();
     }
 
@@ -2972,19 +2883,19 @@ public class MainActivity extends AppCompatActivity {
             new MaterialAlertDialogBuilder(this)
                     .setTitle("Cần quyền để áp dụng " + label)
                     .setMessage(message + "\n\nCấp quyền Shizuku rồi chọn lại DNS. Với cách thủ công, chọn mục DNS riêng tư trong Cài đặt và dán tên máy chủ, sau đó bấm Lưu.")
-                    .setPositiveButton("Cấp quyền Shizuku", (d, w) -> ShizukuHelper.requestShizukuPermission(this))
-                    .setNeutralButton("Cài đặt thủ công", (d, w) -> {
+                    .setPositiveButton(R.string.copy_action_5ba8778, (d, w) -> ShizukuHelper.requestShizukuPermission(this))
+                    .setNeutralButton(R.string.copy_action_07f0877, (d, w) -> {
                         PrivateDnsHelper.copyHostname(this, hostname);
                         boolean opened = PrivateDnsHelper.openPrivateDnsSettings(this);
                         Toast.makeText(this, opened ? (hostname.isEmpty() ? "Chọn chế độ DNS mong muốn trong Cài đặt."
                                 : "Đã sao chép " + hostname + ". Dán vào tên máy chủ DNS riêng tư và bấm Lưu.")
                                 : "Không mở được Cài đặt. Vui lòng tìm DNS riêng tư trong Cài đặt hệ thống.", Toast.LENGTH_LONG).show();
                     })
-                    .setNegativeButton("Hủy", null).show();
+                    .setNegativeButton(R.string.action_cancel, null).show();
         });
     }
 
-    private void handleDebloatFreezeRecommended() {
+    private void handleDebloatFreezeRecommended(Runnable after) {
         List<String> toFreeze = new ArrayList<>();
         for (DebloatHelper.BloatwareApp app : DebloatHelper.SAFE_BLOATWARE_LIST) {
             if (app.recommended && DebloatHelper.isInstalled(this, app.pkg) && !DebloatHelper.isFrozen(this, app.pkg)) {
@@ -2992,7 +2903,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         if (toFreeze.isEmpty()) {
-            Toast.makeText(this, "Tất cả ứng dụng rác khuyên dùng đã được đóng băng!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.message_abc5582eee, Toast.LENGTH_SHORT).show();
             return;
         }
         DebloatHelper.batchFreeze(this, toFreeze, new ShizukuHelper.CommandCallback() {
@@ -3003,13 +2914,14 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         Toast.makeText(MainActivity.this, output, Toast.LENGTH_LONG).show();
                         updateToolsCardSummaries();
+                        if (!isFinishing() && !isDestroyed()) after.run();
                     }
                 });
             }
         });
     }
 
-    private void handleDebloatRestoreAll() {
+    private void handleDebloatRestoreAll(Runnable after) {
         List<String> toRestore = new ArrayList<>();
         for (DebloatHelper.BloatwareApp app : DebloatHelper.SAFE_BLOATWARE_LIST) {
             if (DebloatHelper.isInstalled(this, app.pkg) && DebloatHelper.isFrozen(this, app.pkg)) {
@@ -3017,7 +2929,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         if (toRestore.isEmpty()) {
-            Toast.makeText(this, "Không có ứng dụng nào đang bị đóng băng.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.message_64dea7ba2f, Toast.LENGTH_SHORT).show();
             return;
         }
         DebloatHelper.batchRestore(this, toRestore, new ShizukuHelper.CommandCallback() {
@@ -3028,6 +2940,7 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         Toast.makeText(MainActivity.this, output, Toast.LENGTH_LONG).show();
                         updateToolsCardSummaries();
+                        if (!isFinishing() && !isDestroyed()) after.run();
                     }
                 });
             }
@@ -3047,13 +2960,11 @@ public class MainActivity extends AppCompatActivity {
         MaterialButton btnClose = view.findViewById(R.id.bs_btn_debloat_close);
 
         btnFreezeRec.setOnClickListener(v -> {
-            handleDebloatFreezeRecommended();
-            new Handler(Looper.getMainLooper()).postDelayed(() -> populateDebloatList(itemsContainer, tvSummary), 600);
+            confirmChange("Đóng băng các ứng dụng đề xuất?", "Xem tên và mô tả trong danh sách trước khi áp dụng. Thay đổi có thể ảnh hưởng chức năng hệ thống.", "Đóng băng", () -> handleDebloatFreezeRecommended(() -> populateDebloatList(itemsContainer, tvSummary)));
         });
 
         btnRestoreAll.setOnClickListener(v -> {
-            handleDebloatRestoreAll();
-            new Handler(Looper.getMainLooper()).postDelayed(() -> populateDebloatList(itemsContainer, tvSummary), 600);
+            handleDebloatRestoreAll(() -> populateDebloatList(itemsContainer, tvSummary));
         });
 
         btnClose.setOnClickListener(v -> bs.dismiss());
@@ -3096,50 +3007,44 @@ public class MainActivity extends AppCompatActivity {
             tvDesc.setText(app.desc);
 
             if (frozen) {
-                tvBadge.setText("❄️ ĐÃ ĐÓNG BĂNG");
+                tvBadge.setText(R.string.copy_message_mainactivity_763ac5b);
                 tvBadge.setTextColor(ContextCompat.getColor(this, R.color.neon_cyan));
-                btnToggle.setText("🔄 Kích hoạt lại ứng dụng");
+                btnToggle.setText(R.string.copy_message_mainactivity_65bbd97);
                 btnToggle.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
                 btnToggle.setStrokeColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.neon_green)));
             } else {
-                tvBadge.setText("🟢 ĐANG CHẠY");
+                tvBadge.setText(R.string.copy_message_mainactivity_f03738a);
                 tvBadge.setTextColor(ContextCompat.getColor(this, R.color.mi_orange));
-                btnToggle.setText("❄️ Đóng băng ứng dụng");
+                btnToggle.setText(R.string.feature_packages);
                 btnToggle.setTextColor(ContextCompat.getColor(this, R.color.neon_cyan));
                 btnToggle.setStrokeColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.neon_cyan)));
             }
 
-            btnToggle.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            btnToggle.setOnClickListener(v -> {
+                boolean freeze = !DebloatHelper.isFrozen(this, app.pkg);
+                Runnable action = () -> {
                     btnToggle.setEnabled(false);
-                    boolean newFreeze = !frozen;
-                    DebloatHelper.setPackageState(MainActivity.this, app.pkg, newFreeze, new ShizukuHelper.CommandCallback() {
-                        @Override
-                        public void onComplete(boolean success, final String output) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(MainActivity.this, output, Toast.LENGTH_SHORT).show();
-                                    updateToolsCardSummaries();
-                                    populateDebloatList(itemsContainer, tvSummary);
-                                }
-                            });
-                        }
+                    DebloatHelper.setPackageState(this, app.pkg, freeze, (success, message) -> {
+                        if (isFinishing() || isDestroyed()) return;
+                        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+                        populateDebloatList(itemsContainer, tvSummary);
+                        updateToolsCardSummaries();
                     });
-                }
+                };
+                if (freeze) confirmChange("Đóng băng " + app.name + "?", app.desc + "\n\nThay đổi có thể ảnh hưởng chức năng liên quan. Bạn có thể thử bật lại sau đó.", "Đóng băng ứng dụng", action);
+                else action.run();
             });
 
             itemsContainer.addView(itemView);
         }
 
         if (tvSummary != null) {
-            tvSummary.setText(String.format(Locale.getDefault(), "Phát hiện: %d ứng dụng • Đang chạy: %d • Đã đóng băng: %d", totalFound, activeCount, frozenCount));
+            tvSummary.setText(String.format(Locale.getDefault(), getString(R.string.message_bd05147d75), totalFound, activeCount, frozenCount));
         }
 
         if (itemsContainer.getChildCount() == 0) {
             TextView emptyTv = new TextView(this);
-            emptyTv.setText("Tuyệt vời! Không tìm thấy ứng dụng rác nào trên thiết bị này.");
+            emptyTv.setText(R.string.copy_message_mainactivity_4a3f2a8);
             emptyTv.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
             emptyTv.setPadding(0, 30, 0, 30);
             itemsContainer.addView(emptyTv);
@@ -3201,7 +3106,7 @@ public class MainActivity extends AppCompatActivity {
                         getMainExecutor(),
                         resultCode -> {
                             if (resultCode == StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ADDED) {
-                                Toast.makeText(this, "Đã thêm phím Đồng hồ vào Trung tâm điều khiển thành công!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, R.string.message_6a3685d30f, Toast.LENGTH_SHORT).show();
                             }
                         }
                 );
@@ -3209,9 +3114,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         new MaterialAlertDialogBuilder(this)
-                .setTitle("Thêm phím vào Trung tâm điều khiển")
-                .setMessage("Để thêm phím tắt Đồng hồ giây:\n\n1. Vuốt mở Trung tâm điều khiển (Bảng điều khiển).\n2. Chạm vào biểu tượng Chỉnh sửa (hình bút chì).\n3. Kéo ô 'Đồng hồ giây' lên danh sách phím kích hoạt.")
-                .setPositiveButton("Đã hiểu", null)
+                .setTitle(R.string.copy_message_mainactivity_ba13368)
+                .setMessage(R.string.copy_message_mainactivity_8dab4ae)
+                .setPositiveButton(R.string.copy_action_f46981b, null)
                 .show();
     }
 
@@ -3236,7 +3141,7 @@ public class MainActivity extends AppCompatActivity {
                     "🔋 Thông Tin Kiểm Tra Pin (*#*#4636#*#*)"
                 };
                 new MaterialAlertDialogBuilder(MainActivity.this)
-                    .setTitle("Thông Tin Bí Mật Pin & CIT")
+                    .setTitle(R.string.copy_message_mainactivity_ff2dea7)
                     .setItems(options, (dialog, which) -> {
                         if (which == 0) {
                             XiaomiHelper.openCITHardwareTest(MainActivity.this);
@@ -3244,7 +3149,7 @@ public class MainActivity extends AppCompatActivity {
                             XiaomiHelper.openHiddenBatteryInfo(MainActivity.this);
                         }
                     })
-                    .setNegativeButton("Đóng", null)
+                    .setNegativeButton(R.string.action_close, null)
                     .show();
             });
         }
@@ -3256,7 +3161,7 @@ public class MainActivity extends AppCompatActivity {
                 updateSotView();
                 loadBatteryDrainApps();
                 app.cd.mitool.widget.SotAppWidgetProvider.updateAllWidgets(this);
-                Toast.makeText(this, "Đã đặt lại mốc tính thời gian sáng màn hình!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.message_708508bfdb, Toast.LENGTH_SHORT).show();
             });
         }
 
@@ -3269,7 +3174,7 @@ public class MainActivity extends AppCompatActivity {
             btnRefreshDrainApps.setOnClickListener(v -> {
                 updateSotView();
                 loadBatteryDrainApps();
-                Toast.makeText(this, "Đã làm mới danh sách tiêu thụ pin", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.message_4944883cd7, Toast.LENGTH_SHORT).show();
             });
         }
 
@@ -3307,7 +3212,7 @@ public class MainActivity extends AppCompatActivity {
         if (btnDrainGrantShizuku != null) {
             btnDrainGrantShizuku.setOnClickListener(v -> {
                 if (!ShizukuHelper.hasShizukuPermission()) {
-                    Toast.makeText(this, "Vui lòng mở Shizuku và cấp quyền cho Mi Tool trước!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.message_088de068d9, Toast.LENGTH_SHORT).show();
                     ShizukuHelper.requestShizukuPermission(this);
                     return;
                 }
@@ -3329,14 +3234,14 @@ public class MainActivity extends AppCompatActivity {
             btnTestCable.setOnClickListener(v -> {
                 if (ChargingTesterHelper.isTesting()) {
                     ChargingTesterHelper.stopCableTest();
-                    btnTestCable.setText("🔍 Đo chất lượng (10s)");
+                    btnTestCable.setText(R.string.copy_message_mainactivity_be8cd5b);
                     if (pbCableTest != null) pbCableTest.setVisibility(View.GONE);
-                    Toast.makeText(this, "Đã hủy kiểm tra củ cáp", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.message_4167ae242c, Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 btnTestCable.setEnabled(false);
-                btnTestCable.setText("⏳ Đang đo (0/10s)...");
+                btnTestCable.setText(R.string.copy_message_mainactivity_998a64f);
                 if (pbCableTest != null) {
                     pbCableTest.setVisibility(View.VISIBLE);
                     pbCableTest.setProgress(0);
@@ -3350,7 +3255,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onProgress(int currentSample, int totalSamples, ChargingTesterHelper.RealtimeChargingState liveData) {
                         runOnUiThread(() -> {
                             btnTestCable.setEnabled(true);
-                            btnTestCable.setText(String.format(Locale.getDefault(), "⏳ Đang đo (%d/%ds)...", currentSample, totalSamples));
+                            btnTestCable.setText(String.format(Locale.getDefault(), getString(R.string.message_e44459d574), currentSample, totalSamples));
                             if (pbCableTest != null) {
                                 pbCableTest.setProgress(currentSample);
                             }
@@ -3361,7 +3266,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(ChargingTesterHelper.CableTestResult result) {
                         runOnUiThread(() -> {
-                            btnTestCable.setText("🔄 Đo lại củ cáp (10s)");
+                            btnTestCable.setText(R.string.copy_message_mainactivity_9510887);
                             btnTestCable.setEnabled(true);
                             if (pbCableTest != null) {
                                 pbCableTest.setVisibility(View.GONE);
@@ -3377,18 +3282,17 @@ public class MainActivity extends AppCompatActivity {
                                 tvCableRatingDesc.setText(result.description);
                             }
                             if (tvCableRatingMetrics != null) {
-                                tvCableRatingMetrics.setText(String.format(Locale.getDefault(),
-                                        "Dòng đỉnh: %d mA • Dòng TB: %d mA • Ổn định: %d%% • Công suất: %.1f W",
+                                tvCableRatingMetrics.setText(String.format(Locale.getDefault(), getString(R.string.message_6525729d9b),
                                         result.maxCurrentMa, result.avgCurrentMa, result.stabilityPercent, result.avgPowerW));
                             }
-                            Toast.makeText(MainActivity.this, "Đã hoàn thành đánh giá chất lượng củ cáp!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, R.string.message_6811b99e50, Toast.LENGTH_SHORT).show();
                         });
                     }
 
                     @Override
                     public void onError(String message) {
                         runOnUiThread(() -> {
-                            btnTestCable.setText("🔍 Đo chất lượng (10s)");
+                            btnTestCable.setText(R.string.copy_message_mainactivity_be8cd5b);
                             btnTestCable.setEnabled(true);
                             if (pbCableTest != null) {
                                 pbCableTest.setVisibility(View.GONE);
@@ -3413,13 +3317,13 @@ public class MainActivity extends AppCompatActivity {
             long lastUnplug = prefs.getSotLastUnplugTime();
             long now = System.currentTimeMillis();
             if (lastUnplug <= 0 || lastUnplug > now) {
-                tvSotTotalUsed.setText("Vừa mới đây");
+                tvSotTotalUsed.setText(R.string.copy_message_mainactivity_2449dca);
             } else {
                 long diff = now - lastUnplug;
                 if (diff < 60000L) {
-                    tvSotTotalUsed.setText("Vừa mới rút");
+                    tvSotTotalUsed.setText(R.string.copy_message_mainactivity_86480bc);
                 } else if (diff > 7 * 86400000L) {
-                    tvSotTotalUsed.setText("> 7 ngày");
+                    tvSotTotalUsed.setText(R.string.copy_message_mainactivity_8b189ff);
                 } else {
                     tvSotTotalUsed.setText(SotHelper.formatDuration(diff));
                 }
@@ -3434,10 +3338,10 @@ public class MainActivity extends AppCompatActivity {
         // Update Battery Estimator (On-screen & Mixed duration)
         SotHelper.BatteryEstimate estimate = SotHelper.getBatteryEstimate(this);
         if (tvSotEstimateScreenOn != null) {
-            tvSotEstimateScreenOn.setText("~" + estimate.formattedSot);
+            tvSotEstimateScreenOn.setText(estimate.formattedSot);
         }
         if (tvSotEstimateMixed != null) {
-            tvSotEstimateMixed.setText("~" + estimate.formattedMixed);
+            tvSotEstimateMixed.setText(estimate.formattedMixed);
         }
         if (tvSotDrainRate != null) {
             tvSotDrainRate.setText(estimate.formattedRate);
@@ -3469,9 +3373,9 @@ public class MainActivity extends AppCompatActivity {
 
         if (tvDrainAppsSubtitle != null) {
             if (currentDrainFilter == BatteryUsageHelper.FILTER_SINCE_UNPLUG) {
-                tvDrainAppsSubtitle.setText("Thời gian dùng từ lúc rút sạc; không phải thống kê pin/chạy nền của hệ thống");
+                tvDrainAppsSubtitle.setText(R.string.copy_message_mainactivity_e8e4966);
             } else {
-                tvDrainAppsSubtitle.setText("Thời gian dùng từ 00:00; không dùng để kết luận ứng dụng gây hao pin");
+                tvDrainAppsSubtitle.setText(R.string.copy_message_mainactivity_cc32f60);
             }
         }
 
@@ -3486,7 +3390,7 @@ public class MainActivity extends AppCompatActivity {
         if (layoutDrainPermNeeded != null) layoutDrainPermNeeded.setVisibility(View.GONE);
         if (tvDrainAppsEmpty != null) {
             tvDrainAppsEmpty.setVisibility(View.VISIBLE);
-            tvDrainAppsEmpty.setText("Đang phân tích dữ liệu ứng dụng & tiêu thụ pin...");
+            tvDrainAppsEmpty.setText(R.string.copy_message_mainactivity_71d83d4);
         }
 
         drainQueryRunning = true;
@@ -3510,7 +3414,7 @@ public class MainActivity extends AppCompatActivity {
         if (items == null || items.isEmpty()) {
             if (tvDrainAppsEmpty != null) {
                 tvDrainAppsEmpty.setVisibility(View.VISIBLE);
-                tvDrainAppsEmpty.setText("Chưa đủ dữ liệu thời gian dùng ứng dụng.");
+                tvDrainAppsEmpty.setText(R.string.copy_message_mainactivity_1212da6);
             }
             return;
         }
@@ -3534,18 +3438,7 @@ public class MainActivity extends AppCompatActivity {
             ProgressBar pbProgress = itemView.findViewById(R.id.item_pb_progress);
             MaterialButton btnStop = itemView.findViewById(R.id.item_btn_stop);
 
-            // Rank format (medal or number)
-            if (tvRank != null) {
-                if (item.rank == 1) {
-                    tvRank.setText("🥇");
-                } else if (item.rank == 2) {
-                    tvRank.setText("🥈");
-                } else if (item.rank == 3) {
-                    tvRank.setText("🥉");
-                } else {
-                    tvRank.setText(String.valueOf(item.rank));
-                }
-            }
+            if (tvRank != null) tvRank.setText(Integer.toString(item.rank));
 
             // App Icon
             if (ivIcon != null) {
@@ -3561,7 +3454,7 @@ public class MainActivity extends AppCompatActivity {
             if (tvDuration != null) tvDuration.setText(item.formattedTime);
             if (tvPercentage != null) tvPercentage.setText("(" + item.percentage + "% thời gian)");
             if (tvEstBattery != null) {
-                tvEstBattery.setText("Chưa có số đo pin theo ứng dụng");
+                tvEstBattery.setText(R.string.copy_message_mainactivity_e0fc835);
             }
 
             // Progress bar
@@ -3600,8 +3493,8 @@ public class MainActivity extends AppCompatActivity {
         float volt = info.voltageMv / 1000.0f;
 
         tvBatteryPercent.setText(level + "%");
-        tvBatteryTemp.setText(String.format(Locale.getDefault(), "%.1f °C", temp));
-        tvBatteryVoltage.setText(String.format(Locale.getDefault(), "%.2f V", volt));
+        tvBatteryTemp.setText(String.format(Locale.getDefault(), getString(R.string.message_5b83308024), temp));
+        tvBatteryVoltage.setText(String.format(Locale.getDefault(), getString(R.string.message_bb89f8fc80), volt));
 
         if (isCharging) {
             String plugStr = (plugType == BatteryManager.BATTERY_PLUGGED_AC) ? "Củ sạc tường (AC)"
@@ -3613,8 +3506,8 @@ public class MainActivity extends AppCompatActivity {
             String eta = info.formattedEta;
             tvChargeEta.setText(eta != null ? eta : "Đang ước tính...");
         } else {
-            tvBatteryPlugType.setText("Nguồn: Pin thiết bị");
-            tvChargeEta.setText("Chưa cắm sạc");
+            tvBatteryPlugType.setText(R.string.copy_message_mainactivity_3fd46b5);
+            tvChargeEta.setText(R.string.copy_activity_main_tv_charge_eta_33e9bcd);
         }
 
         updateBatteryPowerRealtime();
@@ -3631,10 +3524,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (powerW > 0.0f) {
             String prefix = isCharging ? "+" : "-";
-            tvBatteryPower.setText(String.format(Locale.getDefault(), "%s%.1f W", prefix, powerW));
+            tvBatteryPower.setText(String.format(Locale.getDefault(), getString(R.string.message_c640b6bc35), prefix, powerW));
             tvBatteryPower.setTextColor(ContextCompat.getColor(this, isCharging ? R.color.neon_green : R.color.neon_cyan));
         } else {
-            tvBatteryPower.setText("Chưa có số đo");
+            tvBatteryPower.setText(R.string.copy_message_mainactivity_b0249d6);
             tvBatteryPower.setTextColor(ContextCompat.getColor(this, R.color.text_muted));
         }
 
@@ -3648,7 +3541,7 @@ public class MainActivity extends AppCompatActivity {
                 tvChargingCurrentVal.setText(prefix + Math.abs(currentMa) + " mA");
                 tvChargingCurrentVal.setTextColor(ContextCompat.getColor(this, isCharging ? R.color.neon_green : R.color.neon_cyan));
             } else {
-                tvChargingCurrentVal.setText("-- mA");
+                tvChargingCurrentVal.setText(R.string.copy_activity_main_tv_charging_current_0e1ac1d);
                 tvChargingCurrentVal.setTextColor(ContextCompat.getColor(this, R.color.text_muted));
             }
         }
@@ -3656,17 +3549,16 @@ public class MainActivity extends AppCompatActivity {
         // Battery Capacity & Health Specs
         BatteryHelper.BatteryCapacityData capData = BatteryHelper.getBatteryCapacityData(this);
         if (tvBatteryDesignCapacity != null) {
-            tvBatteryDesignCapacity.setText(capData.designMah + " mAh");
+            tvBatteryDesignCapacity.setText(capData.designMah > 0 ? capData.designMah + " mAh" : "Chưa có số đo");
         }
         if (tvBatteryActualCapacity != null) {
-            tvBatteryActualCapacity.setText(String.format(Locale.getDefault(), "~%d mAh (%d%%)",
-                    capData.actualMah, Math.round(capData.healthPercent)));
+            tvBatteryActualCapacity.setText(capData.actualMah > 0 ? capData.actualMah + " mAh (hệ thống)" : "Chưa có số đo");
         }
         if (tvBatteryCycleCount != null) {
-            if (capData.cycleCount > 0) {
+            if (capData.cycleCount >= 0) {
                 tvBatteryCycleCount.setText(capData.cycleCount + " chu kỳ");
             } else {
-                tvBatteryCycleCount.setText("Xem tại CIT");
+                tvBatteryCycleCount.setText(R.string.copy_message_mainactivity_928895a);
             }
         }
     }
@@ -3685,7 +3577,7 @@ public class MainActivity extends AppCompatActivity {
             tvChargingCurrentLabel.setText(state.isCharging ? "🔌 Dòng sạc" : "🔋 Dòng xả");
         }
 
-        if (tvChargingCurrentVal != null && state.currentMa <= 0) tvChargingCurrentVal.setText("Chưa có số đo");
+        if (tvChargingCurrentVal != null && state.currentMa <= 0) tvChargingCurrentVal.setText(R.string.copy_message_mainactivity_b0249d6);
         if (tvChargingCurrentVal != null && state.currentMa > 0) {
             String prefix = state.isCharging ? "+" : "";
             tvChargingCurrentVal.setText(prefix + state.currentMa + " mA");
@@ -3762,7 +3654,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     btnCheckUpdateNow.setEnabled(false);
-                    btnCheckUpdateNow.setText("⏳ Đang kết nối GitHub...");
+                    btnCheckUpdateNow.setText(R.string.copy_message_mainactivity_567d2ed);
                     UpdateHelper.checkForUpdate(MainActivity.this, true, new UpdateHelper.UpdateCheckListener() {
                         @Override
                         public void onStart() {
@@ -3774,7 +3666,7 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     btnCheckUpdateNow.setEnabled(true);
-                                    btnCheckUpdateNow.setText("⚡ Kiểm tra bản cập nhật mới ngay");
+                                    btnCheckUpdateNow.setText(R.string.copy_activity_main_btn_check_update_now_36ad101);
                                     if (success) {
                                         prefs.setLastUpdateCheckTime(System.currentTimeMillis());
                                         updateSettingsVersionDisplay();
@@ -3880,14 +3772,14 @@ public class MainActivity extends AppCompatActivity {
         if (tvThemeCurrentBadge != null) {
             switch (mode) {
                 case PreferencesHelper.THEME_MODE_LIGHT:
-                    tvThemeCurrentBadge.setText("Sáng");
+                    tvThemeCurrentBadge.setText(R.string.copy_activity_main_btn_theme_light_55942c0);
                     break;
                 case PreferencesHelper.THEME_MODE_DARK:
-                    tvThemeCurrentBadge.setText("Tối");
+                    tvThemeCurrentBadge.setText(R.string.copy_activity_main_btn_theme_dark_ca1dd55);
                     break;
                 case PreferencesHelper.THEME_MODE_SYSTEM:
                 default:
-                    tvThemeCurrentBadge.setText("Hệ thống");
+                    tvThemeCurrentBadge.setText(R.string.copy_activity_main_tv_theme_current_bad_d90f70a);
                     break;
             }
         }
@@ -3898,7 +3790,7 @@ public class MainActivity extends AppCompatActivity {
             tvSettingsCurrentVersion.setText("v" + UpdateHelper.getCurrentVersion(this));
         }
         if (tvSettingsUpdateBadge != null) {
-            tvSettingsUpdateBadge.setText("CHÍNH THỨC");
+            tvSettingsUpdateBadge.setText(R.string.copy_activity_main_tv_settings_update_b_7493fae);
             tvSettingsUpdateBadge.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
         }
         if (tvSettingsLastCheck != null) {
@@ -3907,7 +3799,7 @@ public class MainActivity extends AppCompatActivity {
                 java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm - dd/MM", java.util.Locale.getDefault());
                 tvSettingsLastCheck.setText(sdf.format(new java.util.Date(last)));
             } else {
-                tvSettingsLastCheck.setText("Vừa xong");
+                tvSettingsLastCheck.setText(R.string.copy_activity_main_tv_settings_last_che_332d45e);
             }
         }
     }
@@ -3937,12 +3829,12 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     if (!ShizukuHelper.isShizukuInstalled(MainActivity.this)) {
-                        Toast.makeText(MainActivity.this, "Đang mở trang tải Shizuku...", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, R.string.message_353552eac6, Toast.LENGTH_SHORT).show();
                         ShizukuHelper.openShizukuDownload(MainActivity.this);
                         return;
                     }
                     if (!ShizukuHelper.isShizukuRunning()) {
-                        Toast.makeText(MainActivity.this, "Shizuku chưa chạy. Vui lòng mở Shizuku và bấm Bắt đầu (Start) trước!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this, R.string.message_953a8dc535, Toast.LENGTH_LONG).show();
                         ShizukuHelper.openShizukuApp(MainActivity.this);
                         return;
                     }
@@ -3952,7 +3844,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     btnShizukuGrantAuto.setEnabled(false);
-                    btnShizukuGrantAuto.setText("Đang cấp quyền qua Shizuku...");
+                    btnShizukuGrantAuto.setText(R.string.copy_message_mainactivity_03b2957);
                     ShizukuHelper.grantSecureSettings(MainActivity.this, new ShizukuHelper.CommandCallback() {
                         @Override
                         public void onComplete(final boolean success, final String message) {
@@ -4000,11 +3892,11 @@ public class MainActivity extends AppCompatActivity {
             tvShizukuStatus.setText(R.string.shizuku_status_granted);
             tvShizukuStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
             if (tvShizukuBadge != null) {
-                tvShizukuBadge.setText("Đã kích hoạt");
+                tvShizukuBadge.setText(R.string.copy_message_mainactivity_7cb8388);
                 tvShizukuBadge.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
             }
             if (btnShizukuGrantAuto != null) {
-                btnShizukuGrantAuto.setText("🟢 Đã Cấp Quyền Secure Settings");
+                btnShizukuGrantAuto.setText(R.string.copy_message_mainactivity_0e001f3);
                 btnShizukuGrantAuto.setEnabled(false);
                 btnShizukuGrantAuto.setAlpha(0.6f);
             }
@@ -4012,11 +3904,11 @@ public class MainActivity extends AppCompatActivity {
             tvShizukuStatus.setText(R.string.shizuku_status_running_no_perm);
             tvShizukuStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_yellow));
             if (tvShizukuBadge != null) {
-                tvShizukuBadge.setText("Chờ cấp quyền");
+                tvShizukuBadge.setText(R.string.copy_message_mainactivity_4c944b7);
                 tvShizukuBadge.setTextColor(ContextCompat.getColor(this, R.color.neon_yellow));
             }
             if (btnShizukuGrantAuto != null) {
-                btnShizukuGrantAuto.setText("⚡ Cấp Quyền Shizuku Cho Mi Tool");
+                btnShizukuGrantAuto.setText(R.string.copy_message_mainactivity_ade013c);
                 btnShizukuGrantAuto.setEnabled(true);
                 btnShizukuGrantAuto.setAlpha(1.0f);
             }
@@ -4035,7 +3927,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void syncNotificationMonitoring() {
+        if (prefs.isNotifClockEnabled() || prefs.isAlert80Enabled() || prefs.isAlert100Enabled()
+                || prefs.isAlertTempEnabled() || prefs.isVoiceAlertMasterEnabled()) requestNotificationPermissionIfNeeded();
+        NotificationClockService.sync(this);
+    }
+
     private void startNotificationClockService() {
+        requestNotificationPermissionIfNeeded();
         Intent intent = new Intent(this, NotificationClockService.class);
         intent.setAction(NotificationClockService.ACTION_START);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -4046,8 +3945,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void stopNotificationClockService() {
-        Intent intent = new Intent(this, NotificationClockService.class);
-        stopService(intent);
+        NotificationClockService.sync(this);
+
     }
 
     private void startFloatingClockService() {

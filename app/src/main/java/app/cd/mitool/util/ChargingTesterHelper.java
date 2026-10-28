@@ -119,39 +119,17 @@ public class ChargingTesterHelper {
         // Adapter power factoring in ~88% internal charging circuitry conversion efficiency
         state.estimatedAdapterWatt = state.powerW > 0 ? (state.powerW / 0.88f) : 0f;
 
-        // Protocol Identification
+        state.estimatedAdapterWatt = 0; // Battery-side power does not identify adapter output.
         if (!state.isCharging) {
-            state.protocolName = "Đang dùng pin (Không cắm sạc)";
-            state.protocolBadge = "🔋 DÙNG PIN";
+            state.protocolName = "Đang dùng pin";
+            state.protocolBadge = "Đang dùng pin";
             state.protocolColor = R.color.text_secondary;
-            state.statusDescription = "Đang xả pin cho các hoạt động của hệ thống";
+            state.statusDescription = "Số đo phía pin, không phải điện năng tiêu thụ riêng của ứng dụng.";
         } else {
-            if (state.currentMa <= 0 || state.voltageV <= 0) {
-                state.protocolName = "Đang sạc (chưa có số đo công suất)";
-                state.protocolBadge = "CHƯA CÓ SỐ ĐO";
-                state.protocolColor = R.color.text_secondary;
-                state.statusDescription = "Thiết bị chưa cung cấp đủ số đo dòng điện/điện áp.";
-            } else if (state.powerW >= 26.0f || state.currentMa >= 4500 || state.estimatedAdapterWatt >= 30.0f) {
-                state.protocolName = "Mi Turbo Charge / HyperCharge (33W - 120W+)";
-                state.protocolBadge = "🚀 SIÊU NHANH MI TURBO";
-                state.protocolColor = R.color.mi_orange;
-                state.statusDescription = "Kích hoạt giao thức sạc siêu nhanh độc quyền của Xiaomi";
-            } else if (state.powerW >= 13.0f || state.currentMa >= 2400 || state.estimatedAdapterWatt >= 15.0f) {
-                state.protocolName = "Sạc Nhanh Quick Charge / USB-PD (18W - 27W)";
-                state.protocolBadge = "⚡ SẠC NHANH QC/PD";
-                state.protocolColor = R.color.neon_yellow;
-                state.statusDescription = "Sạc nhanh chuẩn Qualcomm Quick Charge / Power Delivery";
-            } else if (state.powerW >= 7.5f || state.currentMa >= 1300) {
-                state.protocolName = "Sạc Tiêu Chuẩn (10W - 12W)";
-                state.protocolBadge = "🔋 SẠC CHUẨN 10W";
-                state.protocolColor = R.color.neon_green;
-                state.statusDescription = "Sạc ở mức điện áp 5V tiêu chuẩn an toàn";
-            } else {
-                state.protocolName = "Sạc Chậm / Cổng USB máy tính (5V - 0.5A/1A)";
-                state.protocolBadge = "⚠️ SẠC CHẬM";
-                state.protocolColor = R.color.text_muted;
-                state.statusDescription = "Dòng sạc thấp, thời gian sạc đầy sẽ kéo dài";
-            }
+            state.protocolName = "Đang sạc";
+            state.protocolBadge = state.currentMa > 0 ? "Số đo phía pin" : "Chưa có số đo";
+            state.protocolColor = R.color.neon_green;
+            state.statusDescription = "Chưa xác định giao thức hoặc công suất đầu ra của bộ sạc.";
         }
 
         return state;
@@ -266,45 +244,9 @@ public class ChargingTesterHelper {
 
         boolean isUnstable = (stability < 60) || (minCurrent < 400 && maxCurrent > 1500);
 
-        int score;
-        String stars;
-        String title;
-        String desc;
-        int color;
-
-        if (isUnstable) {
-            score = 2;
-            stars = "⭐⭐";
-            title = "CẢNH BÁO: Cáp chập chờn / Tiếp xúc kém";
-            desc = "Dòng sạc bị dao động mạnh (" + minCurrent + "mA - " + maxCurrent + "mA)! Đầu cắm Type-C có thể bị bẩn, lỏng chân tiếp xúc hoặc dây cáp bị gãy ngầm. Bạn nên vệ sinh cổng sạc hoặc đổi cáp sạc khác để tránh nóng chân sạc.";
-            color = R.color.neon_red;
-        } else if (avgCurrent >= 3500 || avgPower >= 22.0f) {
-            score = 5;
-            stars = "⭐⭐⭐⭐⭐";
-            title = "XUẤT SẮC (Mi Turbo / HyperCharge)";
-            desc = "Củ sạc và dây cáp chất lượng cao, tiếp xúc hoàn hảo! Hỗ trợ trọn vẹn công suất sạc siêu nhanh của Xiaomi, điện áp và dòng sạc cực kỳ ổn định (đạt " + avgCurrent + " mA).";
-            color = R.color.mi_orange;
-        } else if (avgCurrent >= 2200 || avgPower >= 12.0f) {
-            score = 5;
-            stars = "⭐⭐⭐⭐⭐";
-            title = "RẤT TỐT (Sạc Nhanh QC/PD)";
-            desc = "Dây cáp và củ sạc hỗ trợ sạc nhanh ổn định. Suy hao điện năng rất thấp, truyền tải tốt (" + String.format(Locale.getDefault(), "%.1f W", avgPower) + ").";
-            color = R.color.neon_green;
-        } else if (avgCurrent >= 1300) {
-            score = 4;
-            stars = "⭐⭐⭐⭐";
-            title = "TỐT (Chuẩn 10W - 15W)";
-            desc = "Dây cáp tiếp xúc tốt, dòng sạc đều và không bị chập chờn. Đáp ứng hoàn hảo chuẩn sạc thông thường 5V - 2A.";
-            color = R.color.neon_green;
-        } else {
-            score = 3;
-            stars = "⭐⭐⭐";
-            title = "BÌNH THƯỜNG / SẠC CHẬM";
-            desc = "Dòng sạc bị giới hạn ở mức thấp (" + avgCurrent + " mA). Có thể do củ sạc công suất thấp, cắm cổng USB máy tính hoặc dây cáp loại cũ không hỗ trợ dòng cao.";
-            color = R.color.neon_yellow;
-        }
-
-        return new CableTestResult(score, stars, title, desc, color, avgPower, maxPower, avgCurrent, maxCurrent, minCurrent, avgVolt, stability, isUnstable);
+        return new CableTestResult(0, "Tham khảo", "Kết quả đo dòng điện",
+                "Dòng điện thay đổi theo mức pin, nhiệt độ và tác vụ. Kết quả này chưa xác định lỗi cáp hay bộ sạc.",
+                R.color.text_secondary, avgPower, maxPower, avgCurrent, maxCurrent, minCurrent, avgVolt, stability, isUnstable);
     }
 
 }

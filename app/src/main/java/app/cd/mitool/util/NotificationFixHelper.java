@@ -1,5 +1,6 @@
 package app.cd.mitool.util;
 
+import app.cd.mitool.R;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -50,7 +51,7 @@ public class NotificationFixHelper {
             this.packageName = packageName;
             this.defaultName = defaultName;
             this.category = category;
-            this.isSelected = defaultSelected;
+            this.isSelected = false;
             this.isRecommended = isRecommended;
         }
     }
@@ -278,7 +279,7 @@ public class NotificationFixHelper {
                 context.startActivity(intent);
                 return true;
             } catch (Throwable t) {
-                Toast.makeText(context, "Không thể mở mục Tự khởi chạy MIUI", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.message_82d33d7c05, Toast.LENGTH_SHORT).show();
                 return false;
             }
         }
@@ -338,7 +339,7 @@ public class NotificationFixHelper {
                 context.startActivity(intent);
                 return true;
             } catch (Throwable t) {
-                Toast.makeText(context, "Không thể mở trang Tiết kiệm pin", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.message_8037bb3357, Toast.LENGTH_SHORT).show();
                 return false;
             }
         }
@@ -368,7 +369,7 @@ public class NotificationFixHelper {
             context.startActivity(intent);
             return true;
         } catch (Throwable t) {
-            Toast.makeText(context, "Không thể mở thông tin ứng dụng", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.message_2f14c9c4d3, Toast.LENGTH_SHORT).show();
             return false;
         }
     }
@@ -395,7 +396,7 @@ public class NotificationFixHelper {
                 context.startActivity(intent);
                 return true;
             } catch (Throwable t) {
-                Toast.makeText(context, "Không thể mở trang kiểm tra FCM", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.message_feb651570e, Toast.LENGTH_SHORT).show();
                 return false;
             }
         }

@@ -1,102 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
-    app:cardBackgroundColor="@color/card_dark"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="0dp">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="12dp">
-
-        <!-- Header: App Name & Badges -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tv_debloat_app_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Mi Video"
-                    android:textColor="@color/text_primary"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tv_debloat_pkg"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="1dp"
-                    android:fontFamily="monospace"
-                    android:text="com.miui.videoplayer"
-                    android:textColor="@color/text_muted"
-                    android:textSize="10sp" />
+<?xml version='1.0' encoding='utf-8'?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="10dp" app:cardBackgroundColor="@color/card_dark" app:cardCornerRadius="18dp" app:cardElevation="0dp" app:strokeColor="@color/card_dark_stroke" app:strokeWidth="1dp">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="12dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                <TextView android:id="@+id/tv_debloat_app_name" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_dialog_debloater_item_tv_debloat_a_b16a80b" android:textColor="@color/text_primary" android:textSize="14sp" android:textStyle="bold" />
+                <TextView android:id="@+id/tv_debloat_pkg" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:fontFamily="monospace" android:text="@string/copy_dialog_debloater_item_tv_debloat_p_05ff041" android:textColor="@color/text_muted" android:textSize="12sp" />
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/tv_debloat_status_badge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/bg_badge_rounded"
-                android:paddingStart="8dp"
-                android:paddingTop="3dp"
-                android:paddingEnd="8dp"
-                android:paddingBottom="3dp"
-                android:singleLine="true"
-                android:text="Đang chạy"
-                android:textColor="@color/mi_orange"
-                android:textSize="10sp"
-                android:textStyle="bold" />
+            <TextView android:id="@+id/tv_debloat_status_badge" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:background="@drawable/bg_badge_rounded" android:paddingStart="8dp" android:paddingTop="3dp" android:paddingEnd="8dp" android:paddingBottom="3dp" android:singleLine="true" android:text="@string/copy_dialog_debloater_item_tv_debloat_s_b091a30" android:textColor="@color/mi_orange" android:textSize="12sp" android:textStyle="bold" />
         </LinearLayout>
-
-        <!-- Description -->
-        <TextView
-            android:id="@+id/tv_debloat_desc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text="Trình xem video mặc định kèm nhiều thông báo tin tức và quảng cáo"
-            android:textColor="@color/text_secondary"
-            android:textSize="11sp" />
-
-        <!-- Action Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_toggle_freeze"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:minHeight="38dp"
-            android:backgroundTint="@color/card_highlight"
-            app:strokeColor="@color/neon_cyan"
-            app:strokeWidth="1dp"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:insetLeft="0dp"
-            android:insetRight="0dp"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:text="❄️ Đóng băng ứng dụng"
-            android:textColor="@color/neon_cyan"
-            android:textSize="12sp"
-            app:cornerRadius="8dp" />
-
+        <TextView android:id="@+id/tv_debloat_desc" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="@string/copy_dialog_debloater_item_tv_debloat_d_b24b43e" android:textColor="@color/text_secondary" android:textSize="12sp" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/btn_toggle_freeze" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:paddingLeft="8dp" android:paddingRight="8dp" android:text="@string/feature_packages" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
     </LinearLayout>
-
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

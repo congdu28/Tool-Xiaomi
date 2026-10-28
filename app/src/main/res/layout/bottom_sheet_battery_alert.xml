@@ -1,506 +1,80 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/bg_bottom_sheet"
-    android:fillViewport="true"
-    android:overScrollMode="never">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
-
-        <!-- Drag Handle -->
-        <View
-            android:layout_width="40dp"
-            android:layout_height="4dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/bg_drag_handle" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="🔋 Bảo Vệ Pin &amp; Màn Hình Khóa Sạc"
-            android:textColor="@color/text_primary"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Tự động phát thông báo giọng nói Tiếng Việt, chuông báo sạc bảo vệ pin và hiển thị HUD sạc HyperOS."
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp" />
-
-        <!-- ============================================================== -->
-        <!-- SECTION 1: SMART VOICE ALERTS (TEXT-TO-SPEECH VIETNAMESE)      -->
-        <!-- ============================================================== -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:background="@color/card_highlight"
-            android:orientation="vertical"
-            android:padding="12dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="12dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🗣️ Thông báo Giọng nói Tiếng Việt"
-                        android:textColor="@color/text_primary"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="Phát âm tiếng Việt khi cắm/rút sạc, pin đầy &amp; quá nhiệt"
-                        android:textColor="@color/neon_cyan"
-                        android:textSize="11sp" />
-                </LinearLayout>
-
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/bs_switch_voice_master"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <!-- Voice Sub-options Container -->
-            <LinearLayout
-                android:id="@+id/bs_layout_voice_sub_options"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="vertical">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/bs_btn_test_voice"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="38dp"
-                    android:backgroundTint="@color/card_dark"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:insetLeft="0dp"
-                    android:insetRight="0dp"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:text="🔊 Thử phát giọng nói Tiếng Việt"
-                    android:textColor="@color/neon_green"
-                    android:textSize="11sp"
-                    app:cornerRadius="6dp" />
-
-                <!-- Sub 1: Connect -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="12dp"
-                        android:layout_weight="1"
-                        android:text="Khi cắm sạc (Báo mức pin &amp; công suất W)"
-                        android:textColor="@color/text_primary"
-                        android:textSize="12sp" />
-
-                    <com.google.android.material.materialswitch.MaterialSwitch
-                        android:id="@+id/bs_switch_voice_connect"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-                <!-- Sub 2: Disconnect -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="12dp"
-                        android:layout_weight="1"
-                        android:text="Khi rút sạc (Báo mức pin còn lại)"
-                        android:textColor="@color/text_primary"
-                        android:textSize="12sp" />
-
-                    <com.google.android.material.materialswitch.MaterialSwitch
-                        android:id="@+id/bs_switch_voice_disconnect"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-                <!-- Sub 3: 80% Threshold -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/bs_tv_voice_80_label"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="12dp"
-                        android:layout_weight="1"
-                        android:text="Khi sạc đạt ngưỡng bảo vệ (80%)"
-                        android:textColor="@color/text_primary"
-                        android:textSize="12sp" />
-
-                    <com.google.android.material.materialswitch.MaterialSwitch
-                        android:id="@+id/bs_switch_voice_80"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-                <!-- Sub 4: 100% -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="12dp"
-                        android:layout_weight="1"
-                        android:text="Khi pin sạc đầy 100%"
-                        android:textColor="@color/text_primary"
-                        android:textSize="12sp" />
-
-                    <com.google.android.material.materialswitch.MaterialSwitch
-                        android:id="@+id/bs_switch_voice_100"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-                <!-- Sub 5: Temperature -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="12dp"
-                        android:layout_weight="1"
-                        android:text="Cảnh báo khi pin quá nóng (&gt; 42°C)"
-                        android:textColor="@color/text_primary"
-                        android:textSize="12sp" />
-
-                    <com.google.android.material.materialswitch.MaterialSwitch
-                        android:id="@+id/bs_switch_voice_temp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- ============================================================== -->
-        <!-- SECTION 2: RINGTONE ALERT & THRESHOLD                          -->
-        <!-- ============================================================== -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@color/card_highlight"
-            android:orientation="vertical"
-            android:padding="12dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/bs_tv_alert_80_title"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="12dp"
-                    android:layout_weight="1"
-                    android:text="Ngưỡng chuông báo bảo vệ pin (80%)"
-                    android:textColor="@color/text_primary"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
-
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/bs_switch_alert_80"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <!-- Slider container -->
-            <LinearLayout
-                android:id="@+id/bs_layout_alert_level_slider"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Mức pin dừng sạc:"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="11sp" />
-
-                    <TextView
-                        android:id="@+id/bs_tv_alert_level_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="monospace"
-                        android:text="80%"
-                        android:textColor="@color/neon_green"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <SeekBar
-                    android:id="@+id/bs_sb_battery_alert_level"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:max="45"
-                    android:progress="30"
-                    android:progressTint="@color/neon_green"
-                    android:thumbTint="@color/neon_green" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- Custom Tone Section -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@color/card_highlight"
-            android:orientation="vertical"
-            android:padding="12dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Âm thanh chuông báo sạc:"
-                android:textColor="@color/text_primary"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/bs_tv_selected_audio_tone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="Mặc định hệ thống"
-                android:textColor="@color/neon_cyan"
-                android:textSize="11sp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/bs_btn_pick_audio"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="3dp"
-                    android:layout_weight="1"
-                    android:minHeight="36dp"
-                    android:minWidth="0dp"
-                    android:backgroundTint="@color/card_dark"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:insetLeft="0dp"
-                    android:insetRight="0dp"
-                    android:paddingLeft="2dp"
-                    android:paddingRight="2dp"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:text="🎵 Đổi nhạc"
-                    android:textColor="@color/text_primary"
-                    android:textSize="11sp"
-                    app:cornerRadius="6dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/bs_btn_test_audio"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="3dp"
-                    android:layout_marginEnd="3dp"
-                    android:layout_weight="1"
-                    android:minHeight="36dp"
-                    android:minWidth="0dp"
-                    android:backgroundTint="@color/card_dark"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:insetLeft="0dp"
-                    android:insetRight="0dp"
-                    android:paddingLeft="2dp"
-                    android:paddingRight="2dp"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:text="🔊 Nghe thử"
-                    android:textColor="@color/neon_green"
-                    android:textSize="11sp"
-                    app:cornerRadius="6dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/bs_btn_reset_audio"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="3dp"
-                    android:layout_weight="1"
-                    android:minHeight="36dp"
-                    android:minWidth="0dp"
-                    android:backgroundTint="@color/card_dark"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:insetLeft="0dp"
-                    android:insetRight="0dp"
-                    android:paddingLeft="2dp"
-                    android:paddingRight="2dp"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:text="🔄 Mặc định"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="11sp"
-                    app:cornerRadius="6dp" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- ============================================================== -->
-        <!-- SECTION 3: HUD AMBIENT & EXTRA TOGGLES                         -->
-        <!-- ============================================================== -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
-                android:layout_weight="1"
-                android:text="Màn hình sạc HUD HyperOS (Ambient)"
-                android:textColor="@color/text_primary"
-                android:textSize="12sp" />
-
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/bs_switch_lockscreen_ambient"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
-                android:layout_weight="1"
-                android:text="Báo chuông khi đầy 100%"
-                android:textColor="@color/text_primary"
-                android:textSize="12sp" />
-
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/bs_switch_alert_100"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
-                android:layout_weight="1"
-                android:text="Cảnh báo nhiệt độ pin quá nóng (&gt; 42°C)"
-                android:textColor="@color/text_primary"
-                android:textSize="12sp" />
-
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/bs_switch_alert_temp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/bs_btn_view_sot_stats"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:minHeight="44dp"
-            android:backgroundTint="@color/card_highlight"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:insetLeft="0dp"
-            android:insetRight="0dp"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:text="📊 Xem Thời gian Sáng màn hình (SOT) &amp; Hao Pin"
-            android:textColor="@color/neon_cyan"
-            android:textSize="12sp"
-            app:cornerRadius="8dp" />
-
+<?xml version='1.0' encoding='utf-8'?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_bottom_sheet" android:paddingTop="12dp">
+    <View android:layout_width="40dp" android:layout_height="4dp" android:layout_gravity="center_horizontal" android:layout_marginBottom="16dp" android:background="@drawable/bg_drag_handle" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp" android:paddingStart="20dp" android:paddingEnd="20dp">
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="@string/feature_alerts" android:textColor="@color/text_primary" android:textSize="22sp" android:textStyle="bold" android:layout_weight="1" android:layout_marginBottom="0dp" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/sheet_close" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/action_close" android:contentDescription="@string/action_close" style="@style/Widget.MiTool.Button.Text" android:minHeight="48dp" />
     </LinearLayout>
-
-</androidx.core.widget.NestedScrollView>
+    <androidx.core.widget.NestedScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@android:color/transparent" android:fillViewport="true" android:overScrollMode="never">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingStart="20dp" android:paddingEnd="20dp" android:paddingBottom="24dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/copy_bottom_sheet_battery_alert_text_7866b03" android:textColor="@color/text_secondary" android:textSize="12sp" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:background="@color/card_highlight" android:orientation="vertical" android:padding="12dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="12dp" android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_bottom_sheet_battery_alert_text_7678a0f" android:textColor="@color/text_primary" android:textSize="13sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="@string/copy_bottom_sheet_battery_alert_text_41a6c86" android:textColor="@color/neon_cyan" android:textSize="12sp" />
+                    </LinearLayout>
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/bs_switch_voice_master" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" />
+                </LinearLayout>
+                <LinearLayout android:id="@+id/bs_layout_voice_sub_options" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:orientation="vertical">
+                    <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_test_voice" android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingLeft="8dp" android:paddingRight="8dp" android:text="@string/copy_bottom_sheet_battery_alert_bs_btn_c953a9a" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:gravity="center_vertical" android:orientation="horizontal">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="12dp" android:layout_weight="1" android:text="@string/copy_bottom_sheet_battery_alert_text_74dc9b4" android:textColor="@color/text_primary" android:textSize="12sp" />
+                        <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/bs_switch_voice_connect" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" />
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:gravity="center_vertical" android:orientation="horizontal">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="12dp" android:layout_weight="1" android:text="@string/copy_bottom_sheet_battery_alert_text_d5bb8ee" android:textColor="@color/text_primary" android:textSize="12sp" />
+                        <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/bs_switch_voice_disconnect" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" />
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:gravity="center_vertical" android:orientation="horizontal">
+                        <TextView android:id="@+id/bs_tv_voice_80_label" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="12dp" android:layout_weight="1" android:text="@string/copy_bottom_sheet_battery_alert_bs_tv_v_86fe380" android:textColor="@color/text_primary" android:textSize="12sp" />
+                        <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/bs_switch_voice_80" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" />
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:gravity="center_vertical" android:orientation="horizontal">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="12dp" android:layout_weight="1" android:text="@string/copy_bottom_sheet_battery_alert_text_93345f6" android:textColor="@color/text_primary" android:textSize="12sp" />
+                        <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/bs_switch_voice_100" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" />
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:gravity="center_vertical" android:orientation="horizontal">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="12dp" android:layout_weight="1" android:text="@string/copy_bottom_sheet_battery_alert_text_498ff8d" android:textColor="@color/text_primary" android:textSize="12sp" />
+                        <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/bs_switch_voice_temp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:background="@color/card_highlight" android:orientation="vertical" android:padding="12dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+                    <TextView android:id="@+id/bs_tv_alert_80_title" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="12dp" android:layout_weight="1" android:text="@string/copy_bottom_sheet_battery_alert_bs_tv_a_7d2a168" android:textColor="@color/text_primary" android:textSize="13sp" android:textStyle="bold" />
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/bs_switch_alert_80" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" />
+                </LinearLayout>
+                <LinearLayout android:id="@+id/bs_layout_alert_level_slider" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:orientation="vertical">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/copy_bottom_sheet_battery_alert_text_8e42784" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                        <TextView android:id="@+id/bs_tv_alert_level_value" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="monospace" android:text="@string/copy_bottom_sheet_battery_alert_bs_tv_a_5366a74" android:textColor="@color/neon_green" android:textSize="13sp" android:textStyle="bold" />
+                    </LinearLayout>
+                    <SeekBar android:id="@+id/bs_sb_battery_alert_level" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:max="45" android:progress="30" android:progressTint="@color/neon_green" android:thumbTint="@color/neon_green" />
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:background="@color/card_highlight" android:orientation="vertical" android:padding="12dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_bottom_sheet_battery_alert_text_9dda26d" android:textColor="@color/text_primary" android:textSize="13sp" android:textStyle="bold" />
+                <TextView android:id="@+id/bs_tv_selected_audio_tone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:ellipsize="end" android:maxLines="1" android:text="@string/battery_alert_tone_default" android:textColor="@color/neon_cyan" android:textSize="12sp" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:orientation="horizontal">
+                    <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_pick_audio" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="3dp" android:layout_weight="1" android:paddingLeft="2dp" android:paddingRight="2dp" android:text="@string/copy_bottom_sheet_battery_alert_bs_btn_7d17faa" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                    <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_test_audio" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="3dp" android:layout_marginEnd="3dp" android:layout_weight="1" android:paddingLeft="2dp" android:paddingRight="2dp" android:text="@string/btn_test_audio" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                    <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_reset_audio" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="3dp" android:layout_weight="1" android:paddingLeft="2dp" android:paddingRight="2dp" android:text="@string/btn_reset_audio" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="12dp" android:layout_weight="1" android:text="@string/copy_bottom_sheet_battery_alert_text_93d206c" android:textColor="@color/text_primary" android:textSize="12sp" />
+                <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/bs_switch_lockscreen_ambient" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="12dp" android:layout_weight="1" android:text="@string/copy_bottom_sheet_battery_alert_text_27eabb7" android:textColor="@color/text_primary" android:textSize="12sp" />
+                <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/bs_switch_alert_100" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="12dp" android:layout_weight="1" android:text="@string/copy_bottom_sheet_battery_alert_text_f836185" android:textColor="@color/text_primary" android:textSize="12sp" />
+                <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/bs_switch_alert_temp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" />
+            </LinearLayout>
+            <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_view_sot_stats" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:paddingLeft="8dp" android:paddingRight="8dp" android:text="@string/copy_bottom_sheet_battery_alert_bs_btn_79aa7ff" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

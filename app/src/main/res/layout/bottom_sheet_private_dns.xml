@@ -1,279 +1,31 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/bg_bottom_sheet"
-    android:fillViewport="true"
-    android:overScrollMode="never">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
-
-        <!-- Drag Handle -->
-        <View
-            android:layout_width="40dp"
-            android:layout_height="4dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/bg_drag_handle" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="🛡️ Private DNS (DNS Riêng Tư)"
-            android:textColor="@color/text_primary"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Chặn quảng cáo, theo dõi và mã hóa tên miền DoT an toàn, tiết kiệm pin tối đa và không cần dùng VPN."
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp" />
-
-        <!-- Current DNS Status Card -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:background="@drawable/bg_card_rounded"
-            android:gravity="center_vertical"
-            android:padding="12dp">
-
-            <TextView
-                android:id="@+id/bs_tv_private_dns_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Trạng thái: Đang kiểm tra..."
-                android:textColor="@color/neon_cyan"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <!-- 1. AdGuard DNS Button (Recommended) -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/bs_btn_dns_adguard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:minHeight="48dp"
-            android:backgroundTint="@color/card_highlight"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:insetLeft="0dp"
-            android:insetRight="0dp"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:text="🛡️ AdGuard DNS • dns.adguard-dns.com (Chặn QC)"
-            android:textColor="@color/neon_green"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            app:cornerRadius="8dp"
-            app:strokeColor="@color/neon_green"
-            app:strokeWidth="1dp" />
-
-        <!-- 2. Cloudflare Family -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/bs_btn_dns_cloudflare_family"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:minHeight="44dp"
-            android:backgroundTint="@color/card_highlight"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:insetLeft="0dp"
-            android:insetRight="0dp"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:text="👨‍👩‍👧 Cloudflare Family • family.cloudflare-dns.com (18+)"
-            android:textColor="@color/text_primary"
-            android:textSize="12sp"
-            app:cornerRadius="8dp" />
-
-        <!-- Row 1: Cloudflare 1.1.1.1 & Google DNS -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/bs_btn_dns_cloudflare"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:layout_weight="1"
-                android:minHeight="42dp"
-                android:minWidth="0dp"
-                android:backgroundTint="@color/card_highlight"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:paddingLeft="4dp"
-                android:paddingRight="4dp"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:text="⚡ Cloudflare 1.1.1.1"
-                android:textColor="@color/text_primary"
-                android:textSize="11sp"
-                app:cornerRadius="8dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/bs_btn_dns_google"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_weight="1"
-                android:minHeight="42dp"
-                android:minWidth="0dp"
-                android:backgroundTint="@color/card_highlight"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:paddingLeft="4dp"
-                android:paddingRight="4dp"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:text="🌐 Google DNS"
-                android:textColor="@color/text_primary"
-                android:textSize="11sp"
-                app:cornerRadius="8dp" />
-        </LinearLayout>
-
-        <!-- Row 2: Quad9 DNS & Custom DoT Input -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/bs_btn_dns_quad9"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:layout_weight="1"
-                android:minHeight="42dp"
-                android:minWidth="0dp"
-                android:backgroundTint="@color/card_highlight"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:paddingLeft="4dp"
-                android:paddingRight="4dp"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:text="🔒 Quad9 Bảo Mật"
-                android:textColor="@color/text_primary"
-                android:textSize="11sp"
-                app:cornerRadius="8dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/bs_btn_dns_custom"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_weight="1"
-                android:minHeight="42dp"
-                android:minWidth="0dp"
-                android:backgroundTint="@color/card_highlight"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:paddingLeft="4dp"
-                android:paddingRight="4dp"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:text="✏️ DNS Tùy Chọn"
-                android:textColor="@color/neon_yellow"
-                android:textSize="11sp"
-                app:cornerRadius="8dp" />
-        </LinearLayout>
-
-        <!-- Row 3: Auto & Off -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/bs_btn_dns_auto"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:layout_weight="1"
-                android:minHeight="42dp"
-                android:minWidth="0dp"
-                android:backgroundTint="@color/card_highlight"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:paddingLeft="2dp"
-                android:paddingRight="2dp"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:text="🔄 Tự Động (Nhà mạng)"
-                android:textColor="@color/neon_cyan"
-                android:textSize="11sp"
-                app:cornerRadius="8dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/bs_btn_dns_off"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_weight="1"
-                android:minHeight="42dp"
-                android:minWidth="0dp"
-                android:backgroundTint="@color/card_highlight"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:paddingLeft="2dp"
-                android:paddingRight="2dp"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:text="❌ Tắt DNS Riêng Tư"
-                android:textColor="@color/neon_red"
-                android:textSize="11sp"
-                app:cornerRadius="8dp" />
-        </LinearLayout>
-
-        <!-- System Settings Shortcut -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/bs_btn_open_dns_settings"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:minHeight="42dp"
-            android:backgroundTint="@color/card_highlight"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:insetLeft="0dp"
-            android:insetRight="0dp"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:text="⚙️ Mở Cài Đặt DNS Mạng Hệ Thống"
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp"
-            app:cornerRadius="8dp" />
-
+<?xml version='1.0' encoding='utf-8'?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_bottom_sheet" android:paddingTop="12dp">
+    <View android:layout_width="40dp" android:layout_height="4dp" android:layout_gravity="center_horizontal" android:layout_marginBottom="16dp" android:background="@drawable/bg_drag_handle" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp" android:paddingStart="20dp" android:paddingEnd="20dp">
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="@string/quick_dns" android:textColor="@color/text_primary" android:textSize="22sp" android:textStyle="bold" android:layout_weight="1" android:layout_marginBottom="0dp" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/sheet_close" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/action_close" android:contentDescription="@string/action_close" style="@style/Widget.MiTool.Button.Text" android:minHeight="48dp" />
     </LinearLayout>
-
-</androidx.core.widget.NestedScrollView>
+    <androidx.core.widget.NestedScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@android:color/transparent" android:fillViewport="true" android:overScrollMode="never">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingStart="20dp" android:paddingEnd="20dp" android:paddingBottom="24dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/copy_bottom_sheet_private_dns_text_da818e2" android:textColor="@color/text_secondary" android:textSize="12sp" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:background="@drawable/bg_card_rounded" android:gravity="center_vertical" android:padding="12dp">
+                <TextView android:id="@+id/bs_tv_private_dns_status" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_bottom_sheet_private_dns_bs_tv_pri_b9cc01f" android:textColor="@color/neon_cyan" android:textSize="13sp" android:textStyle="bold" />
+            </LinearLayout>
+            <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_dns_adguard" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:paddingLeft="12dp" android:paddingRight="12dp" android:text="@string/btn_dns_adguard" android:textStyle="bold" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_dns_cloudflare_family" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:paddingLeft="12dp" android:paddingRight="12dp" android:text="@string/copy_bottom_sheet_private_dns_bs_btn_dn_eea5e5e" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_dns_cloudflare" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="4dp" android:layout_weight="1" android:paddingLeft="4dp" android:paddingRight="4dp" android:text="@string/btn_dns_cloudflare" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_dns_google" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="4dp" android:layout_weight="1" android:paddingLeft="4dp" android:paddingRight="4dp" android:text="@string/copy_bottom_sheet_private_dns_bs_btn_dn_56b95d6" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_dns_quad9" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="4dp" android:layout_weight="1" android:paddingLeft="4dp" android:paddingRight="4dp" android:text="@string/copy_bottom_sheet_private_dns_bs_btn_dn_595915e" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_dns_custom" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="4dp" android:layout_weight="1" android:paddingLeft="4dp" android:paddingRight="4dp" android:text="@string/copy_bottom_sheet_private_dns_bs_btn_dn_3ef99d3" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_dns_auto" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="4dp" android:layout_weight="1" android:paddingLeft="2dp" android:paddingRight="2dp" android:text="@string/copy_bottom_sheet_private_dns_bs_btn_dn_3ce0ae6" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_dns_off" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="4dp" android:layout_weight="1" android:paddingLeft="2dp" android:paddingRight="2dp" android:text="@string/btn_dns_off" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+            </LinearLayout>
+            <com.google.android.material.button.MaterialButton android:id="@+id/bs_btn_open_dns_settings" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:paddingLeft="8dp" android:paddingRight="8dp" android:text="@string/copy_bottom_sheet_private_dns_bs_btn_op_7074f80" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

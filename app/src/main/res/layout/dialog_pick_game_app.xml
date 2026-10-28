@@ -1,107 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/bg_bottom_sheet"
-    android:orientation="vertical"
-    android:padding="16dp">
-
-    <!-- Header -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="➕ Thêm Game Vào Thư Viện"
-            android:textColor="@color/text_primary"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <ImageView
-            android:id="@+id/btn_game_picker_close"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:contentDescription="Close"
-            android:focusable="true"
-            android:padding="6dp"
-            android:src="@drawable/ic_close"
-            app:tint="@color/text_muted" />
+<?xml version='1.0' encoding='utf-8'?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/bg_bottom_sheet" android:orientation="vertical" android:padding="16dp">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/copy_dialog_pick_game_app_text_9a882a7" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
+        <ImageView android:id="@+id/btn_game_picker_close" android:layout_width="32dp" android:layout_height="32dp" android:background="?attr/selectableItemBackgroundBorderless" android:clickable="true" android:contentDescription="@string/copy_dialog_pick_game_app_btn_game_pick_bbfa773" android:focusable="true" android:padding="6dp" android:src="@drawable/ic_close" app:tint="@color/text_muted" />
     </LinearLayout>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="Chọn bất kỳ tựa game hoặc ứng dụng nào đã cài đặt trên máy để theo dõi FPS nổi khi chơi:"
-        android:textColor="@color/text_secondary"
-        android:textSize="12sp" />
-
-    <!-- Search Input Box -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/bg_card_rounded"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingLeft="12dp"
-        android:paddingRight="12dp">
-
-        <EditText
-            android:id="@+id/et_game_picker_search"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:hint="🔍 Tìm theo tên game hoặc gói..."
-            android:imeOptions="actionDone"
-            android:singleLine="true"
-            android:textColor="@color/text_primary"
-            android:textColorHint="@color/text_muted"
-            android:textSize="13sp" />
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/copy_dialog_pick_game_app_text_c989d65" android:textColor="@color/text_secondary" android:textSize="12sp" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="44dp" android:layout_marginTop="10dp" android:background="@drawable/bg_card_rounded" android:gravity="center_vertical" android:orientation="horizontal" android:paddingLeft="12dp" android:paddingRight="12dp">
+        <EditText android:id="@+id/et_game_picker_search" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="@string/copy_dialog_pick_game_app_et_game_picke_39d453f" android:imeOptions="actionDone" android:singleLine="true" android:textColor="@color/text_primary" android:textColorHint="@color/text_muted" android:textSize="13sp" />
     </LinearLayout>
-
-    <!-- Loading Spinner -->
-    <ProgressBar
-        android:id="@+id/pb_game_picker_loading"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="24dp"
-        android:indeterminate="true"
-        android:indeterminateTint="@color/neon_green" />
-
-    <!-- Scrollable Apps List -->
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/scroll_game_picker"
-        android:layout_width="match_parent"
-        android:layout_height="360dp"
-        android:layout_marginTop="10dp">
-
-        <LinearLayout
-            android:id="@+id/layout_game_picker_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
+    <ProgressBar android:id="@+id/pb_game_picker_loading" android:layout_width="36dp" android:layout_height="36dp" android:layout_gravity="center_horizontal" android:layout_marginTop="24dp" android:indeterminate="true" android:indeterminateTint="@color/neon_green" />
+    <androidx.core.widget.NestedScrollView android:id="@+id/scroll_game_picker" android:layout_width="match_parent" android:layout_height="360dp" android:layout_marginTop="10dp">
+        <LinearLayout android:id="@+id/layout_game_picker_list" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" />
     </androidx.core.widget.NestedScrollView>
-
-    <!-- Empty State Text -->
-    <TextView
-        android:id="@+id/tv_game_picker_empty"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:gravity="center"
-        android:text="Không tìm thấy ứng dụng phù hợp"
-        android:textColor="@color/text_muted"
-        android:textSize="13sp"
-        android:visibility="gone" />
-
+    <TextView android:id="@+id/tv_game_picker_empty" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:gravity="center" android:text="@string/copy_dialog_pick_game_app_tv_game_picke_517defd" android:textColor="@color/text_muted" android:textSize="13sp" android:visibility="gone" />
 </LinearLayout>

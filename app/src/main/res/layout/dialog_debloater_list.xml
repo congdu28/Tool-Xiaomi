@@ -1,39 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/card_dark"
-    android:orientation="vertical"
-    android:padding="16dp">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="🛡️ Quản Lý Ứng Dụng Rác (Safe Debloater)"
-        android:textColor="@color/text_primary"
-        android:textSize="15sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="Bấm 'Đóng băng' để vô hiệu hóa ứng dụng ngầm mà không gây lỗi máy. Có thể bật lại bất cứ lúc nào."
-        android:textColor="@color/text_secondary"
-        android:textSize="11sp" />
-
-    <ScrollView
-        android:id="@+id/scroll_debloat"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:overScrollMode="never">
-
-        <LinearLayout
-            android:id="@+id/layout_debloat_items"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
+<?xml version='1.0' encoding='utf-8'?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@color/card_dark" android:orientation="vertical" android:padding="16dp">
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_dialog_debloater_list_text_b5b3b7f" android:textColor="@color/text_primary" android:textSize="15sp" android:textStyle="bold" />
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/copy_dialog_debloater_list_text_940558a" android:textColor="@color/text_secondary" android:textSize="12sp" />
+    <ScrollView android:id="@+id/scroll_debloat" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:overScrollMode="never">
+        <LinearLayout android:id="@+id/layout_debloat_items" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" />
     </ScrollView>
-
 </LinearLayout>

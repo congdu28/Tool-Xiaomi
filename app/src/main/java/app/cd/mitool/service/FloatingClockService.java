@@ -54,7 +54,6 @@ public class FloatingClockService extends Service {
     private Runnable clockRunnable;
 
     private SimpleDateFormat sdfStandard;
-    private SimpleDateFormat sdfMs;
 
     private int lastBatteryLevel = -1;
     private long lastBatteryCheckTime = 0;
@@ -86,7 +85,6 @@ public class FloatingClockService extends Service {
         android.os.PowerManager power = (android.os.PowerManager) getSystemService(POWER_SERVICE);
         isScreenOn = power != null && power.isInteractive();
         sdfStandard = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
-        sdfMs = new SimpleDateFormat("HH:mm:ss.SS", Locale.getDefault());
 
         startForegroundServiceNotification();
 
@@ -327,7 +325,7 @@ public class FloatingClockService extends Service {
     private void updateTime() {
         Date now = new Date();
         boolean showMs = prefs.isClockShowMs();
-        String timeStr = showMs ? sdfMs.format(now) : sdfStandard.format(now);
+        String timeStr = showMs ? sdfStandard.format(now) + String.format(Locale.getDefault(), ".%02d", (now.getTime() % 1000) / 10) : sdfStandard.format(now);
         if (tvClock != null) {
             tvClock.setText(timeStr);
         }

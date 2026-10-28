@@ -40,12 +40,12 @@ public class NotificationTileService extends TileService {
                 Intent intent = new Intent(this, NotificationClockService.class);
                 intent.setAction(NotificationClockService.ACTION_START);
                 ContextCompat.startForegroundService(this, intent);
-                Toast.makeText(this, "⚡ Đã bật thông báo trạng thái Mi-Tool", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.message_5c8185984b, Toast.LENGTH_SHORT).show();
             } else {
                 Intent intent = new Intent(this, NotificationClockService.class);
                 intent.setAction(NotificationClockService.ACTION_STOP);
                 startService(intent);
-                Toast.makeText(this, "✕ Đã tắt thông báo trạng thái Mi-Tool", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.message_d52c0088c5, Toast.LENGTH_SHORT).show();
             }
 
             updateTileState();

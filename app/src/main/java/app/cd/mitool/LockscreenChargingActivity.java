@@ -154,7 +154,7 @@ public class LockscreenChargingActivity extends Activity {
         if (info.powerWatt > 0) {
             tvPower.setText(String.format(Locale.US, "%.1fW", info.powerWatt));
         } else {
-            tvPower.setText("-- W");
+            tvPower.setText(R.string.copy_message_lockscreenchargingactivity_c7c3317);
         }
 
         float volt = info.voltageMv > 0 ? (info.voltageMv / 1000.0f) : 0.0f;

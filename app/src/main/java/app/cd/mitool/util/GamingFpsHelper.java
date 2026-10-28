@@ -1,5 +1,6 @@
 package app.cd.mitool.util;
 
+import app.cd.mitool.R;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -70,215 +71,42 @@ public class GamingFpsHelper {
         }
     }
 
-    /**
-     * Apply maximum 120Hz lock and speed mode settings to prevent frame rate drops.
-     */
-    public static boolean applyGaming120Mode(Context context) {
-        ContentResolver cr = context.getContentResolver();
-        boolean wroteAny = false;
+    public interface ActionCallback { void onComplete(boolean success, String message); }
+    private static final java.util.concurrent.ExecutorService EXECUTOR = java.util.concurrent.Executors.newSingleThreadExecutor();
+    private static final android.os.Handler MAIN = new android.os.Handler(android.os.Looper.getMainLooper());
 
-        // 1. Force 120Hz min and peak in Secure Settings
-        try {
-            Settings.Secure.putFloat(cr, "min_refresh_rate", 120.0f);
-            Settings.Secure.putFloat(cr, "peak_refresh_rate", 120.0f);
-            Settings.Secure.putInt(cr, "user_refresh_rate", 120);
-            Settings.Secure.putInt(cr, "game_mode_refresh_rate", 120);
-            wroteAny = true;
-        } catch (Exception ignored) {
+    private static void perform(Activity activity, String command, JoyoseStatus expected, String message, ActionCallback callback) {
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
+        if (ShizukuHelper.isShizukuRunning() && !ShizukuHelper.hasShizukuPermission()) {
+            ShizukuHelper.requestShizukuPermission(activity);
+            if (callback != null) callback.onComplete(false, "Cấp quyền Shizuku rồi chọn lại thao tác.");
+            return;
         }
-
-        // 2. Force 120Hz in System Settings & disable thermal refresh downclock
-        try {
-            Settings.System.putInt(cr, "user_refresh_rate", 120);
-            Settings.System.putInt(cr, "min_refresh_rate", 120);
-            Settings.System.putInt(cr, "peak_refresh_rate", 120);
-            Settings.System.putInt(cr, "thermal_limit_refresh_rate", 0);
-            wroteAny = true;
-        } catch (Exception ignored) {
-        }
-
-        // 3. Disable FPS limit and smart FPS throttling in Global Settings
-        try {
-            Settings.Global.putInt(cr, "speed_mode", 1);
-            Settings.Global.putInt(cr, "fps_limit", 0);
-            Settings.Global.putInt(cr, "smart_fps", 0);
-            wroteAny = true;
-        } catch (Exception ignored) {
-        }
-
-        // 4. High performance mode in System Settings
-        try {
-            Settings.System.putString(cr, "power_mode", "high");
-        } catch (Exception ignored) {
-        }
-
-        return wroteAny;
+        EXECUTOR.execute(() -> {
+            boolean success = ShizukuHelper.hasShizukuPermission()
+                    ? ShizukuHelper.executeCommand(command).success : runRootCommand(command);
+            if (success && expected != null) success = checkJoyoseStatus(activity) == expected;
+            final boolean verified = success;
+            MAIN.post(() -> {
+                if (activity.isFinishing() || activity.isDestroyed()) return;
+                if (callback != null) callback.onComplete(verified, verified ? message
+                        : "Chưa xác nhận được thay đổi. Kiểm tra quyền Shizuku/Root và khả năng hỗ trợ của ROM.");
+            });
+        });
     }
-
-    public interface ActionCallback {
-        void onComplete(boolean success, String message);
-    }
-
-    /**
-     * 1-Tap Full Auto Unlock:
-     * - Disables Joyose
-     * - Clears PowerKeeper cache & data
-     * - Applies 120Hz mode & speed settings
-     */
     public static void autoUnlock120Fps(Activity activity, ActionCallback callback) {
-        if (activity == null) return;
-
-        // 1. Root method
-        boolean hasRoot = runRootCommand("pm disable-user --user 0 " + JOYOSE_PKG + " && pm clear " + POWERKEEPER_PKG);
-        if (hasRoot) {
-            if (callback != null) {
-                callback.onComplete(true, "🔥 Đã mở khóa 120 FPS bằng quyền Root! (Đã tắt Joyose & xóa dữ liệu Pin và Hiệu suất)");
-            }
-            return;
-        }
-
-        // 2. Shizuku with permission
-        if (ShizukuHelper.hasShizukuPermission()) {
-            ShizukuHelper.autoUnlock120Fps((success, message) -> {
-                if (callback != null) callback.onComplete(success, message);
-            });
-            return;
-        }
-
-        // 3. Shizuku running without permission
-        if (ShizukuHelper.isShizukuRunning()) {
-            ShizukuHelper.requestShizukuPermission(activity);
-            if (callback != null) {
-                callback.onComplete(false, "Vui lòng bấm 'Cho phép' trong cửa sổ Shizuku!");
-            }
-            return;
-        }
-
-        // 4. Shizuku not running
-        showShizukuSetupDialog(activity, CMD_DISABLE_JOYOSE + " && adb shell pm clear " + POWERKEEPER_PKG);
-        if (callback != null) {
-            callback.onComplete(false, "Shizuku chưa chạy. Vui lòng khởi chạy Shizuku để tự động hóa 1-chạm.");
-        }
+        perform(activity, "pm disable-user --user 0 " + JOYOSE_PKG + " && pm clear " + POWERKEEPER_PKG,
+                JoyoseStatus.DISABLED_UNLOCKED, "Đã tắt Joyose và xóa dữ liệu Pin và Hiệu suất. Chưa xác định FPS của trò chơi.", callback);
     }
-
-    /**
-     * 1-Tap Restore Joyose:
-     */
-    public static void autoRestoreJoyose(Activity activity, ActionCallback callback) {
-        if (activity == null) return;
-
-        boolean hasRoot = runRootCommand("pm enable " + JOYOSE_PKG);
-        if (hasRoot) {
-            if (callback != null) {
-                callback.onComplete(true, "🔄 Đã khôi phục dịch vụ Joyose bằng Root.");
-            }
-            return;
-        }
-
-        if (ShizukuHelper.hasShizukuPermission()) {
-            ShizukuHelper.autoRestoreJoyose((success, message) -> {
-                if (callback != null) callback.onComplete(success, message);
-            });
-            return;
-        }
-
-        if (ShizukuHelper.isShizukuRunning()) {
-            ShizukuHelper.requestShizukuPermission(activity);
-            if (callback != null) {
-                callback.onComplete(false, "Vui lòng cấp quyền trong cửa sổ Shizuku!");
-            }
-            return;
-        }
-
-        showShizukuSetupDialog(activity, CMD_ENABLE_JOYOSE);
-        if (callback != null) {
-            callback.onComplete(false, "Shizuku chưa chạy.");
-        }
-    }
-
-    /**
-     * Disable Joyose independently with callback.
-     */
+    public static void autoRestoreJoyose(Activity activity, ActionCallback callback) { enableJoyose(activity, callback); }
     public static void disableJoyose(Activity activity, ActionCallback callback) {
-        if (activity == null) return;
-
-        boolean root = runRootCommand("pm disable-user --user 0 " + JOYOSE_PKG);
-        if (root) {
-            if (callback != null) callback.onComplete(true, "🔥 Đã vô hiệu hóa Joyose bằng quyền Root! Khóa 89 FPS đã được gỡ bỏ.");
-            return;
-        }
-
-        if (ShizukuHelper.hasShizukuPermission()) {
-            ShizukuHelper.setJoyoseEnabled(false, (success, message) -> {
-                if (callback != null) callback.onComplete(success, message);
-            });
-            return;
-        }
-
-        if (ShizukuHelper.isShizukuRunning()) {
-            ShizukuHelper.requestShizukuPermission(activity);
-            if (callback != null) callback.onComplete(false, "Vui lòng cấp quyền trong cửa sổ Shizuku!");
-            return;
-        }
-
-        copyToClipboard(activity, "Lệnh tắt Joyose", CMD_DISABLE_JOYOSE);
-        showShizukuSetupDialog(activity, CMD_DISABLE_JOYOSE);
-        if (callback != null) callback.onComplete(false, "Đã sao chép lệnh ADB tắt Joyose!");
+        perform(activity, "pm disable-user --user 0 " + JOYOSE_PKG, JoyoseStatus.DISABLED_UNLOCKED, "Đã xác nhận Joyose được tắt.", callback);
     }
-
-    /**
-     * Enable Joyose independently with callback.
-     */
     public static void enableJoyose(Activity activity, ActionCallback callback) {
-        if (activity == null) return;
-
-        boolean root = runRootCommand("pm enable " + JOYOSE_PKG);
-        if (root) {
-            if (callback != null) callback.onComplete(true, "🔄 Đã bật lại Joyose bằng quyền Root.");
-            return;
-        }
-
-        if (ShizukuHelper.hasShizukuPermission()) {
-            ShizukuHelper.setJoyoseEnabled(true, (success, message) -> {
-                if (callback != null) callback.onComplete(success, message);
-            });
-            return;
-        }
-
-        if (ShizukuHelper.isShizukuRunning()) {
-            ShizukuHelper.requestShizukuPermission(activity);
-            if (callback != null) callback.onComplete(false, "Vui lòng cấp quyền trong cửa sổ Shizuku!");
-            return;
-        }
-
-        copyToClipboard(activity, "Lệnh bật Joyose", CMD_ENABLE_JOYOSE);
-        showShizukuSetupDialog(activity, CMD_ENABLE_JOYOSE);
-        if (callback != null) callback.onComplete(false, "Đã sao chép lệnh ADB bật Joyose!");
+        perform(activity, "pm enable --user 0 " + JOYOSE_PKG, JoyoseStatus.ACTIVE_LOCKED, "Đã xác nhận Joyose được bật. Dữ liệu đã xóa không được phục hồi.", callback);
     }
-
-    /**
-     * Clear PowerKeeper cache & data directly via Root or Shizuku, or fallback to App Info.
-     */
     public static void clearPowerKeeper(Activity activity, ActionCallback callback) {
-        if (activity == null) return;
-
-        boolean root = runRootCommand("pm clear " + POWERKEEPER_PKG);
-        if (root) {
-            if (callback != null) callback.onComplete(true, "🗑️ Đã xóa sạch cache PowerKeeper bằng Root!");
-            return;
-        }
-
-        if (ShizukuHelper.hasShizukuPermission()) {
-            ShizukuHelper.clearPowerKeeper((success, message) -> {
-                if (callback != null) callback.onComplete(success, message);
-            });
-            return;
-        }
-
-        openPowerKeeperAppInfo(activity);
-        if (callback != null) {
-            callback.onComplete(false, "Đang mở Thông tin ứng dụng Pin & Hiệu suất -> Chọn 'Xóa dữ liệu'");
-        }
+        perform(activity, "pm clear " + POWERKEEPER_PKG, null, "Lệnh xóa dữ liệu Pin và Hiệu suất đã hoàn tất.", callback);
     }
 
     /**
@@ -300,12 +128,12 @@ public class GamingFpsHelper {
                         ShizukuHelper.openShizukuDownload(activity);
                     }
                 })
-                .setNegativeButton("Đóng", null);
+                .setNegativeButton(R.string.action_close, null);
 
         if (fallbackCommand != null && !fallbackCommand.isEmpty()) {
-            builder.setNeutralButton("📋 Chép lệnh ADB", (dialog, which) -> {
+            builder.setNeutralButton(R.string.copy_action_60dfab3, (dialog, which) -> {
                 copyToClipboard(activity, "Lệnh ADB", fallbackCommand);
-                Toast.makeText(activity, "📋 Đã sao chép lệnh ADB vào khay nhớ tạm!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, R.string.message_2c0b7fb956, Toast.LENGTH_SHORT).show();
             });
         }
 
@@ -323,14 +151,14 @@ public class GamingFpsHelper {
         }
         boolean rootSuccess = runRootCommand("pm disable-user --user 0 " + JOYOSE_PKG);
         if (rootSuccess) {
-            Toast.makeText(context, "🔥 Đã vô hiệu hóa Joyose bằng quyền Root! Khóa 89 FPS đã được gỡ bỏ.", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.message_71e4bd4b2a, Toast.LENGTH_LONG).show();
             return true;
         } else if (ShizukuHelper.hasShizukuPermission()) {
             ShizukuHelper.setJoyoseEnabled(false, (success, message) -> Toast.makeText(context, message, Toast.LENGTH_LONG).show());
             return true;
         } else {
             copyToClipboard(context, "Lệnh tắt Joyose", CMD_DISABLE_JOYOSE);
-            Toast.makeText(context, "📋 Đã sao chép lệnh ADB tắt Joyose! Hãy chạy lệnh trên máy tính hoặc dùng Shizuku 1-chạm.", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.message_6e2403a5fe, Toast.LENGTH_LONG).show();
             return false;
         }
     }
@@ -346,14 +174,14 @@ public class GamingFpsHelper {
         }
         boolean rootSuccess = runRootCommand("pm enable " + JOYOSE_PKG);
         if (rootSuccess) {
-            Toast.makeText(context, "🔄 Đã bật lại Joyose bằng quyền Root.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.message_64be67e4a1, Toast.LENGTH_SHORT).show();
             return true;
         } else if (ShizukuHelper.hasShizukuPermission()) {
             ShizukuHelper.setJoyoseEnabled(true, (success, message) -> Toast.makeText(context, message, Toast.LENGTH_SHORT).show());
             return true;
         } else {
             copyToClipboard(context, "Lệnh bật Joyose", CMD_ENABLE_JOYOSE);
-            Toast.makeText(context, "📋 Đã sao chép lệnh ADB bật lại Joyose!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.message_7d53463ea4, Toast.LENGTH_SHORT).show();
             return false;
         }
     }

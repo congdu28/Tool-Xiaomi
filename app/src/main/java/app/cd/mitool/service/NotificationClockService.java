@@ -355,6 +355,17 @@ public class NotificationClockService extends Service {
         stopSelf();
     }
 
+    public static void sync(Context context) {
+        PreferencesHelper prefs = new PreferencesHelper(context);
+        boolean needed = prefs.isNotifClockEnabled() || prefs.isLockscreenNotifEnabled()
+                || prefs.isAlert80Enabled() || prefs.isAlert100Enabled() || prefs.isAlertTempEnabled()
+                || prefs.isVoiceAlertMasterEnabled();
+        Intent intent = new Intent(context, NotificationClockService.class);
+        intent.setAction(ACTION_UPDATE_BATTERY);
+        if (needed) androidx.core.content.ContextCompat.startForegroundService(context, intent);
+        else context.stopService(intent);
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {

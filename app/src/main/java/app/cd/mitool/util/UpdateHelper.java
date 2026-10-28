@@ -187,7 +187,7 @@ public class UpdateHelper {
                                     }
 
                                     // If user is currently looking at the app activity, also show bottom sheet
-                                    if (context instanceof Activity && !((Activity) context).isFinishing()) {
+                                    if (context instanceof Activity && !((Activity) context).isFinishing() && !((Activity) context).isDestroyed()) {
                                         showUpdateBottomSheet(context, tagName, body, finalApkUrl);
                                     }
                                 } else if (isManualCheck) {
@@ -349,7 +349,7 @@ public class UpdateHelper {
     }
 
     public static void showUpdateBottomSheet(final Context context, final String newVersion, String changelog, final String downloadUrl) {
-        if (!(context instanceof Activity) || ((Activity) context).isFinishing()) {
+        if (!(context instanceof Activity) || ((Activity) context).isFinishing() || ((Activity) context).isDestroyed()) {
             return;
         }
         final Activity activity = (Activity) context;
@@ -368,15 +368,15 @@ public class UpdateHelper {
         MaterialButton btnAction = view.findViewById(R.id.bs_update_btn_action);
         MaterialButton btnDismiss = view.findViewById(R.id.bs_update_btn_dismiss);
 
-        if (tvTitle != null) tvTitle.setText("🎉 Có Bản Cập Nhật Mới!");
+        if (tvTitle != null) tvTitle.setText(R.string.copy_message_updatehelper_80917db);
         if (tvSubtitle != null) tvSubtitle.setText("Phiên bản " + newVersion + " đã sẵn sàng tải về");
         if (tvCurrentVer != null) tvCurrentVer.setText("v" + getCurrentVersion(activity));
         if (tvNewVer != null) tvNewVer.setText(newVersion.startsWith("v") ? newVersion : "v" + newVersion);
         if (tvChangelog != null) tvChangelog.setText(formatChangelog(changelog));
-        if (tvEmoji != null) tvEmoji.setText("🚀");
+        if (tvEmoji != null) tvEmoji.setText(R.string.copy_bottom_sheet_game_fps_text_b858cb2);
 
         if (btnAction != null) {
-            btnAction.setText("⚡ Tải & Cài Đặt Bản Cập Nhật");
+            btnAction.setText(R.string.copy_bottom_sheet_update_bs_update_btn_dc79ed1);
             btnAction.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -387,7 +387,7 @@ public class UpdateHelper {
         }
 
         if (btnDismiss != null) {
-            btnDismiss.setText("Để sau");
+            btnDismiss.setText(R.string.copy_message_updatehelper_fe71eac);
             btnDismiss.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -400,7 +400,7 @@ public class UpdateHelper {
     }
 
     public static void showUpToDateBottomSheet(final Context context, final String currentVersion) {
-        if (!(context instanceof Activity) || ((Activity) context).isFinishing()) {
+        if (!(context instanceof Activity) || ((Activity) context).isFinishing() || ((Activity) context).isDestroyed()) {
             return;
         }
         final Activity activity = (Activity) context;
@@ -421,18 +421,18 @@ public class UpdateHelper {
         MaterialButton btnAction = view.findViewById(R.id.bs_update_btn_action);
         MaterialButton btnDismiss = view.findViewById(R.id.bs_update_btn_dismiss);
 
-        if (tvTitle != null) tvTitle.setText("✅ Bạn Đang Dùng Bản Mới Nhất!");
-        if (tvSubtitle != null) tvSubtitle.setText("Hệ thống đã được đồng bộ phiên bản mới nhất từ GitHub");
+        if (tvTitle != null) tvTitle.setText(R.string.copy_message_updatehelper_4dc1313);
+        if (tvSubtitle != null) tvSubtitle.setText(R.string.copy_message_updatehelper_38b1c18);
         if (tvCurrentVer != null) tvCurrentVer.setText("v" + currentVersion);
         if (tvArrow != null) tvArrow.setVisibility(View.GONE);
         if (newVerContainer != null) newVerContainer.setVisibility(View.GONE);
         if (tvBadge != null) {
-            tvBadge.setText("CHÍNH THỨC");
+            tvBadge.setText(R.string.copy_activity_main_tv_settings_update_b_7493fae);
             tvBadge.setTextColor(ContextCompat.getColor(activity, R.color.neon_cyan));
         }
-        if (tvEmoji != null) tvEmoji.setText("🛡️");
+        if (tvEmoji != null) tvEmoji.setText(R.string.copy_bottom_sheet_game_fps_text_b858cb2);
 
-        if (tvChangelogHeader != null) tvChangelogHeader.setText("📋 Trạng thái phiên bản:");
+        if (tvChangelogHeader != null) tvChangelogHeader.setText(R.string.copy_message_updatehelper_11fd90d);
         if (tvChangelog != null) {
             tvChangelog.setText("• Ứng dụng Mi Tool đang chạy phiên bản mới nhất (v" + currentVersion + ").\n"
                     + "• Toàn bộ các công cụ tinh chỉnh HyperOS, tối ưu Pin, SOT và Kiểm tra củ cáp đều đang hoạt động tốt nhất.\n"
@@ -440,7 +440,7 @@ public class UpdateHelper {
         }
 
         if (btnAction != null) {
-            btnAction.setText("Tuyệt vời (Đã hiểu)");
+            btnAction.setText(R.string.copy_message_updatehelper_1322f58);
             btnAction.setBackgroundTintList(ColorStateList.valueOf(
                     ContextCompat.getColor(activity, R.color.card_highlight)));
             btnAction.setTextColor(ContextCompat.getColor(activity, R.color.neon_green));
@@ -457,7 +457,7 @@ public class UpdateHelper {
 
         if (btnDismiss != null) {
             btnDismiss.setVisibility(View.VISIBLE);
-            btnDismiss.setText("🔔 Bắn thông báo thử nghiệm");
+            btnDismiss.setText(R.string.copy_message_updatehelper_b436a19);
             btnDismiss.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -467,7 +467,7 @@ public class UpdateHelper {
                             "• Đã kiểm tra cơ chế bắn thông báo cập nhật thành công.\n• Khi có bản cập nhật mới trên GitHub, thông báo này sẽ tự động xuất hiện.",
                             GITHUB_RELEASE_API
                     );
-                    Toast.makeText(activity, "🔔 Đã bắn thông báo cập nhật lên thanh trạng thái!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, R.string.message_d5f5d3fb1d, Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -476,7 +476,7 @@ public class UpdateHelper {
     }
 
     public static void showErrorBottomSheet(final Context context, final String errorMessage) {
-        if (!(context instanceof Activity) || ((Activity) context).isFinishing()) {
+        if (!(context instanceof Activity) || ((Activity) context).isFinishing() || ((Activity) context).isDestroyed()) {
             return;
         }
         final Activity activity = (Activity) context;
@@ -495,23 +495,23 @@ public class UpdateHelper {
         MaterialButton btnAction = view.findViewById(R.id.bs_update_btn_action);
         MaterialButton btnDismiss = view.findViewById(R.id.bs_update_btn_dismiss);
 
-        if (tvTitle != null) tvTitle.setText("⚠️ Không Thể Kiểm Tra Cập Nhật");
-        if (tvSubtitle != null) tvSubtitle.setText("Lỗi kết nối tới máy chủ GitHub Releases");
+        if (tvTitle != null) tvTitle.setText(R.string.copy_message_updatehelper_568dcfc);
+        if (tvSubtitle != null) tvSubtitle.setText(R.string.copy_message_updatehelper_a148d5f);
         if (versionCard != null) versionCard.setVisibility(View.GONE);
         if (tvBadge != null) {
-            tvBadge.setText("LỖI MẠNG");
+            tvBadge.setText(R.string.copy_message_updatehelper_49e777f);
             tvBadge.setTextColor(ContextCompat.getColor(activity, R.color.neon_red));
         }
-        if (tvEmoji != null) tvEmoji.setText("📡");
+        if (tvEmoji != null) tvEmoji.setText(R.string.copy_bottom_sheet_game_fps_text_b858cb2);
 
-        if (tvChangelogHeader != null) tvChangelogHeader.setText("Chi tiết:");
+        if (tvChangelogHeader != null) tvChangelogHeader.setText(R.string.copy_message_updatehelper_3958bcb);
         if (tvChangelog != null) {
             tvChangelog.setText("Không thể kết nối đến máy chủ GitHub (" + errorMessage + ").\n\n"
                     + "Vui lòng kiểm tra lại kết nối Wi-Fi hoặc 4G/5G trên thiết bị rồi thử lại.");
         }
 
         if (btnAction != null) {
-            btnAction.setText("🔄 Thử lại ngay");
+            btnAction.setText(R.string.copy_message_updatehelper_8e96f5d);
             btnAction.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -522,7 +522,7 @@ public class UpdateHelper {
         }
 
         if (btnDismiss != null) {
-            btnDismiss.setText("Đóng");
+            btnDismiss.setText(R.string.action_close);
             btnDismiss.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -535,19 +535,7 @@ public class UpdateHelper {
     }
 
     private static void configureBottomSheet(BottomSheetDialog bs) {
-        bs.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                BottomSheetDialog d = (BottomSheetDialog) dialog;
-                FrameLayout bottomSheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
-                if (bottomSheet != null) {
-                    bottomSheet.setBackgroundResource(android.R.color.transparent);
-                    BottomSheetBehavior<FrameLayout> behavior = BottomSheetBehavior.from(bottomSheet);
-                    behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                    behavior.setSkipCollapsed(true);
-                }
-            }
-        });
+        app.cd.mitool.ui.SheetUi.configure(bs);
     }
 
     private static void showUpdateDialog(final Context context, final String newVersion, String changelog, final String downloadUrl) {
@@ -555,9 +543,17 @@ public class UpdateHelper {
     }
 
     private static void checkInstallPermissionAndDownload(Context context, String downloadUrl, String fileName) {
+        Uri source = Uri.parse(downloadUrl);
+        if (!"https".equalsIgnoreCase(source.getScheme()) || source.getPath() == null) return;
+        if (!source.getPath().toLowerCase(java.util.Locale.ROOT).endsWith(".apk")) {
+            try {
+                context.startActivity(new Intent(Intent.ACTION_VIEW, source).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            } catch (Exception ignored) { }
+            return;
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (!context.getPackageManager().canRequestPackageInstalls()) {
-                Toast.makeText(context, "Vui lòng cho phép cài đặt ứng dụng từ nguồn này để tiếp tục.", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, R.string.message_e8fc409fd0, Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
                         Uri.parse("package:" + context.getPackageName()));
                 context.startActivity(intent);
@@ -567,7 +563,8 @@ public class UpdateHelper {
         startDownloadWithManager(context, downloadUrl, fileName);
     }
 
-    private static void startDownloadWithManager(final Context context, String downloadUrl, final String fileName) {
+    private static void startDownloadWithManager(final Context activityContext, String downloadUrl, final String fileName) {
+        final Context context = activityContext.getApplicationContext();
         try {
             DownloadManager.Request request = new DownloadManager.Request(Uri.parse(downloadUrl));
             request.setTitle("Đang tải Mi Tool " + fileName);
@@ -578,7 +575,7 @@ public class UpdateHelper {
             final DownloadManager dm = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
             if (dm != null) {
                 final long downloadId = dm.enqueue(request);
-                Toast.makeText(context, "Đang tải bản cập nhật... Vui lòng theo dõi thanh thông báo.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.message_c2c7cc7fd1, Toast.LENGTH_SHORT).show();
 
                 // Register receiver to trigger installer once finished
                 BroadcastReceiver onComplete = new BroadcastReceiver() {
@@ -593,7 +590,7 @@ public class UpdateHelper {
                             try (android.database.Cursor cursor = dm.query(new DownloadManager.Query().setFilterById(downloadId))) {
                                 if (cursor == null || !cursor.moveToFirst()
                                         || cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS)) != DownloadManager.STATUS_SUCCESSFUL) {
-                                    Toast.makeText(context, "Tải cập nhật thất bại. Vui lòng thử lại.", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(context, R.string.message_66e3f7f1d0, Toast.LENGTH_LONG).show();
                                     return;
                                 }
                                 File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName);
@@ -620,7 +617,7 @@ public class UpdateHelper {
 
     public static void installApk(Context context, File apkFile) {
         if (apkFile == null || !apkFile.exists()) {
-            Toast.makeText(context, "Không tìm thấy file cài đặt đã tải về.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.message_4cc88acb5e, Toast.LENGTH_SHORT).show();
             return;
         }
 

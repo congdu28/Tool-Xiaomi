@@ -1,206 +1,159 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Mi Tool</string>
-    <string name="app_subtitle">Tiện ích tối ưu chuyên dụng cho Xiaomi &amp; HyperOS</string>
-
-    <!-- System Status Bar Clock -->
-    <string name="system_clock_title">Đồng Hồ Giây Hệ Thống (Thanh Trạng Thái)</string>
-    <string name="system_clock_desc">Kích hoạt hiển thị Giờ:Phút:Giây trực tiếp trên thanh thông báo/thanh trạng thái của Xiaomi mà không cần tạo widget ảo hay chạy service tốn pin.</string>
-    <string name="enable_system_clock">Bật giây trên thanh trạng thái hệ thống</string>
-    <string name="secure_settings_needed_title">Cần cấp quyền Secure Settings (1 lần)</string>
-    <string name="secure_settings_desc">Android và Xiaomi yêu cầu quyền hệ thống WRITE_SECURE_SETTINGS để đổi định dạng đồng hồ thanh trạng thái. Bạn có thể cấp nhanh qua máy tính (ADB) hoặc ứng dụng Shizuku/LADB:</string>
-    <string name="btn_copy_adb">Sao chép lệnh ADB</string>
-    <string name="btn_check_permission">Kiểm tra lại quyền</string>
-    <string name="permission_granted">Đã cấp quyền hệ thống thành công!</string>
-    <string name="permission_not_granted">Chưa nhận được quyền WRITE_SECURE_SETTINGS</string>
-
-    <!-- Floating Clock Section (Backup option) -->
-    <string name="clock_floating_title">Tùy chọn: Đồng hồ nổi (Cửa sổ nổi)</string>
-    <string name="clock_floating_desc">Dành cho bạn nào muốn hiển thị thêm đồng hồ nổi tự do kéo thả trên màn hình.</string>
-    <string name="enable_floating_clock">Bật đồng hồ nổi dự phòng</string>
-    <string name="clock_show_ms">Hiển thị mili-giây (.SS)</string>
-    <string name="clock_show_battery">Hiển thị % pin bên cạnh</string>
-    <string name="clock_lock_position">Khóa vị trí (chống chạm nhầm)</string>
-
-    <!-- Battery & Charging Section -->
-    <string name="battery_title">Ước Lượng Sạc &amp; Thông Số Pin Hệ Thống</string>
-    <string name="battery_desc">Lấy dữ liệu trực tiếp từ cảm biến pin hệ thống, tự động tính toán thời gian sạc đầy mà không ngậm ngầm tốn tài nguyên.</string>
-    <string name="battery_status_charging">Đang sạc</string>
-    <string name="battery_status_discharging">Đang dùng pin</string>
-    <string name="battery_status_full">Pin đã đầy</string>
-
-    <string name="charging_power_title">Công suất sạc</string>
-    <string name="battery_temp_title">Nhiệt độ pin</string>
-    <string name="battery_voltage_title">Điện áp</string>
-
-    <string name="enable_charging_notification">Tự động thông báo khi cắm sạc</string>
-    <string name="charging_notif_desc">Khi cắm sạc, hệ thống gửi thông báo ước lượng thời gian sạc đầy và công suất sạc.</string>
-    <string name="battery_protect_alert">Chuông báo khi pin đạt ngưỡng bảo vệ</string>
-    <string name="battery_full_alert">Chuông báo khi sạc đầy 100%</string>
-    <string name="battery_temp_alert">Cảnh báo khi nhiệt độ pin quá nóng (&gt; 42°C)</string>
-
-    <!-- Xiaomi Specific Optimization -->
-    <string name="xiaomi_title">Cài Đặt Tối Ưu Cho Xiaomi (HyperOS / MIUI)</string>
-    <string name="xiaomi_intro">Để tiện ích và thông báo hoạt động ổn định nhất trên Xiaomi:</string>
-    <string name="perm_autostart_title">1. Tự khởi chạy (Autostart)</string>
-    <string name="perm_autostart_desc">Cho phép ứng dụng tự chạy lại khi khởi động máy.</string>
-    <string name="perm_battery_saver_title">2. Tiết kiệm pin: Không giới hạn</string>
-    <string name="perm_battery_saver_desc">Ngăn MIUI/HyperOS đóng tiến trình nhận sạc pin.</string>
-    <string name="shortcut_battery_info">Mở trang thông số pin ẩn của Xiaomi</string>
-
-    <!-- Voice Smart Alerts -->
-    <string name="voice_alert_title">Âm Báo Sạc Giọng Nói Tiếng Việt</string>
-    <string name="voice_alert_desc">Tự động phát thông báo bằng giọng nói tiếng Việt khi cắm/rút sạc, sạc đầy, hoặc khi pin quá nóng.</string>
-    <string name="voice_alert_master">Bật âm báo giọng nói Tiếng Việt</string>
-    <string name="voice_alert_connect">Thông báo khi cắm sạc (Đọc công suất W)</string>
-    <string name="voice_alert_disconnect">Thông báo khi rút sạc (Đọc mức pin)</string>
-    <string name="voice_alert_80">Nhắc nhở khi pin đạt ngưỡng bảo vệ</string>
-    <string name="voice_alert_100">Thông báo khi pin sạc đầy 100%</string>
-    <string name="voice_alert_temp">Cảnh báo khi nhiệt độ pin &gt; 42°C</string>
-    <string name="voice_test_btn">🔊 Nghe thử giọng nói</string>
-
-    <!-- Refresh Rate Section -->
-    <string name="refresh_rate_title">Ép Tần Số Quét Màn Hình (FPS Cao)</string>
-    <string name="refresh_rate_desc">Khóa cứng tần số quét màn hình (60Hz / 90Hz / 120Hz / 144Hz) để chống tụt FPS xuống 60Hz khi xem YouTube, Google Maps hoặc khi máy ấm.</string>
-    <string name="refresh_rate_auto">Mặc định (Auto)</string>
-    <string name="refresh_rate_btn_settings">Mở cài đặt màn hình Xiaomi</string>
-
-    <!-- RAM & Game Turbo -->
-    <string name="ram_boost_title">Giải Phóng RAM &amp; Game Turbo</string>
-    <string name="ram_boost_desc">Dọn dẹp bộ nhớ đệm và tiến trình chạy ngầm để tăng tốc máy trước khi chơi game hoặc tác vụ nặng.</string>
-    <string name="ram_boost_btn">⚡ Tăng tốc RAM ngay</string>
-    <string name="ram_game_turbo_btn">🚀 Mở Xiaomi Game Turbo</string>
-
-    <!-- Deep Clean -->
-    <string name="deep_clean_title">Dọn Rác Chuyên Sâu MIUI (No-Ads)</string>
-    <string name="deep_clean_desc">Mở trực tiếp module dọn dẹp chuyên sâu của hệ thống Xiaomi (quét file rác lớn, video thừa, rác Zalo/Facebook) không bị làm phiền bởi quảng cáo.</string>
-    <string name="deep_clean_btn">🧹 Dọn rác chuyên sâu ngay</string>
-
-    <!-- Hidden CIT Menus -->
-    <string name="hidden_menu_title">Menu Kiểm Tra Bí Mật Xiaomi</string>
-    <string name="hidden_menu_desc">Các menu kiểm tra phần cứng ẩn chính gốc của MIUI / HyperOS.</string>
-    <string name="btn_open_cit">🛠️ Mở CIT Test (*#*#6484#*#*)</string>
-    <string name="btn_open_battery_secret">🔋 Xem Chu Kỳ Sạc (*#*#6485#*#*)</string>
-    <string name="btn_open_testing_radio">📡 Kiểm tra sóng &amp; thiết bị (*#*#4636#*#*)</string>
-
-    <!-- Disable Ads / MSA -->
-    <string name="disable_ads_title">Tắt Dịch Vụ Quảng Cáo Ngầm Xiaomi</string>
-    <string name="disable_ads_desc">Vô hiệu hóa MSA (MIUI System Ads) và trình theo dõi quảng cáo để máy mát hơn và tiết kiệm thêm 10-15% pin.</string>
-    <string name="btn_open_msa">🚫 Mở Ủy quyền &amp; Hủy bỏ (Tắt MSA)</string>
-    <string name="btn_open_ad_services">🔒 Mở Dịch vụ Quảng cáo cá nhân</string>
-
-    <!-- Game 120 FPS Unlocker -->
-    <string name="game_fps_title">Mở Khóa 120 FPS Game (Chống Khóa 89 FPS)</string>
-    <string name="game_fps_desc">Khắc phục triệt để lỗi Xiaomi khóa 89-90 FPS trong Liên Quân Mobile (AOV) dù màn hình đã bật 120Hz và game đã bật 120 FPS.</string>
-    <string name="game_fps_btn_speed_mode">⚡ Kích hoạt Game Mode 120Hz &amp; Tối Đa Hiệu Năng</string>
-    <string name="game_fps_joyose_title">⚠️ Thủ phạm khóa 89 FPS: Dịch vụ Joyose (Xiaomi)</string>
-    <string name="game_fps_joyose_desc">Joyose là dịch vụ ngầm của Xiaomi tự ý bóp GPU/FPS xuống 89-90 FPS để hạ nhiệt khi chơi Liên Quân. Bạn hãy dùng Shizuku 1-chạm hoặc sao chép lệnh ADB dưới đây để gỡ bỏ triệt để giới hạn:</string>
-    <string name="game_fps_btn_copy_disable">📋 Vô hiệu hóa Joyose (120 FPS)</string>
-    <string name="game_fps_btn_copy_enable">🔄 Bật lại Joyose</string>
-    <string name="game_fps_btn_powerkeeper">🔋 Xóa dữ liệu Pin &amp; Hiệu suất</string>
-    <string name="game_fps_btn_per_app_hz">📱 Ứng dụng dùng 120Hz</string>
-    <string name="game_fps_btn_launch_aov">⚔️ Mở Liên Quân Mobile (AOV)</string>
-
-    <!-- Status Bar Pin Mode -->
-    <string name="status_bar_pin_title">Ghim Giây Lên Thanh Trạng Thái (HyperOS)</string>
-    <string name="status_bar_pin_desc">Hiển thị giờ giây trực tiếp ở góc trái thanh trạng thái đỉnh máy, nền trong suốt, chạm xuyên thấu kéo thanh thông báo bình thường.</string>
-    <string name="enable_status_bar_pin">Bật ghim giây góc trái thanh trạng thái</string>
-    <string name="hide_system_minute_clock">Ẩn đồng hồ phút gốc của máy (Tránh trùng)</string>
-    <string name="btn_preset_top_left">📍 Góc trái đỉnh máy</string>
-    <string name="btn_preset_beside">➡️ Kế bên đồng hồ gốc</string>
-    <string name="btn_preset_notch">🎯 Cạnh camera nốt ruồi</string>
-    <string name="btn_preset_free">🖐️ Kéo thả tự do</string>
-
-    <string name="status_granted">Đã cấp</string>
-    <string name="status_missing">Chưa cấp</string>
-
-    <!-- Shortcuts & Quick Settings Tile -->
-    <string name="tile_notification_label">Thông báo Mi-Tool</string>
-    <string name="tile_notification_desc">Bật hoặc tắt nhanh thanh thông báo trạng thái Mi-Tool</string>
-    <string name="tile_hz_label">Tần số quét</string>
-    <string name="tile_hz_desc">Chuyển đổi nhanh 60Hz và 120Hz</string>
-    <string name="shortcut_toggle_notif_short">Bật/Tắt Thông báo</string>
-    <string name="shortcut_toggle_notif_long">Bật/Tắt Thông báo Mi-Tool</string>
-    <string name="btn_pin_shortcut">📌 Thêm ra Màn hình chính</string>
-    <string name="btn_add_qs_tile">🎛️ Thêm nút Thông báo vào Bảng điều khiển</string>
-    <string name="btn_add_hz_qs_tile">🎛️ Thêm nút đổi 60/120Hz vào Bảng điều khiển</string>
-
-    <!-- Shizuku Direct 1-Tap Permissions -->
-    <string name="shizuku_title">⚡ Cấp Quyền Tự Động Bằng Shizuku (1-Chạm)</string>
-    <string name="shizuku_desc">Nếu máy bạn đã chạy ứng dụng Shizuku, bạn có thể cấp quyền hệ thống WRITE_SECURE_SETTINGS chỉ với 1 click ngay trên điện thoại mà không cần dùng máy tính.</string>
-    <string name="shizuku_status_granted">🟢 Shizuku đang chạy &amp; Đã cấp quyền cho Mi Tool</string>
-    <string name="shizuku_status_running_no_perm">🟡 Shizuku đang chạy (Chưa cấp quyền cho Mi Tool)</string>
-    <string name="shizuku_status_not_running">🔴 Shizuku chưa chạy hoặc chưa cài đặt</string>
-    <string name="btn_shizuku_grant_auto">⚡ Cấp Quyền Shizuku Tự Động</string>
-    <string name="btn_shizuku_open">🚀 Mở ứng dụng Shizuku</string>
-
-    <!-- Custom Battery Alerts -->
-    <string name="battery_alert_custom_level_title">Ngưỡng cảnh báo bảo vệ pin</string>
-    <string name="battery_alert_tone_title">Âm thanh chuông báo sạc</string>
-    <string name="battery_alert_tone_default">Mặc định hệ thống</string>
-    <string name="btn_pick_audio">🎵 Chọn nhạc chuông</string>
-    <string name="btn_test_audio">🔊 Nghe thử</string>
-    <string name="btn_stop_audio">⏹️ Dừng</string>
-    <string name="btn_reset_audio">🔄 Mặc định</string>
-
-    <!-- Group 3: Safe Debloater -->
-    <string name="debloater_title">🛡️ Gỡ / Đóng Băng Ứng Dụng Rác (Debloater)</string>
-    <string name="debloater_desc" formatted="false">Đóng băng an toàn các ứng dụng rác, quảng cáo và thu thập dữ liệu ngầm của Xiaomi/HyperOS. 100% an toàn không lo treo logo (Bootloop).</string>
-    <string name="btn_debloater_open_list">📋 Danh sách &amp; Quản lý ứng dụng rác</string>
-    <string name="btn_debloater_freeze_all">❄️ 1-Chạm đóng băng ứng dụng rác khuyên dùng</string>
-    <string name="btn_debloater_restore_all">🔄 Khôi phục toàn bộ ứng dụng</string>
-
-    <!-- Group 3: Private DNS Adblock -->
-    <string name="private_dns_title">🛡️ Private DNS Chặn Quảng Cáo Toàn Hệ Thống</string>
-    <string name="private_dns_desc">Tự động chặn quảng cáo, banner, pop-up trong ứng dụng và trình duyệt bằng DNS bảo mật, không hao pin và không cần dùng VPN.</string>
-    <string name="btn_dns_adguard">🛡️ Bật AdGuard DNS (Khuyên dùng)</string>
-    <string name="btn_dns_cloudflare_family">👨‍👩‍👧 Bật Cloudflare Family (Chặn web đen &amp; QC)</string>
-    <string name="btn_dns_cloudflare">⚡ Bật Cloudflare 1.1.1.1 (Tăng tốc mạng)</string>
-    <string name="btn_dns_off">⭕ Tắt DNS riêng tư (Về Tự động)</string>
-    <string name="btn_open_dns_settings">⚙️ Mở Cài đặt DNS trong máy</string>
-
-    <!-- Group 3: VoLTE & VoWiFi -->
-    <string name="volte_title">📶 Mở Khóa VoLTE / VoWiFi (Xiaomi Xách Tay)</string>
-    <string name="volte_desc">Tự động vô hiệu hóa kiểm tra nhà mạng (Carrier Check) trên ROM nội địa / xách tay, khắc phục lỗi mất sóng, nghẽn cuộc gọi và không đàm thoại được trên mạng 4G/LTE.</string>
-    <string name="btn_unlock_volte">📶 Mở khóa VoLTE (*#*#86583#*#*)</string>
-    <string name="btn_unlock_vowifi">🌐 Mở khóa VoWiFi (*#*#869434#*#*)</string>
-    <string name="btn_open_radio_testing">📡 Kiểm tra cấu hình sóng (*#*#4636#*#*)</string>
-    <string name="btn_open_sim_settings">⚙️ Cài đặt Mạng di động &amp; SIM</string>
-
-    <!-- SOT & Battery Drain Monitor -->
-    <string name="sot_card_title">Thời Lượng Sáng Màn Hình (On-Screen)</string>
-    <string name="sot_card_desc">Tính từ lần rút sạc gần nhất hoặc lần sạc đầy</string>
-    <string name="sot_reset_btn">🔄 Đặt lại mốc tính</string>
-    <string name="battery_drain_title">Ứng Dụng Tiêu Hao Pin Nhiều Nhất</string>
-    <string name="battery_drain_desc">Phát hiện các ứng dụng chạy ngầm &amp; chiếm dụng thời gian on-screen</string>
-    <string name="battery_drain_perm_needed">Cần cấp quyền \'Truy cập dữ liệu sử dụng\' để xem mức tiêu thụ của các ứng dụng.</string>
-    <string name="battery_drain_grant_shizuku">⚡ Cấp nhanh bằng Shizuku</string>
-    <string name="battery_drain_grant_settings">⚙️ Mở Cài đặt hệ thống</string>
-    <string name="battery_drain_empty">Chưa ghi nhận ứng dụng tiêu hao pin đáng kể</string>
-    <string name="battery_drain_btn_stop">🛑 Dừng</string>
-    <string name="battery_drain_btn_stopped">✓ Đã dừng</string>
-    <string name="battery_drain_refresh">🔄 Làm mới danh sách</string>
-
-    <!-- Quick Settings Clock Tile -->
-    <string name="tile_clock_label">Đồng hồ giây</string>
-    <string name="tile_clock_desc">Bật hoặc tắt nhanh đồng hồ giây nổi trên màn hình</string>
-    <string name="btn_add_clock_tile">🎛️ Thêm phím Đồng hồ vào Trung tâm điều khiển</string>
-
-    <!-- Notification Fixer -->
-    <string name="notif_fix_title">Khắc Phục Trễ Thông Báo</string>
-    <string name="notif_fix_desc">Ngăn chặn HyperOS/MIUI kill app nhắn tin, bật tự khởi chạy và loại bỏ giới hạn pin cho Zalo, Messenger, Telegram...</string>
-    <string name="notif_fix_btn_batch">⚡ 1-Chạm Khắc Phục Toàn Bộ</string>
-    <string name="notif_fix_btn_autostart">🚀 Quản lý Tự khởi chạy MIUI</string>
-    <string name="notif_fix_btn_powerkeeper">🔋 Quản lý Tiết kiệm pin MIUI</string>
-    <string name="notif_fix_lock_guide">Mẹo: Mở Đa nhiệm -> Khóa 🔒 ứng dụng để chống bị dọn RAM</string>
-    <string name="tile_notif_fix_label">Fix Thông Báo</string>
-
-    <!-- Mini Game HUD (Floating FPS) -->
-    <string name="game_hud_title">Mini Game HUD Nổi (FPS &amp; Hiệu Năng)</string>
-    <string name="game_hud_desc" formatted="false">Lớp phủ nổi siêu nhẹ đo FPS thời gian thực, % CPU, % RAM, Nhiệt độ và Công suất xả pin khi chơi game.</string>
-    <string name="game_hud_enable">Bật Game HUD nổi trên màn hình</string>
-    <string name="game_hud_mode_compact">Chế độ Gọn (FPS + Nhiệt độ)</string>
-    <string name="game_hud_mode_full">Chế độ Bảng điều khiển (Đầy đủ CPU, RAM, Watt)</string>
-    <string name="tile_game_hud_label">Game HUD FPS</string>
-    <string name="tile_game_hud_desc">Bật hoặc tắt nhanh HUD nổi đo FPS trong game</string>
+  <string name="app_name" formatted="false">Mi Tool</string>
+  <string name="app_subtitle" formatted="false">Tiện ích thiết bị, pin và kết nối</string>
+  <string name="system_clock_title" formatted="false">Đồng hồ giây hệ thống (thanh trạng thái)</string>
+  <string name="system_clock_desc" formatted="false">Kích hoạt hiển thị Giờ:Phút:Giây trực tiếp trên thanh thông báo/thanh trạng thái của Xiaomi mà không cần tạo widget ảo hay chạy service tốn pin.</string>
+  <string name="enable_system_clock" formatted="false">Bật giây trên thanh trạng thái hệ thống</string>
+  <string name="secure_settings_needed_title" formatted="false">Cần cấp quyền Secure Settings (1 lần)</string>
+  <string name="secure_settings_desc" formatted="false">Android và Xiaomi yêu cầu quyền hệ thống WRITE_SECURE_SETTINGS để đổi định dạng đồng hồ thanh trạng thái. Bạn có thể cấp nhanh qua máy tính (ADB) hoặc ứng dụng Shizuku/LADB:</string>
+  <string name="btn_copy_adb" formatted="false">Sao chép lệnh ADB</string>
+  <string name="btn_check_permission" formatted="false">Kiểm tra lại quyền</string>
+  <string name="permission_granted" formatted="false">Đã cấp quyền hệ thống thành công!</string>
+  <string name="permission_not_granted" formatted="false">Chưa nhận được quyền WRITE_SECURE_SETTINGS</string>
+  <string name="clock_floating_title" formatted="false">Đồng hồ nổi</string>
+  <string name="clock_floating_desc" formatted="false">Dành cho bạn nào muốn hiển thị thêm đồng hồ nổi tự do kéo thả trên màn hình.</string>
+  <string name="enable_floating_clock" formatted="false">Bật đồng hồ nổi</string>
+  <string name="clock_show_ms" formatted="false">Hiển thị hai chữ số sau giây</string>
+  <string name="clock_show_battery" formatted="false">Hiển thị % pin bên cạnh</string>
+  <string name="clock_lock_position" formatted="false">Khóa vị trí (chống chạm nhầm)</string>
+  <string name="battery_title" formatted="false">Pin và sạc</string>
+  <string name="battery_desc" formatted="false">Hiển thị số đo pin được hệ thống cung cấp. Thời gian sạc còn lại là ước tính.</string>
+  <string name="battery_status_charging" formatted="false">Đang sạc</string>
+  <string name="battery_status_discharging" formatted="false">Đang dùng pin</string>
+  <string name="battery_status_full" formatted="false">Pin đã đầy</string>
+  <string name="charging_power_title" formatted="false">Công suất sạc</string>
+  <string name="battery_temp_title" formatted="false">Nhiệt độ pin</string>
+  <string name="battery_voltage_title" formatted="false">Điện áp</string>
+  <string name="enable_charging_notification" formatted="false">Tự động thông báo khi cắm sạc</string>
+  <string name="charging_notif_desc" formatted="false">Khi cắm sạc, hệ thống gửi thông báo ước lượng thời gian sạc đầy và công suất sạc.</string>
+  <string name="battery_protect_alert" formatted="false">Nhắc khi pin đạt mức đã chọn (không tự ngắt sạc)</string>
+  <string name="battery_full_alert" formatted="false">Chuông báo khi sạc đầy 100%</string>
+  <string name="battery_temp_alert" formatted="false">Cảnh báo nhiệt độ pin từ 42 °C</string>
+  <string name="xiaomi_title" formatted="false">Cài đặt tối ưu cho Xiaomi (HyperOS / MIUI)</string>
+  <string name="xiaomi_intro" formatted="false">Để tiện ích và thông báo hoạt động ổn định nhất trên Xiaomi:</string>
+  <string name="perm_autostart_title" formatted="false">1. Tự khởi chạy (Autostart)</string>
+  <string name="perm_autostart_desc" formatted="false">Cho phép ứng dụng tự chạy lại khi khởi động máy.</string>
+  <string name="perm_battery_saver_title" formatted="false">2. Tiết kiệm pin: Không giới hạn</string>
+  <string name="perm_battery_saver_desc" formatted="false">Chỉ cần khi bạn muốn duy trì cảnh báo hoặc tiện ích nền. Có thể tăng hoạt động nền.</string>
+  <string name="shortcut_battery_info" formatted="false">Mở trang thông số pin ẩn của Xiaomi</string>
+  <string name="voice_alert_title" formatted="false">Âm báo sạc giọng nói tiếng việt</string>
+  <string name="voice_alert_desc" formatted="false">Tự động phát thông báo bằng giọng nói tiếng Việt khi cắm/rút sạc, sạc đầy, hoặc khi pin quá nóng.</string>
+  <string name="voice_alert_master" formatted="false">Bật âm báo giọng nói Tiếng Việt</string>
+  <string name="voice_alert_connect" formatted="false">Thông báo khi cắm sạc (Đọc công suất W)</string>
+  <string name="voice_alert_disconnect" formatted="false">Thông báo khi rút sạc (Đọc mức pin)</string>
+  <string name="voice_alert_80" formatted="false">Nhắc nhở khi pin đạt ngưỡng bảo vệ</string>
+  <string name="voice_alert_100" formatted="false">Thông báo khi pin sạc đầy 100%</string>
+  <string name="voice_alert_temp" formatted="false">Cảnh báo nhiệt độ pin từ 42 °C</string>
+  <string name="voice_test_btn" formatted="false">Nghe thử giọng nói</string>
+  <string name="refresh_rate_title" formatted="false">Tần số quét màn hình</string>
+  <string name="refresh_rate_desc" formatted="false">Chọn tần số quét được thiết bị hỗ trợ. Hz của màn hình không phải FPS của trò chơi; mức cao có thể tăng tiêu thụ pin.</string>
+  <string name="refresh_rate_auto" formatted="false">Khôi phục cấu hình</string>
+  <string name="refresh_rate_btn_settings" formatted="false">Mở cài đặt màn hình Xiaomi</string>
+  <string name="ram_boost_title" formatted="false">Bộ nhớ và ứng dụng</string>
+  <string name="ram_boost_desc" formatted="false">Xem số đo RAM và mở quản lý ứng dụng. Android sử dụng RAM cho bộ nhớ đệm và tự thu hồi khi cần.</string>
+  <string name="ram_boost_btn" formatted="false">Làm mới số đo</string>
+  <string name="ram_game_turbo_btn" formatted="false">Mở Game Turbo</string>
+  <string name="deep_clean_title" formatted="false">Dọn rác chuyên sâu MIUI (no-ads)</string>
+  <string name="deep_clean_desc" formatted="false">Mở công cụ dọn dẹp của Xiaomi để bạn xem và chọn dữ liệu cần xóa.</string>
+  <string name="deep_clean_btn" formatted="false">Dọn rác chuyên sâu ngay</string>
+  <string name="hidden_menu_title" formatted="false">Menu kiểm tra bí mật Xiaomi</string>
+  <string name="hidden_menu_desc" formatted="false">Các menu kiểm tra phần cứng ẩn chính gốc của MIUI / HyperOS.</string>
+  <string name="btn_open_cit" formatted="false">Mở CIT test (*#*#6484#*#*)</string>
+  <string name="btn_open_battery_secret" formatted="false">Xem chu kỳ sạc (*#*#6485#*#*)</string>
+  <string name="btn_open_testing_radio" formatted="false">Kiểm tra sóng &amp; thiết bị (*#*#4636#*#*)</string>
+  <string name="disable_ads_title" formatted="false">Tắt dịch vụ quảng cáo ngầm Xiaomi</string>
+  <string name="disable_ads_desc" formatted="false">Mở cài đặt quảng cáo của Xiaomi. Hiệu quả phụ thuộc ứng dụng và ROM.</string>
+  <string name="btn_open_msa" formatted="false">Mở Ủy quyền &amp; Hủy bỏ (Tắt MSA)</string>
+  <string name="btn_open_ad_services" formatted="false">Mở Dịch vụ Quảng cáo cá nhân</string>
+  <string name="game_fps_title" formatted="false">HUD và dịch vụ trò chơi</string>
+  <string name="game_fps_desc" formatted="false">Xem số đo thiết bị và quản lý dịch vụ Joyose. Thay đổi dịch vụ hệ thống không bảo đảm mức FPS cụ thể.</string>
+  <string name="game_fps_btn_speed_mode" formatted="false">Mở tùy chọn trò chơi</string>
+  <string name="game_fps_joyose_title" formatted="false">Dịch vụ Joyose</string>
+  <string name="game_fps_joyose_desc" formatted="false">Thay đổi trạng thái Joyose có thể ảnh hưởng quản lý trò chơi của ROM. Hãy kiểm tra trên thiết bị của bạn.</string>
+  <string name="game_fps_btn_copy_disable" formatted="false">Tắt Joyose</string>
+  <string name="game_fps_btn_copy_enable" formatted="false">Bật lại Joyose</string>
+  <string name="game_fps_btn_powerkeeper" formatted="false">Xóa dữ liệu Pin &amp; Hiệu suất</string>
+  <string name="game_fps_btn_per_app_hz" formatted="false">Ứng dụng dùng 120Hz</string>
+  <string name="game_fps_btn_launch_aov" formatted="false">Mở liên quân mobile (aov)</string>
+  <string name="status_bar_pin_title" formatted="false">Ghim giây lên thanh trạng thái (HyperOS)</string>
+  <string name="status_bar_pin_desc" formatted="false">Hiển thị giờ giây trực tiếp ở góc trái thanh trạng thái đỉnh máy, nền trong suốt, chạm xuyên thấu kéo thanh thông báo bình thường.</string>
+  <string name="enable_status_bar_pin" formatted="false">Bật ghim giây góc trái thanh trạng thái</string>
+  <string name="hide_system_minute_clock" formatted="false">Ẩn đồng hồ phút gốc của máy (Tránh trùng)</string>
+  <string name="btn_preset_top_left" formatted="false">Góc trái đỉnh máy</string>
+  <string name="btn_preset_beside" formatted="false">Kế bên đồng hồ gốc</string>
+  <string name="btn_preset_notch" formatted="false">Cạnh camera nốt ruồi</string>
+  <string name="btn_preset_free" formatted="false">Kéo thả tự do</string>
+  <string name="status_granted" formatted="false">Đã cấp</string>
+  <string name="status_missing" formatted="false">Chưa cấp</string>
+  <string name="tile_notification_label" formatted="false">Thông báo mi-tool</string>
+  <string name="tile_notification_desc" formatted="false">Bật hoặc tắt nhanh thanh thông báo trạng thái Mi-Tool</string>
+  <string name="tile_hz_label" formatted="false">Tần số quét</string>
+  <string name="tile_hz_desc" formatted="false">Chuyển đổi nhanh 60Hz và 120Hz</string>
+  <string name="shortcut_toggle_notif_short" formatted="false">Bật/tắt thông báo</string>
+  <string name="shortcut_toggle_notif_long" formatted="false">Bật/tắt thông báo mi-tool</string>
+  <string name="btn_pin_shortcut" formatted="false">Thêm ra Màn hình chính</string>
+  <string name="btn_add_qs_tile" formatted="false">Thêm nút Thông báo vào Bảng điều khiển</string>
+  <string name="btn_add_hz_qs_tile" formatted="false">Thêm nút đổi 60/120Hz vào Bảng điều khiển</string>
+  <string name="shizuku_title" formatted="false">Kết nối Shizuku</string>
+  <string name="shizuku_desc" formatted="false">Kết nối Shizuku để thực hiện các thao tác cần quyền hệ thống. Chỉ cấp quyền cho tính năng bạn sử dụng.</string>
+  <string name="shizuku_status_granted" formatted="false">Shizuku đang chạy &amp; Đã cấp quyền cho Mi Tool</string>
+  <string name="shizuku_status_running_no_perm" formatted="false">Shizuku đang chạy (Chưa cấp quyền cho Mi Tool)</string>
+  <string name="shizuku_status_not_running" formatted="false">Shizuku chưa chạy hoặc chưa cài đặt</string>
+  <string name="btn_shizuku_grant_auto" formatted="false">Cấp quyền hệ thống</string>
+  <string name="btn_shizuku_open" formatted="false">Mở ứng dụng Shizuku</string>
+  <string name="battery_alert_custom_level_title" formatted="false">Ngưỡng cảnh báo bảo vệ pin</string>
+  <string name="battery_alert_tone_title" formatted="false">Âm thanh chuông báo sạc</string>
+  <string name="battery_alert_tone_default" formatted="false">Mặc định hệ thống</string>
+  <string name="btn_pick_audio" formatted="false">Chọn nhạc chuông</string>
+  <string name="btn_test_audio" formatted="false">Nghe thử</string>
+  <string name="btn_stop_audio" formatted="false">⏹ Dừng</string>
+  <string name="btn_reset_audio" formatted="false">Mặc định</string>
+  <string name="debloater_title" formatted="false">Đóng băng ứng dụng</string>
+  <string name="debloater_desc" formatted="false">Vô hiệu hóa ứng dụng được chọn qua Shizuku hoặc Root. Có thể ảnh hưởng tính năng hệ thống; xem mô tả trước khi áp dụng.</string>
+  <string name="btn_debloater_open_list" formatted="false">Danh sách &amp; Quản lý ứng dụng rác</string>
+  <string name="btn_debloater_freeze_all" formatted="false">Xem ứng dụng đề xuất</string>
+  <string name="btn_debloater_restore_all" formatted="false">Bật lại ứng dụng đã đóng băng</string>
+  <string name="private_dns_title" formatted="false">DNS riêng tư</string>
+  <string name="private_dns_desc" formatted="false">Cấu hình DNS-over-TLS. Một số nhà cung cấp có bộ lọc tên miền; kết quả phụ thuộc máy chủ và kết nối.</string>
+  <string name="btn_dns_adguard" formatted="false">AdGuard · lọc quảng cáo</string>
+  <string name="btn_dns_cloudflare_family" formatted="false">Cloudflare Family · lọc nội dung người lớn và mã độc</string>
+  <string name="btn_dns_cloudflare" formatted="false">Cloudflare 1.1.1.1</string>
+  <string name="btn_dns_off" formatted="false">Tắt DNS riêng tư</string>
+  <string name="btn_open_dns_settings" formatted="false">Mở Cài đặt DNS trong máy</string>
+  <string name="volte_title" formatted="false">Cuộc gọi qua 4G và Wi-Fi</string>
+  <string name="volte_desc" formatted="false">Mở tùy chọn VoLTE và VoWiFi. Cần SIM, nhà mạng và ROM hỗ trợ; mã kiểm tra có thể không hoạt động trên mọi máy.</string>
+  <string name="btn_unlock_volte" formatted="false">Tùy chọn VoLTE</string>
+  <string name="btn_unlock_vowifi" formatted="false">Tùy chọn VoWiFi</string>
+  <string name="btn_open_radio_testing" formatted="false">Kiểm tra cấu hình sóng (*#*#4636#*#*)</string>
+  <string name="btn_open_sim_settings" formatted="false">Cài đặt Mạng di động &amp; SIM</string>
+  <string name="sot_card_title" formatted="false">Thời lượng sáng màn hình (on-screen)</string>
+  <string name="sot_card_desc" formatted="false">Tính từ lần rút sạc gần nhất hoặc lần sạc đầy</string>
+  <string name="sot_reset_btn" formatted="false">Đặt lại mốc tính</string>
+  <string name="battery_drain_title" formatted="false">Thời gian dùng ứng dụng</string>
+  <string name="battery_drain_desc" formatted="false">Thống kê thời gian hiển thị ứng dụng; chưa xác định năng lượng hay hoạt động nền.</string>
+  <string name="battery_drain_perm_needed" formatted="false">Cần cấp quyền \'Truy cập dữ liệu sử dụng\' để xem mức tiêu thụ của các ứng dụng.</string>
+  <string name="battery_drain_grant_shizuku" formatted="false">Cấp nhanh bằng Shizuku</string>
+  <string name="battery_drain_grant_settings" formatted="false">Mở Cài đặt hệ thống</string>
+  <string name="battery_drain_empty" formatted="false">Chưa có dữ liệu thời gian sử dụng</string>
+  <string name="battery_drain_btn_stop" formatted="false">Buộc dừng</string>
+  <string name="battery_drain_btn_stopped" formatted="false">Đã dừng</string>
+  <string name="battery_drain_refresh" formatted="false">Làm mới danh sách</string>
+  <string name="tile_clock_label" formatted="false">Đồng hồ giây</string>
+  <string name="tile_clock_desc" formatted="false">Bật hoặc tắt nhanh đồng hồ giây nổi trên màn hình</string>
+  <string name="btn_add_clock_tile" formatted="false">Thêm phím Đồng hồ vào Trung tâm điều khiển</string>
+  <string name="notif_fix_title" formatted="false">Thông báo ứng dụng</string>
+  <string name="notif_fix_desc" formatted="false">Cho phép chạy nền và miễn Doze cho ứng dụng bạn chọn. Kiểm tra thêm quyền thông báo, tự khởi chạy và cài đặt pin của ROM.</string>
+  <string name="notif_fix_btn_batch" formatted="false">Áp dụng cho ứng dụng đã chọn</string>
+  <string name="notif_fix_btn_autostart" formatted="false">Quản lý Tự khởi chạy MIUI</string>
+  <string name="notif_fix_btn_powerkeeper" formatted="false">Quản lý Tiết kiệm pin MIUI</string>
+  <string name="notif_fix_lock_guide" formatted="false">Mẹo: Mở Đa nhiệm -&gt; Khóa  ứng dụng để chống bị dọn RAM</string>
+  <string name="tile_notif_fix_label" formatted="false">Fix thông báo</string>
+  <string name="game_hud_title" formatted="false">HUD theo dõi thiết bị</string>
+  <string name="game_hud_desc" formatted="false">Hiển thị số đo có thể đọc được. FPS (HW) lấy từ nguồn phần cứng; nếu thiếu nguồn, HUD hiển thị Hz. Nhiệt độ là nhiệt độ pin.</string>
+  <string name="game_hud_enable" formatted="false">Bật Game HUD nổi trên màn hình</string>
+  <string name="game_hud_mode_compact" formatted="false">Chế độ Gọn (FPS + Nhiệt độ)</string>
+  <string name="game_hud_mode_full" formatted="false">Chế độ Bảng điều khiển (Đầy đủ CPU, RAM, Watt)</string>
+  <string name="tile_game_hud_label" formatted="false">Game HUD FPS</string>
+  <string name="tile_game_hud_desc" formatted="false">Bật hoặc tắt nhanh HUD nổi đo FPS trong game</string>
 </resources>

@@ -1,41 +1,29 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <!-- Brand & Theme Colors -->
-    <color name="mi_orange">#FF6900</color>
-    <color name="mi_orange_dark">#E55D00</color>
-    <color name="mi_orange_light">#FFF0E6</color>
-
-    <!-- Light Theme Backgrounds & Surfaces (HyperOS Light) -->
-    <color name="bg_dark">#F0F2F5</color>
-    <color name="card_dark">#FFFFFF</color>
-    <color name="card_dark_stroke">#E1E4EA</color>
-    <color name="card_highlight">#EAEDF2</color>
-
-    <color name="text_primary">#0F172A</color>
-    <color name="text_secondary">#475569</color>
-    <color name="text_muted">#64748B</color>
-
-    <!-- Basic Colors -->
-    <color name="white">#FFFFFF</color>
-    <color name="black">#000000</color>
-
-    <!-- Status Colors (Optimized for high contrast and readability on light surfaces) -->
-    <color name="neon_green">#059669</color>
-    <color name="neon_yellow">#B45309</color>
-    <color name="neon_cyan">#0284C7</color>
-    <color name="neon_red">#DC2626</color>
-
-    <!-- Status Badge Colors -->
-    <color name="badge_green_bg">#18059669</color>
-    <color name="badge_green_stroke">#33059669</color>
-    <color name="badge_orange_bg">#18FF6900</color>
-    <color name="badge_orange_stroke">#33FF6900</color>
-    <color name="badge_cyan_bg">#180284C7</color>
-    <color name="badge_cyan_stroke">#330284C7</color>
-
-    <!-- Translucent Overlay Colors -->
-    <color name="overlay_black_50">#80000000</color>
-    <color name="overlay_black_80">#CC000000</color>
-    <color name="overlay_black_solid">#FF000000</color>
-    <color name="overlay_transparent">#00000000</color>
+  <color name="mi_orange">#A8430A</color>
+  <color name="mi_orange_dark">#8E3907</color>
+  <color name="mi_orange_light">#FFF0E6</color>
+  <color name="bg_dark">#F4F6F9</color>
+  <color name="card_dark">#FFFFFF</color>
+  <color name="card_dark_stroke">#DDE3EC</color>
+  <color name="card_highlight">#EDF1F6</color>
+  <color name="text_primary">#172438</color>
+  <color name="text_secondary">#4D5E74</color>
+  <color name="text_muted">#617188</color>
+  <color name="white">#FFFFFF</color>
+  <color name="black">#000000</color>
+  <color name="neon_green">#059669</color>
+  <color name="neon_yellow">#B45309</color>
+  <color name="neon_cyan">#0284C7</color>
+  <color name="neon_red">#DC2626</color>
+  <color name="badge_green_bg">#18059669</color>
+  <color name="badge_green_stroke">#33059669</color>
+  <color name="badge_orange_bg">#18FF6900</color>
+  <color name="badge_orange_stroke">#33FF6900</color>
+  <color name="badge_cyan_bg">#180284C7</color>
+  <color name="badge_cyan_stroke">#330284C7</color>
+  <color name="overlay_black_50">#80000000</color>
+  <color name="overlay_black_80">#CC000000</color>
+  <color name="overlay_black_solid">#FF000000</color>
+  <color name="overlay_transparent">#00000000</color>
 </resources>

@@ -1,15 +1,23 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.ToolXiaomi" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/mi_orange</item>
-        <item name="colorPrimaryVariant">@color/mi_orange_dark</item>
-        <item name="colorOnPrimary">#FFFFFF</item>
-        <item name="colorSecondaryContainer">@color/card_highlight</item>
-        <item name="colorOnSecondaryContainer">@color/mi_orange</item>
-        <item name="android:statusBarColor">@color/bg_dark</item>
-        <item name="android:navigationBarColor">@color/card_dark</item>
-        <item name="android:windowBackground">@color/bg_dark</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
-        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
-    </style>
+<?xml version='1.0' encoding='utf-8'?>
+<resources xmlns:ns0="http://schemas.android.com/tools">
+  <style name="Theme.ToolXiaomi" parent="Theme.Material3.DayNight.NoActionBar">
+    <item name="colorPrimary">@color/mi_orange</item>
+    <item name="colorPrimaryVariant">@color/mi_orange_dark</item>
+    <item name="colorOnPrimary">#201006</item>
+    <item name="colorSecondaryContainer">@color/card_highlight</item>
+    <item name="colorOnSecondaryContainer">@color/mi_orange</item>
+    <item name="android:statusBarColor">@color/bg_dark</item>
+    <item name="android:navigationBarColor">@color/card_dark</item>
+    <item name="android:windowBackground">@color/bg_dark</item>
+    <item name="android:windowLightStatusBar" ns0:targetApi="m">false</item>
+    <item name="android:windowLightNavigationBar" ns0:targetApi="o_mr1">false</item>
+    <item name="materialButtonStyle">@style/Widget.MiTool.Button</item>
+    <item name="android:fontFamily">sans</item>
+    <item name="android:colorAccent">@color/mi_orange</item>
+    <item name="colorSurface">@color/card_dark</item>
+    <item name="colorOnSurface">@color/text_primary</item>
+    <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+    <item name="colorSurfaceContainer">@color/card_dark</item>
+    <item name="colorSurfaceContainerHigh">@color/card_dark</item>
+  </style>
 </resources>

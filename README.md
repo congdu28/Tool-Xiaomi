@@ -1,102 +1,52 @@
-# 📱 Mi Tool (Tool Xiaomi)
+# Mi Tool (Tool Xiaomi)
 
-Bộ tiện ích mở rộng tối ưu chuyên biệt cho điện thoại **Xiaomi, Redmi, POCO** chạy **HyperOS** hoặc **MIUI**.
+Tiện ích Android dành cho Xiaomi, Redmi và POCO chạy MIUI/HyperOS. Một số thao tác cần Shizuku, quyền hệ thống hoặc hỗ trợ của ROM.
 
-![GitHub Release](https://img.shields.io/github/v/release/congdu28/Tool-Xiaomi?color=orange&style=flat-square)
-![Platform](https://img.shields.io/badge/Platform-Android%207.0%2B%20(API%2024%2B)-brightgreen?style=flat-square)
-![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)
+[Phát hành và tải APK](https://github.com/congdu28/Tool-Xiaomi/releases/latest)
 
----
+## Giao diện
 
-## ✨ Tính Năng Nổi Bật
+- **Tổng quan:** trạng thái thiết bị, pin và các lối tắt thường dùng; thông tin phần cứng có thể thu gọn.
+- **Tiện ích:** tìm kiếm có/không dấu; các nhóm Kết nối và thông báo, Màn hình và đồng hồ, Pin và bộ nhớ, Công cụ nâng cao.
+- **Pin:** số đo cảm biến, lịch sử thu thập và ước lượng khi đủ dữ liệu. Thời gian sử dụng ứng dụng không phải số đo điện năng tiêu thụ theo ứng dụng.
+- **Cài đặt:** Shizuku, quyền chạy nền, giao diện, widget và cập nhật.
 
-### 1. ⚡ Tích Hợp Shizuku Trực Tiếp (1-Chạm Tự Động Hóa Không Cần Máy Tính)
-- **Tự động cấp quyền `WRITE_SECURE_SETTINGS`**: Không cần cắm cáp vào máy tính hay gõ lệnh ADB phức tạp. Chỉ cần mở Shizuku -> Bấm 1 nút trong Mi Tool là xong!
-- **⚡ 1-Chạm Mở Khóa Toàn Bộ 120 FPS Game**: Tự động vô hiệu hóa Joyose (thủ phạm khóa 89 FPS), xóa sạch cache bóp nhiệt PowerKeeper và ép màn hình cố định 120Hz & Speed Mode chống tụt xung.
-- **🔄 1-Chạm Khôi Phục Joyose Mặc Định**: Phục hồi dịch vụ Joyose và đưa tần số quét màn hình về tự động khi không chơi game.
-- **📋 Quy Trình 4 Bước Minh Bạch & Trực Quan**: Hướng dẫn chi tiết từng bước, theo dõi trạng thái Shizuku, Joyose và tần số quét theo thời gian thực (real-time).
+## Chức năng
 
-### 2. 🔋 Tùy Chỉnh Cảnh Báo Pin & Âm Thanh Cá Nhân Hóa
-- **Thanh trượt chọn mức % bảo vệ pin**: Tự do kéo chọn mức sạc mong muốn (50% - 95%, mặc định 80%) thay vì cố định một mức.
-- **Tùy chọn file âm thanh / nhạc chuông**: Chọn bất kỳ bản nhạc chuông hoặc file âm thanh từ máy kèm tính năng nghe thử trực tiếp.
-- **Cảnh báo đa cấp**: Chuông báo đạt ngưỡng bảo vệ, chuông báo sạc đầy 100%, cảnh báo quá nhiệt (> 42°C), và giọng nói thông báo Tiếng Việt.
+DNS riêng tư dùng tên miền DoT; thay đổi tự động cần quyền phù hợp, nếu thiếu quyền sẽ hướng dẫn thao tác hệ thống. Khắc phục trễ thông báo áp dụng cho các ứng dụng được người dùng chọn, kiểm tra từng kết quả; không đảm bảo thay thế mọi giới hạn của HyperOS.
 
-### 3. 🎛️ Quick Settings Tiles Bảng Điều Khiển
-- **Tile Thông báo trạng thái Mi-Tool**: Bật/tắt thanh trạng thái sạc nhanh từ bất kỳ đâu.
-- **Tile Đổi Tần số quét (60Hz / 120Hz)**: Chuyển đổi nhanh giữa 60Hz (tiết kiệm pin) và 120Hz/144Hz (siêu mượt) ngay trên thanh điều khiển kéo xuống.
+Tần số quét kiểm tra mức màn hình hỗ trợ và lưu cấu hình để khôi phục. Đồng hồ, lớp phủ và cảnh báo pin là các lựa chọn riêng. Màn hình RAM cung cấp số đo, không tự dọn ứng dụng nền.
 
-### 4. 🕒 Đồng hồ giây linh hoạt (3 Phương thức)
-- **Cách 1: Thanh thông báo kéo xuống (Notification Drawer):**
-  - **100% KHÔNG CẦN ADB / KHÔNG CẦN MÁY TÍNH**.
-  - Ghim trực tiếp đồng hồ giây mượt mà vào bảng thông báo hệ thống của Xiaomi, hiển thị kèm % pin và nhiệt độ.
-- **Cách 2: Thanh trạng thái góc đỉnh máy (Status Bar SystemUI):**
-  - Kích hoạt hiển thị trực tiếp vào góc đồng hồ của hệ thống HyperOS & MIUI qua quyền `WRITE_SECURE_SETTINGS` (cấp tự động qua Shizuku hoặc ADB).
-  - Không tốn pin, không chạy service nền.
-- **Cách 3: Cửa sổ nổi kéo thả (Floating Window):**
-  - Tùy chọn kéo thả tự do đè lên màn hình mọi ứng dụng.
+Các thao tác Joyose, xóa dữ liệu PowerKeeper và đóng băng ứng dụng cần đọc kỹ xác nhận. FPS thực tế phụ thuộc trò chơi, ROM và phần cứng. Bật lại Joyose không hoàn tác dữ liệu đã xóa. Ứng dụng không tự tắt bảo vệ nhiệt để xử lý nóng máy.
 
-### 5. ⚡ Ước lượng sạc & Giám sát pin từ cảm biến hệ thống
-- Tự động nhận diện khi cắm sạc (AC Nhanh, USB, Sạc không dây).
-- **Ước lượng thời gian sạc đầy (ETA):** Thuật toán đường cong sạc giảm dòng thông minh sau 80% kết hợp API `BatteryManager.computeChargeTimeRemaining()`.
-- **Đo công suất tức thời:** Hiển thị công suất sạc tính theo **Watt** ($V \times A$) và nhiệt độ pin (°C).
+Số đo sạc phản ánh phía pin khi cảm biến hỗ trợ; không xác nhận chuẩn sạc, công suất củ sạc hoặc chất lượng cáp. Dung lượng thiết kế/SOH chưa đọc được sẽ hiển thị chưa có dữ liệu.
 
-### 6. 🔄 Tự Động Kiểm Tra & Cài Đặt Bản Cập Nhật (In-App Updater)
-- Tự động kiểm tra bản phát hành mới nhất từ GitHub khi mở ứng dụng.
-- Nút kiểm tra thủ công trong tab **Cài đặt**.
-- Khi có bản mới, ứng dụng tự động hiển thị danh sách thay đổi và nút **"Tải & Cài đặt ngay"** để cập nhật trực tiếp trên máy mà không cần mở trình duyệt web.
+## Cài đặt và quyền
 
-### 7. 🔔 Khắc Phục Trễ Thông Báo (Fix Delayed Notifications)
-- **Chống kill app nhắn tin**: Hỗ trợ giảm chậm thông báo và lỡ cuộc gọi trên HyperOS/MIUI cho Zalo, Messenger, Telegram, WhatsApp, Gmail, Teams...
-- **1-Chạm tối ưu hàng loạt**: Miễn Doze và cho phép chạy nền qua Shizuku, xác minh từng ứng dụng. Kiểm tra Tự khởi chạy, giới hạn pin MIUI và quyền thông báo qua các lối tắt Cài đặt.
-- **Lối tắt bảo vệ**: Hướng dẫn khóa ứng dụng trong đa nhiệm (Recent Apps) để hạn chế bị dọn RAM.
+Tải APK từ Releases, mở bằng trình cài đặt Android. Chỉ bật quyền thông báo, lớp phủ hoặc truy cập sử dụng khi cần tính năng tương ứng. Có thể cài [Shizuku](https://shizuku.rikka.app) và cấp quyền từ phần Cài đặt của Mi Tool.
 
-### 8. 🎮 Mini Game HUD Nổi (FPS & Hiệu Năng Thời Gian Thực)
-- **Lớp phủ nổi siêu nhẹ**: Hiển thị FPS từ cảm biến phần cứng nếu đọc được (FPS HW); khi không có nguồn đo sẽ hiển thị tần số quét Hz. Hiển thị thêm % CPU, % RAM, Nhiệt độ và Công suất xả ($W$) khi chơi game.
-- **Chạm chuyển chế độ**: Dễ dàng đổi giữa chế độ Gọn (Compact) và Bảng điều khiển (Expanded).
-- **Quick Settings Tile**: Bật/tắt HUD nổi ngay từ bảng điều khiển kéo xuống của Xiaomi mà không cần thoát game.
+Cấp quyền ghi cài đặt bảo mật bằng ADB nếu cần:
 
----
-
-## 🔑 Hướng Dẫn Cấp Quyền Shizuku / ADB (Chỉ làm 1 lần)
-
-### Cách 1: Qua Shizuku (Khuyên Dùng - Hoàn Toàn Trên Điện Thoại)
-1. Cài đặt và kích hoạt ứng dụng [Shizuku](https://shizuku.rikka.app) qua Ghép đôi không dây (Wireless Debugging) ngay trên điện thoại.
-2. Mở **Mi Tool**, bấm nút **"⚡ 1-Chạm Cấp Quyền WRITE_SECURE_SETTINGS"**.
-3. Chọn Cho phép trong popup của Shizuku. Toàn bộ tính năng hệ thống sẽ hoạt động ngay lập tức!
-
-### Cách 2: Qua Máy Tính (ADB truyền thống)
-```bash
+```sh
 adb shell pm grant app.cd.mitool android.permission.WRITE_SECURE_SETTINGS
 ```
 
----
+Quyền này không mở mọi hoạt động đặc thù ROM. App đọc lại trạng thái và báo kết quả khi có thể.
 
-## 📥 Tải Về & Cài Đặt
+## Phát triển
 
-1. Vào mục [Releases](https://github.com/congdu28/Tool-Xiaomi/releases) của repository.
-2. Tải file **`Mi-Tool-vX.X.XX-Release.apk`** về điện thoại.
-3. Mở file APK để cài đặt.
-4. Mở ứng dụng **Mi Tool**, cấp quyền **Hiển thị trên ứng dụng khác** và làm theo hướng dẫn tối ưu cho Xiaomi.
+Java 17, Android SDK 35, minSdk 24. Khai báo SDK trong `local.properties` hoặc `ANDROID_HOME`.
 
----
-
-## 🛠️ Hướng Dẫn Tự Biên Dịch (Build Project)
-
-Dự án sử dụng Gradle và Android SDK tiêu chuẩn:
-
-```bash
-# Clone repository
-git clone https://github.com/congdu28/Tool-Xiaomi.git
-cd Tool-Xiaomi
-
-# Chạy test
-./gradlew testDebugUnitTest
-
-# Biên dịch Debug APK
-./gradlew assembleDebug
-
-# Biên dịch Release APK (Đã ký sẵn với keystore tích hợp)
-./gradlew assembleRelease
+```sh
+./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleRelease
 ```
 
-File APK xuất ra tại: `app/build/outputs/apk/release/app-release.apk`.
+Kiểm tra giao diện trên máy giả lập riêng sau khi cài APK:
+
+```sh
+python scripts/ui_smoke.py --adb PATH_TO_ADB --serial emulator-5554
+```
+
+Script chỉ chấp nhận serial giả lập và đặt lại dữ liệu Mi Tool trên giả lập; lưu ảnh và cây giao diện vào `app/build/ui-qa`. Không xác nhận các thao tác hệ thống có tác động dữ liệu.
+
+Quy trình GitHub Actions chạy unit test, lint và build APK khi đẩy tag `v*`; ghi chú phát hành lấy từ `RELEASE_NOTES.md`. Xem các báo cáo rà soát trong `docs/`.

@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="10dp" android:clickable="true" android:focusable="true" android:foreground="?attr/selectableItemBackground" app:cardCornerRadius="16dp" app:cardElevation="0dp" app:cardBackgroundColor="@color/card_dark" app:strokeColor="@color/card_dark_stroke" app:strokeWidth="1dp">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="88dp" android:padding="16dp" android:gravity="center_vertical" android:orientation="horizontal">
+        <ImageView android:id="@+id/feature_icon" android:layout_width="28dp" android:layout_height="28dp" android:layout_marginEnd="16dp" android:importantForAccessibility="no" />
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+            <TextView android:id="@+id/feature_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="16sp" android:textStyle="bold" android:textColor="@color/text_primary" />
+            <TextView android:id="@+id/feature_description" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:textSize="14sp" android:lineSpacingExtra="2dp" android:textColor="@color/text_secondary" />
+        </LinearLayout>
+        <androidx.appcompat.widget.AppCompatImageView android:layout_width="18dp" android:layout_height="18dp" android:layout_marginStart="10dp" android:src="@drawable/ic_arrow_right" android:importantForAccessibility="no" app:tint="@color/text_muted" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

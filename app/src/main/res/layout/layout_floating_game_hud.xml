@@ -1,263 +1,40 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/hud_root_container"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="@drawable/bg_hud_capsule"
-    android:clickable="true"
-    android:focusable="true"
-    android:orientation="vertical">
-
-    <!-- 1. COMPACT MODE (Default) -->
-    <LinearLayout
-        android:id="@+id/layout_hud_compact"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/iv_hud_compact_icon"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:src="@drawable/ic_gamepad"
-            app:tint="@color/neon_green" />
-
-        <TextView
-            android:id="@+id/tv_hud_compact_fps"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:text="120 FPS"
-            android:textColor="@color/neon_green"
-            android:textSize="13sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tv_hud_compact_dot"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:layout_marginEnd="6dp"
-            android:text="•"
-            android:textColor="@color/text_muted"
-            android:textSize="11sp" />
-
-        <TextView
-            android:id="@+id/tv_hud_compact_temp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="37.5°C"
-            android:textColor="@color/neon_cyan"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/btn_hud_close_compact"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginStart="8dp"
-            android:padding="2dp"
-            android:contentDescription="Close HUD"
-            android:src="@drawable/ic_close"
-            app:tint="@color/text_muted" />
+<?xml version='1.0' encoding='utf-8'?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/hud_root_container" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/bg_hud_capsule" android:clickable="true" android:focusable="true" android:orientation="vertical">
+    <LinearLayout android:id="@+id/layout_hud_compact" android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+        <androidx.appcompat.widget.AppCompatImageView android:id="@+id/iv_hud_compact_icon" android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_gamepad" app:tint="@color/neon_green" android:importantForAccessibility="no" />
+        <TextView android:id="@+id/tv_hud_compact_fps" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:text="@string/copy_layout_floating_game_hud_tv_hud_co_04283a2" android:textColor="@color/neon_green" android:textSize="13sp" android:textStyle="bold" />
+        <TextView android:id="@+id/tv_hud_compact_dot" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:layout_marginEnd="6dp" android:text="@string/copy_item_battery_drain_app_text_ecf727e" android:textColor="@color/text_muted" android:textSize="11sp" />
+        <TextView android:id="@+id/tv_hud_compact_temp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_layout_floating_game_hud_tv_hud_co_294f38d" android:textColor="@color/neon_cyan" android:textSize="12sp" android:textStyle="bold" />
+        <androidx.appcompat.widget.AppCompatImageView android:id="@+id/btn_hud_close_compact" android:layout_width="20dp" android:layout_height="20dp" android:layout_marginStart="8dp" android:padding="2dp" android:contentDescription="@string/copy_layout_floating_game_hud_btn_hud_c_e4075cf" android:src="@drawable/ic_close" app:tint="@color/text_muted" />
     </LinearLayout>
-
-    <!-- 2. EXPANDED DASHBOARD MODE -->
-    <LinearLayout
-        android:id="@+id/layout_hud_expanded"
-        android:layout_width="210dp"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <!-- Header -->
-        <LinearLayout
-            android:id="@+id/layout_hud_exp_header"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/iv_hud_exp_icon"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:src="@drawable/ic_gamepad"
-                app:tint="@color/neon_green" />
-
-            <TextView
-                android:id="@+id/tv_hud_exp_title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:layout_weight="1"
-                android:text="GAME HUD"
-                android:textColor="@color/text_primary"
-                android:textSize="11sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tv_hud_exp_fps"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="6dp"
-                android:text="120 FPS"
-                android:textColor="@color/neon_green"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/btn_hud_close_exp"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:padding="2dp"
-                android:contentDescription="Close HUD"
-                android:src="@drawable/ic_close"
-                app:tint="@color/text_muted" />
+    <LinearLayout android:id="@+id/layout_hud_expanded" android:layout_width="210dp" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone">
+        <LinearLayout android:id="@+id/layout_hud_exp_header" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+            <androidx.appcompat.widget.AppCompatImageView android:id="@+id/iv_hud_exp_icon" android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_gamepad" app:tint="@color/neon_green" android:importantForAccessibility="no" />
+            <TextView android:id="@+id/tv_hud_exp_title" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:layout_weight="1" android:text="@string/copy_layout_floating_game_hud_tv_hud_ex_8fd50f0" android:textColor="@color/text_primary" android:textSize="11sp" android:textStyle="bold" />
+            <TextView android:id="@+id/tv_hud_exp_fps" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginEnd="6dp" android:text="@string/copy_layout_floating_game_hud_tv_hud_co_04283a2" android:textColor="@color/neon_green" android:textSize="14sp" android:textStyle="bold" />
+            <androidx.appcompat.widget.AppCompatImageView android:id="@+id/btn_hud_close_exp" android:layout_width="20dp" android:layout_height="20dp" android:padding="2dp" android:contentDescription="@string/copy_layout_floating_game_hud_btn_hud_c_e4075cf" android:src="@drawable/ic_close" app:tint="@color/text_muted" />
         </LinearLayout>
-
-        <!-- Divider line -->
-        <View
-            android:id="@+id/v_hud_exp_divider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="6dp"
-            android:layout_marginBottom="6dp"
-            android:background="#33FFFFFF" />
-
-        <!-- Metrics Row 1: CPU & RAM -->
-        <LinearLayout
-            android:id="@+id/layout_hud_exp_row1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:id="@+id/layout_hud_exp_cpu"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/tv_hud_exp_cpu_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="CPU: "
-                    android:textColor="@color/text_muted"
-                    android:textSize="11sp" />
-
-                <TextView
-                    android:id="@+id/tv_hud_exp_cpu"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="28%"
-                    android:textColor="@color/text_primary"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
+        <View android:id="@+id/v_hud_exp_divider" android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="6dp" android:layout_marginBottom="6dp" android:background="#33FFFFFF" />
+        <LinearLayout android:id="@+id/layout_hud_exp_row1" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+            <LinearLayout android:id="@+id/layout_hud_exp_cpu" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:id="@+id/tv_hud_exp_cpu_label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_layout_floating_game_hud_tv_hud_ex_81c4c3f" android:textColor="@color/text_muted" android:textSize="11sp" />
+                <TextView android:id="@+id/tv_hud_exp_cpu" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_layout_floating_game_hud_tv_hud_ex_8ab0d45" android:textColor="@color/text_primary" android:textSize="11sp" android:textStyle="bold" />
             </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layout_hud_exp_ram"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/tv_hud_exp_ram_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="RAM: "
-                    android:textColor="@color/text_muted"
-                    android:textSize="11sp" />
-
-                <TextView
-                    android:id="@+id/tv_hud_exp_ram"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="54%"
-                    android:textColor="@color/text_primary"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
+            <LinearLayout android:id="@+id/layout_hud_exp_ram" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:id="@+id/tv_hud_exp_ram_label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_layout_floating_game_hud_tv_hud_ex_d8fd50d" android:textColor="@color/text_muted" android:textSize="11sp" />
+                <TextView android:id="@+id/tv_hud_exp_ram" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_layout_floating_game_hud_tv_hud_ex_b378739" android:textColor="@color/text_primary" android:textSize="11sp" android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>
-
-        <!-- Metrics Row 2: Pin Temp & Wattage -->
-        <LinearLayout
-            android:id="@+id/layout_hud_exp_row2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:id="@+id/layout_hud_exp_temp"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/tv_hud_exp_temp_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Pin: "
-                    android:textColor="@color/text_muted"
-                    android:textSize="11sp" />
-
-                <TextView
-                    android:id="@+id/tv_hud_exp_temp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="37.5°C"
-                    android:textColor="@color/neon_cyan"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
+        <LinearLayout android:id="@+id/layout_hud_exp_row2" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:orientation="horizontal">
+            <LinearLayout android:id="@+id/layout_hud_exp_temp" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:id="@+id/tv_hud_exp_temp_label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_layout_floating_game_hud_tv_hud_ex_5a08e30" android:textColor="@color/text_muted" android:textSize="11sp" />
+                <TextView android:id="@+id/tv_hud_exp_temp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_layout_floating_game_hud_tv_hud_co_294f38d" android:textColor="@color/neon_cyan" android:textSize="11sp" android:textStyle="bold" />
             </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layout_hud_exp_power"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/tv_hud_exp_power_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Xả: "
-                    android:textColor="@color/text_muted"
-                    android:textSize="11sp" />
-
-                <TextView
-                    android:id="@+id/tv_hud_exp_power"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="3.2W"
-                    android:textColor="@color/mi_orange"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
+            <LinearLayout android:id="@+id/layout_hud_exp_power" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:id="@+id/tv_hud_exp_power_label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_layout_floating_game_hud_tv_hud_ex_ab93224" android:textColor="@color/text_muted" android:textSize="11sp" />
+                <TextView android:id="@+id/tv_hud_exp_power" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_layout_floating_game_hud_tv_hud_ex_9c97bfa" android:textColor="@color/mi_orange" android:textSize="11sp" android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/tv_hud_exp_hint"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:gravity="center"
-            android:text="Chạm để thu gọn"
-            android:textColor="@color/text_muted"
-            android:textSize="9sp" />
-
+        <TextView android:id="@+id/tv_hud_exp_hint" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:gravity="center" android:text="@string/copy_layout_floating_game_hud_tv_hud_ex_4baf54c" android:textColor="@color/text_muted" android:textSize="9sp" />
     </LinearLayout>
-
 </LinearLayout>

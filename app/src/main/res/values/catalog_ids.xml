@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+  <item name="card_tool_notif_fix" type="id" />
+  <item name="tv_tool_notif_fix_sub" type="id" />
+  <item name="card_tool_hz" type="id" />
+  <item name="tv_tool_hz_sub" type="id" />
+  <item name="card_tool_game_fps" type="id" />
+  <item name="tv_tool_game_fps_sub" type="id" />
+  <item name="card_tool_debloater" type="id" />
+  <item name="tv_tool_debloater_sub" type="id" />
+  <item name="card_tool_private_dns" type="id" />
+  <item name="tv_tool_private_dns_sub" type="id" />
+  <item name="card_tool_volte" type="id" />
+  <item name="tv_tool_volte_sub" type="id" />
+  <item name="card_tool_ram" type="id" />
+  <item name="tv_tool_ram_sub" type="id" />
+  <item name="card_tool_clock" type="id" />
+  <item name="tv_tool_clock_sub" type="id" />
+  <item name="card_tool_battery_alert" type="id" />
+  <item name="tv_tool_battery_alert_sub" type="id" />
+  <item name="card_tool_miui_utils" type="id" />
+  <item name="tv_tool_miui_utils_sub" type="id" />
+  <item name="dialog_value_input" type="id" />
+</resources>

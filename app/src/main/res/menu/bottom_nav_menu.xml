@@ -1,19 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/nav_home"
-        android:icon="@drawable/ic_device"
-        android:title="Thiết Bị" />
-    <item
-        android:id="@+id/nav_tools"
-        android:icon="@drawable/ic_tools"
-        android:title="Tính Năng" />
-    <item
-        android:id="@+id/nav_battery"
-        android:icon="@drawable/ic_battery_bolt"
-        android:title="Pin &amp; Sạc" />
-    <item
-        android:id="@+id/nav_settings"
-        android:icon="@drawable/ic_settings"
-        android:title="Cài Đặt" />
+  <item android:id="@+id/nav_home" android:icon="@drawable/ic_device" android:title="@string/overview_title" />
+  <item android:id="@+id/nav_tools" android:icon="@drawable/ic_tools" android:title="@string/tools_title" />
+  <item android:id="@+id/nav_battery" android:icon="@drawable/ic_battery_bolt" android:title="@string/copy_navigation_9c91841" />
+  <item android:id="@+id/nav_settings" android:icon="@drawable/ic_settings" android:title="@string/copy_activity_main_text_01f3f39" />
 </menu>

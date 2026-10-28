@@ -1,276 +1,43 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/bg_bottom_sheet"
-    android:fillViewport="true">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
-
-        <!-- Drag handle -->
-        <View
-            android:layout_width="40dp"
-            android:layout_height="4dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="14dp"
-            android:background="@drawable/bg_drag_handle" />
-
-        <!-- Header -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="⚙️ Tùy Biến Widget SOT &amp; Pin"
-            android:textColor="@color/mi_orange"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
-            android:text="Tùy biến phong cách hiển thị, nhận diện theme hệ thống và chu kỳ làm mới"
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp" />
-
-        <!-- Divider -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
-            android:background="@color/card_dark_stroke" />
-
-        <!-- 1. Phong cách Widget -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="🎨 Phong Cách Định Dạng Widget"
-            android:textColor="@color/neon_cyan"
-            android:textSize="13sp"
-            android:textStyle="bold" />
-
-        <RadioGroup
-            android:id="@+id/rg_widget_style"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp">
-
-            <RadioButton
-                android:id="@+id/rb_style_dashboard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="📊 Bảng Điều Khiển Đầy Đủ (4 Ô Chỉ Số) (Mặc định)"
-                android:textColor="@color/text_primary"
-                android:textSize="12sp" />
-
-            <RadioButton
-                android:id="@+id/rb_style_hyperos"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="🌟 Chuẩn HyperOS Kính Mờ"
-                android:textColor="@color/text_primary"
-                android:textSize="12sp" />
-
-            <RadioButton
-                android:id="@+id/rb_style_minimal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="⚡ Tối Giản Nhỏ Gọn (Minimalist)"
-                android:textColor="@color/text_primary"
-                android:textSize="12sp" />
+<?xml version='1.0' encoding='utf-8'?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/bg_bottom_sheet" android:fillViewport="true">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
+        <View android:layout_width="40dp" android:layout_height="4dp" android:layout_gravity="center_horizontal" android:layout_marginBottom="14dp" android:background="@drawable/bg_drag_handle" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_dialog_customize_widget_text_a7d9df8" android:textColor="@color/mi_orange" android:textSize="18sp" android:textStyle="bold" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:text="@string/copy_dialog_customize_widget_text_f264b74" android:textColor="@color/text_secondary" android:textSize="12sp" />
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="12dp" android:layout_marginBottom="12dp" android:background="@color/card_dark_stroke" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_dialog_customize_widget_text_d39fa7c" android:textColor="@color/neon_cyan" android:textSize="13sp" android:textStyle="bold" />
+        <RadioGroup android:id="@+id/rg_widget_style" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp">
+            <RadioButton android:id="@+id/rb_style_dashboard" android:layout_width="match_parent" android:layout_height="wrap_content" android:checked="true" android:text="@string/copy_dialog_customize_widget_rb_style_d_17177ba" android:textColor="@color/text_primary" android:textSize="12sp" android:minHeight="48dp" />
+            <RadioButton android:id="@+id/rb_style_hyperos" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/copy_dialog_customize_widget_rb_style_h_da611a9" android:textColor="@color/text_primary" android:textSize="12sp" android:minHeight="48dp" />
+            <RadioButton android:id="@+id/rb_style_minimal" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/copy_dialog_customize_widget_rb_style_m_7af3bb9" android:textColor="@color/text_primary" android:textSize="12sp" android:minHeight="48dp" />
         </RadioGroup>
-
-        <!-- Divider -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:background="@color/card_dark_stroke" />
-
-        <!-- 2. Giao diện Theme Widget -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="🌓 Nhận Diện Giao Diện (Theme)"
-            android:textColor="@color/neon_yellow"
-            android:textSize="13sp"
-            android:textStyle="bold" />
-
-        <RadioGroup
-            android:id="@+id/rg_widget_theme"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp">
-
-            <RadioButton
-                android:id="@+id/rb_theme_system"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="🌓 Tự động theo Hệ thống (Sáng / Tối)"
-                android:textColor="@color/text_primary"
-                android:textSize="12sp" />
-
-            <RadioButton
-                android:id="@+id/rb_theme_dark"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="🌙 Luôn Kính Mờ Tối (Dark HyperOS)"
-                android:textColor="@color/text_primary"
-                android:textSize="12sp" />
-
-            <RadioButton
-                android:id="@+id/rb_theme_light"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="☀️ Luôn Kính Mờ Sáng (Light Frost)"
-                android:textColor="@color/text_primary"
-                android:textSize="12sp" />
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="10dp" android:layout_marginBottom="10dp" android:background="@color/card_dark_stroke" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_dialog_customize_widget_text_33b12ab" android:textColor="@color/neon_yellow" android:textSize="13sp" android:textStyle="bold" />
+        <RadioGroup android:id="@+id/rg_widget_theme" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp">
+            <RadioButton android:id="@+id/rb_theme_system" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/copy_dialog_customize_widget_rb_theme_s_f909bb7" android:textColor="@color/text_primary" android:textSize="12sp" android:minHeight="48dp" />
+            <RadioButton android:id="@+id/rb_theme_dark" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/copy_dialog_customize_widget_rb_theme_d_b435259" android:textColor="@color/text_primary" android:textSize="12sp" android:minHeight="48dp" />
+            <RadioButton android:id="@+id/rb_theme_light" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/copy_dialog_customize_widget_rb_theme_l_56e16da" android:textColor="@color/text_primary" android:textSize="12sp" android:minHeight="48dp" />
         </RadioGroup>
-
-        <!-- Divider -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:background="@color/card_dark_stroke" />
-
-        <!-- 3. Tần suất cập nhật -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="⏱️ Tần Suất Tự Động Làm Mới"
-            android:textColor="@color/neon_green"
-            android:textSize="13sp"
-            android:textStyle="bold" />
-
-        <RadioGroup
-            android:id="@+id/rg_widget_interval"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp">
-
-            <RadioButton
-                android:id="@+id/rb_interval_15"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="15 phút một lần"
-                android:textColor="@color/text_primary"
-                android:textSize="12sp" />
-
-            <RadioButton
-                android:id="@+id/rb_interval_30"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="30 phút một lần (Khuyên dùng)"
-                android:textColor="@color/text_primary"
-                android:textSize="12sp" />
-
-            <RadioButton
-                android:id="@+id/rb_interval_60"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="60 phút một lần"
-                android:textColor="@color/text_primary"
-                android:textSize="12sp" />
-
-            <RadioButton
-                android:id="@+id/rb_interval_event"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Chỉ khi bật màn hình / cắm sạc (Tiết kiệm pin nhất)"
-                android:textColor="@color/text_primary"
-                android:textSize="12sp" />
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="10dp" android:layout_marginBottom="10dp" android:background="@color/card_dark_stroke" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/copy_dialog_customize_widget_text_c97080d" android:textColor="@color/neon_green" android:textSize="13sp" android:textStyle="bold" />
+        <RadioGroup android:id="@+id/rg_widget_interval" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp">
+            <RadioButton android:id="@+id/rb_interval_15" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/copy_dialog_customize_widget_rb_interva_0ecfc9d" android:textColor="@color/text_primary" android:textSize="12sp" android:minHeight="48dp" />
+            <RadioButton android:id="@+id/rb_interval_30" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/copy_dialog_customize_widget_rb_interva_cb612b8" android:textColor="@color/text_primary" android:textSize="12sp" android:minHeight="48dp" />
+            <RadioButton android:id="@+id/rb_interval_60" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/copy_dialog_customize_widget_rb_interva_5d0a8e8" android:textColor="@color/text_primary" android:textSize="12sp" android:minHeight="48dp" />
+            <RadioButton android:id="@+id/rb_interval_event" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/copy_dialog_customize_widget_rb_interva_62c5af3" android:textColor="@color/text_primary" android:textSize="12sp" android:minHeight="48dp" />
         </RadioGroup>
-
-        <!-- Divider -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:background="@color/card_dark_stroke" />
-
-        <!-- 4. Tùy chọn thành phần -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="🌡️ Hiển thị nhiệt độ pin"
-                android:textColor="@color/text_primary"
-                android:textSize="12sp" />
-
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/sw_widget_show_temp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="true" />
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="10dp" android:layout_marginBottom="10dp" android:background="@color/card_dark_stroke" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/copy_dialog_customize_widget_text_ea45d85" android:textColor="@color/text_primary" android:textSize="12sp" />
+            <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/sw_widget_show_temp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checked="true" android:minHeight="48dp" />
         </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="⚡ Hiển thị dự đoán thời lượng"
-                android:textColor="@color/text_primary"
-                android:textSize="12sp" />
-
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/sw_widget_show_estimate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="true" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:gravity="center_vertical" android:orientation="horizontal">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/copy_dialog_customize_widget_text_1c35fac" android:textColor="@color/text_primary" android:textSize="12sp" />
+            <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/sw_widget_show_estimate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checked="true" android:minHeight="48dp" />
         </LinearLayout>
-
-        <!-- Actions -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_widget_save"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:backgroundTint="@color/mi_orange"
-                android:text="💾 Lưu &amp; Cập Nhật Widget"
-                android:textColor="@color/white"
-                android:textSize="13sp"
-                app:cornerRadius="10dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_widget_close"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:backgroundTint="@color/card_highlight"
-                android:text="Đóng"
-                android:textColor="@color/text_secondary"
-                android:textSize="13sp"
-                app:cornerRadius="10dp" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:orientation="horizontal">
+            <com.google.android.material.button.MaterialButton android:id="@+id/btn_widget_save" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/copy_dialog_customize_widget_btn_widget_bb38780" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/btn_widget_close" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="@string/action_close" style="@style/Widget.MiTool.Button" android:minHeight="48dp" />
         </LinearLayout>
-
     </LinearLayout>
 </ScrollView>
