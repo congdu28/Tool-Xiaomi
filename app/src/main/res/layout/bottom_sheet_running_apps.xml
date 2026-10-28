@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf-8'?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@drawable/bg_bottom_sheet" android:padding="20dp">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/ram_cleanup_title" android:textColor="@color/text_primary" android:textSize="22sp" android:textStyle="bold" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/sheet_close" style="@style/Widget.MiTool.Button.Text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/action_close" />
+    </LinearLayout>
+    <androidx.core.widget.NestedScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/ram_cleanup_intro" android:textColor="@color/text_secondary" android:textSize="14sp" android:layout_marginTop="12dp" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/ram_connect" style="@style/Widget.MiTool.Button" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/ram_permission_action" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/ram_reload" style="@style/Widget.MiTool.Button" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/ram_reload" />
+            <TextView android:id="@+id/ram_status" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_secondary" android:textSize="14sp" android:accessibilityLiveRegion="polite" />
+            <TextView android:id="@+id/ram_result" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_primary" android:textSize="14sp" android:accessibilityLiveRegion="polite" android:layout_marginTop="8dp" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/ram_select_all" style="@style/Widget.MiTool.Button.Text" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/ram_select_all" />
+            <LinearLayout android:id="@+id/ram_app_list" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+    <com.google.android.material.button.MaterialButton android:id="@+id/ram_stop_selected" style="@style/Widget.MiTool.Button" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/ram_confirm_stop" android:enabled="false" />
+</LinearLayout>

@@ -22,7 +22,7 @@
   <string name="feature_alerts">Cảnh báo pin và sạc</string>
   <string name="feature_alerts_desc">Nhắc mức pin, nhiệt độ và tùy chỉnh âm báo.</string>
   <string name="feature_memory">Bộ nhớ và ứng dụng</string>
-  <string name="feature_memory_desc">Xem RAM và mở quản lý ứng dụng trong hệ thống.</string>
+  <string name="feature_memory_desc">Dọn RAM bằng cách dừng ứng dụng bạn chọn; giữ lại ứng dụng quan trọng.</string>
   <string name="feature_gaming">HUD và dịch vụ trò chơi</string>
   <string name="feature_gaming_desc">Theo dõi số đo thiết bị; quản lý Joyose khi có quyền.</string>
   <string name="feature_packages">Đóng băng ứng dụng</string>

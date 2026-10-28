@@ -248,7 +248,7 @@
   <string name="copy_bottom_sheet_private_dns_bs_btn_dn_3ce0ae6" formatted="false">Tự động theo mạng</string>
   <string name="copy_bottom_sheet_private_dns_bs_btn_op_7074f80" formatted="false">Mở cài đặt DNS mạng hệ thống</string>
   <string name="copy_bottom_sheet_ram_contentDescriptio_b64a54c" formatted="false">RAM Icon</string>
-  <string name="copy_bottom_sheet_ram_text_c2eecec" formatted="false">Xem số đo RAM và mở quản lý ứng dụng. Mi Tool không tự đóng hàng loạt ứng dụng đang chạy nền.</string>
+  <string name="copy_bottom_sheet_ram_text_c2eecec" formatted="false">Xem số đo RAM hoặc chọn ứng dụng đang chạy để buộc dừng qua Shizuku. Bạn có thể giữ lại ứng dụng cần nhận thông báo.</string>
   <string name="copy_bottom_sheet_ram_bs_tv_shizuku_sta_6d849be" formatted="false">Đang đọc số đo RAM…</string>
   <string name="copy_bottom_sheet_ram_text_1df527f" formatted="false">Mức tải bộ nhớ RAM</string>
   <string name="copy_bottom_sheet_ram_bs_tv_ram_level_d_6221023" formatted="false">Hoạt động tối ưu</string>

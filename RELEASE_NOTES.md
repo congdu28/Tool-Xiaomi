@@ -1,16 +1,17 @@
-# Mi Tool v1.0.60 — Giao diện mới và sửa logic tiện ích
+# Mi Tool v1.0.61 — Dọn RAM và quản lý ứng dụng đang chạy
 
-- Sắp xếp lại bốn trang Tổng quan, Tiện ích, Pin, Cài đặt. Nhóm tiện ích theo mục đích; thêm tìm kiếm tiếng Việt có hoặc không dấu.
-- Thống nhất thẻ tính năng, biểu tượng, màu sáng/tối, nút bấm và bảng điều khiển. Nút đóng luôn ở đầu bảng; thông báo và hướng dẫn mô tả đúng thao tác thực hiện.
-- DNS riêng tư: trạng thái chọn theo cấu hình hệ thống, kiểm tra tên miền DoT, giữ nội dung khi nhập sai. Không báo sao chép thành áp dụng thành công.
-- Thông báo: người dùng chủ động chọn ứng dụng. Không tự chọn hàng loạt ứng dụng để miễn giới hạn chạy nền.
-- RAM: thay thao tác dọn/tăng tốc bằng xem số đo và mở quản lý ứng dụng. Bỏ dọn nền hàng loạt gây xung đột với nhu cầu nhận thông báo.
-- Joyose/PowerKeeper: xác nhận trước thay đổi có tác động; chạy lệnh ngoài luồng giao diện, kiểm tra kết quả. Không tự ép chế độ hiệu năng/nhiệt và không hứa mở khóa FPS. Bật lại Joyose không phục hồi dữ liệu PowerKeeper đã xóa.
-- Pin: chỉ hiển thị dung lượng/SOH khi đọc được; ước lượng thời gian dùng cần đủ dữ liệu phiên thực. Phép đo sạc không suy ra chuẩn sạc hoặc chất lượng cáp từ công suất pin.
-- Dịch vụ cảnh báo độc lập với đồng hồ; mặc định mới không tự bật các chức năng nền. Cải thiện vòng đời tải cập nhật và xử lý liên kết trang phát hành.
+- Thêm màn hình **Chọn ứng dụng để dọn RAM** trong tiện ích Bộ nhớ và ứng dụng.
+- Đọc danh sách tiến trình thực qua Shizuku, gom theo ứng dụng/UID; không dùng danh sách app đã cài hoặc app gần đây để giả lập trạng thái đang chạy.
+- Chọn từng app hoặc chọn tất cả app có thể dừng; không tự chọn sẵn. Tùy chọn giữ lại ứng dụng được lưu cho các lần sau, mặc định giữ các app thông báo được khuyến nghị.
+- Bảo vệ Mi Tool, Shizuku, bàn phím, launcher, app miễn giới hạn pin/Doze, ứng dụng hệ thống và UID dùng chung. Kiểm tra lại quyền và bảo vệ trước mỗi lần dừng.
+- Xác nhận trước khi buộc dừng: có thể gián đoạn tác vụ chưa lưu và ngừng nhận thông báo đến khi mở lại app; không xóa dữ liệu ứng dụng.
+- Chạy thao tác ngoài luồng giao diện. Chỉ báo đã dừng sau khi lệnh thành công và không còn tiến trình UID đó tại lần kiểm tra lại; báo riêng bỏ qua/chưa xác nhận.
+- Sửa bộ chờ lệnh Shizuku dùng chung: không hủy lệnh sớm khi tiến trình chưa kết thúc. Có kiểm thử hồi quy cho lỗi này.
+- Đóng bảng sẽ hủy các ứng dụng chưa xử lý sau lệnh hiện tại.
+- Đo RAM trống trước/sau và hiển thị chênh lệch có dấu. Biến động RAM toàn hệ thống không được trình bày như lượng RAM giải phóng chắc chắn từ các app được dọn.
 
-## Kiểm tra
+Cần Shizuku đang chạy và đã cấp quyền để liệt kê/dừng app khác. Không có dọn tự động định kỳ. Android có thể sử dụng lại RAM trống; tính năng không bảo đảm tăng tốc hoặc giảm nhiệt.
 
-Unit test, Android Lint và build Release; kiểm tra giao diện trên Android 15 giả lập, chế độ sáng/tối và cỡ chữ lớn. Chức năng đặc thù HyperOS/Shizuku vẫn cần kiểm tra trên điện thoại thật; chưa xác nhận nguyên nhân nóng máy của Xiaomi 17 Ultra.
+28/28 unit test đạt, lint không có lỗi chặn build, build Release thành công. Đã kiểm tra dừng ứng dụng thực sự và bảo vệ app miễn Doze qua Shizuku 13.6.0 trên APK Release, Android 15 giả lập. Khả năng hoạt động qua Shizuku trên HyperOS 4 vẫn cần xác minh trên Xiaomi thật.
 
-Cài **Mi-Tool-v1.0.60-Release.apk** để cập nhật.
+Tải **Mi-Tool-v1.0.61-Release.apk** để cập nhật.

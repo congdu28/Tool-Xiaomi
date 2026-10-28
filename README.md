@@ -15,7 +15,7 @@ Tiện ích Android dành cho Xiaomi, Redmi và POCO chạy MIUI/HyperOS. Một 
 
 DNS riêng tư dùng tên miền DoT; thay đổi tự động cần quyền phù hợp, nếu thiếu quyền sẽ hướng dẫn thao tác hệ thống. Khắc phục trễ thông báo áp dụng cho các ứng dụng được người dùng chọn, kiểm tra từng kết quả; không đảm bảo thay thế mọi giới hạn của HyperOS.
 
-Tần số quét kiểm tra mức màn hình hỗ trợ và lưu cấu hình để khôi phục. Đồng hồ, lớp phủ và cảnh báo pin là các lựa chọn riêng. Màn hình RAM cung cấp số đo, không tự dọn ứng dụng nền.
+Tần số quét kiểm tra mức màn hình hỗ trợ và lưu cấu hình để khôi phục. Đồng hồ, lớp phủ và cảnh báo pin là các lựa chọn riêng. Màn hình RAM cho xem số đo và chọn ứng dụng đang chạy để buộc dừng qua Shizuku, có xác nhận trước khi thực hiện. Người dùng có thể giữ lại app; app được miễn Doze, bàn phím, launcher, ứng dụng hệ thống và UID dùng chung được bảo vệ. Không chạy dọn tự động.
 
 Các thao tác Joyose, xóa dữ liệu PowerKeeper và đóng băng ứng dụng cần đọc kỹ xác nhận. FPS thực tế phụ thuộc trò chơi, ROM và phần cứng. Bật lại Joyose không hoàn tác dữ liệu đã xóa. Ứng dụng không tự tắt bảo vệ nhiệt để xử lý nóng máy.
 

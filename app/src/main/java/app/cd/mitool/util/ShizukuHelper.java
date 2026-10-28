@@ -169,7 +169,8 @@ public class ShizukuHelper {
             ProcessRunner.Result result = ProcessRunner.collect(process, 15000);
             return new ShellResult(result.exitCode, result.stdout, result.stderr);
         } catch (Throwable t) {
-            return new ShellResult(-1, "", "Lỗi thực thi: " + t.getMessage());
+            Throwable cause = t.getCause() != null ? t.getCause() : t;
+            return new ShellResult(-1, "", "Lỗi thực thi: " + cause.getClass().getSimpleName() + ": " + cause.getMessage());
         } finally {
             if (process != null) {
                 try {

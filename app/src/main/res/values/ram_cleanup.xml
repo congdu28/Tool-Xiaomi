@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ram_cleanup_title">Dọn RAM và ứng dụng</string>
+    <string name="ram_cleanup_intro">Xem ứng dụng có tiến trình đang chạy và chọn ứng dụng muốn dừng. Android có thể tự dùng lại RAM trống; dọn RAM không bảo đảm máy nhanh hoặc mát hơn. Đóng bảng sẽ hủy các thao tác còn lại sau ứng dụng đang xử lý.</string>
+    <string name="ram_open_cleaner">Chọn ứng dụng để dọn RAM</string>
+    <string name="ram_permission_needed">Cần kết nối và cấp quyền Shizuku để xem, dừng ứng dụng khác. Sau khi cấp quyền, chọn tải lại danh sách.</string>
+    <string name="ram_permission_action">Kết nối Shizuku</string>
+    <string name="ram_load_failed">Chưa đọc được tiến trình qua Shizuku. Kiểm tra quyền và tải lại; danh sách trống không có nghĩa là không còn ứng dụng chạy.</string>
+    <string name="ram_reload">Tải lại danh sách</string>
+    <string name="ram_loading">Đang đọc ứng dụng đang chạy…</string>
+    <string name="ram_select_all">Chọn tất cả có thể dừng</string>
+    <string name="ram_deselect_all">Bỏ chọn tất cả</string>
+    <string name="ram_keep">Giữ ứng dụng này khi dọn RAM</string>
+    <string name="ram_fixed_protection">Được bảo vệ: hệ thống, thông báo, bàn phím, màn hình chính hoặc UID dùng chung.</string>
+    <string name="ram_process_count">%1$s · %2$d tiến trình</string>
+    <string name="ram_list_status">%1$d ứng dụng có tiến trình đang chạy · Đã chọn %2$d. Không liệt kê ứng dụng hệ thống và tiến trình không ánh xạ được sang ứng dụng.</string>
+    <string name="ram_empty">Không tìm thấy tiến trình ứng dụng người dùng trong lần kiểm tra này. Đây không phải danh sách ứng dụng gần đây.</string>
+    <string name="ram_stop_selected">Dừng ứng dụng đã chọn (%1$d)</string>
+    <string name="ram_confirm_title">Dừng %1$d ứng dụng?</string>
+    <string name="ram_confirm_body">%1$s\n\nỨng dụng sẽ bị buộc dừng, có thể mất tác vụ chưa lưu và ngừng nhận thông báo đến khi bạn mở lại. Dữ liệu ứng dụng không bị xóa.</string>
+    <string name="ram_confirm_stop">Buộc dừng</string>
+    <string name="ram_progress">Đang xử lý %1$d/%2$d ứng dụng…</string>
+    <string name="ram_result">Đã xác nhận dừng: %1$d · Chưa xác nhận: %2$d · Bỏ qua: %3$d</string>
+    <string name="ram_memory_change">RAM trống trước: %1$d MB · Sau: %2$d MB · Thay đổi: %3$+d MB. Đây là biến động toàn hệ thống, không phải số RAM giải phóng riêng từ các ứng dụng đã chọn.</string>
+    <string name="ram_memory_unknown">Chưa đọc đủ số đo RAM trước/sau.</string>
+    <string name="ram_failed_apps">Chưa xác nhận: %1$s</string>
+    <string name="ram_refresh">Làm mới số đo RAM</string>
+</resources>

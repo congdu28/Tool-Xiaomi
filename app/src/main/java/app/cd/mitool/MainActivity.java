@@ -1972,9 +1972,15 @@ public class MainActivity extends AppCompatActivity {
         updateRamUi.run();
 
         btnBoost.setOnClickListener(v -> {
-            updateRamUi.run();
-            updateToolsCardSummaries();
-            Toast.makeText(this, R.string.message_c5aac2d6ea, Toast.LENGTH_LONG).show();
+            app.cd.mitool.ui.RamCleanerUi.show(this, () -> {
+                updateRamUi.run();
+                updateToolsCardSummaries();
+                app.cd.mitool.widget.RamBoostAppWidgetProvider.updateAllWidgets(this);
+            });
+        });
+
+        view.findViewById(R.id.bs_btn_refresh_ram).setOnClickListener(v -> {
+            updateRamUi.run(); updateToolsCardSummaries();
         });
 
         btnTurbo.setOnClickListener(v -> {

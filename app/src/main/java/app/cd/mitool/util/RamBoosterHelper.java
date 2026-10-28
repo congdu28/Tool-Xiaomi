@@ -2,12 +2,7 @@ package app.cd.mitool.util;
 
 import android.app.ActivityManager;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.os.Handler;
-import android.os.Looper;
 
-import java.util.List;
 
 public class RamBoosterHelper {
 
@@ -23,30 +18,6 @@ public class RamBoosterHelper {
             this.usedMb = usedMb;
             this.percentUsed = percentUsed;
         }
-    }
-
-    public static class BoostResult {
-        public final long freedMb;
-        public final MemoryStats beforeStats;
-        public final MemoryStats afterStats;
-        public final int killedCount;
-        public final boolean usedShizuku;
-
-        public BoostResult(long freedMb, MemoryStats beforeStats, MemoryStats afterStats, int killedCount, boolean usedShizuku) {
-            this.freedMb = freedMb;
-            this.beforeStats = beforeStats;
-            this.afterStats = afterStats;
-            this.killedCount = killedCount;
-            this.usedShizuku = usedShizuku;
-        }
-    }
-
-    public interface BoostCallback {
-        void onBoostComplete(long freedMb, MemoryStats newStats);
-    }
-
-    public interface DetailedBoostCallback {
-        void onBoostComplete(BoostResult result);
     }
 
     public static MemoryStats getMemoryStats(Context context) {
@@ -66,31 +37,4 @@ public class RamBoosterHelper {
         return new MemoryStats(0, 0, 0, 0);
     }
 
-    /**
-     * Synchronously execute RAM clean and return BoostResult (can be called from background threads / widgets).
-     */
-    public static BoostResult boostRamSync(Context context) {
-        MemoryStats snapshot = getMemoryStats(context);
-        return new BoostResult(0, snapshot, snapshot, 0, false);
-    }
-
-    public static void boostRam(final Context context, final BoostCallback callback) {
-        boostRamDetailed(context, result -> {
-            if (callback != null) {
-                callback.onBoostComplete(result.freedMb, result.afterStats);
-            }
-        });
-    }
-
-    public static void boostRamDetailed(final Context context, final DetailedBoostCallback callback) {
-        final Handler mainHandler = new Handler(Looper.getMainLooper());
-        new Thread(() -> {
-            final BoostResult result = boostRamSync(context);
-            mainHandler.post(() -> {
-                if (callback != null) {
-                    callback.onBoostComplete(result);
-                }
-            });
-        }).start();
-    }
 }
