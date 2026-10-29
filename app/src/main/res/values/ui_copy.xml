@@ -502,15 +502,15 @@
   <string name="message_5b83308024" formatted="false">%.1f °C</string>
   <string name="message_bb89f8fc80" formatted="false">%.2f V</string>
   <string name="message_c640b6bc35" formatted="false">%s%.1f W</string>
-  <string name="message_4e09d4fa5b" formatted="false">Đã bật thanh thông báo Mi-Tool</string>
-  <string name="message_cb902a4f54" formatted="false">Đã tắt thanh thông báo Mi-Tool</string>
+  <string name="message_4e09d4fa5b" formatted="false">Đã bật đồng hồ trong thông báo</string>
+  <string name="message_cb902a4f54" formatted="false">Đã tắt đồng hồ; cảnh báo pin vẫn theo cài đặt</string>
   <string name="message_acb34cbd38" formatted="false">Vui lòng mở Mi Tool và cấp quyền Hiển thị trên ứng dụng khác!</string>
   <string name="message_2c00e1afac" formatted="false">⏰ Đã bật Đồng hồ giây nổi</string>
   <string name="message_8d618c02ce" formatted="false">⏰ Đã tắt Đồng hồ giây nổi</string>
   <string name="message_3551a17c89" formatted="false">Vui lòng cấp quyền Hiển thị trên ứng dụng khác cho Mi Tool!</string>
   <string name="message_79d1762490" formatted="false">Đã bật Mini Game HUD (FPS)</string>
-  <string name="message_5c8185984b" formatted="false">Đã bật thông báo trạng thái Mi-Tool</string>
-  <string name="message_d52c0088c5" formatted="false">Đã tắt thông báo trạng thái Mi-Tool</string>
+  <string name="message_5c8185984b" formatted="false">Đã bật đồng hồ trong thông báo</string>
+  <string name="message_d52c0088c5" formatted="false">Đã tắt đồng hồ; cảnh báo pin vẫn theo cài đặt</string>
   <string name="message_2c0b7fb956" formatted="false">Đã sao chép lệnh ADB vào khay nhớ tạm!</string>
   <string name="message_71e4bd4b2a" formatted="false">Đã tắt Joyose. Chưa xác nhận FPS của trò chơi.</string>
   <string name="message_6e2403a5fe" formatted="false">Đã sao chép lệnh ADB tắt Joyose! Hãy chạy lệnh trên máy tính hoặc dùng Shizuku 1-chạm.</string>

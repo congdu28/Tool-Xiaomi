@@ -34,18 +34,8 @@ public class BootReceiver extends BroadcastReceiver {
                 }
             }
 
-            // Restore unified single notification service if clock or battery alerts enabled
-            if (prefs.isNotifClockEnabled() || prefs.isAlert80Enabled() || prefs.isAlert100Enabled() || prefs.isAlertTempEnabled()) {
-                try {
-                    Intent notifIntent = new Intent(context, NotificationClockService.class);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        context.startForegroundService(notifIntent);
-                    } else {
-                        context.startService(notifIntent);
-                    }
-                } catch (Exception ignored) {
-                }
-            }
+            // Restore only the features the user enabled, including charging status and voice alerts.
+            NotificationClockService.sync(context);
 
             // Restore SOT widget scheduler & refresh widgets
             try {

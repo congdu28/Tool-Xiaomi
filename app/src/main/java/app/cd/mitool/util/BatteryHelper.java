@@ -20,6 +20,7 @@ public class BatteryHelper {
     public static class BatteryInfo {
         public int level; // 0 - 100
         public boolean isCharging;
+        public boolean isPlugged;
         public boolean isFull;
         public int plugType; // AC, USB, Wireless, None
         public String plugTypeName;
@@ -60,10 +61,11 @@ public class BatteryHelper {
         info.isFull = status == BatteryManager.BATTERY_STATUS_FULL || info.level >= 100;
 
         int plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
+        info.isPlugged = plugged > 0;
         info.plugType = plugged;
         switch (plugged) {
             case BatteryManager.BATTERY_PLUGGED_AC:
-                info.plugTypeName = "Củ sạc (AC Nhanh)";
+                info.plugTypeName = "Củ sạc (AC)";
                 break;
             case BatteryManager.BATTERY_PLUGGED_USB:
                 info.plugTypeName = "Cổng USB";
@@ -121,12 +123,12 @@ public class BatteryHelper {
         // Missing sensor readings stay unavailable; never fabricate discharge/charge power.
 
         // Calculate estimated minutes
-        if (info.isFull && !info.isCharging) {
-            info.estimatedMinutesToFull = -1;
-            info.formattedEta = "Pin đầy 100% (" + formatRemainingTime(100) + ")";
+        if (info.isFull && info.isPlugged) {
+            info.estimatedMinutesToFull = 0;
+            info.formattedEta = "Pin đã sạc đầy 100%";
         } else if (!info.isCharging) {
             info.estimatedMinutesToFull = -1;
-            info.formattedEta = formatRemainingTime(info.level);
+            info.formattedEta = info.isPlugged ? "Đã kết nối sạc; hệ thống đang tạm ngừng sạc" : formatRemainingTime(info.level);
         } else if (info.isFull) {
             info.estimatedMinutesToFull = 0;
             info.formattedEta = "Pin đã sạc đầy 100%";

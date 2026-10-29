@@ -145,7 +145,7 @@ open_feature("dong ho", "card_tool_clock")
 assert find("bs_switch_notif_clock").get("checked") == "false"
 tap("bs_switch_notif_clock")
 tap("bs_switch_notif_clock")
-assert b"ServiceRecord" in adb("shell", "dumpsys", "activity", "services", "app.cd.mitool/.service.NotificationClockService"), "Turning off clock stopped an enabled battery alert."
+assert any(b"* ServiceRecord{" in line and b"app.cd.mitool/.service.NotificationClockService" in line for line in adb("shell", "dumpsys", "activity", "services", "app.cd.mitool").splitlines()), "Turning off clock stopped an enabled battery alert."
 close_sheet()
 open_feature("canh bao", "card_tool_battery_alert")
 tap("bs_switch_alert_100", scroll=True)

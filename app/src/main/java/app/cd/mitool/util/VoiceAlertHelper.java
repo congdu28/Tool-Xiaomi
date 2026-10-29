@@ -155,7 +155,7 @@ public class VoiceAlertHelper {
         }
 
         int targetLevel = prefs.getBatteryAlertLevel();
-        if (level >= targetLevel && level < targetLevel + 5 && prefs.isVoiceAlert80Enabled() && !hasAnnounced80) {
+        if (level >= targetLevel && prefs.isVoiceAlert80Enabled() && !hasAnnounced80) {
             hasAnnounced80 = true;
             speak(context, "Pin đã sạc đạt " + targetLevel + " phần trăm. Bạn có thể rút sạc để bảo vệ tuổi thọ pin tối ưu.");
         }

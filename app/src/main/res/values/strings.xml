@@ -86,12 +86,12 @@
   <string name="btn_preset_free" formatted="false">Kéo thả tự do</string>
   <string name="status_granted" formatted="false">Đã cấp</string>
   <string name="status_missing" formatted="false">Chưa cấp</string>
-  <string name="tile_notification_label" formatted="false">Thông báo mi-tool</string>
+  <string name="tile_notification_label" formatted="false">Đồng hồ thông báo</string>
   <string name="tile_notification_desc" formatted="false">Bật hoặc tắt nhanh thanh thông báo trạng thái Mi-Tool</string>
   <string name="tile_hz_label" formatted="false">Tần số quét</string>
   <string name="tile_hz_desc" formatted="false">Chuyển đổi nhanh 60Hz và 120Hz</string>
-  <string name="shortcut_toggle_notif_short" formatted="false">Bật/tắt thông báo</string>
-  <string name="shortcut_toggle_notif_long" formatted="false">Bật/tắt thông báo mi-tool</string>
+  <string name="shortcut_toggle_notif_short" formatted="false">Đồng hồ thông báo</string>
+  <string name="shortcut_toggle_notif_long" formatted="false">Bật/tắt đồng hồ trong thông báo</string>
   <string name="btn_pin_shortcut" formatted="false">Thêm ra Màn hình chính</string>
   <string name="btn_add_qs_tile" formatted="false">Thêm nút Thông báo vào Bảng điều khiển</string>
   <string name="btn_add_hz_qs_tile" formatted="false">Thêm nút đổi 60/120Hz vào Bảng điều khiển</string>

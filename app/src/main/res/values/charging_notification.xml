@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="charging_notif_title">Thông báo pin và sạc</string>
+    <string name="charging_notif_description">Hiển thị pin, nhiệt độ và trạng thái sạc trong thông báo, độc lập với đồng hồ. Sau khi rút sạc, thông báo chuyển sang trạng thái dùng pin để tiếp tục theo dõi.</string>
+    <string name="charging_notif_settings">Kiểm tra quyền và cài đặt thông báo</string>
+    <string name="charging_notif_permission_denied">Chưa có quyền thông báo. Cho phép Mi Tool gửi thông báo trong Cài đặt để xem trạng thái pin và sạc.</string>
+    <string name="charging_notif_clock_off">Tắt đồng hồ</string>
+    <string name="charging_notif_open_settings">Cài đặt pin và sạc</string>
+    <string name="charging_notif_power_unknown">Chưa có số đo W</string>
+    <string name="charging_notif_full">Pin đã đầy</string>
+    <string name="charging_notif_paused">Đã kết nối sạc · Tạm ngừng sạc</string>
+    <string name="charging_notif_active">Đang sạc</string>
+    <string name="charging_notif_allowed">Quyền thông báo: đã được cho phép</string>
+    <string name="charging_notif_blocked">Thông báo đang bị Android chặn. Mở cài đặt bên dưới và cho phép Mi Tool gửi thông báo.</string>
+    <string name="charging_notif_channel_blocked">Kênh thông báo pin và sạc đang bị tắt. Mở cài đặt bên dưới để bật lại kênh này.</string>
+</resources>

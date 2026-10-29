@@ -241,6 +241,7 @@ public class MainActivity extends AppCompatActivity {
     private Runnable refreshGameFpsSheetState = null;
     private Runnable refreshDnsSheetState;
     private Runnable refreshHzSheetState;
+    private Runnable refreshBatteryAlertPermissionState;
     private Runnable refreshNotificationSheetState;
     private boolean dnsApplying;
 
@@ -357,6 +358,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleIncomingIntent(Intent intent) {
         if (intent == null) return;
+        if (intent.getBooleanExtra("extra_open_battery_alert", false)) { bottomNav.setSelectedItemId(R.id.nav_tools); showBatteryAlertBottomSheet(); }
         if (intent.getBooleanExtra("extra_open_memory", false)) { bottomNav.setSelectedItemId(R.id.nav_tools); showRamBottomSheet(); }
         if (intent.getIntExtra("extra_tab_index", -1) == 1) {
             if (bottomNav != null) {
@@ -2104,6 +2106,43 @@ public class MainActivity extends AppCompatActivity {
         bs.setContentView(view);
         configureBottomSheet(bs);
 
+        TextView notificationPermission = view.findViewById(R.id.bs_tv_notification_permission);
+        refreshBatteryAlertPermissionState = () -> {
+            boolean allowed = androidx.core.app.NotificationManagerCompat.from(this).areNotificationsEnabled();
+            boolean channelBlocked = false;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                android.app.NotificationChannel channel = manager != null
+                        ? manager.getNotificationChannel(NotificationClockService.CHANNEL_ID) : null;
+                channelBlocked = channel != null && channel.getImportance() == NotificationManager.IMPORTANCE_NONE;
+            }
+            notificationPermission.setText(!allowed ? R.string.charging_notif_blocked
+                    : channelBlocked ? R.string.charging_notif_channel_blocked : R.string.charging_notif_allowed);
+        };
+        refreshBatteryAlertPermissionState.run();
+        MaterialSwitch chargingNotification = view.findViewById(R.id.bs_switch_charging_notification);
+        chargingNotification.setChecked(prefs.isLockscreenNotifEnabled());
+        chargingNotification.setOnCheckedChangeListener((button, enabled) -> {
+            prefs.setLockscreenNotifEnabled(enabled);
+            syncNotificationMonitoring();
+            updateToolsCardSummaries();
+        });
+        view.findViewById(R.id.bs_btn_notification_settings).setOnClickListener(v -> {
+            try {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                    startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.parse("package:" + getPackageName())));
+                    return;
+                }
+                Intent settings = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                settings.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+                startActivity(settings);
+            } catch (Exception e) {
+                startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        Uri.parse("package:" + getPackageName())));
+            }
+        });
+
         // Voice Alert Views
         MaterialSwitch swVoiceMaster = view.findViewById(R.id.bs_switch_voice_master);
         View layoutVoiceSub = view.findViewById(R.id.bs_layout_voice_sub_options);
@@ -2272,7 +2311,9 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        bs.setOnDismissListener(dialog -> BatteryHelper.stopAlertTone());
+        bs.setOnDismissListener(dialog -> {
+            BatteryHelper.stopAlertTone(); refreshBatteryAlertPermissionState = null;
+        });
         bs.show();
     }
 
@@ -3934,7 +3975,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void syncNotificationMonitoring() {
-        if (prefs.isNotifClockEnabled() || prefs.isAlert80Enabled() || prefs.isAlert100Enabled()
+        if (prefs.isNotifClockEnabled() || prefs.isLockscreenNotifEnabled() || prefs.isAlert80Enabled() || prefs.isAlert100Enabled()
                 || prefs.isAlertTempEnabled() || prefs.isVoiceAlertMasterEnabled()) requestNotificationPermissionIfNeeded();
         NotificationClockService.sync(this);
     }
@@ -4000,6 +4041,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQ_NOTIF_PERM) {
+            if (refreshBatteryAlertPermissionState != null) refreshBatteryAlertPermissionState.run();
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                NotificationClockService.sync(this);
+            else Toast.makeText(this, R.string.charging_notif_permission_denied, Toast.LENGTH_LONG).show();
+        }
+    }
+
     private void requestNotificationPermissionIfNeeded() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
@@ -4030,6 +4082,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if (refreshBatteryAlertPermissionState != null) refreshBatteryAlertPermissionState.run();
         updateDeviceSpecsDisplay();
         updateToolsCardSummaries();
         if (tabBatteryScroll.getVisibility() == View.VISIBLE) updateBatteryDisplay();
@@ -4060,6 +4113,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         stopBatteryRealtimeTicker();
+        refreshBatteryAlertPermissionState = null;
         refreshDnsSheetState = null;
         refreshNotificationSheetState = null;
         refreshGameFpsSheetState = null;

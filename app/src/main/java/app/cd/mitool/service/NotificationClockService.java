@@ -55,9 +55,7 @@ public class NotificationClockService extends Service {
     private PreferencesHelper prefs;
 
     private boolean isScreenOn = true;
-    private boolean alerted80 = false;
-    private boolean alerted100 = false;
-    private boolean alertedTemp = false;
+    private final app.cd.mitool.util.BatteryAlertPolicy alertPolicy = new app.cd.mitool.util.BatteryAlertPolicy();
     private BatteryHelper.BatteryInfo cachedBattery;
     private long lastBatteryRead;
     private long lastNotificationUpdate;
@@ -69,6 +67,7 @@ public class NotificationClockService extends Service {
             String action = intent.getAction();
 
             if (Intent.ACTION_POWER_DISCONNECTED.equals(action)) {
+                BatteryHelper.stopAlertTone();
                 // When unplugged: Seamlessly switch to battery status, keeping unified notification active
                 cachedBattery = BatteryHelper.getBatteryInfo(context);
                 lastBatteryRead = android.os.SystemClock.elapsedRealtime();
@@ -90,14 +89,14 @@ public class NotificationClockService extends Service {
                 updateNotification(true);
                 startTicker();
             } else if (Intent.ACTION_BATTERY_CHANGED.equals(action)) {
-                boolean wasCharging = cachedBattery != null && cachedBattery.isCharging;
+                boolean wasPlugged = cachedBattery != null && cachedBattery.isPlugged;
                 BatteryHelper.BatteryInfo info = BatteryHelper.getBatteryInfo(context, intent);
                 cachedBattery = info;
                 lastBatteryRead = android.os.SystemClock.elapsedRealtime();
                 checkBatteryAlerts(info);
-                updateNotification(wasCharging != info.isCharging);
-                if (wasCharging != info.isCharging) startTicker();
-                app.cd.mitool.util.BatteryHistoryHelper.recordSnapshot(context, info.level, info.isCharging);
+                updateNotification(wasPlugged != info.isPlugged);
+                if (wasPlugged != info.isPlugged) startTicker();
+                app.cd.mitool.util.BatteryHistoryHelper.recordSnapshot(context, info.level, info.isPlugged);
             }
         }
     };
@@ -187,7 +186,9 @@ public class NotificationClockService extends Service {
         String dateStr = dateFormat.format(now);
 
         Intent openApp = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, openApp,
+        openApp.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        openApp.putExtra("extra_open_battery_alert", true);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 4004, openApp,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         // Reuse the latest broadcast/sensor reading across one-second clock updates.
@@ -202,13 +203,15 @@ public class NotificationClockService extends Service {
         String summaryText;
         StringBuilder bigText = new StringBuilder();
 
-        if (info.isCharging) {
-            String powerStr = info.powerWatt > 0 ? String.format(Locale.US, "%.1fW", info.powerWatt) : "⚡ Sạc nhanh";
+        if (info.isPlugged) {
+            String powerStr = info.powerWatt > 0 ? String.format(Locale.US, "%.1fW", info.powerWatt) : getString(R.string.charging_notif_power_unknown);
             String etaShort = info.estimatedMinutesToFull > 0 ? ("Còn ~" + info.estimatedMinutesToFull + "p") : info.formattedEta;
             summaryText = "⚡ " + info.level + "% • " + powerStr + " • " + String.format(Locale.US, "%.1f°C", info.temperature) + " • " + etaShort;
 
             // Expanded detail
-            bigText.append("⚡ Đang sạc: ").append(info.level).append("% (").append(info.plugTypeName).append(")");
+            String chargingState = getString(info.isFull ? R.string.charging_notif_full
+                    : info.isCharging ? R.string.charging_notif_active : R.string.charging_notif_paused);
+            bigText.append(chargingState).append(": ").append(info.level).append("% (").append(info.plugTypeName).append(")");
             if (info.powerWatt > 0) {
                 bigText.append(" • Công suất: ").append(String.format(Locale.US, "%.1fW", info.powerWatt));
             }
@@ -241,27 +244,28 @@ public class NotificationClockService extends Service {
             bigText.append("\n🩺 Tình trạng pin: ").append(info.healthDescription);
         }
 
-        int iconRes = info.isCharging ? R.drawable.ic_battery_bolt : R.drawable.ic_clock;
+        int iconRes = info.isPlugged ? R.drawable.ic_battery_bolt : R.drawable.ic_clock;
 
         Intent deleteIntent = new Intent(this, NotificationClockService.class);
         deleteIntent.setAction(ACTION_STOP);
         PendingIntent deletePi = PendingIntent.getService(this, 1, deleteIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        return new NotificationCompat.Builder(this, CHANNEL_ID)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(summaryText)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(bigText.toString()))
                 .setSmallIcon(iconRes)
                 .setContentIntent(pendingIntent)
-                .setDeleteIntent(deletePi)
-                .addAction(android.R.drawable.ic_menu_close_clear_cancel, "✕ Tắt thông báo", deletePi)
-                .setOngoing(false)
+                .setOngoing(true)
                 .setOnlyAlertOnce(true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setCategory(NotificationCompat.CATEGORY_STATUS)
-                .build();
+                .setCategory(NotificationCompat.CATEGORY_STATUS);
+        if (prefs.isNotifClockEnabled()) builder.addAction(android.R.drawable.ic_menu_close_clear_cancel,
+                getString(R.string.charging_notif_clock_off), deletePi);
+        builder.addAction(android.R.drawable.ic_menu_manage, getString(R.string.charging_notif_open_settings), pendingIntent);
+        return builder.build();
     }
 
     private void updateNotification() { updateNotification(false); }
@@ -269,7 +273,7 @@ public class NotificationClockService extends Service {
     private void updateNotification(boolean force) {
         long now = android.os.SystemClock.elapsedRealtime();
         long interval = app.cd.mitool.util.MonitoringPolicy.notificationInterval(isScreenOn,
-                prefs.isNotifClockEnabled(), cachedBattery != null && cachedBattery.isCharging);
+                prefs.isNotifClockEnabled(), cachedBattery != null && cachedBattery.isPlugged);
         // Battery broadcasts can still deliver alerts while the screen is off, without
         // rebuilding the notification for every sensor change.
         if (!force && now - lastNotificationUpdate < (interval == 0 ? 60000 : interval)) return;
@@ -286,7 +290,7 @@ public class NotificationClockService extends Service {
             @Override public void run() {
                 updateNotification();
                 long interval = app.cd.mitool.util.MonitoringPolicy.notificationInterval(isScreenOn,
-                        prefs.isNotifClockEnabled(), cachedBattery != null && cachedBattery.isCharging);
+                        prefs.isNotifClockEnabled(), cachedBattery != null && cachedBattery.isPlugged);
                 if (interval > 0) handler.postDelayed(this, interval);
             }
         };
@@ -294,45 +298,15 @@ public class NotificationClockService extends Service {
     }
 
     private void checkBatteryAlerts(BatteryHelper.BatteryInfo info) {
-        int targetLevel = prefs != null ? prefs.getBatteryAlertLevel() : 80;
-
-        if (!info.isCharging) {
-            alerted80 = false;
-            alerted100 = false;
-            VoiceAlertHelper.resetSessionAlerts();
-        } else {
-            if (info.level < targetLevel - 5) {
-                alerted80 = false;
-            }
-            if (info.level < 95) {
-                alerted100 = false;
-            }
-        }
-
-        if (info.temperature < 40.0f) {
-            alertedTemp = false;
-        }
-
-        // Voice smart announcements
-        VoiceAlertHelper.checkLevelAlerts(this, info.level, info.isCharging);
+        if (!info.isPlugged) VoiceAlertHelper.resetSessionAlerts();
+        VoiceAlertHelper.checkLevelAlerts(this, info.level, info.isPlugged);
         VoiceAlertHelper.checkTempAlert(this, info.temperature);
-
-        if (info.isCharging && info.level >= targetLevel && info.level < targetLevel + 5 && (prefs != null && prefs.isAlert80Enabled()) && !alerted80) {
-            alerted80 = true;
+        int alerts = alertPolicy.evaluate(info.isPlugged, info.level, info.temperature, prefs.getBatteryAlertLevel(),
+                prefs.isAlert80Enabled(), prefs.isAlert100Enabled(), prefs.isAlertTempEnabled());
+        if (alerts != 0) {
             BatteryHelper.playAlertTone(this);
-            BatteryHelper.vibrateDevice(this, 800);
-        }
-
-        if (info.isFull && (prefs != null && prefs.isAlert100Enabled()) && !alerted100) {
-            alerted100 = true;
-            BatteryHelper.playAlertTone(this);
-            BatteryHelper.vibrateDevice(this, 1200);
-        }
-
-        if (info.temperature >= 42.0f && (prefs != null && prefs.isAlertTempEnabled()) && !alertedTemp) {
-            alertedTemp = true;
-            BatteryHelper.playAlertTone(this);
-            BatteryHelper.vibrateDevice(this, 1500);
+            BatteryHelper.vibrateDevice(this, (alerts & app.cd.mitool.util.BatteryAlertPolicy.HOT) != 0 ? 1500
+                    : (alerts & app.cd.mitool.util.BatteryAlertPolicy.FULL) != 0 ? 1200 : 800);
         }
     }
 
@@ -348,39 +322,37 @@ public class NotificationClockService extends Service {
         if (notificationManager != null) {
             notificationManager.cancel(NOTIF_ID);
         }
-        if (prefs != null) {
-            prefs.setNotifClockEnabled(false);
-        }
         notifyTileUpdate();
         stopSelf();
     }
 
     public static void sync(Context context) {
         PreferencesHelper prefs = new PreferencesHelper(context);
-        boolean needed = prefs.isNotifClockEnabled() || prefs.isLockscreenNotifEnabled()
-                || prefs.isAlert80Enabled() || prefs.isAlert100Enabled() || prefs.isAlertTempEnabled()
-                || prefs.isVoiceAlertMasterEnabled();
+        boolean needed = app.cd.mitool.util.MonitoringPolicy.requiresService(prefs.isNotifClockEnabled(),
+                prefs.isLockscreenNotifEnabled(), prefs.isAlert80Enabled(), prefs.isAlert100Enabled(),
+                prefs.isAlertTempEnabled(), prefs.isVoiceAlertMasterEnabled());
         Intent intent = new Intent(context, NotificationClockService.class);
         intent.setAction(ACTION_UPDATE_BATTERY);
-        if (needed) androidx.core.content.ContextCompat.startForegroundService(context, intent);
-        else context.stopService(intent);
+        try {
+            if (needed) androidx.core.content.ContextCompat.startForegroundService(context, intent);
+            else context.stopService(intent);
+        } catch (RuntimeException e) {
+            android.util.Log.w("MiToolNotification", "System refused battery monitoring start", e);
+        }
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
             String action = intent.getAction();
-            if (ACTION_STOP.equals(action)) {
-                dismissAndStop();
-                return START_NOT_STICKY;
-            }
+            if (ACTION_STOP.equals(action)) prefs.setNotifClockEnabled(false);
         }
         if (intent != null && ACTION_START.equals(intent.getAction())) prefs.setNotifClockEnabled(true);
-        boolean needed = prefs.isNotifClockEnabled() || prefs.isLockscreenNotifEnabled()
-                || prefs.isAlert80Enabled() || prefs.isAlert100Enabled() || prefs.isAlertTempEnabled()
-                || prefs.isVoiceAlertMasterEnabled();
+        boolean needed = app.cd.mitool.util.MonitoringPolicy.requiresService(prefs.isNotifClockEnabled(),
+                prefs.isLockscreenNotifEnabled(), prefs.isAlert80Enabled(), prefs.isAlert100Enabled(),
+                prefs.isAlertTempEnabled(), prefs.isVoiceAlertMasterEnabled());
         if (!needed) {
-            stopSelf();
+            dismissAndStop();
             return START_NOT_STICKY;
         }
         updateNotification(true);
@@ -392,6 +364,7 @@ public class NotificationClockService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        BatteryHelper.stopAlertTone();
         if (handler != null && tickerRunnable != null) {
             handler.removeCallbacks(tickerRunnable);
         }

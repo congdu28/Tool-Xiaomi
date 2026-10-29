@@ -43,19 +43,8 @@ public class BatteryReceiver extends BroadcastReceiver {
             // Voice announcement
             VoiceAlertHelper.onPowerConnected(context, info.plugType, info.powerWatt, info.level);
 
-            // 1. Launch / Update realtime charging notification on lockscreen
-            if (prefs.isLockscreenNotifEnabled() || prefs.isNotifClockEnabled()) {
-                Intent serviceIntent = new Intent(context, NotificationClockService.class);
-                serviceIntent.setAction(NotificationClockService.ACTION_START_CHARGING);
-                try {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        context.startForegroundService(serviceIntent);
-                    } else {
-                        context.startService(serviceIntent);
-                    }
-                } catch (Exception ignored) {
-                }
-            }
+            // Reconcile all explicitly enabled monitoring features, without enabling the clock.
+            NotificationClockService.sync(context);
 
             // 2. Launch AMOLED Lockscreen Charging Screen if enabled
             if (prefs.isLockscreenAmbientEnabled()) {
@@ -82,6 +71,7 @@ public class BatteryReceiver extends BroadcastReceiver {
             }
 
         } else if (Intent.ACTION_POWER_DISCONNECTED.equals(action)) {
+            BatteryHelper.stopAlertTone();
             // Read realtime battery info
             BatteryHelper.BatteryInfo info = BatteryHelper.getBatteryInfo(context);
 
@@ -96,13 +86,7 @@ public class BatteryReceiver extends BroadcastReceiver {
             // Voice announcement
             VoiceAlertHelper.onPowerDisconnected(context, info.level);
 
-            // Unplugged: Seamlessly switch notification to normal battery status without dismissing
-            Intent updateIntent = new Intent(context, NotificationClockService.class);
-            updateIntent.setAction(NotificationClockService.ACTION_UPDATE_BATTERY);
-            try {
-                context.startService(updateIntent);
-            } catch (Exception ignored) {
-            }
+            NotificationClockService.sync(context);
         }
     }
 }

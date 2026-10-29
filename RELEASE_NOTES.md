@@ -1,17 +1,15 @@
-# Mi Tool v1.0.61 — Dọn RAM và quản lý ứng dụng đang chạy
+# Mi Tool v1.0.62 — Sửa thông báo khi cắm sạc
 
-- Thêm màn hình **Chọn ứng dụng để dọn RAM** trong tiện ích Bộ nhớ và ứng dụng.
-- Đọc danh sách tiến trình thực qua Shizuku, gom theo ứng dụng/UID; không dùng danh sách app đã cài hoặc app gần đây để giả lập trạng thái đang chạy.
-- Chọn từng app hoặc chọn tất cả app có thể dừng; không tự chọn sẵn. Tùy chọn giữ lại ứng dụng được lưu cho các lần sau, mặc định giữ các app thông báo được khuyến nghị.
-- Bảo vệ Mi Tool, Shizuku, bàn phím, launcher, app miễn giới hạn pin/Doze, ứng dụng hệ thống và UID dùng chung. Kiểm tra lại quyền và bảo vệ trước mỗi lần dừng.
-- Xác nhận trước khi buộc dừng: có thể gián đoạn tác vụ chưa lưu và ngừng nhận thông báo đến khi mở lại app; không xóa dữ liệu ứng dụng.
-- Chạy thao tác ngoài luồng giao diện. Chỉ báo đã dừng sau khi lệnh thành công và không còn tiến trình UID đó tại lần kiểm tra lại; báo riêng bỏ qua/chưa xác nhận.
-- Sửa bộ chờ lệnh Shizuku dùng chung: không hủy lệnh sớm khi tiến trình chưa kết thúc. Có kiểm thử hồi quy cho lỗi này.
-- Đóng bảng sẽ hủy các ứng dụng chưa xử lý sau lệnh hiện tại.
-- Đo RAM trống trước/sau và hiển thị chênh lệch có dấu. Biến động RAM toàn hệ thống không được trình bày như lượng RAM giải phóng chắc chắn từ các app được dọn.
+- Thêm công tắc **Thông báo pin và sạc** riêng trong Tiện ích → Cảnh báo pin và sạc. Không cần bật đồng hồ để xem trạng thái sạc.
+- Hiển thị quyền thông báo đang được phép, bị Android chặn hoặc kênh pin/sạc đang tắt; thêm nút mở cài đặt hệ thống. Không tự tạo kênh mới để vượt lựa chọn chặn của người dùng.
+- Sửa nút tắt đồng hồ từ ô cài đặt nhanh, lối tắt và thông báo: không dừng các cảnh báo pin hay chế độ thông báo sạc còn được bật.
+- Khôi phục dịch vụ đúng các chế độ đã chọn khi cập nhật/khởi động máy. Đồng bộ khi cắm/rút sạc, không tự bật đồng hồ.
+- Phân biệt còn kết nối nguồn sạc với đang nạp điện: pin đầy hoặc tạm dừng sạc không bị mô tả như đã rút cáp. Không gọi sạc nhanh khi thiếu số đo công suất.
+- Sửa ngưỡng báo chuông khi mức pin nhảy qua nhiều phần trăm, tránh bỏ lỡ ngưỡng. Không báo đầy pin do rút sạc ở mức 100%, không phát nhiều chuông cùng một lần cập nhật. Dừng âm báo khi rút sạc/dừng theo dõi.
+- Thông báo có nút mở đúng phần cài đặt pin/sạc. Khi tắt toàn bộ chức năng theo dõi, dịch vụ và thông báo được gỡ.
 
-Cần Shizuku đang chạy và đã cấp quyền để liệt kê/dừng app khác. Không có dọn tự động định kỳ. Android có thể sử dụng lại RAM trống; tính năng không bảo đảm tăng tốc hoặc giảm nhiệt.
+Sau khi rút sạc, chế độ này chuyển sang hiển thị trạng thái dùng pin để tiếp tục theo dõi. Có thể tắt công tắc nếu không cần. Tính năng dọn RAM và ứng dụng đang chạy của v1.0.61 vẫn được giữ.
 
-28/28 unit test đạt, lint không có lỗi chặn build, build Release thành công. Đã kiểm tra dừng ứng dụng thực sự và bảo vệ app miễn Doze qua Shizuku 13.6.0 trên APK Release, Android 15 giả lập. Khả năng hoạt động qua Shizuku trên HyperOS 4 vẫn cần xác minh trên Xiaomi thật.
+35/35 unit test đạt, lint không có lỗi chặn build. Đã kiểm tra các luồng cắm/rút sạc, pin đầy, tắt đồng hồ, chặn/cấp lại quyền trên APK Release, Android 15 giả lập. Chưa kiểm tra trực tiếp trên Xiaomi 17 Ultra/HyperOS 4.
 
-Tải **Mi-Tool-v1.0.61-Release.apk** để cập nhật.
+Tải **Mi-Tool-v1.0.62-Release.apk** để cập nhật.

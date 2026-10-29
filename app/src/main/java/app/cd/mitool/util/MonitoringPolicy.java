@@ -4,6 +4,11 @@ package app.cd.mitool.util;
 public final class MonitoringPolicy {
     private MonitoringPolicy() {}
 
+    public static boolean requiresService(boolean clock, boolean chargingNotification, boolean targetAlert,
+                                          boolean fullAlert, boolean temperatureAlert, boolean voice) {
+        return clock || chargingNotification || targetAlert || fullAlert || temperatureAlert || voice;
+    }
+
     public static long notificationInterval(boolean screenOn, boolean secondsClock, boolean charging) {
         if (!screenOn) return 0;
         if (secondsClock) return 1000;

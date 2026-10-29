@@ -36,9 +36,7 @@ public class ToggleNotificationActivity extends Activity {
                 ContextCompat.startForegroundService(this, intent);
                 Toast.makeText(this, R.string.message_4e09d4fa5b, Toast.LENGTH_SHORT).show();
             } else {
-                Intent intent = new Intent(this, NotificationClockService.class);
-                intent.setAction(NotificationClockService.ACTION_STOP);
-                startService(intent);
+                NotificationClockService.sync(this);
                 Toast.makeText(this, R.string.message_cb902a4f54, Toast.LENGTH_SHORT).show();
             }
 

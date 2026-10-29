@@ -42,9 +42,7 @@ public class NotificationTileService extends TileService {
                 ContextCompat.startForegroundService(this, intent);
                 Toast.makeText(this, R.string.message_5c8185984b, Toast.LENGTH_SHORT).show();
             } else {
-                Intent intent = new Intent(this, NotificationClockService.class);
-                intent.setAction(NotificationClockService.ACTION_STOP);
-                startService(intent);
+                NotificationClockService.sync(this);
                 Toast.makeText(this, R.string.message_d52c0088c5, Toast.LENGTH_SHORT).show();
             }
 
