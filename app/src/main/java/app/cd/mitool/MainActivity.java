@@ -820,9 +820,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Battery Alert Card
         if (tvToolBatteryAlertSub != null) {
-            int count = (prefs.isAlert80Enabled() ? 1 : 0) + (prefs.isAlert100Enabled() ? 1 : 0)
-                    + (prefs.isAlertTempEnabled() ? 1 : 0) + (prefs.isVoiceAlertMasterEnabled() ? 1 : 0)
-                    + (prefs.isLockscreenAmbientEnabled() ? 1 : 0) + (prefs.isChargingHudEnabled() ? 1 : 0);
+            int count = (prefs.isLockscreenNotifEnabled() ? 1 : 0) + (prefs.isLockscreenAmbientEnabled() ? 1 : 0);
+            app.cd.mitool.util.AlertAudioSettings audio = new app.cd.mitool.util.AlertAudioSettings(this);
+            for (int event = 0; event < 5; event++) if (audio.mode(event) != 0) count++;
             tvToolBatteryAlertSub.setText(count > 0 ? getString(R.string.summary_alert_count, count) : getString(R.string.summary_alert_off));
             tvToolBatteryAlertSub.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
         }
@@ -2143,162 +2143,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Voice Alert Views
-        MaterialSwitch swVoiceMaster = view.findViewById(R.id.bs_switch_voice_master);
-        View layoutVoiceSub = view.findViewById(R.id.bs_layout_voice_sub_options);
-        MaterialButton btnTestVoice = view.findViewById(R.id.bs_btn_test_voice);
-        MaterialSwitch swVoiceConnect = view.findViewById(R.id.bs_switch_voice_connect);
-        MaterialSwitch swVoiceDisconnect = view.findViewById(R.id.bs_switch_voice_disconnect);
-        MaterialSwitch swVoice80 = view.findViewById(R.id.bs_switch_voice_80);
-        TextView tvVoice80Label = view.findViewById(R.id.bs_tv_voice_80_label);
-        MaterialSwitch swVoice100 = view.findViewById(R.id.bs_switch_voice_100);
-        MaterialSwitch swVoiceTemp = view.findViewById(R.id.bs_switch_voice_temp);
-
-        // Ringtone & Threshold Views
-        TextView tvTitle = view.findViewById(R.id.bs_tv_alert_80_title);
-        MaterialSwitch swAlert80 = view.findViewById(R.id.bs_switch_alert_80);
-        View sliderLayout = view.findViewById(R.id.bs_layout_alert_level_slider);
-        TextView tvLevelValue = view.findViewById(R.id.bs_tv_alert_level_value);
-        SeekBar sbLevel = view.findViewById(R.id.bs_sb_battery_alert_level);
-
-        TextView tvTone = view.findViewById(R.id.bs_tv_selected_audio_tone);
-        MaterialButton btnPick = view.findViewById(R.id.bs_btn_pick_audio);
-        MaterialButton btnTest = view.findViewById(R.id.bs_btn_test_audio);
-        MaterialButton btnReset = view.findViewById(R.id.bs_btn_reset_audio);
-
-        // Extra Toggles
-        MaterialSwitch swAmbient = view.findViewById(R.id.bs_switch_lockscreen_ambient);
-        MaterialSwitch swAlert100 = view.findViewById(R.id.bs_switch_alert_100);
-        MaterialSwitch swAlertTemp = view.findViewById(R.id.bs_switch_alert_temp);
-
-        // Setup Voice Alerts
-        boolean voiceMaster = prefs.isVoiceAlertMasterEnabled();
-        if (swVoiceMaster != null) {
-            swVoiceMaster.setChecked(voiceMaster);
-            if (layoutVoiceSub != null) layoutVoiceSub.setVisibility(voiceMaster ? View.VISIBLE : View.GONE);
-            swVoiceMaster.setOnCheckedChangeListener((btn, isChecked) -> {
-                prefs.setVoiceAlertMasterEnabled(isChecked);
-                syncNotificationMonitoring();
-                if (layoutVoiceSub != null) layoutVoiceSub.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-                if (isChecked) {
-                    VoiceAlertHelper.init(MainActivity.this);
-                    Toast.makeText(MainActivity.this, R.string.message_4ea961cd51, Toast.LENGTH_SHORT).show();
-                }
-                updateToolsCardSummaries();
-            });
-        }
-
-        if (btnTestVoice != null) {
-            btnTestVoice.setOnClickListener(v -> VoiceAlertHelper.testVoice(MainActivity.this));
-        }
-
-        if (swVoiceConnect != null) {
-            swVoiceConnect.setChecked(prefs.isVoiceAlertConnectEnabled());
-            swVoiceConnect.setOnCheckedChangeListener((btn, isChecked) -> prefs.setVoiceAlertConnectEnabled(isChecked));
-        }
-        if (swVoiceDisconnect != null) {
-            swVoiceDisconnect.setChecked(prefs.isVoiceAlertDisconnectEnabled());
-            swVoiceDisconnect.setOnCheckedChangeListener((btn, isChecked) -> prefs.setVoiceAlertDisconnectEnabled(isChecked));
-        }
-        if (swVoice80 != null) {
-            swVoice80.setChecked(prefs.isVoiceAlert80Enabled());
-            swVoice80.setOnCheckedChangeListener((btn, isChecked) -> prefs.setVoiceAlert80Enabled(isChecked));
-        }
-        if (swVoice100 != null) {
-            swVoice100.setChecked(prefs.isVoiceAlert100Enabled());
-            swVoice100.setOnCheckedChangeListener((btn, isChecked) -> prefs.setVoiceAlert100Enabled(isChecked));
-        }
-        if (swVoiceTemp != null) {
-            swVoiceTemp.setChecked(prefs.isVoiceAlertTempEnabled());
-            swVoiceTemp.setOnCheckedChangeListener((btn, isChecked) -> prefs.setVoiceAlertTempEnabled(isChecked));
-        }
-
-        // Setup Ringtone & Threshold
-        int currentLevel = prefs.getBatteryAlertLevel();
-        boolean enabled = prefs.isBatteryAlertLevelEnabled();
-        if (swAlert80 != null) {
-            swAlert80.setChecked(enabled);
-            swAlert80.setOnCheckedChangeListener((btn, isChecked) -> {
-                prefs.setBatteryAlertLevelEnabled(isChecked);
-                syncNotificationMonitoring();
-                if (sliderLayout != null) sliderLayout.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-                updateToolsCardSummaries();
-            });
-        }
-
-        if (tvTitle != null) tvTitle.setText("Ngưỡng chuông báo bảo vệ pin (" + currentLevel + "%)");
-        if (tvVoice80Label != null) tvVoice80Label.setText("Khi sạc đạt ngưỡng bảo vệ (" + currentLevel + "%)");
-        if (tvLevelValue != null) tvLevelValue.setText(currentLevel + "%");
-        if (sbLevel != null) sbLevel.setProgress(Math.max(0, Math.min(45, currentLevel - 50)));
-        if (sliderLayout != null) sliderLayout.setVisibility(enabled ? View.VISIBLE : View.GONE);
-
-        if (sbLevel != null) {
-            sbLevel.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    int target = 50 + progress;
-                    if (tvLevelValue != null) tvLevelValue.setText(target + "%");
-                    if (tvTitle != null) tvTitle.setText("Ngưỡng chuông báo bảo vệ pin (" + target + "%)");
-                    if (tvVoice80Label != null) tvVoice80Label.setText("Khi sạc đạt ngưỡng bảo vệ (" + target + "%)");
-                    if (fromUser) {
-                        prefs.setBatteryAlertLevel(target);
-                        updateToolsCardSummaries();
-                    }
-                }
-                @Override public void onStartTrackingTouch(SeekBar seekBar) {}
-                @Override public void onStopTrackingTouch(SeekBar seekBar) {}
-            });
-        }
-
-        if (tvTone != null) tvTone.setText(prefs.getCustomAlertToneTitle());
-
-        if (btnPick != null) {
-            btnPick.setOnClickListener(v -> {
-                Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
-                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION | RingtoneManager.TYPE_RINGTONE);
-                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Chọn âm báo bảo vệ pin");
-                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
-                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false);
-                startActivityForResult(intent, REQ_PICK_RINGTONE);
-                bs.dismiss();
-            });
-        }
-
-        if (btnTest != null) {
-            btnTest.setOnClickListener(v -> {
-                if (BatteryHelper.isPlayingAlert()) {
-                    BatteryHelper.stopAlertTone();
-                    btnTest.setText(R.string.btn_test_audio);
-                } else {
-                    BatteryHelper.playAlertTone(MainActivity.this, prefs.getCustomAlertToneUri());
-                    btnTest.setText(R.string.btn_stop_audio);
-                }
-            });
-        }
-
-        if (btnReset != null) {
-            btnReset.setOnClickListener(v -> {
-                prefs.setCustomAlertToneUri(null);
-                prefs.setCustomAlertToneTitle("Mặc định hệ thống");
-                if (tvTone != null) tvTone.setText(R.string.battery_alert_tone_default);
-                Toast.makeText(MainActivity.this, R.string.message_f270fc3eb4, Toast.LENGTH_SHORT).show();
-            });
-        }
-
-        if (swAmbient != null) {
-            swAmbient.setChecked(prefs.isLockscreenAmbientEnabled());
-            swAmbient.setOnCheckedChangeListener((btn, isChecked) -> prefs.setLockscreenAmbientEnabled(isChecked));
-        }
-
-        if (swAlert100 != null) {
-            swAlert100.setChecked(prefs.isAlert100Enabled());
-            swAlert100.setOnCheckedChangeListener((btn, isChecked) -> { prefs.setAlert100Enabled(isChecked); syncNotificationMonitoring(); });
-        }
-
-        if (swAlertTemp != null) {
-            swAlertTemp.setChecked(prefs.isAlertTempEnabled());
-            swAlertTemp.setOnCheckedChangeListener((btn, isChecked) -> { prefs.setAlertTempEnabled(isChecked); syncNotificationMonitoring(); });
-        }
+        Runnable audioHealth = app.cd.mitool.ui.BatterySoundUi.bind(this, view, () -> {
+            syncNotificationMonitoring(); updateToolsCardSummaries();
+        }, () -> {
+            Intent picker = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+            picker.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION | RingtoneManager.TYPE_RINGTONE);
+            picker.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false);
+            startActivityForResult(picker, REQ_PICK_RINGTONE); bs.dismiss();
+        });
+        audioHealth.run();
+        Runnable permissionHealth = refreshBatteryAlertPermissionState;
+        refreshBatteryAlertPermissionState = () -> { permissionHealth.run(); audioHealth.run(); };
 
         MaterialButton btnViewSot = view.findViewById(R.id.bs_btn_view_sot_stats);
         if (btnViewSot != null) {
@@ -2312,7 +2167,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         bs.setOnDismissListener(dialog -> {
-            BatteryHelper.stopAlertTone(); refreshBatteryAlertPermissionState = null;
+            BatteryHelper.stopPreviewTone(); refreshBatteryAlertPermissionState = null;
+            if (!new app.cd.mitool.util.AlertAudioSettings(this).hasVoiceEnabled()) VoiceAlertHelper.destroy();
         });
         bs.show();
     }
@@ -3976,7 +3832,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void syncNotificationMonitoring() {
         if (prefs.isNotifClockEnabled() || prefs.isLockscreenNotifEnabled() || prefs.isAlert80Enabled() || prefs.isAlert100Enabled()
-                || prefs.isAlertTempEnabled() || prefs.isVoiceAlertMasterEnabled()) requestNotificationPermissionIfNeeded();
+                || prefs.isAlertTempEnabled() || prefs.isVoiceAlertMasterEnabled()
+                || new app.cd.mitool.util.AlertAudioSettings(this).anyEnabled()) requestNotificationPermissionIfNeeded();
         NotificationClockService.sync(this);
     }
 
@@ -4106,7 +3963,7 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         unregisterBatteryMonitorReceiver();
         stopBatteryRealtimeTicker();
-        BatteryHelper.stopAlertTone();
+        BatteryHelper.stopPreviewTone();
     }
 
     @Override

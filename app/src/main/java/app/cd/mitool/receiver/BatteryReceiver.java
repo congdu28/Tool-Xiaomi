@@ -41,10 +41,10 @@ public class BatteryReceiver extends BroadcastReceiver {
             app.cd.mitool.widget.RamBoostAppWidgetProvider.updateAllWidgets(context);
 
             // Voice announcement
-            VoiceAlertHelper.onPowerConnected(context, info.plugType, info.powerWatt, info.level);
+
 
             // Reconcile all explicitly enabled monitoring features, without enabling the clock.
-            NotificationClockService.sync(context);
+            NotificationClockService.sync(context, action);
 
             // 2. Launch AMOLED Lockscreen Charging Screen if enabled
             if (prefs.isLockscreenAmbientEnabled()) {
@@ -71,7 +71,6 @@ public class BatteryReceiver extends BroadcastReceiver {
             }
 
         } else if (Intent.ACTION_POWER_DISCONNECTED.equals(action)) {
-            BatteryHelper.stopAlertTone();
             // Read realtime battery info
             BatteryHelper.BatteryInfo info = BatteryHelper.getBatteryInfo(context);
 
@@ -84,9 +83,9 @@ public class BatteryReceiver extends BroadcastReceiver {
             app.cd.mitool.widget.RamBoostAppWidgetProvider.updateAllWidgets(context);
 
             // Voice announcement
-            VoiceAlertHelper.onPowerDisconnected(context, info.level);
 
-            NotificationClockService.sync(context);
+
+            NotificationClockService.sync(context, action);
         }
     }
 }

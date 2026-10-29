@@ -208,34 +208,40 @@ public class BatteryHelper {
     private static Ringtone activeRingtone;
 
     public static synchronized void playAlertTone(Context context) {
-        try {
-            stopAlertTone();
-            PreferencesHelper prefs = new PreferencesHelper(context);
-            String customUriStr = prefs.getCustomAlertToneUri();
-            Uri alertUri = null;
-            if (customUriStr != null && !customUriStr.trim().isEmpty()) {
-                alertUri = Uri.parse(customUriStr);
-            }
-            if (alertUri == null) {
-                alertUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                if (alertUri == null) {
-                    alertUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-                }
-            }
-            activeRingtone = RingtoneManager.getRingtone(context.getApplicationContext(), alertUri);
-            if (activeRingtone != null) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    activeRingtone.setAudioAttributes(new android.media.AudioAttributes.Builder()
-                            .setUsage(android.media.AudioAttributes.USAGE_ALARM)
-                            .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                            .build());
-                } else {
-                    activeRingtone.setStreamType(android.media.AudioManager.STREAM_ALARM);
-                }
-                activeRingtone.play();
-            }
-        } catch (Exception ignored) {
+        stopAlertTone();
+        activeRingtone = startTone(context, new PreferencesHelper(context).getCustomAlertToneUri());
+        android.util.Log.i("MiToolAudio", "ring_started=" + (activeRingtone != null && activeRingtone.isPlaying()));
+    }
+
+    private static Ringtone startTone(Context context, String custom) {
+        java.util.List<Uri> sources = new java.util.ArrayList<>();
+        if (custom != null && !custom.trim().isEmpty()) sources.add(Uri.parse(custom));
+        for (int type : new int[]{RingtoneManager.TYPE_NOTIFICATION, RingtoneManager.TYPE_ALARM, RingtoneManager.TYPE_RINGTONE}) {
+            Uri uri = RingtoneManager.getDefaultUri(type); if (uri != null) sources.add(uri);
         }
+        for (Uri source : sources) {
+            try {
+                Ringtone tone = RingtoneManager.getRingtone(context.getApplicationContext(), source);
+                if (tone == null) continue;
+                tone.setAudioAttributes(new android.media.AudioAttributes.Builder()
+                        .setUsage(android.media.AudioAttributes.USAGE_ALARM)
+                        .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION).build());
+                tone.play();
+                if (tone.isPlaying()) return tone;
+                tone.stop();
+            } catch (RuntimeException ignored) { }
+        }
+        android.util.Log.w("MiToolAudio", "No ringtone could be started");
+        return null;
+    }
+    private static Ringtone previewRingtone;
+    public static synchronized boolean previewTone(Context context) {
+        stopPreviewTone();
+        previewRingtone = startTone(context, new PreferencesHelper(context).getCustomAlertToneUri());
+        return previewRingtone != null;
+    }
+    public static synchronized void stopPreviewTone() {
+        if (previewRingtone != null) { previewRingtone.stop(); previewRingtone = null; }
     }
 
     public static synchronized void stopAlertTone() {
@@ -446,28 +452,6 @@ public class BatteryHelper {
     }
 
     public static synchronized void playAlertTone(Context context, String uriStr) {
-        try {
-            stopAlertTone();
-            Uri alertUri = null;
-            if (uriStr != null && !uriStr.trim().isEmpty()) {
-                alertUri = Uri.parse(uriStr);
-            }
-            if (alertUri == null) {
-                alertUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            }
-            activeRingtone = RingtoneManager.getRingtone(context.getApplicationContext(), alertUri);
-            if (activeRingtone != null) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    activeRingtone.setAudioAttributes(new android.media.AudioAttributes.Builder()
-                            .setUsage(android.media.AudioAttributes.USAGE_ALARM)
-                            .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                            .build());
-                } else {
-                    activeRingtone.setStreamType(android.media.AudioManager.STREAM_ALARM);
-                }
-                activeRingtone.play();
-            }
-        } catch (Exception ignored) {
-        }
+        stopAlertTone(); activeRingtone = startTone(context, uriStr);
     }
 }

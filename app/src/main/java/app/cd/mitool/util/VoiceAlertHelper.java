@@ -1,203 +1,139 @@
 package app.cd.mitool.util;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioAttributes;
-import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.SystemClock;
 import android.speech.tts.TextToSpeech;
-import android.util.Log;
-
-import java.util.LinkedList;
+import android.speech.tts.UtteranceProgressListener;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
-import java.util.Queue;
+import java.util.Map;
+import app.cd.mitool.R;
 
-public class VoiceAlertHelper {
-
-    private static final String TAG = "VoiceAlertHelper";
-
-    private static TextToSpeech tts;
-    private static volatile boolean isTtsInitialized = false;
-    private static volatile boolean isTtsInitializing = false;
-    private static final Queue<String> pendingQueue = new LinkedList<>();
-
-    private static boolean hasAnnounced80 = false;
-    private static boolean hasAnnounced100 = false;
-    private static long lastTempAlertTime = 0;
-    private static long lastConnectTime = 0;
-    private static long lastDisconnectTime = 0;
-
-    public static synchronized void init(Context context) {
-        if (tts != null || isTtsInitializing) return;
-        isTtsInitializing = true;
-        final Context appCtx = context.getApplicationContext();
-
+/** Bounded TTS initialization, checked Vietnamese support, queued speech and one-shot fallback. */
+public final class VoiceAlertHelper {
+    public interface StatusCallback { void onStatus(int message); }
+    private static final Handler MAIN = new Handler(Looper.getMainLooper());
+    private static TextToSpeech engine;
+    private static boolean ready, initializing;
+    private static int generation, serial;
+    private static long failedAt;
+    private static int status = R.string.audio_wait;
+    private static final List<Request> pending = new ArrayList<>();
+    private static final List<StatusCallback> checks = new ArrayList<>();
+    private static final Map<String, Request> active = new HashMap<>();
+    private static final class Request {
+        String text; Runnable fallback; StatusCallback callback; boolean started, failed;
+        Request(String text, Runnable fallback, StatusCallback callback) {
+            this.text = text; this.fallback = fallback; this.callback = callback;
+        }
+    }
+    private VoiceAlertHelper() {}
+    public static void prepare(Context context, StatusCallback callback) {
+        Context app = context.getApplicationContext();
+        MAIN.post(() -> {
+            if (ready) { if (callback != null) callback.onStatus(status); return; }
+            if (callback != null) checks.add(callback);
+            failedAt = 0; initialize(app);
+        });
+    }
+    public static void init(Context context) { prepare(context, null); }
+    public static void speak(Context context, String text) {
+        speak(context, text, () -> BatteryHelper.playAlertTone(context), null);
+    }
+    public static void speak(Context context, String text, Runnable fallback, StatusCallback callback) {
+        Context app = context.getApplicationContext();
+        MAIN.post(() -> {
+            Request request = new Request(text, fallback, callback);
+            if (ready) { dispatch(request); return; }
+            if (failedAt > 0 && SystemClock.elapsedRealtime() - failedAt < 30000) { fail(request, R.string.audio_missing); return; }
+            if (callback != null) callback.onStatus(R.string.audio_wait);
+            if (pending.size() >= 8) fail(pending.remove(0), R.string.audio_failed);
+            pending.add(request); initialize(app);
+        });
+    }
+    private static void initialize(Context app) {
+        if (initializing || ready) return;
+        initializing = true; status = R.string.audio_wait;
+        int token = ++generation;
+        if (app.getPackageManager().queryIntentServices(new Intent(TextToSpeech.Engine.INTENT_ACTION_TTS_SERVICE), 0).isEmpty()) {
+            initializationFailed(); return;
+        }
         try {
-            tts = new TextToSpeech(appCtx, new TextToSpeech.OnInitListener() {
-                @Override
-                public void onInit(int status) {
-                    isTtsInitializing = false;
-                    if (status == TextToSpeech.SUCCESS) {
-                        try {
-                            int result = tts.setLanguage(new Locale("vi", "VN"));
-                            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                                tts.setLanguage(Locale.getDefault());
-                            }
-                            tts.setPitch(1.0f);
-                            tts.setSpeechRate(1.0f);
-
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                AudioAttributes attrs = new AudioAttributes.Builder()
-                                        .setUsage(AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE)
-                                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                                        .build();
-                                tts.setAudioAttributes(attrs);
-                            }
-                            isTtsInitialized = true;
-
-                            // Drain and speak pending messages
-                            synchronized (VoiceAlertHelper.class) {
-                                while (!pendingQueue.isEmpty()) {
-                                    String msg = pendingQueue.poll();
-                                    if (msg != null && !msg.trim().isEmpty()) {
-                                        speakDirect(msg);
-                                    }
-                                }
-                            }
-                        } catch (Exception e) {
-                            Log.w(TAG, "Error configuring TTS: " + e.getMessage());
-                        }
-                    } else {
-                        Log.w(TAG, "TTS initialization failed with code: " + status);
+            engine = new TextToSpeech(app, result -> MAIN.post(() -> {
+                if (token != generation || !initializing) return;
+                if (result != TextToSpeech.SUCCESS || engine == null) { initializationFailed(); return; }
+                try {
+                    if (engine.setLanguage(new Locale("vi", "VN")) < TextToSpeech.LANG_AVAILABLE) {
+                        initializationFailed(); return;
                     }
-                }
-            });
-        } catch (Exception e) {
-            isTtsInitializing = false;
-            Log.e(TAG, "Failed to instantiate TextToSpeech", e);
-        }
+                    engine.setAudioAttributes(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH).build());
+                    engine.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                        @Override public void onStart(String id) { MAIN.post(() -> {
+                            Request request = active.get(id);
+                            if (request != null) { android.util.Log.i("MiToolAudio", "voice_started"); request.started = true; status = R.string.audio_ready; if (request.callback != null) request.callback.onStatus(R.string.audio_ready); }
+                        }); }
+                        @Override public void onDone(String id) { MAIN.post(() -> active.remove(id)); }
+                        @Override public void onError(String id) { MAIN.post(() -> {
+                            Request request = active.remove(id); if (request != null) fail(request, R.string.audio_failed);
+                        }); }
+                    });
+                    ready = true; initializing = false; status = R.string.audio_ready;
+                    for (StatusCallback check : new ArrayList<>(checks)) check.onStatus(status);
+                    checks.clear();
+                    for (Request request : new ArrayList<>(pending)) dispatch(request);
+                    pending.clear();
+                } catch (RuntimeException e) { initializationFailed(); }
+            }));
+        } catch (RuntimeException e) { initializationFailed(); }
+        MAIN.postDelayed(() -> { if (token == generation && initializing) initializationFailed(); }, 8000);
     }
-
-    public static synchronized void speak(Context context, final String text) {
-        if (context == null || text == null || text.trim().isEmpty()) return;
-
-        if (tts == null) {
-            init(context);
-        }
-
-        if (isTtsInitialized && tts != null) {
-            speakDirect(text);
-        } else {
-            // Queue message so it will speak as soon as TTS is ready (never dropped)
-            pendingQueue.offer(text);
-        }
+    private static void initializationFailed() {
+        generation++; initializing = false; ready = false; failedAt = SystemClock.elapsedRealtime(); status = R.string.audio_missing;
+        if (engine != null) { try { engine.shutdown(); } catch (RuntimeException ignored) {} engine = null; }
+        for (StatusCallback check : new ArrayList<>(checks)) check.onStatus(status);
+        checks.clear();
+        for (Request request : new ArrayList<>(pending)) fail(request, status);
+        pending.clear();
     }
-
-    private static void speakDirect(String text) {
+    private static void dispatch(Request request) {
+        String id = "MiTool_" + (++serial);
+        active.put(id, request);
         try {
-            if (tts != null) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "MiToolVoice_" + System.currentTimeMillis());
-                } else {
-                    tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
-                }
+            android.os.Bundle parameters = new android.os.Bundle();
+            parameters.putInt(TextToSpeech.Engine.KEY_PARAM_STREAM, android.media.AudioManager.STREAM_ALARM);
+            if (engine == null || engine.speak(request.text, TextToSpeech.QUEUE_ADD, parameters, id) != TextToSpeech.SUCCESS) {
+                active.remove(id); fail(request, R.string.audio_failed); return;
             }
-        } catch (Exception e) {
-            Log.w(TAG, "TTS speak failed: " + e.getMessage());
-        }
-    }
-
-    public static void resetSessionAlerts() {
-        hasAnnounced80 = false;
-        hasAnnounced100 = false;
-    }
-
-    public static synchronized void onPowerConnected(Context context, int plugType, float powerWatt, int level) {
-        long now = System.currentTimeMillis();
-        // De-duplicate: Don't repeat if already announced within 3 seconds
-        if (now - lastConnectTime < 3000) {
-            return;
-        }
-        lastConnectTime = now;
-
-        PreferencesHelper prefs = new PreferencesHelper(context);
-        if (!prefs.isVoiceAlertMasterEnabled() || !prefs.isVoiceAlertConnectEnabled()) {
-            return;
-        }
-
-        String typeStr = (plugType == 2) ? "bằng cổng sạc USB." : "bằng bộ sạc.";
-        String fastStr = (powerWatt >= 15.0f) ? String.format(Locale.getDefault(), " Sạc nhanh %.0f oát.", powerWatt) : "";
-        String msg = "Đã kết nối " + typeStr + fastStr + " Pin hiện tại " + level + " phần trăm.";
-        speak(context, msg);
-    }
-
-    public static synchronized void onPowerDisconnected(Context context, int level) {
-        long now = System.currentTimeMillis();
-        // De-duplicate: Don't repeat if already announced within 3 seconds
-        if (now - lastDisconnectTime < 3000) {
-            return;
-        }
-        lastDisconnectTime = now;
-
-        resetSessionAlerts();
-
-        PreferencesHelper prefs = new PreferencesHelper(context);
-        if (!prefs.isVoiceAlertMasterEnabled() || !prefs.isVoiceAlertDisconnectEnabled()) {
-            return;
-        }
-
-        String msg = "Đã ngắt sạc. Mức pin hiện tại " + level + " phần trăm.";
-        speak(context, msg);
-    }
-
-    public static void checkLevelAlerts(Context context, int level, boolean isCharging) {
-        PreferencesHelper prefs = new PreferencesHelper(context);
-        if (!prefs.isVoiceAlertMasterEnabled() || !isCharging) {
-            return;
-        }
-
-        int targetLevel = prefs.getBatteryAlertLevel();
-        if (level >= targetLevel && prefs.isVoiceAlert80Enabled() && !hasAnnounced80) {
-            hasAnnounced80 = true;
-            speak(context, "Pin đã sạc đạt " + targetLevel + " phần trăm. Bạn có thể rút sạc để bảo vệ tuổi thọ pin tối ưu.");
-        }
-
-        if (level < targetLevel - 5) {
-            hasAnnounced80 = false;
-        }
-
-        if (level >= 100 && prefs.isVoiceAlert100Enabled() && !hasAnnounced100) {
-            hasAnnounced100 = true;
-            speak(context, "Pin đã được sạc đầy 100 phần trăm. Vui lòng rút bộ sạc.");
-        }
-    }
-
-    public static void checkTempAlert(Context context, float tempC) {
-        PreferencesHelper prefs = new PreferencesHelper(context);
-        if (!prefs.isVoiceAlertMasterEnabled() || !prefs.isVoiceAlertTempEnabled()) {
-            return;
-        }
-
-        long now = System.currentTimeMillis();
-        // Cooldown: 10 minutes between temperature voice alerts
-        if (tempC >= 42.0f && (now - lastTempAlertTime > 10 * 60 * 1000)) {
-            lastTempAlertTime = now;
-            speak(context, "Cảnh báo, nhiệt độ pin đang cao " + Math.round(tempC) + " độ C. Vui lòng tạm ngừng sạc để bảo vệ máy.");
-        }
-    }
-
-    public static void testVoice(Context context) {
-        speak(context, "Hệ thống âm báo sạc thông minh Tiếng Việt hoạt động rất tốt trên máy Xiaomi của bạn!");
-    }
-
-    public static synchronized void destroy() {
-        if (tts != null) {
-            try {
-                tts.stop();
-                tts.shutdown();
-            } catch (Exception ignored) {
+        } catch (RuntimeException e) { active.remove(id); fail(request, R.string.audio_failed); return; }
+        MAIN.postDelayed(() -> {
+            if (active.get(id) == request && !request.started) {
+                List<Request> stalled = new ArrayList<>(active.values()); active.clear();
+                try { if (engine != null) engine.stop(); } catch (RuntimeException ignored) { }
+                for (Request waiting : stalled) if (!waiting.started) fail(waiting, R.string.audio_failed);
             }
-            tts = null;
-            isTtsInitialized = false;
-            isTtsInitializing = false;
-        }
+        }, 8000);
+        MAIN.postDelayed(() -> active.remove(id), 60000);
     }
+    private static void fail(Request request, int message) {
+        if (request.failed) return;
+        request.failed = true; status = message;
+        if (request.fallback != null) request.fallback.run();
+        if (request.callback != null) request.callback.onStatus(message);
+        android.util.Log.w("MiToolAudio", "Voice unavailable; fallback evaluated");
+    }
+    public static void testVoice(Context context) { speak(context, context.getString(R.string.audio_test_sentence)); }
+    public static void cancelSpeech() { MAIN.post(() -> {
+        pending.clear(); active.clear(); if (engine != null) try { engine.stop(); } catch (RuntimeException ignored) {}
+    }); }
+    public static void destroy() { MAIN.post(() -> {
+        generation++; if (engine != null) try { engine.shutdown(); } catch (RuntimeException ignored) {} engine = null;
+        ready = false; initializing = false; pending.clear(); checks.clear(); active.clear();
+    }); }
 }

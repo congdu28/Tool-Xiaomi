@@ -107,6 +107,23 @@ def service_alive():
 
 def battery(key, value): adb("shell", "dumpsys", "battery", "set", key, str(value))
 
+def choose_audio_mode(id, label):
+    tap(id, scroll=True)
+    for attempt in range(3):
+        time.sleep(0.5)
+        for n in tree().iter("node"):
+            if n.get("text") == label and n.get("resource-id") == "android:id/text1":
+                x1,y1,x2,y2=bounds(n); adb("shell","input","tap",str((x1+x2)//2),str((y1+y2)//2));time.sleep(0.7);break
+        current=tree()
+        if not any(n.get("resource-id", "").endswith("/alertTitle") for n in current.iter("node")):
+            assert find(id, scroll=True).get("text")==label
+            return
+    raise AssertionError("Audio mode dialog did not select: " + label)
+def toggle_full_audio():
+    current = find("bs_audio_mode_full", scroll=True).get("text")
+    choose_audio_mode("bs_audio_mode_full", "Chuông" if current == "Tắt" else "Tắt")
+
+
 adb("shell", "pm", "clear", "app.cd.mitool")
 adb("shell", "pm", "grant", "app.cd.mitool", "android.permission.POST_NOTIFICATIONS")
 adb("logcat", "-c")
@@ -128,7 +145,7 @@ try:
     expect_notification("Đang sạc")
     capture("charging-connected-app")
     open_feature("canh bao", "card_tool_battery_alert")
-    tap("bs_switch_alert_100", scroll=True)
+    toggle_full_audio()
     close_sheet()
     # The launcher shortcut uses the same on/off path as the notification tile.
     for _ in range(2):
@@ -144,12 +161,12 @@ try:
     assert service_alive(), "Unplugging disabled an enabled alert."
     open_feature("canh bao", "card_tool_battery_alert")
     assert find("bs_switch_charging_notification").get("checked") == "true"
-    assert find("bs_switch_alert_100", scroll=True).get("checked") == "true"
+    assert find("bs_audio_mode_full", scroll=True).get("text") == "Chuông"
     # Return to the top to turn off charging status; the independent alert must keep running.
     close_sheet(); open_feature("canh bao", "card_tool_battery_alert")
     tap("bs_switch_charging_notification")
     assert service_alive(), "Turning off charging status stopped the full-battery alert."
-    tap("bs_switch_alert_100", scroll=True)
+    toggle_full_audio()
     for _ in range(10):
         if not service_alive(): break
         time.sleep(0.5)

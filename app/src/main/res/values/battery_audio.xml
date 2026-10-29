@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="audio_events">Âm báo theo sự kiện</string>
+    <string name="audio_help">Mỗi sự kiện chỉ cấu hình một lần. Chuông và giọng nói dùng âm lượng báo thức. Nếu không phát được tiếng Việt, chế độ giọng nói sẽ dùng chuông dự phòng.</string>
+    <string name="audio_connect">Khi cắm sạc</string>
+    <string name="audio_disconnect">Khi rút sạc</string>
+    <string name="audio_target">Đạt ngưỡng bảo vệ (%1$d%%)</string>
+    <string name="audio_full" formatted="false">Khi pin đầy 100%</string>
+    <string name="audio_hot">Khi nhiệt độ pin ≥ 42°C</string>
+    <string-array name="audio_modes"><item>Tắt</item><item>Chuông</item><item>Giọng nói</item><item>Chuông + giọng nói</item></string-array>
+    <string name="audio_threshold">Ngưỡng bảo vệ: %1$d%%</string>
+    <string name="audio_tone">Chuông được dùng: %1$s</string>
+    <string name="audio_pick">Chọn chuông</string>
+    <string name="audio_default">Mặc định</string>
+    <string name="audio_test_ring">Thử chuông</string>
+    <string name="audio_test_voice">Thử giọng nói</string>
+    <string name="audio_system">Cài đặt âm lượng / giọng nói</string>
+    <string name="audio_ready">Giọng nói tiếng Việt đã sẵn sàng.</string>
+    <string name="audio_wait">Đang kiểm tra bộ đọc tiếng Việt…</string>
+    <string name="audio_missing">Chưa có bộ đọc tiếng Việt hoạt động. Chọn chuông hoặc cài/bật giọng đọc tiếng Việt trong hệ thống.</string>
+    <string name="audio_failed">Không phát được giọng nói. Đã chuyển sang chuông dự phòng cho sự kiện này.</string>
+    <string name="audio_volume_zero">Âm lượng báo thức đang bằng 0; âm báo sẽ không nghe được. Mở cài đặt âm lượng để điều chỉnh.</string>
+    <string name="audio_test_sentence">Mi Tool đang thử thông báo sạc bằng tiếng Việt.</string>
+    <string name="audio_ring_started">Android đã bắt đầu phát chuông thử. Nếu chưa nghe được, kiểm tra âm lượng báo thức và chế độ Không làm phiền.</string>
+    <string name="audio_ring_failed">Chưa phát được chuông. Kiểm tra âm thanh mặc định và quyền đọc tệp chuông.</string>
+    <string name="audio_no_voice_needed">Chuông không cần bộ đọc tiếng Việt. Bấm Thử giọng nói nếu bạn muốn kiểm tra giọng đọc.</string>
+</resources>

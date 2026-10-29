@@ -1,15 +1,14 @@
-# Mi Tool v1.0.62 — Sửa thông báo khi cắm sạc
+# Mi Tool v1.0.63 — Sửa âm báo sạc và bỏ các mục lặp
 
-- Thêm công tắc **Thông báo pin và sạc** riêng trong Tiện ích → Cảnh báo pin và sạc. Không cần bật đồng hồ để xem trạng thái sạc.
-- Hiển thị quyền thông báo đang được phép, bị Android chặn hoặc kênh pin/sạc đang tắt; thêm nút mở cài đặt hệ thống. Không tự tạo kênh mới để vượt lựa chọn chặn của người dùng.
-- Sửa nút tắt đồng hồ từ ô cài đặt nhanh, lối tắt và thông báo: không dừng các cảnh báo pin hay chế độ thông báo sạc còn được bật.
-- Khôi phục dịch vụ đúng các chế độ đã chọn khi cập nhật/khởi động máy. Đồng bộ khi cắm/rút sạc, không tự bật đồng hồ.
-- Phân biệt còn kết nối nguồn sạc với đang nạp điện: pin đầy hoặc tạm dừng sạc không bị mô tả như đã rút cáp. Không gọi sạc nhanh khi thiếu số đo công suất.
-- Sửa ngưỡng báo chuông khi mức pin nhảy qua nhiều phần trăm, tránh bỏ lỡ ngưỡng. Không báo đầy pin do rút sạc ở mức 100%, không phát nhiều chuông cùng một lần cập nhật. Dừng âm báo khi rút sạc/dừng theo dõi.
-- Thông báo có nút mở đúng phần cài đặt pin/sạc. Khi tắt toàn bộ chức năng theo dõi, dịch vụ và thông báo được gỡ.
+- Mỗi sự kiện **Cắm sạc, Rút sạc, Đạt ngưỡng, Đầy pin, Quá nhiệt** chỉ có một lựa chọn: Tắt / Chuông / Giọng nói / Chuông + giọng nói. Bỏ hai cụm công tắc gây nhầm lẫn; giữ trạng thái có hiệu lực từ cấu hình cũ.
+- Thêm chế độ chuông cho cắm/rút sạc. Hai mục này trước đây chỉ điều khiển giọng nói, không phải chuông thông thường.
+- Kiểm tra bộ đọc và dữ liệu tiếng Việt; xử lý lỗi khởi tạo, lỗi phát và trường hợp bộ đọc không phản hồi. Không tự đổi sang ngôn ngữ khác rồi báo sẵn sàng.
+- Nếu giọng nói không hoạt động, dùng chuông dự phòng một lần cho sự kiện. Chế độ cả hai không phát thêm chuông dự phòng khi chuông đã được phát.
+- Gộp xử lý sự kiện nguồn vào dịch vụ theo dõi để không phát trùng giữa các broadcast và không phụ thuộc tuổi thọ của receiver. Không bỏ mất cắm/rút nhanh do giới hạn 3 giây cũ.
+- Dùng hàng đợi giọng nói, tránh câu sau cắt mất câu trước. Thêm thời hạn chờ và ngăn giọng nói phát muộn sau khi đã chuyển sang chuông dự phòng.
+- Tách chuông nghe thử khỏi chuông thật, tránh đóng bảng/chuyển sang Ambient làm ngắt âm báo sạc. Hiển thị cảnh báo âm lượng báo thức bằng 0 và nút mở cài đặt âm lượng/giọng đọc.
+- Có nút Thử chuông và Thử giọng nói, hiển thị trạng thái lỗi cụ thể. Chuông hoạt động độc lập với bộ đọc tiếng Việt.
 
-Sau khi rút sạc, chế độ này chuyển sang hiển thị trạng thái dùng pin để tiếp tục theo dõi. Có thể tắt công tắc nếu không cần. Tính năng dọn RAM và ứng dụng đang chạy của v1.0.61 vẫn được giữ.
+Kiểm tra unit test, lint và build Release; kiểm tra Android bắt đầu phát chuông khi cắm/rút, TTS bằng bộ đọc thử nghiệm và chuông dự phòng khi bộ đọc lỗi. Bộ đọc thử nghiệm chỉ tạo PCM để kiểm tra hợp đồng TTS, không kiểm tra chất lượng đọc tiếng Việt. Chưa kiểm tra nghe trực tiếp trên Xiaomi 17 Ultra/HyperOS 4.
 
-35/35 unit test đạt, lint không có lỗi chặn build. Đã kiểm tra các luồng cắm/rút sạc, pin đầy, tắt đồng hồ, chặn/cấp lại quyền trên APK Release, Android 15 giả lập. Chưa kiểm tra trực tiếp trên Xiaomi 17 Ultra/HyperOS 4.
-
-Tải **Mi-Tool-v1.0.62-Release.apk** để cập nhật.
+Tải **Mi-Tool-v1.0.63-Release.apk**. Muốn có tiếng báo cắm sạc ngay: vào Cảnh báo pin và sạc → Khi cắm sạc → Chuông, rồi bấm Thử chuông.

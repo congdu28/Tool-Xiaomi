@@ -89,6 +89,23 @@ def open_feature(query, identifier):
     find("sheet_close")
 
 
+def choose_audio_mode(id, label):
+    tap(id, scroll=True)
+    for attempt in range(3):
+        time.sleep(0.5)
+        for n in tree().iter("node"):
+            if n.get("text") == label and n.get("resource-id") == "android:id/text1":
+                x1,y1,x2,y2=bounds(n); adb("shell","input","tap",str((x1+x2)//2),str((y1+y2)//2));time.sleep(0.7);break
+        current=tree()
+        if not any(n.get("resource-id", "").endswith("/alertTitle") for n in current.iter("node")):
+            assert find(id, scroll=True).get("text")==label
+            return
+    raise AssertionError("Audio mode dialog did not select: " + label)
+def toggle_full_audio():
+    current = find("bs_audio_mode_full", scroll=True).get("text")
+    choose_audio_mode("bs_audio_mode_full", "Chuông" if current == "Tắt" else "Tắt")
+
+
 adb("shell", "pm", "clear", "app.cd.mitool")
 adb("logcat", "-c")
 adb("shell", "pm", "grant", "app.cd.mitool", "android.permission.POST_NOTIFICATIONS")
@@ -138,8 +155,8 @@ for query, identifier, name in (
 
 # Monitoring state must follow the switches, with alerts independent of the clock.
 open_feature("canh bao", "card_tool_battery_alert")
-assert find("bs_switch_alert_100", scroll=True).get("checked") == "false"
-tap("bs_switch_alert_100", scroll=True)
+assert find("bs_audio_mode_full", scroll=True).get("text") == "Tắt"
+toggle_full_audio()
 close_sheet()
 open_feature("dong ho", "card_tool_clock")
 assert find("bs_switch_notif_clock").get("checked") == "false"
@@ -148,7 +165,7 @@ tap("bs_switch_notif_clock")
 assert any(b"* ServiceRecord{" in line and b"app.cd.mitool/.service.NotificationClockService" in line for line in adb("shell", "dumpsys", "activity", "services", "app.cd.mitool").splitlines()), "Turning off clock stopped an enabled battery alert."
 close_sheet()
 open_feature("canh bao", "card_tool_battery_alert")
-tap("bs_switch_alert_100", scroll=True)
+toggle_full_audio()
 close_sheet()
 
 adb("shell", "settings", "put", "system", "font_scale", "1.3")
