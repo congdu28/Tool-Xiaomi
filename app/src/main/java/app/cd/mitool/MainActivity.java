@@ -572,6 +572,8 @@ public class MainActivity extends AppCompatActivity {
         if (btnQuickBoostRam != null) btnQuickBoostRam.setOnClickListener(v -> showHzBottomSheet());
         if (btnQuickDns != null) btnQuickDns.setOnClickListener(v -> showPrivateDnsBottomSheet());
         if (btnQuickDebloat != null) btnQuickDebloat.setOnClickListener(v -> showNotificationFixBottomSheet());
+        View btnQuickSecurity = findViewById(R.id.btn_quick_security_center);
+        if (btnQuickSecurity != null) btnQuickSecurity.setOnClickListener(v -> XiaomiHelper.openSecurityCenter(MainActivity.this));
         View batteryCard = findViewById(R.id.card_overview_battery);
         if (batteryCard != null) batteryCard.setOnClickListener(v -> bottomNav.setSelectedItemId(R.id.nav_battery));
         if (tvDeviceShizukuBadge != null) tvDeviceShizukuBadge.setOnClickListener(v -> bottomNav.setSelectedItemId(R.id.nav_settings));
@@ -2315,11 +2317,19 @@ public class MainActivity extends AppCompatActivity {
         bs.setContentView(view);
         configureBottomSheet(bs);
 
+        MaterialButton btnSecurity = view.findViewById(R.id.bs_btn_open_security_center);
         MaterialButton btnDeepClean = view.findViewById(R.id.bs_btn_open_deep_clean);
         MaterialButton btnCit = view.findViewById(R.id.bs_btn_open_cit_test);
         MaterialButton btnRadio = view.findViewById(R.id.bs_btn_open_radio_info);
         MaterialButton btnMsa = view.findViewById(R.id.bs_btn_open_msa_settings);
         MaterialButton btnAd = view.findViewById(R.id.bs_btn_open_ad_service_settings);
+
+        if (btnSecurity != null) {
+            btnSecurity.setOnClickListener(v -> {
+                XiaomiHelper.openSecurityCenter(MainActivity.this);
+                bs.dismiss();
+            });
+        }
 
         btnDeepClean.setOnClickListener(v -> {
             XiaomiHelper.openDeepClean(MainActivity.this);

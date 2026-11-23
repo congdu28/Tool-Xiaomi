@@ -44,6 +44,9 @@
   <string name="settings_subtitle">Quản lý Shizuku, quyền chạy nền và giao diện</string>
   <string name="quick_gaming">Chống nóng Game</string>
   <string name="quick_hz">Tần số quét Hz</string>
+  <string name="quick_security_center">Mở Bảo mật Xiaomi</string>
+  <string name="btn_open_security_center">Mở ứng dụng Bảo mật Xiaomi</string>
+  <string name="security_center_not_found">Không tìm thấy ứng dụng Bảo mật Xiaomi trên thiết bị này.</string>
   <string name="quick_notifications">Thông báo</string>
   <string name="quick_battery">Xem pin</string>
   <string name="quick_dns">DNS riêng tư</string>

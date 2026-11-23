@@ -71,6 +71,37 @@ public class XiaomiHelper {
     }
 
     /**
+     * Open Xiaomi Security Center app (Bảo mật Xiaomi).
+     */
+    public static void openSecurityCenter(Context context) {
+        if (context == null) return;
+        try {
+            Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage("com.miui.securitycenter");
+            if (launchIntent != null) {
+                launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(launchIntent);
+                return;
+            }
+        } catch (Exception ignored) {
+        }
+        String[][] fallbacks = {
+                {"com.miui.securitycenter", "com.miui.securityscan.MainActivity"},
+                {"com.miui.securitycenter", "com.miui.securitycenter.MainActivity"}
+        };
+        for (String[] comp : fallbacks) {
+            try {
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.setComponent(new ComponentName(comp[0], comp[1]));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+                return;
+            } catch (Exception ignored) {
+            }
+        }
+        Toast.makeText(context, R.string.security_center_not_found, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
      * Open Xiaomi Autostart management screen.
      */
     public static void openAutostartSettings(Context context) {
