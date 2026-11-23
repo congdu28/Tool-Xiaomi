@@ -653,4 +653,96 @@ public class PreferencesHelper {
     public void setNotifFixLastApplied(long time) {
         prefs.edit().putLong(KEY_NOTIF_FIX_LAST_APPLIED, time).apply();
     }
+
+    // Thermal-Safe Game Optimization state
+    public static final String KEY_GAME_OPT_TARGET_PKG = "game_opt_target_pkg";
+    public static final String KEY_GAME_OPT_PRESET = "game_opt_preset";
+    public static final String KEY_GAME_OPT_FPS = "game_opt_fps";
+    public static final String KEY_GAME_OPT_DOWNSCALE = "game_opt_downscale";
+    public static final String KEY_GAME_OPT_MODE = "game_opt_mode";
+    public static final String KEY_GAME_OPT_ALIGN_HZ = "game_opt_align_hz";
+    public static final String KEY_GAME_OPT_PRECOMPILE = "game_opt_precompile";
+    public static final String KEY_GAME_OPT_TRIM_BG = "game_opt_trim_bg";
+    public static final String KEY_GAME_OPT_HZ_APPLIED = "game_opt_hz_applied";
+    public static final String KEY_GAME_OPT_LAST_SUMMARY = "game_opt_last_summary";
+
+    public String getGameOptTargetPackage() {
+        return prefs.getString(KEY_GAME_OPT_TARGET_PKG, "");
+    }
+
+    public void setGameOptTargetPackage(String pkg) {
+        prefs.edit().putString(KEY_GAME_OPT_TARGET_PKG, pkg != null ? pkg : "").apply();
+    }
+
+    public String getGameOptPreset() {
+        return prefs.getString(KEY_GAME_OPT_PRESET, GameThermalPolicy.Preset.COOL_60.name());
+    }
+
+    public void setGameOptPreset(String presetName) {
+        prefs.edit().putString(KEY_GAME_OPT_PRESET, presetName != null ? presetName : GameThermalPolicy.Preset.COOL_60.name()).apply();
+    }
+
+    public int getGameOptFps() {
+        return prefs.getInt(KEY_GAME_OPT_FPS, 60);
+    }
+
+    public void setGameOptFps(int fps) {
+        prefs.edit().putInt(KEY_GAME_OPT_FPS, fps).apply();
+    }
+
+    public String getGameOptDownscale() {
+        return prefs.getString(KEY_GAME_OPT_DOWNSCALE, "0.8");
+    }
+
+    public void setGameOptDownscale(String scale) {
+        prefs.edit().putString(KEY_GAME_OPT_DOWNSCALE, scale != null ? scale : "0.8").apply();
+    }
+
+    public String getGameOptMode() {
+        return prefs.getString(KEY_GAME_OPT_MODE, GameThermalPolicy.MODE_STANDARD);
+    }
+
+    public void setGameOptMode(String mode) {
+        prefs.edit().putString(KEY_GAME_OPT_MODE, mode != null ? mode : GameThermalPolicy.MODE_STANDARD).apply();
+    }
+
+    public boolean isGameOptAlignHz() {
+        return prefs.getBoolean(KEY_GAME_OPT_ALIGN_HZ, true);
+    }
+
+    public void setGameOptAlignHz(boolean align) {
+        prefs.edit().putBoolean(KEY_GAME_OPT_ALIGN_HZ, align).apply();
+    }
+
+    public boolean isGameOptPrecompile() {
+        return prefs.getBoolean(KEY_GAME_OPT_PRECOMPILE, true);
+    }
+
+    public void setGameOptPrecompile(boolean precompile) {
+        prefs.edit().putBoolean(KEY_GAME_OPT_PRECOMPILE, precompile).apply();
+    }
+
+    public boolean isGameOptTrimBg() {
+        return prefs.getBoolean(KEY_GAME_OPT_TRIM_BG, true);
+    }
+
+    public void setGameOptTrimBg(boolean trim) {
+        prefs.edit().putBoolean(KEY_GAME_OPT_TRIM_BG, trim).apply();
+    }
+
+    public boolean isGameOptHzApplied() {
+        return prefs.getBoolean(KEY_GAME_OPT_HZ_APPLIED, false);
+    }
+
+    public void setGameOptHzApplied(boolean applied) {
+        prefs.edit().putBoolean(KEY_GAME_OPT_HZ_APPLIED, applied).apply();
+    }
+
+    public String getGameOptLastSummary() {
+        return prefs.getString(KEY_GAME_OPT_LAST_SUMMARY, "");
+    }
+
+    public void setGameOptLastSummary(String summary) {
+        prefs.edit().putString(KEY_GAME_OPT_LAST_SUMMARY, summary != null ? summary : "").apply();
+    }
 }

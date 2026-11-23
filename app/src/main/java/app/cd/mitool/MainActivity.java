@@ -1141,13 +1141,25 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        refreshGameFpsSheetState = updateFpsSheetDisplay;
+        final Runnable[] refreshThermalUi = {null};
+        Runnable refreshAllSheetState = () -> {
+            updateFpsSheetDisplay.run();
+            if (refreshThermalUi[0] != null) refreshThermalUi[0].run();
+        };
+
+        refreshThermalUi[0] = app.cd.mitool.ui.GameThermalUi.bind(MainActivity.this, view, () -> {
+            updateFpsSheetDisplay.run();
+            updateToolsCardSummaries();
+            updateDeviceSpecsDisplay();
+        });
+
+        refreshGameFpsSheetState = refreshAllSheetState;
         bs.setOnDismissListener(dialog -> refreshGameFpsSheetState = null);
         updateFpsSheetDisplay.run();
 
-        // 1-Tap Auto Unlock 120 FPS
+        // 1-Tap Auto Unlock 120 FPS (Unrestricted - may increase heat)
         if (btnAutoUnlock != null) {
-            btnAutoUnlock.setOnClickListener(v -> confirmChange("Xóa dữ liệu Pin và Hiệu suất?", "Thao tác sẽ tắt Joyose và xóa dữ liệu ứng dụng Pin và Hiệu suất. Các tùy chỉnh của ứng dụng này có thể bị đặt lại. Bật lại Joyose không phục hồi dữ liệu đã xóa.", "Tắt Joyose và xóa dữ liệu", () -> {
+            btnAutoUnlock.setOnClickListener(v -> confirmChange("Xóa dữ liệu Pin và Hiệu suất?", "Thao tác sẽ tắt Joyose (gỡ kiểm soát nhiệt của Xiaomi) và xóa dữ liệu ứng dụng Pin và Hiệu suất. Chơi Liên Quân khi tắt Joyose có thể gây nóng máy nhanh và tụt FPS khi quá nhiệt. Bật lại Joyose không phục hồi dữ liệu đã xóa.", "Tắt Joyose và xóa dữ liệu", () -> {
                 btnAutoUnlock.setEnabled(false);
                 btnAutoUnlock.setText(R.string.copy_message_mainactivity_09dba51);
                 GamingFpsHelper.autoUnlock120Fps(MainActivity.this, (success, message) -> {

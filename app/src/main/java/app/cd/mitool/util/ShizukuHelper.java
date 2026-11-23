@@ -146,6 +146,14 @@ public class ShizukuHelper {
      * Note: Must be called from a background thread!
      */
     public static ShellResult executeCommand(String command) {
+        return executeCommand(command, 15000);
+    }
+
+    /**
+     * Execute shell command synchronously via Shizuku with a custom timeout in milliseconds.
+     * Note: Must be called from a background thread!
+     */
+    public static ShellResult executeCommand(String command, long timeoutMs) {
         if (!hasShizukuPermission()) {
             return new ShellResult(-1, "", "Shizuku chưa chạy hoặc chưa cấp quyền");
         }
@@ -166,7 +174,8 @@ public class ShizukuHelper {
                 return new ShellResult(-1, "", "Không thể khởi tạo tiến trình Shizuku");
             }
 
-            ProcessRunner.Result result = ProcessRunner.collect(process, 15000);
+            long safeTimeout = Math.max(1000L, timeoutMs);
+            ProcessRunner.Result result = ProcessRunner.collect(process, safeTimeout);
             return new ShellResult(result.exitCode, result.stdout, result.stderr);
         } catch (Throwable t) {
             Throwable cause = t.getCause() != null ? t.getCause() : t;

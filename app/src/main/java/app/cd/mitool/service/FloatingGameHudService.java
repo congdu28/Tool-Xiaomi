@@ -118,10 +118,11 @@ public class FloatingGameHudService extends Service {
     private long lastCpuWork = 0;
     private int currentCpuUsage = 0;
 
-    // Battery / Power variables
+    // Battery / Power / Thermal variables
     private float currentTemp = 36.0f;
     private float currentPowerW = 0.0f;
     private boolean isCharging = false;
+    private int currentThermalStatus = -1;
 
     private final Handler metricsHandler = new Handler(Looper.getMainLooper());
     private Runnable metricsRunnable;
@@ -584,11 +585,12 @@ public class FloatingGameHudService extends Service {
                                 : app.cd.mitool.util.RefreshRateHelper.getCurrentRefreshRate(FloatingGameHudService.this);
                         updateFpsViews();
                     }
-                    if (prefs.isGameHudShowCpu()) {
+                    if (isExpanded && prefs.isGameHudShowCpu()) {
                         measureCpuUsage();
                     }
-                    if (prefs.isGameHudShowTemp() || prefs.isGameHudShowPower()) {
+                    if (prefs.isGameHudShowTemp() || (isExpanded && prefs.isGameHudShowPower())) {
                         measureBatteryMetrics();
+                        currentThermalStatus = app.cd.mitool.util.GamingFpsHelper.getThermalStatus(FloatingGameHudService.this);
                     }
                     updateMetricsViews();
                 }
@@ -683,17 +685,18 @@ public class FloatingGameHudService extends Service {
     }
 
     private void updateMetricsViews() {
+        boolean throttling = app.cd.mitool.util.GameThermalPolicy.isThrottlingThermalStatus(currentThermalStatus);
         String tempText = String.format(Locale.getDefault(), "%.1f°C", currentTemp);
+        int tempColor = Color.parseColor("#00E5FF");
+        if (currentTemp >= 43.0f || currentThermalStatus >= 3) {
+            tempColor = Color.parseColor("#FF5252");
+        } else if (currentTemp >= 40.0f || throttling) {
+            tempColor = Color.parseColor("#FF9800");
+        }
 
         if (prefs.isGameHudShowTemp() && tvCompactTemp != null) {
-            tvCompactTemp.setText(tempText);
-            if (currentTemp >= 43.0f) {
-                tvCompactTemp.setTextColor(Color.parseColor("#FF5252"));
-            } else if (currentTemp >= 40.0f) {
-                tvCompactTemp.setTextColor(Color.parseColor("#FF9800"));
-            } else {
-                tvCompactTemp.setTextColor(Color.parseColor("#00E5FF"));
-            }
+            tvCompactTemp.setText(throttling ? tempText + " ⚠" : tempText);
+            tvCompactTemp.setTextColor(tempColor);
         }
 
         if (isExpanded) {
@@ -704,7 +707,8 @@ public class FloatingGameHudService extends Service {
                 tvExpRam.setText(getRamUsagePercent() + "%");
             }
             if (prefs.isGameHudShowTemp() && tvExpTemp != null) {
-                tvExpTemp.setText(tempText);
+                tvExpTemp.setText(throttling ? tempText + " (Giảm xung)" : tempText);
+                tvExpTemp.setTextColor(tempColor);
             }
             if (prefs.isGameHudShowPower() && tvExpPower != null) {
                 if (currentPowerW > 0.05f) {
