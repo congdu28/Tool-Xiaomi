@@ -1054,6 +1054,15 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton(action, (dialog, which) -> apply.run()).show();
     }
 
+    private void bindExpandableSection(MaterialButton toggleButton, View contentView, int showRes, int hideRes) {
+        if (toggleButton == null || contentView == null) return;
+        toggleButton.setOnClickListener(v -> {
+            boolean expanding = contentView.getVisibility() != View.VISIBLE;
+            contentView.setVisibility(expanding ? View.VISIBLE : View.GONE);
+            toggleButton.setText(expanding ? hideRes : showRes);
+        });
+    }
+
     private void showGameFpsBottomSheet() {
         BottomSheetDialog bs = new BottomSheetDialog(this);
         View view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_game_fps, null);
@@ -1208,30 +1217,36 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Step 2: Disable / Enable Joyose
-        btnDisableJoyose.setOnClickListener(v -> confirmChange("Tắt dịch vụ Joyose?", "Thay đổi có thể ảnh hưởng quản lý trò chơi và hiệu năng của ROM. Bạn có thể bật lại dịch vụ sau đó.", "Tắt Joyose", () -> {
-            GamingFpsHelper.disableJoyose(MainActivity.this, (success, message) -> {
-                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
-                updateFpsSheetDisplay.run();
-                updateToolsCardSummaries();
-                updateDeviceSpecsDisplay();
-            });
-        }));
+        if (btnDisableJoyose != null) {
+            btnDisableJoyose.setOnClickListener(v -> confirmChange("Tắt dịch vụ Joyose?", "Thay đổi có thể ảnh hưởng quản lý trò chơi và hiệu năng của ROM. Bạn có thể bật lại dịch vụ sau đó.", "Tắt Joyose", () -> {
+                GamingFpsHelper.disableJoyose(MainActivity.this, (success, message) -> {
+                    Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                    updateFpsSheetDisplay.run();
+                    updateToolsCardSummaries();
+                    updateDeviceSpecsDisplay();
+                });
+            }));
+        }
 
-        btnEnableJoyose.setOnClickListener(v -> {
-            GamingFpsHelper.enableJoyose(MainActivity.this, (success, message) -> {
-                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
-                updateFpsSheetDisplay.run();
-                updateToolsCardSummaries();
-                updateDeviceSpecsDisplay();
+        if (btnEnableJoyose != null) {
+            btnEnableJoyose.setOnClickListener(v -> {
+                GamingFpsHelper.enableJoyose(MainActivity.this, (success, message) -> {
+                    Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                    updateFpsSheetDisplay.run();
+                    updateToolsCardSummaries();
+                    updateDeviceSpecsDisplay();
+                });
             });
-        });
+        }
 
         // Step 3: Clear PowerKeeper (Shizuku 1-tap or App Settings)
-        btnClearPk.setOnClickListener(v -> confirmChange("Xóa dữ liệu Pin và Hiệu suất?", "Dữ liệu và tùy chỉnh của ứng dụng này sẽ bị xóa. Mi Tool không có bản sao để khôi phục.", "Xóa dữ liệu", () -> {
-            GamingFpsHelper.clearPowerKeeper(MainActivity.this, (success, message) -> {
-                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
-            });
-        }));
+        if (btnClearPk != null) {
+            btnClearPk.setOnClickListener(v -> confirmChange("Xóa dữ liệu Pin và Hiệu suất?", "Dữ liệu và tùy chỉnh của ứng dụng này sẽ bị xóa. Mi Tool không có bản sao để khôi phục.", "Xóa dữ liệu", () -> {
+                GamingFpsHelper.clearPowerKeeper(MainActivity.this, (success, message) -> {
+                    Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                });
+            }));
+        }
 
         if (btnClearPkManual != null) {
             btnClearPkManual.setOnClickListener(v -> {
@@ -1240,16 +1255,31 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Step 4: Launch Game
-        btnAov.setOnClickListener(v -> {
-            boolean launched = GamingFpsHelper.launchLienQuanMobile(MainActivity.this);
-            if (!launched) {
-                Toast.makeText(MainActivity.this, R.string.message_e0bf52937b, Toast.LENGTH_SHORT).show();
-            }
-        });
+        if (btnAov != null) {
+            btnAov.setOnClickListener(v -> {
+                boolean launched = GamingFpsHelper.launchLienQuanMobile(MainActivity.this);
+                if (!launched) {
+                    Toast.makeText(MainActivity.this, R.string.message_e0bf52937b, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        // Collapsible advanced sections to keep sheet clean
+        bindExpandableSection(
+                view.findViewById(R.id.bs_btn_toggle_hud_custom),
+                view.findViewById(R.id.bs_layout_hud_customization),
+                R.string.game_thermal_hud_customize_show,
+                R.string.game_thermal_hud_customize_hide
+        );
+        bindExpandableSection(
+                view.findViewById(R.id.bs_btn_toggle_manual_steps),
+                view.findViewById(R.id.bs_layout_manual_steps),
+                R.string.game_thermal_manual_show,
+                R.string.game_thermal_manual_hide
+        );
 
         // Mini Game HUD controls
         MaterialSwitch switchGameHud = view.findViewById(R.id.bs_switch_game_hud);
-        MaterialButton btnToggleGameHud = view.findViewById(R.id.bs_btn_toggle_game_hud);
         MaterialButton btnAddHudTile = view.findViewById(R.id.bs_btn_add_hud_qs_tile);
 
         final boolean[] isUpdatingHudSwitch = {false};
@@ -1266,23 +1296,6 @@ public class MainActivity extends AppCompatActivity {
             switchGameHud.setOnCheckedChangeListener((btn, isChecked) -> {
                 if (isUpdatingHudSwitch[0]) return;
                 if (isChecked) {
-                    ensureGameHudPermissionAndStart(() -> {
-                        syncHudSwitchState.run();
-                        Toast.makeText(MainActivity.this, R.string.message_e642e9cac1, Toast.LENGTH_SHORT).show();
-                    });
-                } else {
-                    prefs.setGameHudEnabled(false);
-                    stopFloatingGameHudService();
-                    syncHudSwitchState.run();
-                    Toast.makeText(MainActivity.this, R.string.message_84696a9c8b, Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-
-        if (btnToggleGameHud != null) {
-            btnToggleGameHud.setOnClickListener(v -> {
-                boolean cur = prefs.isGameHudEnabled();
-                if (!cur) {
                     ensureGameHudPermissionAndStart(() -> {
                         syncHudSwitchState.run();
                         Toast.makeText(MainActivity.this, R.string.message_e642e9cac1, Toast.LENGTH_SHORT).show();

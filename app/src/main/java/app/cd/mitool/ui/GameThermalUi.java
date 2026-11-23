@@ -39,6 +39,7 @@ public final class GameThermalUi {
         MaterialButton btnPresetCustom = view.findViewById(R.id.bs_btn_preset_custom);
 
         View layoutCustom = view.findViewById(R.id.bs_layout_thermal_custom);
+        TextView tvConfigSummary = view.findViewById(R.id.bs_tv_thermal_config_summary);
         MaterialButton btnFps = view.findViewById(R.id.bs_btn_thermal_fps);
         MaterialButton btnScale = view.findViewById(R.id.bs_btn_thermal_scale);
         MaterialButton btnMode = view.findViewById(R.id.bs_btn_thermal_mode);
@@ -66,8 +67,8 @@ public final class GameThermalUi {
             boolean installed = GamingFpsHelper.isPackageInstalled(activity, targetPkg[0]);
             if (tvTargetGame != null) {
                 tvTargetGame.setText(installed
-                        ? "Mục tiêu: " + label + " (" + targetPkg[0] + ")"
-                        : "Chưa cài đặt game mục tiêu (" + targetPkg[0] + ")");
+                        ? "Game: " + label
+                        : "Chưa cài đặt (" + targetPkg[0] + ")");
             }
 
             stylePresetButton(activity, btnPresetCool60, activePreset[0] == GameThermalPolicy.Preset.COOL_60);
@@ -79,6 +80,15 @@ public final class GameThermalUi {
             }
 
             GameThermalPolicy.Config cfg = currentConfig(prefs, activePreset[0]);
+            if (tvConfigSummary != null) {
+                String fpsPart = cfg.targetFps > 0 ? "Trần " + cfg.targetFps + " FPS" : "FPS mặc định";
+                String scalePart = "Scale GPU " + formatDownscaleLabel(cfg.downscale);
+                StringBuilder summary = new StringBuilder(fpsPart + " · " + scalePart + " · Giữ Joyose");
+                if (cfg.alignDisplayHz) summary.append(" · Đồng bộ Hz");
+                if (cfg.precompileProfile) summary.append(" · ART");
+                if (cfg.trimCachedProcesses) summary.append(" · Dọn nền");
+                tvConfigSummary.setText(summary.toString());
+            }
             if (btnFps != null) {
                 btnFps.setText("Trần FPS: " + (cfg.targetFps > 0 ? cfg.targetFps + " FPS" : "Mặc định"));
             }

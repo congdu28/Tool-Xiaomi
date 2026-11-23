@@ -1,21 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="game_thermal_status_loading">Nhiệt độ: Đang đọc...</string>
-    <string name="game_thermal_card_title">Tối ưu chống quá nhiệt (Khuyên dùng cho Liên Quân)</string>
-    <string name="game_thermal_card_desc">Giảm tải GPU bằng GameManager (Android 13+), giữ Joyose bảo vệ nhiệt, tối ưu ART và dọn cache nền qua Shizuku để tránh nóng máy gây tụt FPS đột ngột.</string>
-    <string name="game_thermal_pick_game">Đổi game</string>
-    <string name="game_thermal_preset_cool_60">❄️ Mát 60 FPS\n(Scale 80%)</string>
-    <string name="game_thermal_preset_balanced_90">⚡ 90 FPS\n(Scale 85%)</string>
+    <string name="game_thermal_card_title">🛡️ Chống quá nhiệt &amp; Ổn định FPS</string>
+    <string name="game_thermal_card_desc">Giảm tải GPU, khóa trần FPS và giữ bảo vệ nhiệt qua Shizuku để tránh nóng máy gây tụt FPS.</string>
+    <string name="game_thermal_pick_game">Đổi</string>
+    <string name="game_thermal_preset_cool_60">❄️ Mát\n60 FPS</string>
+    <string name="game_thermal_preset_balanced_90">⚡ Cân bằng\n90 FPS</string>
     <string name="game_thermal_preset_custom">🎛️ Tùy chỉnh</string>
     <string name="game_thermal_opt_align_hz">Đồng bộ Hz màn hình theo trần FPS (nếu hỗ trợ)</string>
     <string name="game_thermal_opt_precompile">Biên dịch ART speed-profile (giảm giật do JIT)</string>
     <string name="game_thermal_opt_trim_bg">Dọn cache tiến trình nền an toàn (am kill-all)</string>
-    <string name="game_thermal_btn_apply">🛡️ Áp dụng chống nóng qua Shizuku</string>
+    <string name="game_thermal_btn_apply">Chỉ áp dụng</string>
     <string name="game_thermal_btn_apply_launch">⚔️ Áp dụng &amp; Mở game</string>
     <string name="game_thermal_btn_restore">🔄 Khôi phục mặc định</string>
-    <string name="game_thermal_btn_ram_cleaner">🧹 Dừng app ngầm</string>
-    <string name="game_thermal_result_default_title">Trạng thái can thiệp hiện tại</string>
-    <string name="game_thermal_result_default_desc">Chọn cấu hình và bấm Áp dụng. Mọi thay đổi đều kiểm tra lại từ hệ thống.</string>
-    <string name="game_thermal_legacy_title">Phá giới hạn Joyose (Dễ nóng máy)</string>
-    <string name="game_thermal_legacy_desc">Tắt Joyose và xóa PowerKeeper sẽ gỡ cơ chế kiểm soát nhiệt của Xiaomi. Chỉ nên dùng khi có sò lạnh tản nhiệt; dùng máy trần chơi Liên Quân dễ quá nhiệt và tụt FPS nặng hơn.</string>
+    <string name="game_thermal_btn_ram_cleaner">🧹 Dừng ứng dụng ngầm gây nóng</string>
+    <string name="game_thermal_result_default_title">Trạng thái can thiệp</string>
+    <string name="game_thermal_result_default_desc">Chọn mức tối ưu rồi bấm Áp dụng &amp; Mở game. Tắt Shizuku sau khi áp dụng vẫn giữ hiệu lực.</string>
+    <string name="game_thermal_hud_customize_show">🎨 Tùy chỉnh kích thước, độ mờ &amp; thông số HUD ▾</string>
+    <string name="game_thermal_hud_customize_hide">🎨 Thu gọn tùy chỉnh HUD ▴</string>
+    <string name="game_thermal_legacy_title">⚠️ Phá giới hạn Joyose (Chỉ dùng với tản nhiệt)</string>
+    <string name="game_thermal_legacy_desc">Tắt Joyose và xóa PowerKeeper sẽ gỡ kiểm soát nhiệt của Xiaomi. Chơi máy trần dễ nóng và tụt FPS nặng hơn.</string>
+    <string name="game_thermal_manual_show">Thao tác thủ công từng bước ▾</string>
+    <string name="game_thermal_manual_hide">Thu gọn thao tác thủ công ▴</string>
 </resources>
