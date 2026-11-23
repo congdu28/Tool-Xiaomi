@@ -18,19 +18,60 @@ public class GameThermalPolicyTest {
         }
     }
 
-    @Test public void presetsPrioritizeCoolThermalSafetyOverDisablingJoyose() {
-        GameThermalPolicy.Config cool60 = GameThermalPolicy.presetConfig(GameThermalPolicy.Preset.COOL_60);
-        assertEquals(60, cool60.targetFps);
-        assertEquals("0.8", cool60.downscale);
-        assertEquals(GameThermalPolicy.MODE_STANDARD, cool60.gameMode);
-        assertTrue(cool60.keepJoyoseEnabled);
-        assertTrue(cool60.precompileProfile);
-        assertTrue(cool60.trimCachedProcesses);
+    @Test public void workloadClassificationDistinguishesCpuAndGpuGames() {
+        assertEquals(GameThermalPolicy.WorkloadProfile.CPU_BOUND,
+                GameThermalPolicy.classifyWorkload("com.garena.game.kgvn"));
+        assertEquals(GameThermalPolicy.WorkloadProfile.CPU_BOUND,
+                GameThermalPolicy.classifyWorkload("com.levelinfinite.sgameGlobal"));
+        assertEquals(GameThermalPolicy.WorkloadProfile.CPU_BOUND,
+                GameThermalPolicy.classifyWorkload("com.riotgames.league.wildriftvn"));
 
-        GameThermalPolicy.Config balanced90 = GameThermalPolicy.presetConfig(GameThermalPolicy.Preset.BALANCED_90);
-        assertEquals(90, balanced90.targetFps);
-        assertEquals("0.85", balanced90.downscale);
-        assertTrue(balanced90.keepJoyoseEnabled);
+        assertEquals(GameThermalPolicy.WorkloadProfile.GPU_BOUND,
+                GameThermalPolicy.classifyWorkload("com.miHoYo.GenshinImpact"));
+        assertEquals(GameThermalPolicy.WorkloadProfile.GPU_BOUND,
+                GameThermalPolicy.classifyWorkload("com.vng.pubgmobile"));
+
+        assertEquals(GameThermalPolicy.WorkloadProfile.BALANCED,
+                GameThermalPolicy.classifyWorkload("com.example.unknown.game"));
+        assertEquals(GameThermalPolicy.WorkloadProfile.BALANCED,
+                GameThermalPolicy.classifyWorkload(null));
+    }
+
+    @Test public void presetsAdaptToCpuBoundGamesWithoutBlurringResolution() {
+        GameThermalPolicy.Config aovCool60 = GameThermalPolicy.presetConfig(
+                GameThermalPolicy.Preset.COOL_60, "com.garena.game.kgvn");
+        assertEquals(60, aovCool60.targetFps);
+        assertEquals(GameThermalPolicy.DOWNSCALE_DISABLE, aovCool60.downscale);
+        assertEquals(GameThermalPolicy.MODE_STANDARD, aovCool60.gameMode);
+        assertTrue(aovCool60.alignDisplayHz);
+        assertTrue(aovCool60.keepJoyoseEnabled);
+        assertTrue(aovCool60.precompileProfile);
+        assertTrue(aovCool60.trimCachedProcesses);
+
+        GameThermalPolicy.Config aovBal90 = GameThermalPolicy.presetConfig(
+                GameThermalPolicy.Preset.BALANCED_90, "com.garena.game.kgvn");
+        assertEquals(90, aovBal90.targetFps);
+        assertEquals(GameThermalPolicy.DOWNSCALE_DISABLE, aovBal90.downscale);
+        assertTrue(aovBal90.keepJoyoseEnabled);
+    }
+
+    @Test public void presetsApplyGpuDownscaleForGpuBoundGames() {
+        GameThermalPolicy.Config genshinCool60 = GameThermalPolicy.presetConfig(
+                GameThermalPolicy.Preset.COOL_60, "com.miHoYo.GenshinImpact");
+        assertEquals(60, genshinCool60.targetFps);
+        assertEquals("0.8", genshinCool60.downscale);
+        assertTrue(genshinCool60.keepJoyoseEnabled);
+
+        GameThermalPolicy.Config genshinBal90 = GameThermalPolicy.presetConfig(
+                GameThermalPolicy.Preset.BALANCED_90, "com.miHoYo.GenshinImpact");
+        assertEquals(90, genshinBal90.targetFps);
+        assertEquals("0.85", genshinBal90.downscale);
+        assertTrue(genshinBal90.keepJoyoseEnabled);
+    }
+
+    @Test public void backgroundCpuReliefCommandsAreSafe() {
+        assertEquals("cmd package bg-dexopt-job --cancel", GameThermalPolicy.buildCancelBgDexoptCommand());
+        assertEquals("am kill-all", GameThermalPolicy.buildTrimCachedCommand());
     }
 
     @Test public void gameManagerCommandsRespectApiLevelsAndWhitelists() {
@@ -86,10 +127,20 @@ public class GameThermalPolicyTest {
         assertTrue(ok.supported);
         assertTrue(ok.activeOverride);
 
+        GameThermalPolicy.GameConfigVerification fpsOnlyOk =
+                GameThermalPolicy.parseGameConfigsOutput(
+                        "com.garena.game.kgvn:\n  mode=1, downscaleFactor=disable, fps=60", "", 60, GameThermalPolicy.DOWNSCALE_DISABLE);
+        assertTrue(fpsOnlyOk.supported);
+        assertTrue(fpsOnlyOk.activeOverride);
+
         GameThermalPolicy.GameConfigVerification mismatch =
                 GameThermalPolicy.parseGameConfigsOutput(
                         "com.garena.game.kgvn:\n  mode=1, downscaleFactor=disable, fps=0", "", 60, "0.8");
         assertTrue(mismatch.supported);
         assertFalse(mismatch.activeOverride);
+
+        assertFalse(GameThermalPolicy.hasActiveIntervention("com.garena.game.kgvn:\n  mode=1, downscaleFactor=disable, fps=0"));
+        assertTrue(GameThermalPolicy.hasActiveIntervention("com.garena.game.kgvn:\n  mode=1, downscaleFactor=disable, fps=60"));
+        assertTrue(GameThermalPolicy.hasActiveIntervention("com.miHoYo.GenshinImpact:\n  mode=1, downscaleFactor=0.8, fps=0"));
     }
 }

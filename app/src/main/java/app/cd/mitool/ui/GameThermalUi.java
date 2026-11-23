@@ -65,9 +65,10 @@ public final class GameThermalUi {
             GamingFpsHelper.GameEntry entry = GamingFpsHelper.getGameEntry(activity, targetPkg[0]);
             String label = entry != null ? entry.title : targetPkg[0];
             boolean installed = GamingFpsHelper.isPackageInstalled(activity, targetPkg[0]);
+            GameThermalPolicy.WorkloadProfile workload = GameThermalPolicy.classifyWorkload(targetPkg[0]);
             if (tvTargetGame != null) {
                 tvTargetGame.setText(installed
-                        ? "Game: " + label
+                        ? "Game: " + label + " (" + GameThermalPolicy.workloadLabel(workload) + ")"
                         : "Chưa cài đặt (" + targetPkg[0] + ")");
             }
 
@@ -79,14 +80,21 @@ public final class GameThermalUi {
                 layoutCustom.setVisibility(activePreset[0] == GameThermalPolicy.Preset.CUSTOM ? View.VISIBLE : View.GONE);
             }
 
-            GameThermalPolicy.Config cfg = currentConfig(prefs, activePreset[0]);
+            GameThermalPolicy.Config cfg = currentConfig(prefs, activePreset[0], targetPkg[0]);
             if (tvConfigSummary != null) {
-                String fpsPart = cfg.targetFps > 0 ? "Trần " + cfg.targetFps + " FPS" : "FPS mặc định";
-                String scalePart = "Scale GPU " + formatDownscaleLabel(cfg.downscale);
+                boolean noScale = GameThermalPolicy.DOWNSCALE_DISABLE.equals(cfg.downscale);
+                String fpsPart = cfg.targetFps > 0
+                        ? (workload == GameThermalPolicy.WorkloadProfile.CPU_BOUND
+                                ? "Trần " + cfg.targetFps + " FPS (giảm tải CPU)"
+                                : "Trần " + cfg.targetFps + " FPS")
+                        : "FPS mặc định";
+                String scalePart = noScale
+                        ? "Giữ 100% nét gốc"
+                        : "Scale GPU " + formatDownscaleLabel(cfg.downscale);
                 StringBuilder summary = new StringBuilder(fpsPart + " · " + scalePart + " · Giữ Joyose");
                 if (cfg.alignDisplayHz) summary.append(" · Đồng bộ Hz");
                 if (cfg.precompileProfile) summary.append(" · ART");
-                if (cfg.trimCachedProcesses) summary.append(" · Dọn nền");
+                if (cfg.trimCachedProcesses) summary.append(" · Dọn CPU nền");
                 tvConfigSummary.setText(summary.toString());
             }
             if (btnFps != null) {
@@ -184,7 +192,13 @@ public final class GameThermalUi {
 
         if (btnScale != null) {
             final String[] scaleValues = {GameThermalPolicy.DOWNSCALE_DISABLE, "0.9", "0.85", "0.8", "0.75"};
-            final String[] scaleLabels = {"100% (Không giảm)", "90% (Sắc nét, nhẹ hơn)", "85% (Cân bằng)", "80% (Giảm nhiệt rõ rệt)", "75% (Mát nhất)"};
+            final String[] scaleLabels = {
+                    "100% (Gốc — khuyên dùng cho game thiên CPU như Liên Quân)",
+                    "90% (Sắc nét, nhẹ hơn)",
+                    "85% (Cân bằng 3D)",
+                    "80% (Giảm tải GPU rõ rệt)",
+                    "75% (Mát nhất cho game 3D nặng)"
+            };
             btnScale.setOnClickListener(v -> new MaterialAlertDialogBuilder(activity)
                     .setTitle("Tỉ lệ dựng hình GPU (Downscale)")
                     .setItems(scaleLabels, (d, which) -> {
@@ -248,7 +262,7 @@ public final class GameThermalUi {
             if (tvResultTitle != null) {
                 tvResultTitle.setText(launchAfter ? "Đang tối ưu & chuẩn bị mở game..." : "Đang áp dụng qua Shizuku...");
             }
-            GameThermalPolicy.Config cfg = currentConfig(prefs, activePreset[0]);
+            GameThermalPolicy.Config cfg = currentConfig(prefs, activePreset[0], targetPkg[0]);
             GamingFpsHelper.applyThermalOptimization(activity, targetPkg[0], cfg, res -> {
                 busy[0] = false;
                 if (btnApply != null) btnApply.setEnabled(true);
@@ -315,7 +329,7 @@ public final class GameThermalUi {
         }
     }
 
-    private static GameThermalPolicy.Config currentConfig(PreferencesHelper prefs, GameThermalPolicy.Preset preset) {
+    private static GameThermalPolicy.Config currentConfig(PreferencesHelper prefs, GameThermalPolicy.Preset preset, String pkg) {
         if (preset == GameThermalPolicy.Preset.CUSTOM) {
             return new GameThermalPolicy.Config(
                     GameThermalPolicy.Preset.CUSTOM,
@@ -328,7 +342,7 @@ public final class GameThermalUi {
                     true
             );
         }
-        return GameThermalPolicy.presetConfig(preset);
+        return GameThermalPolicy.presetConfig(preset, pkg);
     }
 
     private static String formatDownscaleLabel(String downscale) {

@@ -691,11 +691,11 @@ public class PreferencesHelper {
     }
 
     public String getGameOptDownscale() {
-        return prefs.getString(KEY_GAME_OPT_DOWNSCALE, "0.8");
+        return prefs.getString(KEY_GAME_OPT_DOWNSCALE, GameThermalPolicy.DOWNSCALE_DISABLE);
     }
 
     public void setGameOptDownscale(String scale) {
-        prefs.edit().putString(KEY_GAME_OPT_DOWNSCALE, scale != null ? scale : "0.8").apply();
+        prefs.edit().putString(KEY_GAME_OPT_DOWNSCALE, scale != null ? scale : GameThermalPolicy.DOWNSCALE_DISABLE).apply();
     }
 
     public String getGameOptMode() {

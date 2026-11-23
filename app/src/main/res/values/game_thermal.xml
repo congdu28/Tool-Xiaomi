@@ -2,14 +2,14 @@
 <resources>
     <string name="game_thermal_status_loading">Nhiệt độ: Đang đọc...</string>
     <string name="game_thermal_card_title">🛡️ Chống quá nhiệt &amp; Ổn định FPS</string>
-    <string name="game_thermal_card_desc">Giảm tải GPU, khóa trần FPS và giữ bảo vệ nhiệt qua Shizuku để tránh nóng máy gây tụt FPS.</string>
+    <string name="game_thermal_card_desc">Tự động nhận diện game thiên CPU (Liên Quân giữ 100% độ nét, giảm tải CPU) hoặc thiên GPU (3D nặng) và giữ bảo vệ nhiệt qua Shizuku.</string>
     <string name="game_thermal_pick_game">Đổi</string>
     <string name="game_thermal_preset_cool_60">❄️ Mát\n60 FPS</string>
     <string name="game_thermal_preset_balanced_90">⚡ Cân bằng\n90 FPS</string>
     <string name="game_thermal_preset_custom">🎛️ Tùy chỉnh</string>
     <string name="game_thermal_opt_align_hz">Đồng bộ Hz màn hình theo trần FPS (nếu hỗ trợ)</string>
     <string name="game_thermal_opt_precompile">Biên dịch ART speed-profile (giảm giật do JIT)</string>
-    <string name="game_thermal_opt_trim_bg">Dọn cache tiến trình nền an toàn (am kill-all)</string>
+    <string name="game_thermal_opt_trim_bg">Giảm tranh chấp CPU nền (hủy dexopt nền + am kill-all)</string>
     <string name="game_thermal_btn_apply">Chỉ áp dụng</string>
     <string name="game_thermal_btn_apply_launch">⚔️ Áp dụng &amp; Mở game</string>
     <string name="game_thermal_btn_restore">🔄 Khôi phục mặc định</string>

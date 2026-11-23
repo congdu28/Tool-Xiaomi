@@ -223,8 +223,7 @@ public class GamingFpsHelper {
                     GameThermalPolicy.GameConfigVerification v =
                             GameThermalPolicy.parseGameConfigsOutput(res.stdout, res.stderr, 0, GameThermalPolicy.DOWNSCALE_DISABLE);
                     summary = v.summary;
-                    String lower = summary.toLowerCase(java.util.Locale.US);
-                    interventionActive = v.supported && (lower.contains("fps=") || lower.contains("downscale"));
+                    interventionActive = v.supported && GameThermalPolicy.hasActiveIntervention(summary);
                 } else {
                     String modesCmd = GameThermalPolicy.buildListModesCommand(sdk, gamePkg);
                     if (modesCmd != null) {
@@ -288,6 +287,14 @@ public class GamingFpsHelper {
         StringBuilder details = new StringBuilder();
         boolean anyApplied = false;
 
+        GameThermalPolicy.WorkloadProfile workload = GameThermalPolicy.classifyWorkload(gamePkg);
+        boolean downscaleDisabled = GameThermalPolicy.DOWNSCALE_DISABLE.equals(config.downscale);
+        if (workload == GameThermalPolicy.WorkloadProfile.CPU_BOUND && downscaleDisabled) {
+            details.append("• Hồ sơ game: Thiên CPU (giữ 100% độ nét gốc, tập trung giảm tải CPU qua trần FPS, ART & giảm tranh chấp nền).\n");
+        } else {
+            details.append("• Hồ sơ game: " + GameThermalPolicy.workloadLabel(workload) + ".\n");
+        }
+
         // 1. Keep Joyose enabled so Xiaomi's hardware thermal curve remains intact
         if (config.keepJoyoseEnabled) {
             JoyoseStatus joyose = checkJoyoseStatus(app);
@@ -327,10 +334,13 @@ public class GamingFpsHelper {
 
             if (setRes.success && verified.activeOverride) {
                 anyApplied = true;
-                String scaleDesc = GameThermalPolicy.DOWNSCALE_DISABLE.equals(config.downscale)
-                        ? "100% gốc" : Math.round(Float.parseFloat(config.downscale) * 100) + "%";
                 String fpsDesc = config.targetFps > 0 ? config.targetFps + " FPS" : "Mặc định";
-                details.append("• GameManager (Xác minh OK): Trần " + fpsDesc + ", Scale GPU " + scaleDesc + ".\n");
+                if (downscaleDisabled) {
+                    details.append("• GameManager (Xác minh OK): Trần " + fpsDesc + " (giảm tải CPU/khung hình), giữ 100% độ phân giải gốc.\n");
+                } else {
+                    String scaleDesc = Math.round(Float.parseFloat(config.downscale) * 100) + "%";
+                    details.append("• GameManager (Xác minh OK): Trần " + fpsDesc + ", Scale GPU " + scaleDesc + ".\n");
+                }
             } else if (setRes.success && verified.supported) {
                 details.append("• GameManager: Lệnh đã chạy nhưng ROM/game chưa khớp cấu hình (" + verified.summary + ").\n");
             } else {
@@ -338,7 +348,7 @@ public class GamingFpsHelper {
                 details.append("• GameManager: Game/ROM không áp dụng can thiệp (" + reason + ").\n");
             }
         } else {
-            details.append("• Giảm tải GPU / Trần FPS (`cmd game set`): Cần Android 13+ (API " + sdk + ").\n");
+            details.append("• Khóa trần FPS / Scale (`cmd game set`): Cần Android 13+ (API " + sdk + ").\n");
         }
 
         // 3. Optional Display Refresh Rate Alignment (only if panel exposes exact matching step)
@@ -379,14 +389,23 @@ public class GamingFpsHelper {
             }
         }
 
-        // 5. Safe background cached process trim
+        // 5. Safe CPU background contention relief (cancel background dexopt + trim cached processes)
         if (config.trimCachedProcesses) {
-            ShizukuHelper.ShellResult trimRes = runPrivilegedCommand(GameThermalPolicy.buildTrimCachedCommand(), 10000);
-            if (trimRes.success) {
+            ShizukuHelper.ShellResult dexoptCancelRes = runPrivilegedCommand(
+                    GameThermalPolicy.buildCancelBgDexoptCommand(), 10000);
+            ShizukuHelper.ShellResult trimRes = runPrivilegedCommand(
+                    GameThermalPolicy.buildTrimCachedCommand(), 10000);
+            if (trimRes.success && dexoptCancelRes.success) {
                 anyApplied = true;
-                details.append("• Tiến trình đệm: Đã dọn cache nền an toàn (`am kill-all`, không ngắt thông báo).\n");
+                details.append("• Giảm tranh chấp CPU nền: Đã hủy tác vụ biên dịch nền (bg-dexopt) và dọn cache nền (`am kill-all`, giữ thông báo).\n");
+            } else if (trimRes.success) {
+                anyApplied = true;
+                details.append("• Giảm tranh chấp CPU nền: Đã dọn cache nền an toàn (`am kill-all`, không ngắt thông báo).\n");
+            } else if (dexoptCancelRes.success) {
+                anyApplied = true;
+                details.append("• Giảm tranh chấp CPU nền: Đã hủy tác vụ biên dịch nền (bg-dexopt).\n");
             } else {
-                details.append("• Tiến trình đệm: Không chạy được `am kill-all`.\n");
+                details.append("• Giảm tranh chấp CPU nền: Không chạy được lệnh dọn nền.\n");
             }
         }
 

@@ -11,7 +11,8 @@ import java.util.regex.Pattern;
 
 /**
  * Pure-Java policy and shell command builder for thermal-safe Shizuku game optimization.
- * Focuses on reducing GPU/CPU/display thermal load instead of disabling vendor thermal daemons.
+ * Adapts to CPU-bound games (e.g. Arena of Valor / MOBA) vs GPU-bound 3D games instead of
+ * blindly downscaling resolution or disabling vendor thermal daemons.
  */
 public final class GameThermalPolicy {
 
@@ -32,14 +33,66 @@ public final class GameThermalPolicy {
             MODE_STANDARD, MODE_PERFORMANCE, MODE_BATTERY
     )));
 
+    private static final Set<String> CPU_BOUND_PACKAGES = Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(
+            "com.garena.game.kgvn",            // Liên Quân Mobile (VN)
+            "com.garena.game.kgtw",            // Truyền Thuyết Đối Quyết (TW)
+            "com.garena.game.kgth",            // RoV (TH)
+            "com.ngame.allstar.eu",            // Arena of Valor (EU/NA)
+            "com.levelinfinite.sgameGlobal",   // Honor of Kings (Global)
+            "com.tencent.tmgp.sgame",          // Vương Giả Vinh Diệu (CN)
+            "com.riotgames.league.wildriftvn", // LMHT: Tốc Chiến (VN)
+            "com.riotgames.league.wildrift",   // Wild Rift (Global)
+            "com.mobile.legends",              // Mobile Legends: Bang Bang
+            "com.roblox.client",               // Roblox
+            "com.haegin.playtogether",         // Play Together
+            "com.mojang.minecraftpe"           // Minecraft
+    )));
+
+    private static final Set<String> GPU_BOUND_PACKAGES = Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(
+            "com.miHoYo.GenshinImpact",        // Genshin Impact (Global)
+            "com.miHoYo.Yuanshen",             // Genshin Impact (CN)
+            "com.miHoYo.hkrpgoversea",         // Honkai: Star Rail (Global)
+            "com.miHoYo.hkrpg",                // Honkai: Star Rail (CN)
+            "com.HoYoverse.Nap",               // Zenless Zone Zero
+            "com.kurogame.wutheringwaves.global", // Wuthering Waves
+            "com.carxtech.sr",                 // CarX Street
+            "com.vng.pubgmobile",              // PUBG Mobile (VN)
+            "com.tencent.ig",                  // PUBG Mobile (Global)
+            "com.vng.codmvn",                  // Call of Duty Mobile (VN)
+            "com.activision.callofduty.shooter", // COD Mobile (Global)
+            "com.dts.freefiremax"              // Free Fire MAX
+    )));
+
     private static final Pattern PACKAGE_PATTERN = Pattern.compile("[a-zA-Z0-9_]+(?:\\.[a-zA-Z0-9_]+)+");
     private static final Pattern DEXOPT_STATUS_PATTERN = Pattern.compile("\\[status=([a-zA-Z0-9_\\-]+)\\]");
+    private static final Pattern ACTIVE_FPS_PATTERN = Pattern.compile("fps\\s*[:=]\\s*([1-9][0-9]*)");
+    private static final Pattern ACTIVE_SCALE_PATTERN = Pattern.compile("downscale(?:factor)?\\s*[:=]\\s*(0\\.[0-9]+)");
+
+    public enum WorkloadProfile {
+        CPU_BOUND,
+        GPU_BOUND,
+        BALANCED
+    }
 
     public enum Preset {
         COOL_60,
         BALANCED_90,
         CUSTOM,
         RESTORE_DEFAULT
+    }
+
+    public static WorkloadProfile classifyWorkload(String pkg) {
+        if (pkg == null) return WorkloadProfile.BALANCED;
+        String clean = pkg.trim();
+        if (CPU_BOUND_PACKAGES.contains(clean)) return WorkloadProfile.CPU_BOUND;
+        if (GPU_BOUND_PACKAGES.contains(clean)) return WorkloadProfile.GPU_BOUND;
+        return WorkloadProfile.BALANCED;
+    }
+
+    public static String workloadLabel(WorkloadProfile profile) {
+        if (profile == WorkloadProfile.CPU_BOUND) return "Thiên CPU";
+        if (profile == WorkloadProfile.GPU_BOUND) return "Thiên GPU";
+        return "Cân bằng CPU/GPU";
     }
 
     public static final class Config {
@@ -67,16 +120,34 @@ public final class GameThermalPolicy {
     }
 
     public static Config presetConfig(Preset preset) {
+        return presetConfig(preset, null);
+    }
+
+    /**
+     * Build preset config adapted to the game's workload profile:
+     * - CPU_BOUND (e.g. Liên Quân Mobile, Honor of Kings, Wild Rift): keeps 100% native resolution
+     *   (`disable` downscale) so UI/minimap stay crisp, focusing thermal savings on FPS cap (cuts CPU
+     *   simulation/render-thread work), Display Hz alignment, ART pre-compilation, and CPU background relief.
+     * - GPU_BOUND (e.g. Genshin Impact, Honkai: Star Rail, PUBG): adds GPU downscale (0.8 / 0.85).
+     * - BALANCED (other games): gentle GPU downscale (0.85 / 0.9).
+     */
+    public static Config presetConfig(Preset preset, String pkg) {
+        WorkloadProfile profile = classifyWorkload(pkg);
         if (preset == Preset.COOL_60) {
-            return new Config(Preset.COOL_60, MODE_STANDARD, 60, "0.8", true, true, true, true);
+            String scale = profile == WorkloadProfile.CPU_BOUND ? DOWNSCALE_DISABLE
+                    : (profile == WorkloadProfile.GPU_BOUND ? "0.8" : "0.85");
+            return new Config(Preset.COOL_60, MODE_STANDARD, 60, scale, true, true, true, true);
         }
         if (preset == Preset.BALANCED_90) {
-            return new Config(Preset.BALANCED_90, MODE_STANDARD, 90, "0.85", true, true, true, true);
+            String scale = profile == WorkloadProfile.CPU_BOUND ? DOWNSCALE_DISABLE
+                    : (profile == WorkloadProfile.GPU_BOUND ? "0.85" : "0.9");
+            return new Config(Preset.BALANCED_90, MODE_STANDARD, 90, scale, true, true, true, true);
         }
         if (preset == Preset.RESTORE_DEFAULT) {
             return new Config(Preset.RESTORE_DEFAULT, MODE_STANDARD, 0, DOWNSCALE_DISABLE, false, false, false, true);
         }
-        return new Config(Preset.CUSTOM, MODE_STANDARD, 60, "0.85", false, true, true, true);
+        String customScale = profile == WorkloadProfile.CPU_BOUND ? DOWNSCALE_DISABLE : "0.85";
+        return new Config(Preset.CUSTOM, MODE_STANDARD, 60, customScale, false, true, true, true);
     }
 
     public static boolean validPackage(String pkg) {
@@ -160,6 +231,14 @@ public final class GameThermalPolicy {
     }
 
     /**
+     * Cancel any in-progress background ART/dexopt job so it does not peg CPU cores and heat the SoC mid-match.
+     * Safe and reversible: Android automatically reschedules dexopt when idle and charging.
+     */
+    public static String buildCancelBgDexoptCommand() {
+        return "cmd package bg-dexopt-job --cancel";
+    }
+
+    /**
      * Choose display Hz aligned to target FPS only if the display natively exposes that exact step.
      * Never forces 120Hz when playing at 90 FPS on a 60/120Hz panel, and never forces higher Hz to "boost" FPS.
      */
@@ -213,6 +292,15 @@ public final class GameThermalPolicy {
                 || lower.contains(downscale);
         boolean active = (expectFps || expectScale) && matchesFps && matchesScale;
         return new GameConfigVerification(true, active, out);
+    }
+
+    /**
+     * Detect whether `cmd game list-configs` reports any active non-zero FPS cap or non-1.0 downscale.
+     */
+    public static boolean hasActiveIntervention(String listConfigsOutput) {
+        if (listConfigsOutput == null || listConfigsOutput.isEmpty()) return false;
+        String lower = listConfigsOutput.toLowerCase(Locale.US);
+        return ACTIVE_FPS_PATTERN.matcher(lower).find() || ACTIVE_SCALE_PATTERN.matcher(lower).find();
     }
 
     public static String thermalStatusLabel(int status) {
