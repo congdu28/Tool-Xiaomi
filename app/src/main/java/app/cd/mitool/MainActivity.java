@@ -43,7 +43,6 @@ import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -569,10 +568,13 @@ public class MainActivity extends AppCompatActivity {
     // =========================================================================
 
     private void setupDeviceSpecs() {
-        if (btnQuickGameMode != null) btnQuickGameMode.setOnClickListener(v -> showNotificationFixBottomSheet());
-        if (btnQuickBoostRam != null) btnQuickBoostRam.setOnClickListener(v -> bottomNav.setSelectedItemId(R.id.nav_battery));
+        if (btnQuickGameMode != null) btnQuickGameMode.setOnClickListener(v -> showGameFpsBottomSheet());
+        if (btnQuickBoostRam != null) btnQuickBoostRam.setOnClickListener(v -> showHzBottomSheet());
         if (btnQuickDns != null) btnQuickDns.setOnClickListener(v -> showPrivateDnsBottomSheet());
-        if (btnQuickDebloat != null) btnQuickDebloat.setOnClickListener(v -> bottomNav.setSelectedItemId(R.id.nav_settings));
+        if (btnQuickDebloat != null) btnQuickDebloat.setOnClickListener(v -> showNotificationFixBottomSheet());
+        View batteryCard = findViewById(R.id.card_overview_battery);
+        if (batteryCard != null) batteryCard.setOnClickListener(v -> bottomNav.setSelectedItemId(R.id.nav_battery));
+        if (tvDeviceShizukuBadge != null) tvDeviceShizukuBadge.setOnClickListener(v -> bottomNav.setSelectedItemId(R.id.nav_settings));
         MaterialButton details = findViewById(R.id.btn_toggle_device_details);
         details.setOnClickListener(v -> {
             View panel = findViewById(R.id.layout_device_details);
@@ -733,18 +735,20 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // Game FPS Card
+        // Game FPS & Thermal Card
         if (tvToolGameFpsSub != null) {
             GamingFpsHelper.JoyoseStatus joyose = GamingFpsHelper.checkJoyoseStatus(this);
+            String targetPkg = GamingFpsHelper.resolveTargetGamePackage(this);
+            app.cd.mitool.util.GameThermalPolicy.WorkloadProfile workload =
+                    app.cd.mitool.util.GameThermalPolicy.classifyWorkload(targetPkg);
             if (joyose == GamingFpsHelper.JoyoseStatus.DISABLED_UNLOCKED) {
-                tvToolGameFpsSub.setText(R.string.copy_message_mainactivity_424b6e1);
-                tvToolGameFpsSub.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
-            } else if (joyose == GamingFpsHelper.JoyoseStatus.ACTIVE_LOCKED) {
-                tvToolGameFpsSub.setText(R.string.copy_message_mainactivity_723e32f);
+                tvToolGameFpsSub.setText("Joyose đang tắt (mở trần FPS, dễ nóng) · " + app.cd.mitool.util.GameThermalPolicy.workloadLabel(workload));
                 tvToolGameFpsSub.setTextColor(ContextCompat.getColor(this, R.color.mi_orange));
             } else {
-                tvToolGameFpsSub.setText(R.string.copy_message_mainactivity_50e8ff6);
-                tvToolGameFpsSub.setTextColor(ContextCompat.getColor(this, R.color.neon_cyan));
+                String presetLabel = app.cd.mitool.util.GameThermalPolicy.Preset.BALANCED_90.name().equals(prefs.getGameOptPreset())
+                        ? "90 FPS" : (app.cd.mitool.util.GameThermalPolicy.Preset.CUSTOM.name().equals(prefs.getGameOptPreset()) ? "Tùy chỉnh" : "60 FPS mát");
+                tvToolGameFpsSub.setText("Chống nóng (" + presetLabel + ") · " + app.cd.mitool.util.GameThermalPolicy.workloadLabel(workload) + " · Giữ Joyose");
+                tvToolGameFpsSub.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
             }
         }
 
@@ -3817,6 +3821,7 @@ public class MainActivity extends AppCompatActivity {
         boolean hasPerm = ShizukuHelper.hasShizukuPermission();
 
         if (hasPerm) {
+            boolean hasSecure = SystemClockHelper.hasSecureSettingsPermission(this);
             tvShizukuStatus.setText(R.string.shizuku_status_granted);
             tvShizukuStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
             if (tvShizukuBadge != null) {
@@ -3824,9 +3829,15 @@ public class MainActivity extends AppCompatActivity {
                 tvShizukuBadge.setTextColor(ContextCompat.getColor(this, R.color.neon_green));
             }
             if (btnShizukuGrantAuto != null) {
-                btnShizukuGrantAuto.setText(R.string.copy_message_mainactivity_0e001f3);
-                btnShizukuGrantAuto.setEnabled(false);
-                btnShizukuGrantAuto.setAlpha(0.6f);
+                if (hasSecure) {
+                    btnShizukuGrantAuto.setText(R.string.shizuku_all_ready);
+                    btnShizukuGrantAuto.setEnabled(false);
+                    btnShizukuGrantAuto.setAlpha(0.6f);
+                } else {
+                    btnShizukuGrantAuto.setText(R.string.shizuku_grant_secure_btn);
+                    btnShizukuGrantAuto.setEnabled(true);
+                    btnShizukuGrantAuto.setAlpha(1.0f);
+                }
             }
         } else if (running) {
             tvShizukuStatus.setText(R.string.shizuku_status_running_no_perm);
@@ -3967,10 +3978,13 @@ public class MainActivity extends AppCompatActivity {
         if (refreshBatteryAlertPermissionState != null) refreshBatteryAlertPermissionState.run();
         updateDeviceSpecsDisplay();
         updateToolsCardSummaries();
-        if (tabBatteryScroll.getVisibility() == View.VISIBLE) updateBatteryDisplay();
-        loadBatteryDrainApps();
+        if (tabBatteryScroll.getVisibility() == View.VISIBLE) {
+            updateBatteryDisplay();
+            loadBatteryDrainApps();
+        }
         updateShizukuDisplay();
         if (refreshDnsSheetState != null) refreshDnsSheetState.run();
+        if (refreshHzSheetState != null) refreshHzSheetState.run();
         if (refreshNotificationSheetState != null) refreshNotificationSheetState.run();
         if (refreshGameFpsSheetState != null) {
             refreshGameFpsSheetState.run();
@@ -3997,6 +4011,7 @@ public class MainActivity extends AppCompatActivity {
         stopBatteryRealtimeTicker();
         refreshBatteryAlertPermissionState = null;
         refreshDnsSheetState = null;
+        refreshHzSheetState = null;
         refreshNotificationSheetState = null;
         refreshGameFpsSheetState = null;
         try {

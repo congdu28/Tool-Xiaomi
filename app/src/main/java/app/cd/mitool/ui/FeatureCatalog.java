@@ -21,18 +21,18 @@ public final class FeatureCatalog {
     public static void bind(Activity activity) {
         LinearLayout container = activity.findViewById(R.id.layout_tool_groups);
         List<View> groups = new ArrayList<>();
-        addGroup(activity, container, groups, R.string.group_connections, new int[][] {
-                {R.id.card_tool_notif_fix,R.id.tv_tool_notif_fix_sub,R.string.feature_notifications,R.string.feature_notifications_desc,R.drawable.ic_feature_notifications},
-                {R.id.card_tool_private_dns,R.id.tv_tool_private_dns_sub,R.string.feature_dns,R.string.feature_dns_desc,R.drawable.ic_feature_dns},
-                {R.id.card_tool_volte,R.id.tv_tool_volte_sub,R.string.feature_calls,R.string.feature_calls_desc,R.drawable.ic_feature_calls}});
-        addGroup(activity, container, groups, R.string.group_display, new int[][] {
+        addGroup(activity, container, groups, R.string.group_gaming, new int[][] {
+                {R.id.card_tool_game_fps,R.id.tv_tool_game_fps_sub,R.string.feature_gaming,R.string.feature_gaming_desc,R.drawable.ic_feature_gaming},
                 {R.id.card_tool_hz,R.id.tv_tool_hz_sub,R.string.feature_display,R.string.feature_display_desc,R.drawable.ic_feature_display},
-                {R.id.card_tool_clock,R.id.tv_tool_clock_sub,R.string.feature_clock,R.string.feature_clock_desc,R.drawable.ic_feature_clock}});
+                {R.id.card_tool_ram,R.id.tv_tool_ram_sub,R.string.feature_memory,R.string.feature_memory_desc,R.drawable.ic_feature_memory}});
         addGroup(activity, container, groups, R.string.group_battery, new int[][] {
                 {R.id.card_tool_battery_alert,R.id.tv_tool_battery_alert_sub,R.string.feature_alerts,R.string.feature_alerts_desc,R.drawable.ic_feature_battery},
-                {R.id.card_tool_ram,R.id.tv_tool_ram_sub,R.string.feature_memory,R.string.feature_memory_desc,R.drawable.ic_feature_memory}});
+                {R.id.card_tool_notif_fix,R.id.tv_tool_notif_fix_sub,R.string.feature_notifications,R.string.feature_notifications_desc,R.drawable.ic_feature_notifications}});
+        addGroup(activity, container, groups, R.string.group_connections, new int[][] {
+                {R.id.card_tool_private_dns,R.id.tv_tool_private_dns_sub,R.string.feature_dns,R.string.feature_dns_desc,R.drawable.ic_feature_dns},
+                {R.id.card_tool_volte,R.id.tv_tool_volte_sub,R.string.feature_calls,R.string.feature_calls_desc,R.drawable.ic_feature_calls}});
         addGroup(activity, container, groups, R.string.group_advanced, new int[][] {
-                {R.id.card_tool_game_fps,R.id.tv_tool_game_fps_sub,R.string.feature_gaming,R.string.feature_gaming_desc,R.drawable.ic_feature_gaming},
+                {R.id.card_tool_clock,R.id.tv_tool_clock_sub,R.string.feature_clock,R.string.feature_clock_desc,R.drawable.ic_feature_clock},
                 {R.id.card_tool_debloater,R.id.tv_tool_debloater_sub,R.string.feature_packages,R.string.feature_packages_desc,R.drawable.ic_feature_packages},
                 {R.id.card_tool_miui_utils,R.id.tv_tool_miui_utils_sub,R.string.feature_system,R.string.feature_system_desc,R.drawable.ic_feature_system}});
         EditText search = activity.findViewById(R.id.et_tool_search);

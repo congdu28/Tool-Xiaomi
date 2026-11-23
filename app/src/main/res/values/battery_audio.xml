@@ -24,4 +24,6 @@
     <string name="audio_ring_started">Android đã bắt đầu phát chuông thử. Nếu chưa nghe được, kiểm tra âm lượng báo thức và chế độ Không làm phiền.</string>
     <string name="audio_ring_failed">Chưa phát được chuông. Kiểm tra âm thanh mặc định và quyền đọc tệp chuông.</string>
     <string name="audio_no_voice_needed">Chuông không cần bộ đọc tiếng Việt. Bấm Thử giọng nói nếu bạn muốn kiểm tra giọng đọc.</string>
+    <string name="charging_ambient_title">Màn hình sạc Ambient</string>
+    <string name="charging_view_sot_btn">Xem thống kê pin &amp; SOT</string>
 </resources>

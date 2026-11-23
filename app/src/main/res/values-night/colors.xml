@@ -1,15 +1,15 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-  <color name="mi_orange">#FFAD70</color>
-  <color name="mi_orange_dark">#8E3907</color>
-  <color name="mi_orange_light">#FFF0E6</color>
-  <color name="bg_dark">#101720</color>
-  <color name="card_dark">#18222E</color>
-  <color name="card_dark_stroke">#344358</color>
-  <color name="card_highlight">#243243</color>
-  <color name="text_primary">#F1F5FA</color>
-  <color name="text_secondary">#BFCCDA</color>
-  <color name="text_muted">#A0AEC0</color>
+  <color name="mi_orange">#FF7A2F</color>
+  <color name="mi_orange_dark">#CC5514</color>
+  <color name="mi_orange_light">#2E1A0E</color>
+  <color name="bg_dark">#0D1219</color>
+  <color name="card_dark">#151D28</color>
+  <color name="card_dark_stroke">#263345</color>
+  <color name="card_highlight">#1E2938</color>
+  <color name="text_primary">#F8FAFC</color>
+  <color name="text_secondary">#B8C7D9</color>
+  <color name="text_muted">#8B9CB3</color>
   <color name="white">#FFFFFF</color>
   <color name="black">#000000</color>
   <color name="neon_green">#00E676</color>

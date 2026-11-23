@@ -1,57 +1,446 @@
 <?xml version='1.0' encoding='utf-8'?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_bottom_sheet" android:paddingTop="12dp">
-    <View android:layout_width="40dp" android:layout_height="4dp" android:layout_gravity="center_horizontal" android:layout_marginBottom="16dp" android:background="@drawable/bg_drag_handle" />
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp" android:paddingStart="20dp" android:paddingEnd="20dp">
-        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="@string/feature_alerts" android:textColor="@color/text_primary" android:textSize="22sp" android:textStyle="bold" android:layout_weight="1" android:layout_marginBottom="0dp" />
-        <com.google.android.material.button.MaterialButton android:id="@+id/sheet_close" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/action_close" android:contentDescription="@string/action_close" style="@style/Widget.MiTool.Button.Text" android:minHeight="48dp" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_bottom_sheet"
+    android:orientation="vertical"
+    android:paddingTop="12dp">
+
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="14dp"
+        android:background="@drawable/bg_drag_handle" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/feature_alerts"
+            android:textColor="@color/text_primary"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/sheet_close"
+            style="@style/Widget.MiTool.Button.Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/action_close"
+            android:minHeight="48dp"
+            android:text="@string/action_close" />
     </LinearLayout>
-    <androidx.core.widget.NestedScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@android:color/transparent" android:fillViewport="true" android:overScrollMode="never">
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingStart="20dp" android:paddingEnd="20dp" android:paddingBottom="24dp">
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="12dp">
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/charging_notif_title" android:textSize="16sp" android:textStyle="bold" android:textColor="@color/text_primary" />
-                <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/bs_switch_charging_notification" android:layout_width="wrap_content" android:layout_height="wrap_content" android:contentDescription="@string/charging_notif_title" android:minHeight="48dp" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:fillViewport="true"
+        android:overScrollMode="never">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="24dp">
+
+            <!-- Card 1: Charging Notification & Ambient Screen -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/bg_card_rounded"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:layout_weight="1"
+                        android:text="@string/charging_notif_title"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/bs_switch_charging_notification"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/charging_notif_title"
+                        android:minHeight="48dp" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/charging_notif_description"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/bs_tv_notification_permission"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textColor="@color/mi_orange"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/bs_btn_notification_settings"
+                    style="@style/Widget.MiTool.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/charging_notif_settings" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="4dp"
+                    android:background="@color/card_dark_stroke" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:layout_weight="1"
+                        android:text="@string/charging_ambient_title"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/bs_switch_lockscreen_ambient"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp" />
+                </LinearLayout>
             </LinearLayout>
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/charging_notif_description" android:textSize="14sp" android:textColor="@color/text_secondary" />
-            <TextView android:id="@+id/bs_tv_notification_permission" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="14sp" android:layout_marginTop="8dp" android:textColor="@color/text_secondary" />
-            <com.google.android.material.button.MaterialButton style="@style/Widget.MiTool.Button" android:id="@+id/bs_btn_notification_settings" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/charging_notif_settings" />
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/audio_events" android:textColor="@color/text_secondary" android:textSize="14sp" android:layout_marginTop="12dp" />
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/audio_help" android:textColor="@color/text_secondary" android:textSize="14sp" android:layout_marginTop="12dp" />
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="8dp">
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="@string/audio_connect" android:textColor="@color/text_primary" android:textSize="14sp" android:layout_marginTop="0dp" android:id="@+id/bs_audio_label_connect" android:layout_weight="1" />
-                <com.google.android.material.button.MaterialButton style="@style/Widget.MiTool.Button" android:id="@+id/bs_audio_mode_connect" android:layout_width="140dp" android:layout_height="wrap_content" android:text="@string/action_close" />
+
+            <!-- Card 2: Audio Events -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_card_rounded"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/audio_events"
+                    android:textColor="@color/text_primary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/audio_help"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/bs_audio_label_connect"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:text="@string/audio_connect"
+                        android:textColor="@color/text_primary"
+                        android:textSize="13sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/bs_audio_mode_connect"
+                        style="@style/Widget.MiTool.Button"
+                        android:layout_width="142dp"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:text="@string/action_close"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/bs_audio_label_disconnect"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:text="@string/audio_disconnect"
+                        android:textColor="@color/text_primary"
+                        android:textSize="13sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/bs_audio_mode_disconnect"
+                        style="@style/Widget.MiTool.Button"
+                        android:layout_width="142dp"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:text="@string/action_close"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/bs_audio_label_target"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:text="@string/audio_target"
+                        android:textColor="@color/text_primary"
+                        android:textSize="13sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/bs_audio_mode_target"
+                        style="@style/Widget.MiTool.Button"
+                        android:layout_width="142dp"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:text="@string/action_close"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/bs_layout_alert_level_slider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/bs_tv_battery_audio_level"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/audio_threshold"
+                        android:textColor="@color/neon_cyan"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <SeekBar
+                        android:id="@+id/bs_sb_battery_alert_level"
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:contentDescription="@string/audio_events"
+                        android:max="45" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/bs_audio_label_full"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:text="@string/audio_full"
+                        android:textColor="@color/text_primary"
+                        android:textSize="13sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/bs_audio_mode_full"
+                        style="@style/Widget.MiTool.Button"
+                        android:layout_width="142dp"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:text="@string/action_close"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/bs_audio_label_hot"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:text="@string/audio_hot"
+                        android:textColor="@color/text_primary"
+                        android:textSize="13sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/bs_audio_mode_hot"
+                        style="@style/Widget.MiTool.Button"
+                        android:layout_width="142dp"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:text="@string/action_close"
+                        android:textSize="12sp" />
+                </LinearLayout>
             </LinearLayout>
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="8dp">
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="@string/audio_disconnect" android:textColor="@color/text_primary" android:textSize="14sp" android:layout_marginTop="0dp" android:id="@+id/bs_audio_label_disconnect" android:layout_weight="1" />
-                <com.google.android.material.button.MaterialButton style="@style/Widget.MiTool.Button" android:id="@+id/bs_audio_mode_disconnect" android:layout_width="140dp" android:layout_height="wrap_content" android:text="@string/action_close" />
+
+            <!-- Card 3: Tone & Voice Test -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_card_rounded"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <TextView
+                    android:id="@+id/bs_tv_selected_audio_tone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/audio_tone"
+                    android:textColor="@color/text_primary"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/bs_btn_pick_audio"
+                        style="@style/Widget.MiTool.Button"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:layout_weight="1"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:text="@string/audio_pick"
+                        android:textSize="13sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/bs_btn_reset_audio"
+                        style="@style/Widget.MiTool.Button"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_weight="1"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:text="@string/audio_default"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/bs_btn_test_audio"
+                        style="@style/Widget.MiTool.Button"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:layout_weight="1"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:text="@string/audio_test_ring"
+                        android:textSize="13sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/bs_btn_test_voice"
+                        style="@style/Widget.MiTool.Button"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_weight="1"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:text="@string/audio_test_voice"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/bs_tv_audio_health"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/audio_wait"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/bs_btn_audio_settings"
+                    style="@style/Widget.MiTool.Button.Text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/audio_system" />
             </LinearLayout>
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="8dp">
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="@string/audio_target" android:textColor="@color/text_primary" android:textSize="14sp" android:layout_marginTop="0dp" android:id="@+id/bs_audio_label_target" android:layout_weight="1" />
-                <com.google.android.material.button.MaterialButton style="@style/Widget.MiTool.Button" android:id="@+id/bs_audio_mode_target" android:layout_width="140dp" android:layout_height="wrap_content" android:text="@string/action_close" />
-            </LinearLayout>
-            <LinearLayout android:id="@+id/bs_layout_alert_level_slider" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/audio_threshold" android:textColor="@color/text_secondary" android:textSize="14sp" android:layout_marginTop="12dp" android:id="@+id/bs_tv_battery_audio_level" />
-                <SeekBar android:id="@+id/bs_sb_battery_alert_level" android:layout_width="match_parent" android:layout_height="48dp" android:max="45" android:contentDescription="@string/audio_events" />
-            </LinearLayout>
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="8dp">
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="@string/audio_full" android:textColor="@color/text_primary" android:textSize="14sp" android:layout_marginTop="0dp" android:id="@+id/bs_audio_label_full" android:layout_weight="1" />
-                <com.google.android.material.button.MaterialButton style="@style/Widget.MiTool.Button" android:id="@+id/bs_audio_mode_full" android:layout_width="140dp" android:layout_height="wrap_content" android:text="@string/action_close" />
-            </LinearLayout>
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="8dp">
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="@string/audio_hot" android:textColor="@color/text_primary" android:textSize="14sp" android:layout_marginTop="0dp" android:id="@+id/bs_audio_label_hot" android:layout_weight="1" />
-                <com.google.android.material.button.MaterialButton style="@style/Widget.MiTool.Button" android:id="@+id/bs_audio_mode_hot" android:layout_width="140dp" android:layout_height="wrap_content" android:text="@string/action_close" />
-            </LinearLayout>
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/audio_tone" android:textColor="@color/text_secondary" android:textSize="14sp" android:layout_marginTop="12dp" android:id="@+id/bs_tv_selected_audio_tone" />
-            <com.google.android.material.button.MaterialButton style="@style/Widget.MiTool.Button" android:id="@+id/bs_btn_pick_audio" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/audio_pick" />
-            <com.google.android.material.button.MaterialButton style="@style/Widget.MiTool.Button" android:id="@+id/bs_btn_reset_audio" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/audio_default" />
-            <com.google.android.material.button.MaterialButton style="@style/Widget.MiTool.Button" android:id="@+id/bs_btn_test_audio" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/audio_test_ring" />
-            <com.google.android.material.button.MaterialButton style="@style/Widget.MiTool.Button" android:id="@+id/bs_btn_test_voice" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/audio_test_voice" />
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/audio_wait" android:textColor="@color/text_secondary" android:textSize="14sp" android:layout_marginTop="12dp" android:id="@+id/bs_tv_audio_health" />
-            <com.google.android.material.button.MaterialButton style="@style/Widget.MiTool.Button" android:id="@+id/bs_btn_audio_settings" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/audio_system" />
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="Màn hình sạc Ambient" android:textColor="@color/text_secondary" android:textSize="14sp" android:layout_marginTop="12dp" android:layout_weight="1" />
-                <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/bs_switch_lockscreen_ambient" android:layout_width="wrap_content" android:layout_height="48dp" />
-            </LinearLayout>
-            <com.google.android.material.button.MaterialButton style="@style/Widget.MiTool.Button" android:id="@+id/bs_btn_view_sot_stats" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Xem thống kê pin và SOT" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/bs_btn_view_sot_stats"
+                style="@style/Widget.MiTool.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/charging_view_sot_btn" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>

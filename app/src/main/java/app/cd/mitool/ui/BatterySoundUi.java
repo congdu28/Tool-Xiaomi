@@ -85,7 +85,10 @@ public final class BatterySoundUi {
                 }).show());
         MaterialSwitch ambient = view.findViewById(R.id.bs_switch_lockscreen_ambient);
         ambient.setChecked(prefs.isLockscreenAmbientEnabled());
-        ambient.setOnCheckedChangeListener((button, checked) -> prefs.setLockscreenAmbientEnabled(checked));
+        ambient.setOnCheckedChangeListener((button, checked) -> {
+            prefs.setLockscreenAmbientEnabled(checked);
+            changed.run();
+        });
         refresh.run();
         return () -> { refresh.run(); checkHealth.run(); };
     }
